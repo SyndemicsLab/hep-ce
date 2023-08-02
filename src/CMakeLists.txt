@@ -11,10 +11,6 @@ project (
 
 include(GNUInstallDirs)
 
-find_package(fmt REQUIRED)
-
-find_package(Eigen3 3.4 REQUIRED)
-
 add_executable(HEPCESIMULATION_SRC main.cpp)
 
 target_link_libraries(HEPCESIMULATION_SRC)
