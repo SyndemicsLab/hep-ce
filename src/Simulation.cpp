@@ -18,6 +18,49 @@
 
 #include "Simulation.hpp"
 
-std::vector<Person> Simulation::run(){
+// PRIVATE METHODS
+
+std::vector<Person> Simulation::createPopulation(std::mt19937_64 generator) {
+    return std::vector<Person>();
+}
+
+std::vector<Event> Simulation::createEvents(std::mt19937_64 generator) {
+    return std::vector<Event>();
+}
+
+// PUBLIC METHODS
+
+std::vector<Person> Simulation::createPopulation() {
+    this->population = this->createPopulation(this->generator);
+    return this->population;
+}
+
+std::vector<Event> Simulation::createEvents() { 
+    this->events = this->createEvents(this->generator); 
+    return this->events;
+}
+
+void Simulation::loadPopulation(std::vector<Person> population) {}
+
+void Simulation::addPerson(Person person) {}
+
+void Simulation::loadEvents(std::vector<Event> events) {}
+
+bool Simulation::addEventToEnd(Event event) { return false; }
+
+bool Simulation::addEventToBeginning(Event event) { return false; }
+
+bool Simulation::addEventAtIndex(Event event, int idx) { return false; }
+
+std::vector<Person> Simulation::getPopulation() { return this->population; }
+
+std::vector<Event> Simulation::getEvents() { return this->events; }
+
+std::vector<Person> Simulation::run(){ 
+    while(this->currentTimestep < this->duration){
+        for(Event event : this->events){
+            this->population = event.execute(this->population);
+        }
+    }
     return this->population;
 }

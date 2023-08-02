@@ -1,4 +1,4 @@
-//===-- Event.hpp - Instruction class definition -------*- C++ -*-===//
+//===-- Data.hpp - Instruction class definition -------*- C++ -*-===//
 //
 // Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
@@ -11,24 +11,23 @@
 /// This file contains the declaration of the Instruction class, which is the
 /// base class for all of the VM instructions.
 ///
-/// Created Date: Wednesday, August 2nd 2023, 9:44:04 am
+/// Created Date: Wednesday, August 2nd 2023, 3:16:18 pm
 /// Contact: Benjamin.Linas@bmc.org
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef EVENT_HPP_
-#define EVENT_HPP_
+#ifndef DATA_HPP_
+#define DATA_HPP_
 
-#include "Person.hpp"
+#include <string>
 
-#include <vector>
-
-class Event {
+class Data {
 private:
+    std::string dataString;
 public:
-    Event(){};
-    virtual ~Event() = default;
-    virtual std::vector<Person> execute(std::vector<Person>);
+    Data(){};
+    void read_csv(std::string filepath);
+    void write_csv(std::string filepath);
 };
 
 #endif

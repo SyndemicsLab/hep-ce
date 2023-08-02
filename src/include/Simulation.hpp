@@ -23,27 +23,39 @@
 #include "Event.hpp"
 
 #include <cstdint>
+#include <random>
 #include <string>
 #include <vector>
 
 class Simulation {
 private:
-    uint32_t currentTimestep;
-    unsigned long long seed;
+    uint32_t currentTimestep = 0;
+    uint64_t seed;
     std::vector<Person> population;
     std::vector<Event> events;
+    std::mt19937_64 generator;
+    
+    std::vector<Person> createPopulation(std::mt19937_64 generator);
+    std::vector<Event> createEvents(std::mt19937_64 generator);
 
 public:
-    Simulation() : seed(0) {};
-    Simulation(unsigned long long seed) : seed(seed) {};
+    Simulation() : Simulation((uint64_t)0, (uint32_t)0) {};
 
-    Simulation(uint32_t duration) : seed(0) {
+    Simulation(uint64_t seed) : Simulation(seed, (uint32_t)0) {};
+
+    Simulation(uint32_t duration) : Simulation((uint64_t)0, duration) {};
+
+    Simulation(uint64_t seed, uint32_t duration){
+        this->generator.seed(this->seed);
         this->duration = duration;
-    };
+    }
 
     virtual ~Simulation() = default;
 
     uint32_t duration;
+
+    std::vector<Person> createPopulation();
+    std::vector<Event> createEvents();
 
     void loadPopulation(std::vector<Person> population);
     void addPerson(Person person);
@@ -57,7 +69,6 @@ public:
     std::vector<Event> getEvents();
 
     std::vector<Person> run();
-    std::vector<Person> run(uint32_t duration);
 
 };
 
