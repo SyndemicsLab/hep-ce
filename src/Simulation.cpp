@@ -31,20 +31,28 @@ std::vector<Event> Simulation::createEvents(std::mt19937_64 generator) {
 // PUBLIC METHODS
 
 std::vector<Person> Simulation::createPopulation() {
-    this->population = this->createPopulation(this->generator);
-    return this->population;
+    this->loadPopulation(this->createPopulation(this->generator));
+    return this->getPopulation();
 }
 
 std::vector<Event> Simulation::createEvents() { 
-    this->events = this->createEvents(this->generator); 
-    return this->events;
+    this->loadEvents(this->createEvents(this->generator)); 
+    return this->getEvents();
 }
 
 void Simulation::loadPopulation(std::vector<Person> population) {}
 
 void Simulation::addPerson(Person person) {}
 
-void Simulation::loadEvents(std::vector<Event> events) {}
+void Simulation::loadEvents(std::vector<Event> events) {
+    if (events.empty()) {
+        // log that we are writing an empty event vector
+    }
+    if (!this->events.empty()){
+        // log that we are overwriting this->events
+    }
+    this->events = events;
+}
 
 bool Simulation::addEventToEnd(Event event) { return false; }
 
