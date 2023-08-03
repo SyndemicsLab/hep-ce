@@ -23,12 +23,15 @@
 
 #include <vector>
 
+namespace Event{
+
 class Event {
 private:
 public:
     Event(){};
     virtual ~Event() = default;
-    virtual std::vector<Person> execute(std::vector<Person>);
+    virtual std::vector<Person::Person> execute(std::vector<Person::Person>);
 };
 
+}
 #endif

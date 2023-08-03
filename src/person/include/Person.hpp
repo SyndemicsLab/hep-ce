@@ -21,6 +21,8 @@
 #include <cstdint>
 #include <string>
 
+namespace Person{
+
 enum FibrosisState { 
     NONE,
     F0,
@@ -69,10 +71,11 @@ public:
     FibrosisState diagnoseFibrosis();
     HEPCState diagnoseHEPC();
 
-    FibrosisState getFibrosisState();
-    HEPCState getHEPCState();
-    Alive getIsAlive();
-    BehaviorState getBehaviorState();
+    FibrosisState getFibrosisState() { return this->fibState; }
+    HEPCState getHEPCState() { return this->hepceState; }
+    Alive getIsAlive() { return this->alive; }
+    BehaviorState getBehaviorState() { return this->behaviorState; }
 };
 
+}
 #endif

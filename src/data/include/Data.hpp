@@ -21,6 +21,8 @@
 
 #include <string>
 
+namespace Data{
+
 class Data {
 private:
     std::string dataString;
@@ -30,4 +32,5 @@ public:
     void write_csv(std::string filepath);
 };
 
+}
 #endif

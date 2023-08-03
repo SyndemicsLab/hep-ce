@@ -31,12 +31,12 @@ class Simulation {
 private:
     uint32_t currentTimestep = 0;
     uint64_t seed;
-    std::vector<Person> population;
-    std::vector<Event> events;
+    std::vector<Person::Person> population;
+    std::vector<Event::Event> events;
     std::mt19937_64 generator;
     
-    std::vector<Person> createPopulation(std::mt19937_64 generator);
-    std::vector<Event> createEvents(std::mt19937_64 generator);
+    std::vector<Person::Person> createPopulation(std::mt19937_64 generator);
+    std::vector<Event::Event> createEvents(std::mt19937_64 generator);
 
 public:
     Simulation() : Simulation((uint64_t)0, (uint32_t)0) {};
@@ -54,21 +54,21 @@ public:
 
     uint32_t duration;
 
-    std::vector<Person> createPopulation();
-    std::vector<Event> createEvents();
+    std::vector<Person::Person> createPopulation();
+    std::vector<Event::Event> createEvents();
 
-    void loadPopulation(std::vector<Person> population);
-    void addPerson(Person person);
+    void loadPopulation(std::vector<Person::Person> population);
+    void addPerson(Person::Alive person);
 
-    void loadEvents(std::vector<Event> events);
-    bool addEventToEnd(Event event);
-    bool addEventToBeginning(Event event);
-    bool addEventAtIndex(Event event, int idx);
+    void loadEvents(std::vector<Event::Event> events);
+    bool addEventToEnd(Event::Event event);
+    bool addEventToBeginning(Event::Event event);
+    bool addEventAtIndex(Event::Event event, int idx);
 
-    std::vector<Person> getPopulation();
-    std::vector<Event> getEvents();
+    std::vector<Person::Person> getPopulation();
+    std::vector<Event::Event> getEvents();
 
-    std::vector<Person> run();
+    std::vector<Person::Person> run();
 
 };
 
