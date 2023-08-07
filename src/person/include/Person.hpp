@@ -15,8 +15,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef PERSON_HPP_
-#define PERSON_HPP_
+#ifndef PERSON_PERSON_HPP_
+#define PERSON_PERSON_HPP_
 
 #include <cstdint>
 #include <string>
@@ -50,13 +50,21 @@ enum BehaviorState {
     FORMER
 };
 
+enum LinkageState {
+    LINKED,
+    UNLINKED
+};
+
 class Person {
 private:
     int id;
+    int timeSinceLastScreening = -1; // -1 if never screened, otherwise [0, currentTimestep-1)
+
     FibrosisState fibState = FibrosisState::NONE;
     HEPCState hepceState = HEPCState::NONE;
     Alive alive = Alive::YES;
     BehaviorState behaviorState = BehaviorState::NEVER;
+    LinkageState linkState = LinkageState::UNLINKED;
 
 public:
     uint32_t age = 0;
@@ -70,7 +78,10 @@ public:
     void updateBehavior();
     FibrosisState diagnoseFibrosis();
     HEPCState diagnoseHEPC();
+    void markScreened() { this->timeSinceLastScreening = 0; }
 
+
+    int getTimeSinceLastScreening() { return this->timeSinceLastScreening; }
     FibrosisState getFibrosisState() { return this->fibState; }
     HEPCState getHEPCState() { return this->hepceState; }
     Alive getIsAlive() { return this->alive; }

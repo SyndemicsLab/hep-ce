@@ -16,8 +16,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef DATA_HPP_
-#define DATA_HPP_
+#ifndef DATA_DATA_HPP_
+#define DATA_DATA_HPP_
 
 #include <string>
 

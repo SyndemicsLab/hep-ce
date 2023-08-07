@@ -58,12 +58,12 @@ public:
     std::vector<Event::Event> createEvents();
 
     void loadPopulation(std::vector<Person::Person> population);
-    void addPerson(Person::Alive person);
+    void addPerson(Person::Person person);
 
     void loadEvents(std::vector<Event::Event> events);
-    bool addEventToEnd(Event::Event event);
-    bool addEventToBeginning(Event::Event event);
-    bool addEventAtIndex(Event::Event event, int idx);
+    bool addEventToEnd(Event::Event &event);
+    bool addEventToBeginning(Event::Event &event);
+    bool addEventAtIndex(Event::Event &event, int idx);
 
     std::vector<Person::Person> getPopulation();
     std::vector<Event::Event> getEvents();

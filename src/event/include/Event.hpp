@@ -16,8 +16,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#ifndef EVENT_HPP_
-#define EVENT_HPP_
+#ifndef EVENT_EVENT_HPP_
+#define EVENT_EVENT_HPP_
 
 #include "Person.hpp"
 
@@ -27,10 +27,11 @@ namespace Event{
 
 class Event {
 private:
+
 public:
     Event(){};
     virtual ~Event() = default;
-    virtual std::vector<Person::Person> execute(std::vector<Person::Person>);
+    virtual std::vector<Person::Person> execute(std::vector<Person::Person>) = 0;
 };
 
 }
