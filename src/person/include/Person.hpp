@@ -58,9 +58,11 @@ enum LinkageState {
 class Person {
 private:
     int id;
+    
     int timeSinceLastScreening = -1; // -1 if never screened, otherwise [0, currentTimestep-1)
     int screeningFrequency = -1; // -1 if screened only once and never again
     bool interventionScreening = false;
+    bool seropositivity = false;
 
     FibrosisState fibState = FibrosisState::NONE;
     HEPCState hepceState = HEPCState::NONE;
@@ -83,6 +85,9 @@ public:
     void markScreened() { this->timeSinceLastScreening = 0; }
     void setScreeningFrequency(int screeningFrequency) { this->screeningFrequency = screeningFrequency; }
     void addInterventionScreening() {this->interventionScreening = true; }
+    void setSeropositivity(bool seropositivity) { this->seropositivity = seropositivity; }
+    void unlink() { this->linkState = LinkageState::UNLINKED; }
+    void link() { this->linkState = LinkageState::LINKED; }
 
     int getTimeSinceLastScreening() { return this->timeSinceLastScreening; }
     int getScreeningFrequency() { return this-> screeningFrequency; }
@@ -91,6 +96,7 @@ public:
     HEPCState getHEPCState() { return this->hepceState; }
     Alive getIsAlive() { return this->alive; }
     BehaviorState getBehaviorState() { return this->behaviorState; }
+    bool getSeropositivity(){ return this->seropositivity; }
 };
 
 }

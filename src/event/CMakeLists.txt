@@ -13,4 +13,5 @@ target_include_directories(event INTERFACE
 
 target_link_libraries(event
     person
+    libs
 )

@@ -19,29 +19,121 @@
 
 namespace Event {
     Screening::Screening(uint64_t seed) {
-        this->backgroundSeed = seed;
-        this->generator.seed(this->backgroundSeed);
+        this->generatorSeed = seed;
+        this->generator.seed(this->generatorSeed);
+        // QUERY backgroundProbability and interventionProbability Tables
+        // Save to attributes
+        // ensure lookup scheme for stratified age/IDU
     };
 
     std::vector<Person::Person> Screening::execute(std::vector<Person::Person> population){
-        std::for_each(std::execution::par, std::begin(population), std::end(population), this->screen);
+        std::for_each(std::execution::par, std::begin(population), std::end(population), screen);
     }
 
     void Screening::screen(Person::Person &person){
-        if( person->isInterventionScreened() && 
-            person->getScreeningFrequency() == -1 && 
-            person->getTimeSinceLastScreening() == -1){
-            // one time screen
-        }
-        else if(person->isInterventionScreened() && 
-            person->getTimeSinceLastScreening() > person->getScreeningFrequency()){
-            // time for periodic screen
+        double prob = 0.5;
+        if( 
+            (person.isInterventionScreened() && 
+                person.getScreeningFrequency() == -1 && 
+                person.getTimeSinceLastScreening() == -1) ||
+            (person.isInterventionScreened() && 
+                person.getScreeningFrequency() != -1 && 
+                person.getTimeSinceLastScreening() > person.getScreeningFrequency())
+        ){
+            // time one-time screen or periodic screen
         }
         else{
-            std::bernoulli_distribution<int> backgroundProbability(1, prob);
+            std::bernoulli_distribution backgroundProbability(prob);
             this->generatorMutex.lock();
             int value = backgroundProbability(this->generator);
             this->generatorMutex.unlock();
+            
+            if (value != 1){
+                return;
+            }
+            this->backgroundScreen(person);
+
         }
+    }
+
+    void Screening::backgroundScreen(Person::Person &person){
+        person.markScreened();
+
+        if(!this->antibodyTest(person) && !this->antibodyTest(person)){
+            return; // run two tests and if both are negative do nothing
+        }
+        
+        // if either is positive then...
+        if(this->rnaTest(person)){
+            person.link();
+            // what else needs to happen during a link?
+        }
+
+        person.unlink();
+    }
+
+    /// @brief 
+    /// @param person 
+    void Screening::interventionScreen(Person::Person &person){
+        std::bernoulli_distribution testAcceptanceProbability(this->acceptTestProbability[person.age]); // need to also add idu stratification
+        this->generatorMutex.lock();
+        int accepted = testAcceptanceProbability(this->generator);
+        this->generatorMutex.unlock();
+        if(!accepted) {
+            return;
+        }
+
+        person.markScreened();
+        if(!this->antibodyTest(person) && !this->antibodyTest(person)){
+
+        }
+        if(this->rnaTest(person)){
+            person.link();
+            // what else needs to happen during a link?
+        }
+        person.unlink();
+    }
+
+    /// @brief 
+    /// @param person 
+    /// @return 
+    bool Screening::antibodyTest(Person::Person &person){
+        double probability = 0.5;
+        if(person.getSeropositivity()){
+            Person::HEPCState infectionStatus = person.getHEPCState();
+            if(infectionStatus == Person::HEPCState::ACUTE || infectionStatus == Person::HEPCState::NONE){
+                // probability = acute_sensitivity
+            }   
+            else{
+                // probability = chronic_sensitivity
+            }
+        }
+        else{
+            // probability = 1 - specificity;
+        }
+        std::bernoulli_distribution testProbability(probability);
+        this->generatorMutex.lock();
+        int value = testProbability(this->generator);
+        this->generatorMutex.unlock();
+        return value;
+    }
+
+    bool Screening::rnaTest(Person::Person &person){
+        double probability = 0.5;
+        Person::HEPCState infectionStatus = person.getHEPCState();
+        if(infectionStatus == Person::HEPCState::ACUTE){
+            // probability = acute_sensitivity
+        }   
+        else if(infectionStatus == Person::HEPCState::CHRONIC){
+            // probability = chronic_sensitivity
+        }
+        else{
+            // probability = 1 - specificity;
+        }
+        std::bernoulli_distribution testProbability(probability);
+        this->generatorMutex.lock();
+        int value = testProbability(this->generator);
+        this->generatorMutex.unlock();
+        return value;
     }
 }
