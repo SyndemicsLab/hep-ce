@@ -4,6 +4,7 @@
 #include "Event.hpp"
 
 #include <random>
+#include <mutex>
 
 namespace Event{
 
@@ -11,48 +12,16 @@ class Screening : public Event {
 private:
     uint64_t backgroundSeed;
     std::mt19937_64 generator;
+    std::mutex generatorMutex;
+
+
+    void screen(Person::Person &person);
 public:
-    Screening() : Event() {};
+    Screening() : Event() { this->Screening((uint64)0); };
+    Screening(uint64_t seed);
     virtual ~Screening() = default;
 
-    virtual bool checkIfScreen(std::vector<Person::Person> population) = 0;
-
-    std::vector<Person::Person> execute(std::vector<Person::Person> population){
-        if(!this->checkIfScreen(population)) { return population; }
-        return std::vector<Person::Person>();
-    };
-};
-
-class OneTimeScreening : public Screening {
-public:
-    OneTimeScreening() : Screening() {};
-    virtual ~OneTimeScreening() = default;
-
-    bool checkIfScreen(std::vector<Person::Person> population);
-};
-
-class PeriodicScreening : public Screening {
-public:
-    PeriodicScreening() : Screening() {};
-    virtual ~PeriodicScreening() = default;
-
-    bool checkIfScreen(std::vector<Person::Person> population);
-};
-
-class BackgroundScreening : public Screening {
-public:
-    BackgroundScreening() : Screening() {};
-    virtual ~BackgroundScreening() = default;
-
-    bool checkIfScreen(std::vector<Person::Person> population);
-};
-
-class InterventionScreening : public Screening {
-public:
-    InterventionScreening() : Screening() {};
-    virtual ~InterventionScreening() = default;
-
-    bool checkIfScreen(std::vector<Person::Person> population);
+    std::vector<Person::Person> execute(std::vector<Person::Person> population);
 };
 
 }
