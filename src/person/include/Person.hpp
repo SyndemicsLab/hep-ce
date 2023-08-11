@@ -21,10 +21,10 @@
 #include <cstdint>
 #include <string>
 
-/// @brief 
+/// @brief Namespace containing all code pertaining to a Person
 namespace Person{
 
-/// @brief 
+/// @brief Fibrosis States
 enum FibrosisState { 
     NONE,
     F0,
@@ -35,40 +35,40 @@ enum FibrosisState {
     DECOMP
 };
 
-/// @brief 
+/// @brief HEP-C Infection States
 enum HEPCState {
     NONE,
     ACUTE,
     CHRONIC
 };
 
-/// @brief 
+/// @brief Person's Living Status
 enum Alive {
     NO,
     YES
 };
 
-/// @brief 
+/// @brief Opioid Usage Status
 enum BehaviorState {
     NEVER,
     CURRENT,
     FORMER
 };
 
-/// @brief 
+/// @brief Screening type that lead to Linkage
 enum LinkageType {
     BACKGROUND,
     INTERVENTION
 };
 
-/// @brief 
+/// @brief Status of Linkage
 enum LinkageState {
     NEVER,
     LINKED,
     UNLINKED
 };
 
-/// @brief 
+/// @brief class describing a Person
 class Person {
 private:
     int id;
@@ -78,7 +78,7 @@ private:
     bool interventionScreening = false;
     bool seropositivity = false;
 
-    /// @brief 
+    /// @brief Attributes describing Identification
     struct IdentificationStatus {
         bool identifiedAsPositiveInfection = false;
         int timeIdentified = -1;
@@ -90,7 +90,7 @@ private:
     Alive alive = Alive::YES;
     BehaviorState behaviorState = BehaviorState::NEVER;
 
-    /// @brief 
+    /// @brief Attributes describing Linkage
     struct LinkageDetails {
         LinkageState linkState = LinkageState::NEVER;
         int timeLinkChange = -1;
@@ -106,38 +106,38 @@ public:
     Person(){};
     virtual ~Person() = default;
 
-    /// @brief 
+    /// @brief End a Person's life and set final age
     void die();
 
-    /// @brief 
+    /// @brief increase a person's age
     void grow();
 
-    /// @brief 
+    /// @brief Infect the person
     void infect();
 
-    /// @brief 
+    /// @brief Update Opioid use behavior
     void updateBehavior();
 
-    /// @brief 
-    /// @return 
+    /// @brief Diagnose somebody's fibrosis
+    /// @return Fibrosis state that is diagnosed
     FibrosisState diagnoseFibrosis();
 
-    /// @brief 
-    /// @return 
+    /// @brief Dignose somebody with HEPC
+    /// @return HEPC state that was diagnosed
     HEPCState diagnoseHEPC();
 
-    /// @brief 
+    /// @brief Mark somebody as having been screened this timestep
     void markScreened() { this->timeSinceLastScreening = 0; }
 
-    /// @brief 
-    /// @param screeningFrequency 
+    /// @brief Set the frequency in which to screen this person
+    /// @param screeningFrequency Frequency in which to screen this person
     void setScreeningFrequency(int screeningFrequency) { this->screeningFrequency = screeningFrequency; }
 
-    /// @brief 
+    /// @brief Add intervention screening to this person
     void addInterventionScreening() {this->interventionScreening = true; }
 
-    /// @brief 
-    /// @param seropositivity 
+    /// @brief Set the Seropositivity value
+    /// @param seropositivity Seropositivity status to set
     void setSeropositivity(bool seropositivity) { this->seropositivity = seropositivity; }
 
     /// @brief 
