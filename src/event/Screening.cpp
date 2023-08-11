@@ -28,6 +28,7 @@ namespace Event {
 
     std::vector<Person::Person> Screening::execute(std::vector<Person::Person> population){
         std::for_each(std::execution::par, std::begin(population), std::end(population), screen);
+        return population;
     }
 
     void Screening::screen(Person::Person &person){
