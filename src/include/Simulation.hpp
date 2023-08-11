@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 
+/// @brief 
 class Simulation {
 private:
     uint32_t currentTimestep = 0;
@@ -35,7 +36,14 @@ private:
     std::vector<Event::Event> events;
     std::mt19937_64 generator;
     
+    /// @brief 
+    /// @param generator 
+    /// @return 
     std::vector<Person::Person> createPopulation(std::mt19937_64 generator);
+
+    /// @brief 
+    /// @param generator 
+    /// @return 
     std::vector<Event::Event> createEvents(std::mt19937_64 generator);
 
 public:
@@ -54,22 +62,53 @@ public:
 
     uint32_t duration;
 
+    /// @brief 
+    /// @return 
     std::vector<Person::Person> createPopulation();
+
+    /// @brief 
+    /// @return 
     std::vector<Event::Event> createEvents();
 
+    /// @brief 
+    /// @param population 
     void loadPopulation(std::vector<Person::Person> population);
+
+    /// @brief 
+    /// @param person 
     void addPerson(Person::Person person);
 
+    /// @brief 
+    /// @param events 
     void loadEvents(std::vector<Event::Event> events);
+
+    /// @brief 
+    /// @param event 
+    /// @return 
     bool addEventToEnd(Event::Event &event);
+
+    /// @brief 
+    /// @param event 
+    /// @return 
     bool addEventToBeginning(Event::Event &event);
+
+    /// @brief 
+    /// @param event 
+    /// @param idx 
+    /// @return 
     bool addEventAtIndex(Event::Event &event, int idx);
 
+    /// @brief 
+    /// @return 
     std::vector<Person::Person> getPopulation();
+    
+    /// @brief 
+    /// @return 
     std::vector<Event::Event> getEvents();
 
+    /// @brief 
+    /// @return 
     std::vector<Person::Person> run();
-
 };
 
 #endif

@@ -23,15 +23,22 @@
 
 #include <vector>
 
+/// @brief Namespace containing the Events that occur during the simulation
 namespace Event{
 
+/// @brief Abstract class that superclasses all Events. Contains execute function definition
 class Event {
 private:
 
 public:
     Event(){};
     virtual ~Event() = default;
-    virtual std::vector<Person::Person> execute(std::vector<Person::Person>) = 0;
+
+    /// @brief Primary function required in all Event subclasses. Used to run the event
+    /// @param  Population vector containing all the people in the simulation
+    /// @param  timestep integer containing the current timestep of the simulation
+    /// @return The population vector after the event is executed
+    virtual std::vector<Person::Person> execute(std::vector<Person::Person>, int) = 0;
 };
 
 }

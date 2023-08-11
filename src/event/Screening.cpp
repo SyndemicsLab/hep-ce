@@ -26,7 +26,7 @@ namespace Event {
         // ensure lookup scheme for stratified age/IDU
     };
 
-    std::vector<Person::Person> Screening::execute(std::vector<Person::Person> population){
+    std::vector<Person::Person> Screening::execute(std::vector<Person::Person> population, int timestep){
         std::for_each(std::execution::par, std::begin(population), std::end(population), screen);
         return population;
     }

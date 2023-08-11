@@ -22,19 +22,37 @@ private:
     std::vector<double> acceptTestProbability;
     sqlite3 *db;
 
-
-
+    /// @brief 
+    /// @param person 
     void screen(Person::Person &person);
+
+    /// @brief 
+    /// @param person 
     void backgroundScreen(Person::Person &person);
+
+    /// @brief 
+    /// @param person 
     void interventionScreen(Person::Person & person);
+
+    /// @brief 
+    /// @param person 
+    /// @return 
     bool antibodyTest(Person::Person &person);
+
+    /// @brief 
+    /// @param person 
+    /// @return 
     bool rnaTest(Person::Person &person);
 public:
     Screening() : Event() { Screening((uint64_t)0); };
     Screening(uint64_t seed);
     virtual ~Screening() = default;
 
-    std::vector<Person::Person> execute(std::vector<Person::Person> population);
+    /// @brief 
+    /// @param population 
+    /// @param timestep 
+    /// @return 
+    std::vector<Person::Person> execute(std::vector<Person::Person> population, int timestep);
 };
 
 }
