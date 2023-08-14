@@ -42,12 +42,6 @@ enum HEPCState {
     CHRONIC
 };
 
-/// @brief Person's Living Status
-enum Alive {
-    NO,
-    YES
-};
-
 /// @brief Opioid Usage Status
 enum BehaviorState {
     NEVER,
@@ -87,7 +81,7 @@ private:
 
     FibrosisState fibState = FibrosisState::NONE;
     HEPCState hepceState = HEPCState::NONE;
-    Alive alive = Alive::YES;
+    bool isAlive = false;
     BehaviorState behaviorState = BehaviorState::NEVER;
 
     /// @brief Attributes describing Linkage
@@ -187,7 +181,7 @@ public:
 
     /// @brief 
     /// @return 
-    Alive getIsAlive() { return this->alive; }
+    bool getIsAlive() { return this->isAlive; }
 
     /// @brief 
     /// @return 

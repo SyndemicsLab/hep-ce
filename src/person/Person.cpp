@@ -2,11 +2,11 @@
 
 namespace Person{
     void Person::die(){
-        this->alive = Alive::NO;
+        this->isAlive = false;
     }
 
     void Person::grow(){
-        if (this->alive == Alive::YES){
+        if (this->isAlive){
             this->age++;
         }
     }

@@ -22,6 +22,8 @@ private:
     std::vector<double> acceptTestProbability;
     sqlite3 *db;
 
+    int currentTimestep = -1;
+
     /// @brief 
     /// @param person 
     void screen(Person::Person &person);
