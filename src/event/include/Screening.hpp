@@ -14,8 +14,7 @@ namespace Event{
 
 class Screening : public Event {
 private:
-    uint64_t generatorSeed;
-    std::mt19937_64 generator;
+    std::mt19937_64 &generator;
     std::mutex generatorMutex;
     std::vector<double> backgroundProbability;
     std::vector<double> interventionProbability;
@@ -34,7 +33,7 @@ private:
 
     /// @brief 
     /// @param person 
-    void interventionScreen(Person::Person & person);
+    void interventionScreen(Person::Person &person);
 
     /// @brief 
     /// @param person 
@@ -46,8 +45,7 @@ private:
     /// @return 
     bool rnaTest(Person::Person &person);
 public:
-    Screening() : Event() { Screening((uint64_t)0); };
-    Screening(uint64_t seed);
+    Screening(std::mt19937_64 &generator);
     virtual ~Screening() = default;
 
     /// @brief 

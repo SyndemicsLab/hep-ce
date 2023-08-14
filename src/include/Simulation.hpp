@@ -39,12 +39,12 @@ private:
     /// @brief 
     /// @param generator 
     /// @return 
-    std::vector<Person::Person> createPopulation(std::mt19937_64 generator);
+    std::vector<Person::Person> createPopulation();
 
     /// @brief 
     /// @param generator 
     /// @return 
-    std::vector<Event::Event> createEvents(std::mt19937_64 generator);
+    std::vector<Event::Event> createEvents();
 
 public:
     Simulation() : Simulation((uint64_t)0, (uint32_t)0) {};

@@ -20,23 +20,23 @@
 
 // PRIVATE METHODS
 
-std::vector<Person::Person> Simulation::createPopulation(std::mt19937_64 generator) {
+std::vector<Person::Person> Simulation::createPopulation() {
     return std::vector<Person::Person>();
 }
 
-std::vector<Event::Event> Simulation::createEvents(std::mt19937_64 generator) {
+std::vector<Event::Event> Simulation::createEvents() {
     return std::vector<Event::Event>();
 }
 
 // PUBLIC METHODS
 
 std::vector<Person::Person> Simulation::createPopulation() {
-    this->loadPopulation(this->createPopulation(this->generator));
+    this->loadPopulation(this->createPopulation());
     return this->getPopulation();
 }
 
 std::vector<Event::Event> Simulation::createEvents() { 
-    this->loadEvents(this->createEvents(this->generator)); 
+    this->loadEvents(this->createEvents()); 
     return this->getEvents();
 }
 
@@ -67,8 +67,9 @@ std::vector<Event::Event> Simulation::getEvents() { return this->events; }
 std::vector<Person::Person> Simulation::run(){ 
     while(this->currentTimestep < this->duration){
         for(auto event : this->events){
-            this->population = event.execute(this->population);
+            this->population = event.execute(this->population, this->currentTimestep);
         }
+        this->currentTimestep++;
     }
     return this->population;
 }

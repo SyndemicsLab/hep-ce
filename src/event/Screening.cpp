@@ -18,9 +18,7 @@
 #include "Screening.hpp"
 
 namespace Event {
-    Screening::Screening(uint64_t seed) {
-        this->generatorSeed = seed;
-        this->generator.seed(this->generatorSeed);
+    Screening::Screening(std::mt19937_64 &generator) : generator(generator) {
         // QUERY backgroundProbability and interventionProbability Tables
         // Save to attributes
         // ensure lookup scheme for stratified age/IDU
