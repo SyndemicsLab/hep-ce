@@ -29,7 +29,7 @@ public:
     /// @param population vector containing the people undergoing the simulation
     /// @param timestep current timestep of the simulation
     /// @return vector of people after the event occurs
-    std::vector<Person::Person> execute(std::vector<Person::Person> population, int timestep);
+    void execute(std::vector<Person::Person> &population, int timestep) override;
 };
 
 }

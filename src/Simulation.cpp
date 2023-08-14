@@ -67,7 +67,7 @@ std::vector<Event::Event> Simulation::getEvents() { return this->events; }
 std::vector<Person::Person> Simulation::run(){ 
     while(this->currentTimestep < this->duration){
         for(auto event : this->events){
-            this->population = event.execute(this->population, this->currentTimestep);
+            event.execute(this->population, this->currentTimestep);
         }
         this->currentTimestep++;
     }

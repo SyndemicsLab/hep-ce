@@ -38,7 +38,7 @@ public:
     /// @param  Population vector containing all the people in the simulation
     /// @param  timestep integer containing the current timestep of the simulation
     /// @return The population vector after the event is executed
-    virtual std::vector<Person::Person> execute(std::vector<Person::Person>, int) = 0;
+    virtual void execute(std::vector<Person::Person>&, int) = 0;
 };
 
 }

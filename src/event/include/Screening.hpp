@@ -52,7 +52,7 @@ public:
     /// @param population 
     /// @param timestep 
     /// @return 
-    std::vector<Person::Person> execute(std::vector<Person::Person> population, int timestep);
+    void execute(std::vector<Person::Person> &population, int timestep) override;
 };
 
 }
