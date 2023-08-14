@@ -20,47 +20,56 @@
 
 // PRIVATE METHODS
 
-std::vector<Person> Simulation::createPopulation(std::mt19937_64 generator) {
-    return std::vector<Person>();
+std::vector<Person::Person> Simulation::createPopulation() {
+    return std::vector<Person::Person>();
 }
 
-std::vector<Event> Simulation::createEvents(std::mt19937_64 generator) {
-    return std::vector<Event>();
+std::vector<Event::Event> Simulation::createEvents() {
+    return std::vector<Event::Event>();
 }
 
 // PUBLIC METHODS
 
-std::vector<Person> Simulation::createPopulation() {
-    this->population = this->createPopulation(this->generator);
-    return this->population;
+std::vector<Person::Person> Simulation::createPopulation() {
+    this->loadPopulation(this->createPopulation());
+    return this->getPopulation();
 }
 
-std::vector<Event> Simulation::createEvents() { 
-    this->events = this->createEvents(this->generator); 
-    return this->events;
+std::vector<Event::Event> Simulation::createEvents() { 
+    this->loadEvents(this->createEvents()); 
+    return this->getEvents();
 }
 
-void Simulation::loadPopulation(std::vector<Person> population) {}
+void Simulation::loadPopulation(std::vector<Person::Person> population) {}
 
-void Simulation::addPerson(Person person) {}
+void Simulation::addPerson(Person::Person person) {}
 
-void Simulation::loadEvents(std::vector<Event> events) {}
+void Simulation::loadEvents(std::vector<Event::Event> events) {
+    if (events.empty()) {
+        // log that we are writing an empty event vector
+    }
+    if (!this->events.empty()){
+        // log that we are overwriting this->events
+    }
+    this->events = events;
+}
 
-bool Simulation::addEventToEnd(Event event) { return false; }
+bool Simulation::addEventToEnd(Event::Event &event) { return false; }
 
-bool Simulation::addEventToBeginning(Event event) { return false; }
+bool Simulation::addEventToBeginning(Event::Event &event) { return false; }
 
-bool Simulation::addEventAtIndex(Event event, int idx) { return false; }
+bool Simulation::addEventAtIndex(Event::Event &event, int idx) { return false; }
 
-std::vector<Person> Simulation::getPopulation() { return this->population; }
+std::vector<Person::Person> Simulation::getPopulation() { return this->population; }
 
-std::vector<Event> Simulation::getEvents() { return this->events; }
+std::vector<Event::Event> Simulation::getEvents() { return this->events; }
 
-std::vector<Person> Simulation::run(){ 
+std::vector<Person::Person> Simulation::run(){ 
     while(this->currentTimestep < this->duration){
-        for(Event event : this->events){
-            this->population = event.execute(this->population);
+        for(auto event : this->events){
+            event.execute(this->population, this->currentTimestep);
         }
+        this->currentTimestep++;
     }
     return this->population;
 }

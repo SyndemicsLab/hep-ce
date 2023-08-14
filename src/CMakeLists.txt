@@ -9,8 +9,16 @@ project (
   DESCRIPTION "A Micro-Simulation for Hepatitis C Virus Transmission"
 )
 
+add_subdirectory(data)
+add_subdirectory(event)
+add_subdirectory(person)
+
 include(GNUInstallDirs)
 
 add_executable(HEPCESIMULATION_SRC main.cpp)
 
-target_link_libraries(HEPCESIMULATION_SRC)
+target_link_libraries(HEPCESIMULATION_SRC
+  data
+  event
+  person
+)

@@ -27,16 +27,24 @@
 #include <string>
 #include <vector>
 
+/// @brief 
 class Simulation {
 private:
     uint32_t currentTimestep = 0;
     uint64_t seed;
-    std::vector<Person> population;
-    std::vector<Event> events;
+    std::vector<Person::Person> population;
+    std::vector<Event::Event> events;
     std::mt19937_64 generator;
     
-    std::vector<Person> createPopulation(std::mt19937_64 generator);
-    std::vector<Event> createEvents(std::mt19937_64 generator);
+    /// @brief 
+    /// @param generator 
+    /// @return 
+    std::vector<Person::Person> createPopulation();
+
+    /// @brief 
+    /// @param generator 
+    /// @return 
+    std::vector<Event::Event> createEvents();
 
 public:
     Simulation() : Simulation((uint64_t)0, (uint32_t)0) {};
@@ -54,22 +62,53 @@ public:
 
     uint32_t duration;
 
-    std::vector<Person> createPopulation();
-    std::vector<Event> createEvents();
+    /// @brief 
+    /// @return 
+    std::vector<Person::Person> createPopulation();
 
-    void loadPopulation(std::vector<Person> population);
-    void addPerson(Person person);
+    /// @brief 
+    /// @return 
+    std::vector<Event::Event> createEvents();
 
-    void loadEvents(std::vector<Event> events);
-    bool addEventToEnd(Event event);
-    bool addEventToBeginning(Event event);
-    bool addEventAtIndex(Event event, int idx);
+    /// @brief 
+    /// @param population 
+    void loadPopulation(std::vector<Person::Person> population);
 
-    std::vector<Person> getPopulation();
-    std::vector<Event> getEvents();
+    /// @brief 
+    /// @param person 
+    void addPerson(Person::Person person);
 
-    std::vector<Person> run();
+    /// @brief 
+    /// @param events 
+    void loadEvents(std::vector<Event::Event> events);
 
+    /// @brief 
+    /// @param event 
+    /// @return 
+    bool addEventToEnd(Event::Event &event);
+
+    /// @brief 
+    /// @param event 
+    /// @return 
+    bool addEventToBeginning(Event::Event &event);
+
+    /// @brief 
+    /// @param event 
+    /// @param idx 
+    /// @return 
+    bool addEventAtIndex(Event::Event &event, int idx);
+
+    /// @brief 
+    /// @return 
+    std::vector<Person::Person> getPopulation();
+    
+    /// @brief 
+    /// @return 
+    std::vector<Event::Event> getEvents();
+
+    /// @brief 
+    /// @return 
+    std::vector<Person::Person> run();
 };
 
 #endif
