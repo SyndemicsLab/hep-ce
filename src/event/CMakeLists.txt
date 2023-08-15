@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.19)
 set (CMAKE_CXX_STANDARD 20)
 
 add_library(event
-    Event.cpp
+    ScreenageLinking.cpp
+    Screening.cpp
+    VoluntaryRelinking.cpp
 )
 
 target_include_directories(event INTERFACE

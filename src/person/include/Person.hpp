@@ -201,6 +201,10 @@ public:
 
     /// @brief 
     /// @return 
+    int getTimeLinkChange() { return this->linkStatus.timeLinkChange; }
+
+    /// @brief 
+    /// @return 
     LinkageType getLinkageType() { return this->linkStatus.linkType; }
 };
 

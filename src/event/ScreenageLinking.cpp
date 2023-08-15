@@ -1,13 +1,13 @@
-#include "Linking.hpp"
+#include "ScreenageLinking.hpp"
 
 namespace Event{
 
-    void Linking::execute(std::vector<Person::Person> &population, int timestep){
+    void ScreenageLinking::execute(std::vector<Person::Person> &population, int timestep){
         this->timestep = timestep;
         std::for_each(std::execution::par, std::begin(population), std::end(population), link);
     }
 
-    void Linking::link(Person::Person &person){
+    void ScreenageLinking::link(Person::Person &person){
         Person::HEPCState state = person.getHEPCState();
         if (state == Person::HEPCState::NONE){
             // add false positive cost

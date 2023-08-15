@@ -1,5 +1,5 @@
-#ifndef EVENT_LINKING_HPP_
-#define EVENT_LINKING_HPP_
+#ifndef EVENT_SCREENAGELINKING_HPP_
+#define EVENT_SCREENAGELINKING_HPP_
 
 
 #include "Event.hpp"
@@ -14,7 +14,7 @@
 namespace Event{
 
 /// @brief Linking subclass used to link people to treatment
-class Linking : public Event{
+class ScreenageLinking : public Event{
 private:
     /// @brief Supporting function called from execute. Use to establish links
     /// @param person Individual Person working through the event
@@ -22,8 +22,8 @@ private:
     int timestep = -1;
 
 public:
-    Linking() : Event() {};
-    virtual ~Linking() = default;
+    ScreenageLinking() : Event() {};
+    virtual ~ScreenageLinking() = default;
     
     /// @brief Implementation of abstract function, primary entry point for all events
     /// @param population vector containing the people undergoing the simulation
