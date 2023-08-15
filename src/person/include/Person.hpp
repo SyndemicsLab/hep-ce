@@ -114,11 +114,11 @@ public:
 
     /// @brief Diagnose somebody's fibrosis
     /// @return Fibrosis state that is diagnosed
-    FibrosisState diagnoseFibrosis();
+    FibrosisState diagnoseFibrosis(int timestep);
 
     /// @brief Dignose somebody with HEPC
     /// @return HEPC state that was diagnosed
-    HEPCState diagnoseHEPC();
+    HEPCState diagnoseHEPC(int timestep);
 
     /// @brief Mark somebody as having been screened this timestep
     void markScreened() { this->timeSinceLastScreening = 0; }

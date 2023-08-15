@@ -35,12 +35,12 @@ namespace Person{
         }
     }
 
-    FibrosisState Person::diagnoseFibrosis(){
+    FibrosisState Person::diagnoseFibrosis(int timestep){
         // need to add functionality here
         return FibrosisState::F0;
     }
 
-    HEPCState Person::diagnoseHEPC(){
+    HEPCState Person::diagnoseHEPC(int timestep){
         // need to add functionality here
         return HEPCState::ACUTE;
     }
