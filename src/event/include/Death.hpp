@@ -18,19 +18,16 @@
 #ifndef EVENT_DEATH_HPP_
 #define EVENT_DEATH_HPP_
 
+#include "Event.hpp"
+
 namespace Event {
 
 class Death : public Event {
 private:
+    void doEvent(Person::Person &person) override;
 public:
     Death() {};
     virtual ~Death() = default;
-
-    /// @brief Implementation of abstract function, primary entry point for all events
-    /// @param population vector containing the people undergoing the simulation
-    /// @param timestep current timestep of the simulation
-    /// @return vector of people after the event occurs
-    void execute(std::vector<Person::Person> &population, int timestep) override;
 };
 
 }

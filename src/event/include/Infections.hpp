@@ -25,15 +25,10 @@ namespace Event {
 
 class Infections : public Event {
 private:
+    void doEvent(Person::Person &person) override;
 public:
     Infections() {};
     virtual ~Infections() = default;
-
-    /// @brief Implementation of abstract function, primary entry point for all events
-    /// @param population vector containing the people undergoing the simulation
-    /// @param timestep current timestep of the simulation
-    /// @return vector of people after the event occurs
-    void execute(std::vector<Person::Person> &population, int timestep) override;
 };
 
 }

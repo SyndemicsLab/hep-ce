@@ -18,12 +18,7 @@
 #include "VoluntaryRelinking.hpp"
 
 namespace Event {
-    void VoluntaryRelinking::execute(std::vector<Person::Person> &population, int timestep){
-        this->timestep = timestep;
-        std::for_each(std::execution::par, std::begin(population), std::end(population), link);
-    }
-
-    void VoluntaryRelinking::link(Person::Person &person){
+    void VoluntaryRelinking::doEvent(Person::Person &person){
         double relinkProbability = 0.5; // Need to read this from a parameter
 
         std::bernoulli_distribution backgroundProbability(relinkProbability);

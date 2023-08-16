@@ -31,7 +31,7 @@ private:
     std::mutex generatorMutex;
     int voluntaryRelinkDuration = 1024; // we should set this
 
-    void link(Person::Person &person);
+    void doEvent(Person::Person &person) override;
 public:
     VoluntaryRelinking() {};
     virtual ~VoluntaryRelinking() = default;
