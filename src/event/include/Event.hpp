@@ -39,7 +39,7 @@ public:
     /// @param  Population vector containing all the people in the simulation
     /// @param  timestep integer containing the current timestep of the simulation
     /// @return The population vector after the event is executed
-    void execute(std::vector<Person::Person>& population, int timestep) {
+    void execute(std::vector<Person::Person> &population, int timestep) {
         this->timestep = timestep;
         std::for_each(std::execution::par, std::begin(population), std::end(population), doEvent);
     }
