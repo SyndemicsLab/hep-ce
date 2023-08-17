@@ -22,6 +22,9 @@
 #include "Person.hpp"
 #include "sqlite3.h"
 
+#include <random>
+#include <mutex>
+
 namespace Event {
 
 class VoluntaryRelinking : public Event {
@@ -33,20 +36,13 @@ private:
 
     void doEvent(Person::Person &person) override;
 public:
-    VoluntaryRelinking() {};
+    VoluntaryRelinking(std::mt19937_64 &generator) : generator(generator) {};
     virtual ~VoluntaryRelinking() = default;
-
-    /// @brief Implementation of abstract function, primary entry point for all events
-    /// @param population vector containing the people undergoing the simulation
-    /// @param timestep current timestep of the simulation
-    /// @return vector of people after the event occurs
-    void execute(std::vector<Person::Person> &population, int timestep) override;
 
     void setVoluntaryRelinkDuration(int duration) { this->voluntaryRelinkDuration = duration; }
 
     int getVoluntaryRelinkDuration() { return this->voluntaryRelinkDuration; }
 };
-    
 
 }
 

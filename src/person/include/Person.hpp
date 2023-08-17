@@ -79,8 +79,16 @@ private:
     };
     IdentificationStatus idStatus;
 
-    FibrosisState fibState = FibrosisState::NONE;
-    HEPCState hepceState = HEPCState::NONE;
+    struct InfectionStatus {
+        HEPCState hepcState = HEPCState::NONE;
+        FibrosisState fibState = FibrosisState::NONE;
+        int timeSinceHEPCStateChange = 0;
+        int timeSinceFibStateChange = 0;
+    };
+    InfectionStatus infectionStatus;
+
+    // FibrosisState fibState = FibrosisState::NONE;
+    // HEPCState hepceState = HEPCState::NONE;
     bool isAlive = false;
     BehaviorState behaviorState = BehaviorState::NEVER;
 
@@ -173,11 +181,11 @@ public:
 
     /// @brief 
     /// @return 
-    FibrosisState getFibrosisState() { return this->fibState; }
+    FibrosisState getFibrosisState() { return this->infectionStatus.fibState; }
 
     /// @brief 
     /// @return 
-    HEPCState getHEPCState() { return this->hepceState; }
+    HEPCState getHEPCState() { return this->infectionStatus.hepcState; }
 
     /// @brief 
     /// @return 

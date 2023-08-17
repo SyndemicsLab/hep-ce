@@ -20,14 +20,19 @@
 #define EVENT_INFECTIONS_HPP_
 
 #include "Event.hpp"
+#include <mutex>
+#include <random>
 
 namespace Event {
 
 class Infections : public Event {
 private:
+    std::mt19937_64 &generator;
+    std::mutex generatorMutex;
+
     void doEvent(Person::Person &person) override;
 public:
-    Infections() {};
+    Infections(std::mt19937_64 &generator) : generator(generator) {};
     virtual ~Infections() = default;
 };
 

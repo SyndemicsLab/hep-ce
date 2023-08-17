@@ -5,12 +5,12 @@ namespace Event{
         Person::HEPCState state = person.getHEPCState();
         if (state == Person::HEPCState::NONE){
             // add false positive cost
-            person.unlink(this->currentTimestep);
+            person.unlink(this->getCurrentTimestep());
             return;
         }
 
         if (!person.isIdentifiedAsInfected()){
-            person.identifyAsInfected(this->currentTimestep);
+            person.identifyAsInfected(this->getCurrentTimestep());
         }
 
         if (person.getLinkageType() == Person::LinkageType::BACKGROUND){
@@ -30,10 +30,10 @@ namespace Event{
 
         if (value){
             // need to figure out how to pass in the LinkageType to the event
-            person.link(this->currentTimestep, Person::LinkageType::BACKGROUND); 
+            person.link(this->getCurrentTimestep(), Person::LinkageType::BACKGROUND); 
         }
         else if (!value && person.getLinkState() == Person::LinkageState::LINKED){
-            person.unlink(this->currentTimestep);
+            person.unlink(this->getCurrentTimestep());
         }
     }
 

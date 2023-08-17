@@ -3,8 +3,14 @@ cmake_minimum_required(VERSION 3.19)
 set (CMAKE_CXX_STANDARD 20)
 
 add_library(event
+    Death.cpp
+    DiseaseProgression.cpp
+    Fibrosis.cpp
+    Growth.cpp
+    Infections.cpp
     ScreenageLinking.cpp
     Screening.cpp
+    Treatment.cpp
     VoluntaryRelinking.cpp
 )
 

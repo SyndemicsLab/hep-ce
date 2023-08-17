@@ -21,7 +21,7 @@ private:
     void doEvent(Person::Person &person) override;
 
 public:
-    ScreenageLinking() : Event() {};
+    ScreenageLinking() {};
     virtual ~ScreenageLinking() = default;
 };
 

@@ -28,7 +28,7 @@ namespace Event {
 
         if(
             person.getLinkState() != Person::LinkageState::UNLINKED ||
-            (this->timestep - person.getTimeLinkChange()) > this->voluntaryRelinkDuration ||
+            (this->getCurrentTimestep() - person.getTimeLinkChange()) > this->voluntaryRelinkDuration ||
             !relink
         ){
             return; // if linked or never linked OR too long since last linked OR relink draw is false
