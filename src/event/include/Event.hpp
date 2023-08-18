@@ -45,7 +45,7 @@ public:
     /// @return The population vector after the event is executed
     void execute(std::vector<Person::Person> &population, int timestep) {
         this->currentTimestep = timestep;
-        std::for_each(std::execution::par, std::begin(population), std::end(population), doEvent);
+        std::for_each(std::execution::par, std::begin(population), std::end(population), [this](Person::Person &p) { this->doEvent(p); });
     }
 };
 

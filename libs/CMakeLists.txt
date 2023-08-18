@@ -6,6 +6,6 @@ add_library(libs
     sqlite3/sqlite3.c
 )
 
-target_include_directories(libs INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/sqlite3/
-)
+set(LIB_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/sqlite3")
+
+target_include_directories(libs PUBLIC ${LIB_INCLUDES})

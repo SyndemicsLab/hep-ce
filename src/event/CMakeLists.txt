@@ -14,10 +14,9 @@ add_library(event
     VoluntaryRelinking.cpp
 )
 
-target_include_directories(event INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    "include/"
-)
+set(EVENT_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
+
+target_include_directories(event PUBLIC ${EVENT_INCLUDES})
 
 target_link_libraries(event
     person

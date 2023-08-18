@@ -25,7 +25,7 @@
 namespace Person{
 
 /// @brief Fibrosis States
-enum FibrosisState { 
+enum class FibrosisState { 
     NONE,
     F0,
     F1,
@@ -36,27 +36,27 @@ enum FibrosisState {
 };
 
 /// @brief HEP-C Infection States
-enum HEPCState {
+enum class HEPCState {
     NONE,
     ACUTE,
     CHRONIC
 };
 
 /// @brief Opioid Usage Status
-enum BehaviorState {
+enum class BehaviorState {
     NEVER,
     CURRENT,
     FORMER
 };
 
 /// @brief Screening type that lead to Linkage
-enum LinkageType {
+enum class LinkageType {
     BACKGROUND,
     INTERVENTION
 };
 
 /// @brief Status of Linkage
-enum LinkageState {
+enum class LinkageState {
     NEVER,
     LINKED,
     UNLINKED

@@ -36,16 +36,6 @@ private:
     std::vector<Event::Event> events;
     std::mt19937_64 generator;
     
-    /// @brief 
-    /// @param generator 
-    /// @return 
-    std::vector<Person::Person> createPopulation();
-
-    /// @brief 
-    /// @param generator 
-    /// @return 
-    std::vector<Event::Event> createEvents();
-
 public:
     Simulation() : Simulation((uint64_t)0, (uint32_t)0) {};
 

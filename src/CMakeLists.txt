@@ -1,24 +1,19 @@
 cmake_minimum_required(VERSION 3.19)
-
 set (CMAKE_CXX_STANDARD 20)
 
-# Set some basic project attributes
-project (
-  HEPCESIMULATION_SRC
-  VERSION 2.0.0
-  DESCRIPTION "A Micro-Simulation for Hepatitis C Virus Transmission"
-)
+add_executable(src main.cpp Simulation.cpp)
 
 add_subdirectory(data)
 add_subdirectory(event)
 add_subdirectory(person)
 
-include(GNUInstallDirs)
+set(MAIN_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
 
-add_executable(HEPCESIMULATION_SRC main.cpp)
+target_include_directories(src PUBLIC ${MAIN_INCLUDES})
 
-target_link_libraries(HEPCESIMULATION_SRC
+target_link_libraries(src
   data
   event
   person
+  libs
 )
