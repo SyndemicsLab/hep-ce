@@ -18,25 +18,15 @@
 
 #include "Simulation.hpp"
 
-// PRIVATE METHODS
-
-std::vector<Person::Person> Simulation::createPopulation() {
-    return std::vector<Person::Person>();
-}
-
-std::vector<Event::Event> Simulation::createEvents() {
-    return std::vector<Event::Event>();
-}
-
 // PUBLIC METHODS
 
 std::vector<Person::Person> Simulation::createPopulation() {
-    this->loadPopulation(this->createPopulation());
+    this->loadPopulation(std::vector<Person::Person>());
     return this->getPopulation();
 }
 
-std::vector<Event::Event> Simulation::createEvents() { 
-    this->loadEvents(this->createEvents()); 
+std::vector<std::shared_ptr<Event::Event>> Simulation::createEvents() { 
+    this->loadEvents(std::vector<std::shared_ptr<Event::Event>>()); 
     return this->getEvents();
 }
 
@@ -44,7 +34,7 @@ void Simulation::loadPopulation(std::vector<Person::Person> population) {}
 
 void Simulation::addPerson(Person::Person person) {}
 
-void Simulation::loadEvents(std::vector<Event::Event> events) {
+void Simulation::loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
     if (events.empty()) {
         // log that we are writing an empty event vector
     }
@@ -62,12 +52,12 @@ bool Simulation::addEventAtIndex(Event::Event &event, int idx) { return false; }
 
 std::vector<Person::Person> Simulation::getPopulation() { return this->population; }
 
-std::vector<Event::Event> Simulation::getEvents() { return this->events; }
+std::vector<std::shared_ptr<Event::Event>> Simulation::getEvents() { return this->events; }
 
 std::vector<Person::Person> Simulation::run(){ 
     while(this->currentTimestep < this->duration){
-        for(auto event : this->events){
-            event.execute(this->population, this->currentTimestep);
+        for(std::shared_ptr<Event::Event> event : this->events){
+            event->execute(this->population, this->currentTimestep);
         }
         this->currentTimestep++;
     }

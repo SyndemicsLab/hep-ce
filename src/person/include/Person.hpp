@@ -25,7 +25,7 @@
 namespace Person{
 
 /// @brief Fibrosis States
-enum FibrosisState { 
+enum class FibrosisState { 
     NONE,
     F0,
     F1,
@@ -36,27 +36,27 @@ enum FibrosisState {
 };
 
 /// @brief HEP-C Infection States
-enum HEPCState {
+enum class HEPCState {
     NONE,
     ACUTE,
     CHRONIC
 };
 
 /// @brief Opioid Usage Status
-enum BehaviorState {
+enum class BehaviorState {
     NEVER,
     CURRENT,
     FORMER
 };
 
 /// @brief Screening type that lead to Linkage
-enum LinkageType {
+enum class LinkageType {
     BACKGROUND,
     INTERVENTION
 };
 
 /// @brief Status of Linkage
-enum LinkageState {
+enum class LinkageState {
     NEVER,
     LINKED,
     UNLINKED
@@ -79,8 +79,16 @@ private:
     };
     IdentificationStatus idStatus;
 
-    FibrosisState fibState = FibrosisState::NONE;
-    HEPCState hepceState = HEPCState::NONE;
+    struct InfectionStatus {
+        HEPCState hepcState = HEPCState::NONE;
+        FibrosisState fibState = FibrosisState::NONE;
+        int timeSinceHEPCStateChange = 0;
+        int timeSinceFibStateChange = 0;
+    };
+    InfectionStatus infectionStatus;
+
+    // FibrosisState fibState = FibrosisState::NONE;
+    // HEPCState hepceState = HEPCState::NONE;
     bool isAlive = false;
     BehaviorState behaviorState = BehaviorState::NEVER;
 
@@ -114,11 +122,11 @@ public:
 
     /// @brief Diagnose somebody's fibrosis
     /// @return Fibrosis state that is diagnosed
-    FibrosisState diagnoseFibrosis();
+    FibrosisState diagnoseFibrosis(int timestep);
 
     /// @brief Dignose somebody with HEPC
     /// @return HEPC state that was diagnosed
-    HEPCState diagnoseHEPC();
+    HEPCState diagnoseHEPC(int timestep);
 
     /// @brief Mark somebody as having been screened this timestep
     void markScreened() { this->timeSinceLastScreening = 0; }
@@ -173,11 +181,11 @@ public:
 
     /// @brief 
     /// @return 
-    FibrosisState getFibrosisState() { return this->fibState; }
+    FibrosisState getFibrosisState() { return this->infectionStatus.fibState; }
 
     /// @brief 
     /// @return 
-    HEPCState getHEPCState() { return this->hepceState; }
+    HEPCState getHEPCState() { return this->infectionStatus.hepcState; }
 
     /// @brief 
     /// @return 
@@ -198,6 +206,10 @@ public:
     /// @brief 
     /// @return 
     LinkageState getLinkState() { return this->linkStatus.linkState; }
+
+    /// @brief 
+    /// @return 
+    int getTimeLinkChange() { return this->linkStatus.timeLinkChange; }
 
     /// @brief 
     /// @return 

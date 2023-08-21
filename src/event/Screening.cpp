@@ -24,12 +24,7 @@ namespace Event {
         // ensure lookup scheme for stratified age/IDU
     };
 
-    void Screening::execute(std::vector<Person::Person> &population, int timestep){
-        this->currentTimestep = timestep;
-        std::for_each(std::execution::par, std::begin(population), std::end(population), screen);
-    }
-
-    void Screening::screen(Person::Person &person){
+    void Screening::doEvent(Person::Person &person){
         double prob = 0.5;
         if( 
             (person.isInterventionScreened() && 
@@ -64,11 +59,11 @@ namespace Event {
         
         // if either is positive then...
         if(this->rnaTest(person)){
-            person.link(this->currentTimestep, Person::LinkageType::BACKGROUND);
+            person.link(this->getCurrentTimestep(), Person::LinkageType::BACKGROUND);
             // what else needs to happen during a link?
         }
 
-        person.unlink(this->currentTimestep);
+        person.unlink(this->getCurrentTimestep());
     }
 
     /// @brief 
@@ -87,10 +82,10 @@ namespace Event {
 
         }
         if(this->rnaTest(person)){
-            person.link(this->currentTimestep, Person::LinkageType::INTERVENTION);
+            person.link(this->getCurrentTimestep(), Person::LinkageType::INTERVENTION);
             // what else needs to happen during a link?
         }
-        person.unlink(this->currentTimestep);
+        person.unlink(this->getCurrentTimestep());
     }
 
     /// @brief 

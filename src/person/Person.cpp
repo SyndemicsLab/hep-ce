@@ -12,15 +12,14 @@ namespace Person{
     }
 
     void Person::infect(){
-        if (this->hepceState == HEPCState::NONE){
-            this->hepceState = HEPCState::ACUTE;
-        }
-        else if (this->hepceState == HEPCState::ACUTE){
-            this->hepceState = HEPCState::CHRONIC;
-        }
-        else{
-            // Already Chronic, so do nothing
-        }
+        if (this->infectionStatus.hepcState != HEPCState::NONE) { return; }
+        this->infectionStatus.hepcState = HEPCState::ACUTE;
+        this->infectionStatus.timeSinceHEPCStateChange = 0;
+        this->seropositivity = true;
+        
+        if(this->infectionStatus.fibState != FibrosisState::NONE) { return; }
+        this->infectionStatus.fibState = FibrosisState::NONE;
+        this->infectionStatus.timeSinceFibStateChange = 0;
     }
 
     void Person::updateBehavior(){
@@ -35,12 +34,12 @@ namespace Person{
         }
     }
 
-    FibrosisState Person::diagnoseFibrosis(){
+    FibrosisState Person::diagnoseFibrosis(int timestep){
         // need to add functionality here
         return FibrosisState::F0;
     }
 
-    HEPCState Person::diagnoseHEPC(){
+    HEPCState Person::diagnoseHEPC(int timestep){
         // need to add functionality here
         return HEPCState::ACUTE;
     }

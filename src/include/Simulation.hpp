@@ -33,19 +33,9 @@ private:
     uint32_t currentTimestep = 0;
     uint64_t seed;
     std::vector<Person::Person> population;
-    std::vector<Event::Event> events;
+    std::vector<std::shared_ptr<Event::Event>> events;
     std::mt19937_64 generator;
     
-    /// @brief 
-    /// @param generator 
-    /// @return 
-    std::vector<Person::Person> createPopulation();
-
-    /// @brief 
-    /// @param generator 
-    /// @return 
-    std::vector<Event::Event> createEvents();
-
 public:
     Simulation() : Simulation((uint64_t)0, (uint32_t)0) {};
 
@@ -68,7 +58,7 @@ public:
 
     /// @brief 
     /// @return 
-    std::vector<Event::Event> createEvents();
+    std::vector<std::shared_ptr<Event::Event>> createEvents();
 
     /// @brief 
     /// @param population 
@@ -80,7 +70,7 @@ public:
 
     /// @brief 
     /// @param events 
-    void loadEvents(std::vector<Event::Event> events);
+    void loadEvents(std::vector<std::shared_ptr<Event::Event>> events);
 
     /// @brief 
     /// @param event 
@@ -104,7 +94,7 @@ public:
     
     /// @brief 
     /// @return 
-    std::vector<Event::Event> getEvents();
+    std::vector<std::shared_ptr<Event::Event>> getEvents();
 
     /// @brief 
     /// @return 

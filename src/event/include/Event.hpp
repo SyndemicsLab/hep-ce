@@ -22,6 +22,8 @@
 #include "Person.hpp"
 
 #include <vector>
+#include <algorithm>
+#include <execution>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event{
@@ -29,16 +31,22 @@ namespace Event{
 /// @brief Abstract class that superclasses all Events. Contains execute function definition
 class Event {
 private:
-
+    int currentTimestep = -1;
+    virtual void doEvent(Person::Person &person) = 0;
 public:
     Event(){};
     virtual ~Event() = default;
+
+    int getCurrentTimestep() { return this->currentTimestep; }
 
     /// @brief Primary function required in all Event subclasses. Used to run the event
     /// @param  Population vector containing all the people in the simulation
     /// @param  timestep integer containing the current timestep of the simulation
     /// @return The population vector after the event is executed
-    virtual void execute(std::vector<Person::Person>&, int) = 0;
+    void execute(std::vector<Person::Person> &population, int timestep) {
+        this->currentTimestep = timestep;
+        std::for_each(std::execution::par, std::begin(population), std::end(population), [this](Person::Person &p) { this->doEvent(p); });
+    }
 };
 
 }

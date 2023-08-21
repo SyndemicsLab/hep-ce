@@ -21,11 +21,9 @@ private:
     std::vector<double> acceptTestProbability;
     sqlite3 *db;
 
-    int currentTimestep = -1;
-
     /// @brief 
     /// @param person 
-    void screen(Person::Person &person);
+    void doEvent(Person::Person &person) override;
 
     /// @brief 
     /// @param person 
@@ -47,12 +45,6 @@ private:
 public:
     Screening(std::mt19937_64 &generator);
     virtual ~Screening() = default;
-
-    /// @brief 
-    /// @param population 
-    /// @param timestep 
-    /// @return 
-    void execute(std::vector<Person::Person> &population, int timestep) override;
 };
 
 }
