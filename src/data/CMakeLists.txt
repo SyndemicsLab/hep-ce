@@ -3,6 +3,7 @@ set (CMAKE_CXX_STANDARD 20)
 
 add_library(data
     Data.cpp
+    SQLite3.cpp
 )
 
 set(DATA_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
