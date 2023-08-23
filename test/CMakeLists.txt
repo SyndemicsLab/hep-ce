@@ -4,19 +4,20 @@ include(GoogleTest)
 
 include_directories(mocks)
 
-add_executable(HEPCESIMULATION_TEST
+add_executable(test
   PersonTest.cpp
 )
 
-target_include_directories(HEPCESIMULATION_TEST INTERFACE
+target_include_directories(test INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(HEPCESIMULATION_TEST
+target_link_libraries(test
   GTest::gtest
   GTest::gtest_main
   GTest::gmock
   GTest::gmock_main
+  person
 )
 
-gtest_discover_tests(HEPCESIMULATION_TEST)
+gtest_discover_tests(test)

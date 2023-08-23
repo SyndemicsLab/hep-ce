@@ -25,6 +25,7 @@ namespace Event {
     class Death : public Event {
     private:
         void doEvent(Person::Person &person) override;
+        void die(Person::Person &person);
 
     public:
         Death(){};

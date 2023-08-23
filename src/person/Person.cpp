@@ -36,11 +36,13 @@ namespace Person {
 
     FibrosisState Person::diagnoseFibrosis(int timestep) {
         // need to add functionality here
-        return FibrosisState::F0;
+        this->infectionStatus.fibState = FibrosisState::F0;
+        return this->infectionStatus.fibState;
     }
 
     HEPCState Person::diagnoseHEPC(int timestep) {
         // need to add functionality here
-        return HEPCState::ACUTE;
+        this->infectionStatus.hepcState = HEPCState::ACUTE;
+        return this->infectionStatus.hepcState;
     }
 } // namespace Person

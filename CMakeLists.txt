@@ -11,7 +11,7 @@ add_subdirectory(libs)
 add_subdirectory(src)
 
 # Only compile tests if desired
-option(BUILD_TESTS "enable HEPCE tests" OFF)
+option(BUILD_TESTS "enable HEPCE tests" ON)
 
 if (BUILD_TESTS)
   find_package(GTest REQUIRED)
