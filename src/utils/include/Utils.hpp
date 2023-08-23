@@ -9,7 +9,8 @@ namespace Utils {
 
     double rateToProbability(double rate);
 
-    double discount(double valueToDiscount, double discountRate, double timestep);
-}
+    double discount(double valueToDiscount, double discountRate,
+                    double timestep);
+} // namespace Utils
 
 #endif

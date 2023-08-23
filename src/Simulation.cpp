@@ -1,6 +1,6 @@
 //===-- Simulation.cpp - Instruction class definition -------*- C++ -*-===//
 //
-// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
+// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
 // for license information.
 // SPDX-License-Identifier: AGPLv3
@@ -25,8 +25,8 @@ std::vector<Person::Person> Simulation::createPopulation() {
     return this->getPopulation();
 }
 
-std::vector<std::shared_ptr<Event::Event>> Simulation::createEvents() { 
-    this->loadEvents(std::vector<std::shared_ptr<Event::Event>>()); 
+std::vector<std::shared_ptr<Event::Event>> Simulation::createEvents() {
+    this->loadEvents(std::vector<std::shared_ptr<Event::Event>>());
     return this->getEvents();
 }
 
@@ -38,7 +38,7 @@ void Simulation::loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
     if (events.empty()) {
         // log that we are writing an empty event vector
     }
-    if (!this->events.empty()){
+    if (!this->events.empty()) {
         // log that we are overwriting this->events
     }
     this->events = events;
@@ -50,13 +50,17 @@ bool Simulation::addEventToBeginning(Event::Event &event) { return false; }
 
 bool Simulation::addEventAtIndex(Event::Event &event, int idx) { return false; }
 
-std::vector<Person::Person> Simulation::getPopulation() { return this->population; }
+std::vector<Person::Person> Simulation::getPopulation() {
+    return this->population;
+}
 
-std::vector<std::shared_ptr<Event::Event>> Simulation::getEvents() { return this->events; }
+std::vector<std::shared_ptr<Event::Event>> Simulation::getEvents() {
+    return this->events;
+}
 
-std::vector<Person::Person> Simulation::run(){ 
-    while(this->currentTimestep < this->duration){
-        for(std::shared_ptr<Event::Event> event : this->events){
+std::vector<Person::Person> Simulation::run() {
+    while (this->currentTimestep < this->duration) {
+        for (std::shared_ptr<Event::Event> event : this->events) {
             event->execute(this->population, this->currentTimestep);
         }
         this->currentTimestep++;

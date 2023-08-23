@@ -14,37 +14,35 @@
 #ifndef SQLITE3_HPP
 #define SQLITE3_HPP
 
-#include <memory>
+#include <iostream>
 #include <sqlite3.h>
 #include <string>
 #include <unordered_map>
-#include <vector>
-#include <iostream>
 
-struct SQLTable {
-    SQLTable() {}
-    ~SQLTable() {
-        sqlite3_free_table(this->data);
-    }
-    int nRows;
-    int nCols;
-    char **data;
-    std::string name;
-};
+namespace Data {
+    struct SQLTable {
+        SQLTable() {}
+        ~SQLTable() { sqlite3_free_table(this->data); }
+        int nRows;
+        int nCols;
+        char **data;
+        std::string name;
+    };
 
-class Database {
-public:
-    /// @brief Constructor for the class that handles SQLite3 interfacing
-    /// @param database
-    Database(std::string database);
-    ~Database();
+    class Database {
+    public:
+        /// @brief Constructor for the class that handles SQLite3 interfacing
+        /// @param database
+        Database(std::string database);
+        ~Database();
 
-    /// @brief
-    /// @param
-    SQLTable readTable(std::string query);
+        /// @brief
+        /// @param
+        SQLTable readTable(std::string query);
 
-private:
-    // pointer for the sqlite3 connection
-    sqlite3 *db;
-};
+    private:
+        // pointer for the sqlite3 connection
+        sqlite3 *db;
+    };
+} // namespace Data
 #endif // SQLITE3_HPP

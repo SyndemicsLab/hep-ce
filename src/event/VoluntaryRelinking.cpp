@@ -1,6 +1,7 @@
-//===-- VoluntaryRelinking.cpp - Instruction class definition -------*- C++ -*-===//
+//===-- VoluntaryRelinking.cpp - Instruction class definition -------*- C++
+//-*-===//
 //
-// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
+// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
 // for license information.
 // SPDX-License-Identifier: AGPLv3
@@ -18,7 +19,7 @@
 #include "VoluntaryRelinking.hpp"
 
 namespace Event {
-    void VoluntaryRelinking::doEvent(Person::Person &person){
+    void VoluntaryRelinking::doEvent(Person::Person &person) {
         double relinkProbability = 0.5; // Need to read this from a parameter
 
         std::bernoulli_distribution backgroundProbability(relinkProbability);
@@ -26,15 +27,14 @@ namespace Event {
         int relink = backgroundProbability(this->generator);
         this->generatorMutex.unlock();
 
-        if(
-            person.getLinkState() != Person::LinkageState::UNLINKED ||
-            (this->getCurrentTimestep() - person.getTimeLinkChange()) > this->voluntaryRelinkDuration ||
-            !relink
-        ){
-            return; // if linked or never linked OR too long since last linked OR relink draw is false
+        if (person.getLinkState() != Person::LinkageState::UNLINKED ||
+            (this->getCurrentTimestep() - person.getTimeLinkChange()) >
+                this->voluntaryRelinkDuration ||
+            !relink) {
+            return; // if linked or never linked OR too long since last linked
+                    // OR relink draw is false
         }
 
         // This is sorta a place for a background screening?
-
     }
-}
+} // namespace Event
