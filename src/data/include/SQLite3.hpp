@@ -20,7 +20,8 @@
 #include <unordered_map>
 
 namespace Data {
-    struct SQLTable {
+    class SQLTable {
+    public:
         SQLTable() {}
         ~SQLTable() { sqlite3_free_table(this->data); }
         int nRows;

@@ -1,6 +1,6 @@
 //===-- PersonTest.cpp - Instruction class definition -------*- C++ -*-===//
 //
-// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
+// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
 // for license information.
 // SPDX-License-Identifier: AGPLv3
@@ -18,6 +18,4 @@
 
 #include <gtest/gtest.h>
 
-TEST(PersonCreation, DefaultConstructor){
-    EXPECT_TRUE(true);
-}
+TEST(PersonCreation, DefaultConstructor) { EXPECT_TRUE(true); }
