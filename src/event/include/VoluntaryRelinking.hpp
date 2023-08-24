@@ -1,6 +1,7 @@
-//===-- VoluntaryRelinking.hpp - Instruction class definition -------*- C++ -*-===//
+//===-- VoluntaryRelinking.hpp - Instruction class definition -------*- C++
+//-*-===//
 //
-// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
+// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
 // for license information.
 // SPDX-License-Identifier: AGPLv3
@@ -22,28 +23,33 @@
 #include "Person.hpp"
 #include "sqlite3.h"
 
-#include <random>
 #include <mutex>
+#include <random>
 
 namespace Event {
 
-class VoluntaryRelinking : public Event {
-private:
-    /* data */
-    std::mt19937_64 &generator;
-    std::mutex generatorMutex;
-    int voluntaryRelinkDuration = 1024; // we should set this
+    class VoluntaryRelinking : public Event {
+    private:
+        /* data */
+        std::mt19937_64 &generator;
+        std::mutex generatorMutex;
+        int voluntaryRelinkDuration = 1024; // we should set this
 
-    void doEvent(Person::Person &person) override;
-public:
-    VoluntaryRelinking(std::mt19937_64 &generator) : generator(generator) {};
-    virtual ~VoluntaryRelinking() = default;
+        void doEvent(Person::Person &person) override;
 
-    void setVoluntaryRelinkDuration(int duration) { this->voluntaryRelinkDuration = duration; }
+    public:
+        VoluntaryRelinking(std::mt19937_64 &generator) : generator(generator){};
+        virtual ~VoluntaryRelinking() = default;
 
-    int getVoluntaryRelinkDuration() { return this->voluntaryRelinkDuration; }
-};
+        void setVoluntaryRelinkDuration(int duration) {
+            this->voluntaryRelinkDuration = duration;
+        }
 
-}
+        int getVoluntaryRelinkDuration() {
+            return this->voluntaryRelinkDuration;
+        }
+    };
+
+} // namespace Event
 
 #endif

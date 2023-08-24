@@ -6,14 +6,15 @@
 
 namespace Event {
 
-class Treatment : public Event {
-private:
-    void doEvent(Person::Person &person) override;
-public:
-    Treatment(){};
-    virtual ~Treatment() = default;
-};
+    class Treatment : public Event {
+    private:
+        void doEvent(Person::Person &person) override;
 
-}
+    public:
+        Treatment(){};
+        virtual ~Treatment() = default;
+    };
+
+} // namespace Event
 
 #endif

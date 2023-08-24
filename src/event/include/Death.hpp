@@ -1,6 +1,6 @@
 //===-- Death.hpp - Instruction class definition -------*- C++ -*-===//
 //
-// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
+// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
 // for license information.
 // SPDX-License-Identifier: AGPLv3
@@ -22,14 +22,15 @@
 
 namespace Event {
 
-class Death : public Event {
-private:
-    void doEvent(Person::Person &person) override;
-public:
-    Death() {};
-    virtual ~Death() = default;
-};
+    class Death : public Event {
+    private:
+        void doEvent(Person::Person &person) override;
 
-}
+    public:
+        Death(){};
+        virtual ~Death() = default;
+    };
+
+} // namespace Event
 
 #endif

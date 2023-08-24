@@ -1,6 +1,6 @@
 //===-- Data.hpp - Instruction class definition -------*- C++ -*-===//
 //
-// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
+// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
 // for license information.
 // SPDX-License-Identifier: AGPLv3
@@ -22,23 +22,24 @@
 #include <string>
 
 /// @brief Namespace holding Data manipulation classes
-namespace Data{
+namespace Data {
 
-/// @brief Main class for manipulating Data Files. Does not inlcude SQL DBs
-class Data {
-private:
-    std::string dataString;
-public:
-    Data(){};
+    /// @brief Main class for manipulating Data Files. Does not inlcude SQL DBs
+    class Data {
+    private:
+        std::string dataString;
 
-    /// @brief Function for Reading Data from the provided CSV
-    /// @param filepath string containing the filepath for the csv File
-    void read_csv(std::string filepath);
+    public:
+        Data(){};
 
-    /// @brief Function for Writing Data to the CSV
-    /// @param filepath String containing the filepath to the csv File
-    void write_csv(std::string filepath);
-};
+        /// @brief Function for Reading Data from the provided CSV
+        /// @param filepath string containing the filepath for the csv File
+        void read_csv(std::string filepath);
 
-}
+        /// @brief Function for Writing Data to the CSV
+        /// @param filepath String containing the filepath to the csv File
+        void write_csv(std::string filepath);
+    };
+
+} // namespace Data
 #endif

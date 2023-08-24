@@ -1,7 +1,5 @@
 #include "Fibrosis.hpp"
 
 namespace Event {
-    void Fibrosis::doEvent(Person::Person &person) {
-        
-    }
-}
+    void Fibrosis::doEvent(Person::Person &person) {}
+} // namespace Event

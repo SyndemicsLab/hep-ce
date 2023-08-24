@@ -1,6 +1,6 @@
 //===-- Simulation.hpp - Instruction class definition -------*- C++ -*-===//
 //
-// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
+// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
 // for license information.
 // SPDX-License-Identifier: AGPLv3
@@ -19,15 +19,15 @@
 #ifndef SIMULATION_HPP_
 #define SIMULATION_HPP_
 
-#include "Person.hpp"
 #include "Event.hpp"
+#include "Person.hpp"
 
 #include <cstdint>
 #include <random>
 #include <string>
 #include <vector>
 
-/// @brief 
+/// @brief
 class Simulation {
 private:
     uint32_t currentTimestep = 0;
@@ -35,15 +35,15 @@ private:
     std::vector<Person::Person> population;
     std::vector<std::shared_ptr<Event::Event>> events;
     std::mt19937_64 generator;
-    
+
 public:
-    Simulation() : Simulation((uint64_t)0, (uint32_t)0) {};
+    Simulation() : Simulation((uint64_t)0, (uint32_t)0){};
 
-    Simulation(uint64_t seed) : Simulation(seed, (uint32_t)0) {};
+    Simulation(uint64_t seed) : Simulation(seed, (uint32_t)0){};
 
-    Simulation(uint32_t duration) : Simulation((uint64_t)0, duration) {};
+    Simulation(uint32_t duration) : Simulation((uint64_t)0, duration){};
 
-    Simulation(uint64_t seed, uint32_t duration){
+    Simulation(uint64_t seed, uint32_t duration) {
         this->generator.seed(this->seed);
         this->duration = duration;
     }
@@ -52,52 +52,52 @@ public:
 
     uint32_t duration;
 
-    /// @brief 
-    /// @return 
+    /// @brief
+    /// @return
     std::vector<Person::Person> createPopulation();
 
-    /// @brief 
-    /// @return 
+    /// @brief
+    /// @return
     std::vector<std::shared_ptr<Event::Event>> createEvents();
 
-    /// @brief 
-    /// @param population 
+    /// @brief
+    /// @param population
     void loadPopulation(std::vector<Person::Person> population);
 
-    /// @brief 
-    /// @param person 
+    /// @brief
+    /// @param person
     void addPerson(Person::Person person);
 
-    /// @brief 
-    /// @param events 
+    /// @brief
+    /// @param events
     void loadEvents(std::vector<std::shared_ptr<Event::Event>> events);
 
-    /// @brief 
-    /// @param event 
-    /// @return 
+    /// @brief
+    /// @param event
+    /// @return
     bool addEventToEnd(Event::Event &event);
 
-    /// @brief 
-    /// @param event 
-    /// @return 
+    /// @brief
+    /// @param event
+    /// @return
     bool addEventToBeginning(Event::Event &event);
 
-    /// @brief 
-    /// @param event 
-    /// @param idx 
-    /// @return 
+    /// @brief
+    /// @param event
+    /// @param idx
+    /// @return
     bool addEventAtIndex(Event::Event &event, int idx);
 
-    /// @brief 
-    /// @return 
+    /// @brief
+    /// @return
     std::vector<Person::Person> getPopulation();
-    
-    /// @brief 
-    /// @return 
+
+    /// @brief
+    /// @return
     std::vector<std::shared_ptr<Event::Event>> getEvents();
 
-    /// @brief 
-    /// @return 
+    /// @brief
+    /// @return
     std::vector<Person::Person> run();
 };
 

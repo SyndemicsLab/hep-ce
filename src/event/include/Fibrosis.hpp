@@ -1,6 +1,6 @@
 //===-- Fibrosis.hpp - Instruction class definition -------*- C++ -*-===//
 //
-// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
+// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
 // for license information.
 // SPDX-License-Identifier: AGPLv3
@@ -22,14 +22,15 @@
 
 namespace Event {
 
-class Fibrosis : public Event {
-private:
-    void doEvent(Person::Person &person) override;
-public:
-    Fibrosis() {};
-    virtual ~Fibrosis() = default;
-};
+    class Fibrosis : public Event {
+    private:
+        void doEvent(Person::Person &person) override;
 
-}
+    public:
+        Fibrosis(){};
+        virtual ~Fibrosis() = default;
+    };
+
+} // namespace Event
 
 #endif

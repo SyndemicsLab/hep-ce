@@ -6,14 +6,15 @@
 
 namespace Event {
 
-class Growth : public Event {
-private:
-    void doEvent(Person::Person &person) override;
-public:
-    Growth() {};
-    virtual ~Growth() = default;
-};
+    class Growth : public Event {
+    private:
+        void doEvent(Person::Person &person) override;
 
-}
+    public:
+        Growth(){};
+        virtual ~Growth() = default;
+    };
+
+} // namespace Event
 
 #endif

@@ -1,6 +1,6 @@
 //===-- Infect.hpp - Instruction class definition -------*- C++ -*-===//
 //
-// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid 
+// Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
 // for license information.
 // SPDX-License-Identifier: AGPLv3
@@ -25,17 +25,18 @@
 
 namespace Event {
 
-class Infections : public Event {
-private:
-    std::mt19937_64 &generator;
-    std::mutex generatorMutex;
+    class Infections : public Event {
+    private:
+        std::mt19937_64 &generator;
+        std::mutex generatorMutex;
 
-    void doEvent(Person::Person &person) override;
-public:
-    Infections(std::mt19937_64 &generator) : generator(generator) {};
-    virtual ~Infections() = default;
-};
+        void doEvent(Person::Person &person) override;
 
-}
+    public:
+        Infections(std::mt19937_64 &generator) : generator(generator){};
+        virtual ~Infections() = default;
+    };
+
+} // namespace Event
 
 #endif

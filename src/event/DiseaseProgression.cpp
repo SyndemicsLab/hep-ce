@@ -1,7 +1,5 @@
 #include "DiseaseProgression.hpp"
 
 namespace Event {
-    void DiseaseProgression::doEvent(Person::Person &person) {
-        
-    }
-}
+    void DiseaseProgression::doEvent(Person::Person &person) {}
+} // namespace Event
