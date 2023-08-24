@@ -43,5 +43,4 @@ namespace Person {
         // need to add functionality here
         return HEPCState::ACUTE;
     }
-
 } // namespace Person

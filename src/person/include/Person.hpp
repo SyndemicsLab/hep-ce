@@ -23,7 +23,6 @@
 
 /// @brief Namespace containing all code pertaining to a Person
 namespace Person {
-
     /// @brief Fibrosis States
     enum class FibrosisState { NONE, F0, F1, F2, F3, F4, DECOMP };
 
@@ -41,44 +40,6 @@ namespace Person {
 
     /// @brief class describing a Person
     class Person {
-    private:
-        int id;
-
-        int timeSinceLastScreening =
-            -1; // -1 if never screened, otherwise [0, currentTimestep-1)
-        int screeningFrequency = -1; // -1 if screened only once and never again
-        bool interventionScreening = false;
-        bool seropositivity = false;
-
-        /// @brief Attributes describing Identification
-        struct IdentificationStatus {
-            bool identifiedAsPositiveInfection = false;
-            int timeIdentified = -1;
-        };
-        IdentificationStatus idStatus;
-
-        struct InfectionStatus {
-            HEPCState hepcState = HEPCState::NONE;
-            FibrosisState fibState = FibrosisState::NONE;
-            int timeSinceHEPCStateChange = 0;
-            int timeSinceFibStateChange = 0;
-        };
-        InfectionStatus infectionStatus;
-
-        // FibrosisState fibState = FibrosisState::NONE;
-        // HEPCState hepceState = HEPCState::NONE;
-        bool isAlive = false;
-        BehaviorState behaviorState = BehaviorState::NEVER;
-
-        /// @brief Attributes describing Linkage
-        struct LinkageDetails {
-            LinkageState linkState = LinkageState::NEVER;
-            int timeLinkChange = -1;
-            LinkageType linkType = LinkageType::BACKGROUND;
-        };
-
-        LinkageDetails linkStatus;
-
     public:
         uint32_t age = 0;
 
@@ -199,7 +160,44 @@ namespace Person {
         /// @brief
         /// @return
         LinkageType getLinkageType() { return this->linkStatus.linkType; }
-    };
 
+    private:
+        int id;
+
+        int timeSinceLastScreening =
+            -1; // -1 if never screened, otherwise [0, currentTimestep-1)
+        int screeningFrequency = -1; // -1 if screened only once and never again
+        bool interventionScreening = false;
+        bool seropositivity = false;
+
+        /// @brief Attributes describing Identification
+        struct IdentificationStatus {
+            bool identifiedAsPositiveInfection = false;
+            int timeIdentified = -1;
+        };
+        IdentificationStatus idStatus;
+
+        struct InfectionStatus {
+            HEPCState hepcState = HEPCState::NONE;
+            FibrosisState fibState = FibrosisState::NONE;
+            int timeSinceHEPCStateChange = 0;
+            int timeSinceFibStateChange = 0;
+        };
+        InfectionStatus infectionStatus;
+
+        // FibrosisState fibState = FibrosisState::NONE;
+        // HEPCState hepceState = HEPCState::NONE;
+        bool isAlive = false;
+        BehaviorState behaviorState = BehaviorState::NEVER;
+
+        /// @brief Attributes describing Linkage
+        struct LinkageDetails {
+            LinkageState linkState = LinkageState::NEVER;
+            int timeLinkChange = -1;
+            LinkageType linkType = LinkageType::BACKGROUND;
+        };
+
+        LinkageDetails linkStatus;
+    };
 } // namespace Person
 #endif
