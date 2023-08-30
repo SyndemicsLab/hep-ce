@@ -80,7 +80,7 @@ namespace Person {
         LinkageDetails linkStatus;
 
     public:
-        uint32_t age = 0;
+        double age = 0;
 
         Person(){};
         virtual ~Person() = default;
