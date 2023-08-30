@@ -30,8 +30,42 @@ namespace Person {
     /// @brief HEP-C Infection States
     enum class HEPCState { NONE, ACUTE, CHRONIC };
 
-    /// @brief Opioid Usage Status
-    enum class BehaviorState { NEVER, CURRENT, FORMER };
+    /// @brief Enum used to select the behavior state to be changed
+    enum class BehaviorIndex { EVER, ACTIVE, IDU };
+
+    /// @brief Drug Usage Status
+    /// @details Behavior states represent the drug usage state of a person.
+    /// There are four possible possible usage classifications:
+    /// - No History of Opioid Use
+    /// - Non-injection Opioid Use
+    /// - Injection Opioid Use
+    /// - Former Opioid Use
+    /// Each of these states is represented in combinations of the three boolean
+    /// variables. `everUsedDrugs` is false only if a person has no history of
+    /// opioid use. `injectionDrugUse` and `activeDrugUse` are able to be
+    /// flipped between true and false. When `activeDrugUse` is true, the person
+    /// is in either the Non-injection Opioid Use or the Injection Opioid Use
+    /// state, based on the value of `injectionDrugUse`. When `activeDrugUse` is
+    /// false, the person is in the Former Opioid Use state.
+    class BehaviorState {
+    public:
+        bool everUsedDrugs;
+        bool injectionDrugUse;
+        bool activeDrugUse;
+
+        void flipState(const BehaviorIndex &index) {
+            // this flag cannot be set to false after being true
+            if (index == BehaviorIndex::EVER) {
+                if (!this->everUsedDrugs) {
+                    this->everUsedDrugs = !this->everUsedDrugs;
+                }
+            } else if (index == BehaviorIndex::IDU) {
+                this->injectionDrugUse = !this->injectionDrugUse;
+            } else {
+                this->activeDrugUse = !this->activeDrugUse;
+            }
+        }
+    };
 
     /// @brief Screening type that lead to Linkage
     enum class LinkageType { BACKGROUND, INTERVENTION };
@@ -68,7 +102,7 @@ namespace Person {
         // FibrosisState fibState = FibrosisState::NONE;
         // HEPCState hepceState = HEPCState::NONE;
         bool isAlive = true;
-        BehaviorState behaviorState = BehaviorState::NEVER;
+        BehaviorState behaviorState;
 
         /// @brief Attributes describing Linkage
         struct LinkageDetails {
