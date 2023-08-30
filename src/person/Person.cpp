@@ -25,7 +25,7 @@ namespace Person {
     }
 
     void Person::updateBehavior() {
-        if (this->behaviorState->everUsedDrugs) {
+        if (this->behaviorState.everUsedDrugs) {
             // person is either in an active or former opioid use state
         } else {
             // person has never used drugs

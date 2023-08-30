@@ -25,7 +25,7 @@
 namespace Person {
 
     /// @brief Fibrosis States
-    enum class FibrosisState { NONE, F0, F1, F2, F3, F4, DECOMP };
+    enum class FibrosisState { NONE, F0, F1, F2, F3, F4, DECOMP, EHCC, LHCC };
 
     /// @brief HEP-C Infection States
     enum class HEPCState { NONE, ACUTE, CHRONIC };
