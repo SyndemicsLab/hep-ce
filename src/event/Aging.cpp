@@ -3,7 +3,8 @@
 namespace Event {
     void Aging::doEvent(Person::Person &person) {
         if (person.getIsAlive()) {
-            person.age += (1 / 12);
+            double monthAge = 1.0 / 12.0;
+            person.age += monthAge;
         }
     }
 } // namespace Event
