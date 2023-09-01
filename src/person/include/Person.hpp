@@ -23,48 +23,42 @@
 
 /// @brief Namespace containing all code pertaining to a Person
 namespace Person {
-
     /// @brief Fibrosis States
     enum class FibrosisState { NONE, F0, F1, F2, F3, F4, DECOMP, EHCC, LHCC };
 
     /// @brief HEP-C Infection States
     enum class HEPCState { NONE, ACUTE, CHRONIC };
 
+    /// @brief Usage Behavior Classification
+    /// @details There are four possible possible usage classifications:
+    /// - No History of Opioid Use
+    /// - Non-injection Opioid Use
+    /// - Injection Opioid Use
+    /// - Former Opioid Use
+    enum class BehaviorClassification {
+        NEVER,
+        FORMER,
+        NONINJECTION,
+        INJECTION
+    };
+
     /// @brief Enum used to select the behavior state to be changed
     enum class BehaviorIndex { EVER, ACTIVE, IDU };
 
     /// @brief Drug Usage Status
     /// @details Behavior states represent the drug usage state of a person.
-    /// There are four possible possible usage classifications:
-    /// - No History of Opioid Use
-    /// - Non-injection Opioid Use
-    /// - Injection Opioid Use
-    /// - Former Opioid Use
-    /// Each of these states is represented in combinations of the three boolean
-    /// variables. `everUsedDrugs` is false only if a person has no history of
-    /// opioid use. `injectionDrugUse` and `activeDrugUse` are able to be
-    /// flipped between true and false. When `activeDrugUse` is true, the person
-    /// is in either the Non-injection Opioid Use or the Injection Opioid Use
-    /// state, based on the value of `injectionDrugUse`. When `activeDrugUse` is
-    /// false, the person is in the Former Opioid Use state.
+    /// Each of the usage classifications is represented in combinations of the
+    /// three boolean variables. `everUsedDrugs` is false only if a person has
+    /// no history of opioid use. `injectionDrugUse` and `activeDrugUse` are
+    /// able to be flipped between true and false. When `activeDrugUse` is true,
+    /// the person is in either the Non-injection Opioid Use or the Injection
+    /// Opioid Use state, based on the value of `injectionDrugUse`. When
+    /// `activeDrugUse` is false, the person is in the Former Opioid Use state.
     class BehaviorState {
     public:
         bool everUsedDrugs;
         bool injectionDrugUse;
         bool activeDrugUse;
-
-        void flipState(const BehaviorIndex &index) {
-            // this flag cannot be set to false after being true
-            if (index == BehaviorIndex::EVER) {
-                if (!this->everUsedDrugs) {
-                    this->everUsedDrugs = !this->everUsedDrugs;
-                }
-            } else if (index == BehaviorIndex::IDU) {
-                this->injectionDrugUse = !this->injectionDrugUse;
-            } else {
-                this->activeDrugUse = !this->activeDrugUse;
-            }
-        }
     };
 
     /// @brief Screening type that lead to Linkage
@@ -103,6 +97,7 @@ namespace Person {
         // HEPCState hepceState = HEPCState::NONE;
         bool isAlive = true;
         BehaviorState behaviorState;
+        BehaviorClassification behaviorClassification;
 
         /// @brief Attributes describing Linkage
         struct LinkageDetails {
@@ -116,7 +111,7 @@ namespace Person {
     public:
         double age = 0;
 
-        Person(){};
+        Person();
         virtual ~Person() = default;
 
         /// @brief End a Person's life and set final age
@@ -128,8 +123,12 @@ namespace Person {
         /// @brief Infect the person
         void infect();
 
-        /// @brief Update Opioid use behavior
-        void updateBehavior();
+        /// @brief Update Opioid Use Behavior Classification
+        /// @param bc The intended resultant BehaviorClassification
+        void updateBehavior(const BehaviorClassification bc);
+
+        /// @brief Classify the behavior of a person based on their BehaviorState
+        void classifyBehavior();
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
@@ -210,7 +209,7 @@ namespace Person {
 
         /// @brief
         /// @return
-        BehaviorState getBehaviorState() { return this->behaviorState; }
+        BehaviorClassification getBehaviorClassification() { return this->behaviorClassification; }
 
         /// @brief
         /// @return

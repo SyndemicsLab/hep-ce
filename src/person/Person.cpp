@@ -1,6 +1,11 @@
 #include "Person.hpp"
 
 namespace Person {
+    Person::Person() {
+        this->behaviorState = { false, false, false };
+        this->classifyBehavior();
+    }
+
     void Person::die() { this->isAlive = false; }
 
     void Person::grow() {
@@ -24,11 +29,41 @@ namespace Person {
         this->infectionStatus.timeSinceFibStateChange = 0;
     }
 
-    void Person::updateBehavior() {
+    void Person::updateBehavior(const BehaviorClassification bc) {
+        switch (bc) {
+        case BehaviorClassification::NEVER:
+            // cannot transition to NEVER
+            return;
+        case BehaviorClassification::INJECTION:
+            this->behaviorState.activeDrugUse = true;
+            this->behaviorState.injectionDrugUse = true;
+            break;
+        case BehaviorClassification::NONINJECTION:
+            this->behaviorState.activeDrugUse = true;
+            this->behaviorState.injectionDrugUse = false;
+            break;
+        case BehaviorClassification::FORMER:
+            this->behaviorState.activeDrugUse = false;
+            break;
+        }
+        if (!this->behaviorState.everUsedDrugs) {
+            this->behaviorState.everUsedDrugs = true;
+        }
+    }
+
+    void Person::classifyBehavior() {
         if (this->behaviorState.everUsedDrugs) {
-            // person is either in an active or former opioid use state
+            if (this->behaviorState.activeDrugUse) {
+                if (this->behaviorState.injectionDrugUse) {
+                    this->behaviorClassification = BehaviorClassification::INJECTION;
+                } else {
+                    this->behaviorClassification = BehaviorClassification::NONINJECTION;
+                }
+            } else {
+                this->behaviorClassification = BehaviorClassification::FORMER;
+            }
         } else {
-            // person has never used drugs
+            this->behaviorClassification = BehaviorClassification::NEVER;
         }
     }
 
