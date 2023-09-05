@@ -5,7 +5,7 @@
 #include "Person.hpp"
 
 namespace Event {
-    class BehaviorChanges : public Event {
+    class BehaviorChanges : public ProbEvent {
     private:
         void doEvent(Person::Person &person) override;
 

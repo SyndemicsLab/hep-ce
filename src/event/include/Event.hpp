@@ -20,14 +20,14 @@
 #define EVENT_EVENT_HPP_
 
 #include "Person.hpp"
-
 #include <algorithm>
 #include <execution>
+#include <mutex>
+#include <random>
 #include <vector>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
-
     /// @brief Abstract class that superclasses all Events. Contains execute
     /// function definition
     class Event {
@@ -56,5 +56,38 @@ namespace Event {
         }
     };
 
+    /// @brief Abstract class for use with Events that involve sampling from the
+    /// random number generator to make decisions.
+    class ProbEvent : public Event {
+    protected:
+        std::mt19937_64 &generator;
+        std::mutex generatorMutex;
+
+        /// @brief When making a decision with two or more choices, pick one
+        /// based on the provided weight(s).
+        /// @param probs A vector containing the weights of each option.
+        /// @return
+        int getDecision(std::vector<double> probs) {
+            if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.0) {
+                // error -- sum of probabilities cannot exceed 1
+                return -1;
+            }
+            std::uniform_real_distribution<double> uniform(0.0, 1.0);
+            this->generatorMutex.lock();
+            double value = uniform(this->generator);
+            this->generatorMutex.unlock();
+            double reference = 0.0;
+            for (int i = 0; i < probs.size(); ++i) {
+                reference += probs[i];
+                if (value < reference) {
+                    return i;
+                }
+            }
+            return (int)probs.size();
+        }
+    public:
+        ProbEvent(std::mt19937_64 &generator): generator(generator) {}
+        virtual ~ProbEvent() = default;
+    };
 } // namespace Event
 #endif
