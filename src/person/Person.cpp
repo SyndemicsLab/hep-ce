@@ -22,11 +22,11 @@ namespace Person {
         this->infectionStatus.timeSinceHEPCStateChange = 0;
         this->seropositivity = true;
 
-        if (this->infectionStatus.fibState != FibrosisState::NONE) {
+        if (this->infectionStatus.liverState != LiverState::NONE) {
             return;
         }
-        this->infectionStatus.fibState = FibrosisState::NONE;
-        this->infectionStatus.timeSinceFibStateChange = 0;
+        this->infectionStatus.liverState = LiverState::NONE;
+        this->infectionStatus.timeSinceLiverStateChange = 0;
     }
 
     void Person::updateBehavior(const BehaviorClassification bc) {
@@ -71,10 +71,10 @@ namespace Person {
         }
     }
 
-    FibrosisState Person::diagnoseFibrosis(int timestep) {
+    LiverState Person::diagnoseLiver(int timestep) {
         // need to add functionality here
-        this->infectionStatus.fibState = FibrosisState::F0;
-        return this->infectionStatus.fibState;
+        this->infectionStatus.liverState = LiverState::F0;
+        return this->infectionStatus.liverState;
     }
 
     HEPCState Person::diagnoseHEPC(int timestep) {

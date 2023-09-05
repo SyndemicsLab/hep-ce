@@ -92,12 +92,10 @@ namespace Person {
             HEPCState hepcState = HEPCState::NONE;
             LiverState liverState = LiverState::NONE;
             int timeSinceHEPCStateChange = 0;
-            int timeSinceFibStateChange = 0;
+            int timeSinceLiverStateChange = 0;
         };
         InfectionStatus infectionStatus;
 
-        // FibrosisState fibState = FibrosisState::NONE;
-        // HEPCState hepceState = HEPCState::NONE;
         bool isAlive = true;
         BehaviorState behaviorState;
         BehaviorClassification behaviorClassification;
@@ -135,7 +133,7 @@ namespace Person {
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
-        FibrosisState diagnoseFibrosis(int timestep);
+        LiverState diagnoseLiver(int timestep);
 
         /// @brief Dignose somebody with HEPC
         /// @return HEPC state that was diagnosed
@@ -198,8 +196,8 @@ namespace Person {
 
         /// @brief
         /// @return
-        FibrosisState getFibrosisState() {
-            return this->infectionStatus.fibState;
+        LiverState getLiverState() {
+            return this->infectionStatus.liverState;
         }
 
         /// @brief
@@ -222,8 +220,8 @@ namespace Person {
 
         /// @brief
         /// @return
-        int getTimeSinceFibrosisStateChange() {
-            return this->infectionStatus.timeSinceFibStateChange;
+        int getTimeSinceLiverStateChange() {
+            return this->infectionStatus.timeSinceLiverStateChange;
         }
 
         /// @brief

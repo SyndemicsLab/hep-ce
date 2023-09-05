@@ -53,8 +53,8 @@ TEST(PersonInfect, InfectNormally) {
     EXPECT_EQ(person.getTimeSinceHEPCStateChange(), 0);
     EXPECT_TRUE(person.getSeropositivity());
 
-    EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::NONE);
-    EXPECT_EQ(person.getTimeSinceFibrosisStateChange(), 0);
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::NONE);
+    EXPECT_EQ(person.getTimeSinceLiverStateChange(), 0);
 }
 
 TEST(PersonInfect, ResistMultiHCVInfect) {
@@ -68,10 +68,10 @@ TEST(PersonInfect, ResistMultiHCVInfect) {
 
 TEST(PersonInfect, ResistMultiFibrosisInfect) {
     Person::Person person;
-    person.diagnoseFibrosis(5);
+    person.diagnoseLiver(5);
     person.infect();
     EXPECT_EQ(person.getHEPCState(), Person::HEPCState::ACUTE);
-    EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::F0);
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::F0);
 }
 
 TEST(PersonLink, LinkNormally) {
