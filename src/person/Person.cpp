@@ -30,6 +30,7 @@ namespace Person {
     }
 
     void Person::updateBehavior(const BehaviorClassification bc) {
+        if (bc == this->behaviorClassification) { return; }
         switch (bc) {
         case BehaviorClassification::NEVER:
             // cannot transition to NEVER
@@ -46,9 +47,12 @@ namespace Person {
             this->behaviorState.activeDrugUse = false;
             break;
         }
+        // people only make it to this if they have used drugs
         if (!this->behaviorState.everUsedDrugs) {
             this->behaviorState.everUsedDrugs = true;
         }
+        // update the behavior classification
+        this->behaviorClassification = bc;
     }
 
     void Person::classifyBehavior() {

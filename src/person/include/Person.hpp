@@ -23,8 +23,10 @@
 
 /// @brief Namespace containing all code pertaining to a Person
 namespace Person {
-    /// @brief Fibrosis States
-    enum class FibrosisState { NONE, F0, F1, F2, F3, F4, DECOMP, EHCC, LHCC };
+    /// @brief Classification of Liver Disease Stage
+    /// @details HCV infection causes liver fibrosis and cirrhosis and increases
+    /// the risk of development of hepatocellular carcinoma (HCC).
+    enum class LiverState { NONE, F0, F1, F2, F3, F4, DECOMP, EHCC, LHCC };
 
     /// @brief HEP-C Infection States
     enum class HEPCState { NONE, ACUTE, CHRONIC };
@@ -32,9 +34,9 @@ namespace Person {
     /// @brief Usage Behavior Classification
     /// @details There are four possible possible usage classifications:
     /// - No History of Opioid Use
+    /// - Former (Past) Opioid Use
     /// - Non-injection Opioid Use
     /// - Injection Opioid Use
-    /// - Former Opioid Use
     enum class BehaviorClassification {
         NEVER,
         FORMER,
@@ -42,18 +44,19 @@ namespace Person {
         INJECTION
     };
 
-    /// @brief Enum used to select the behavior state to be changed
-    enum class BehaviorIndex { EVER, ACTIVE, IDU };
-
     /// @brief Drug Usage Status
     /// @details Behavior states represent the drug usage state of a person.
     /// Each of the usage classifications is represented in combinations of the
-    /// three boolean variables. `everUsedDrugs` is false only if a person has
-    /// no history of opioid use. `injectionDrugUse` and `activeDrugUse` are
-    /// able to be flipped between true and false. When `activeDrugUse` is true,
-    /// the person is in either the Non-injection Opioid Use or the Injection
-    /// Opioid Use state, based on the value of `injectionDrugUse`. When
-    /// `activeDrugUse` is false, the person is in the Former Opioid Use state.
+    /// three boolean variables.
+    /// - `everUsedDrugs` is false only if a person has no history of opioid
+    /// use.
+    /// - `injectionDrugUse` and `activeDrugUse` are able to be flipped between
+    /// true and false.
+    ///   - When `activeDrugUse` is true, the person is in either the
+    ///   Non-injection Opioid Use or the Injection Opioid Use state, based on
+    ///   the value of `injectionDrugUse`.
+    ///   - When `activeDrugUse` is false, the person is in the Former Opioid
+    ///   Use state.
     class BehaviorState {
     public:
         bool everUsedDrugs;
@@ -72,8 +75,8 @@ namespace Person {
     private:
         int id;
 
-        int timeSinceLastScreening =
-            -1; // -1 if never screened, otherwise [0, currentTimestep-1)
+        // -1 if never screened, otherwise [0, currentTimestep-1)
+        int timeSinceLastScreening = -1;
         int screeningFrequency = -1; // -1 if screened only once and never again
         bool interventionScreening = false;
         bool seropositivity = false;
@@ -87,7 +90,7 @@ namespace Person {
 
         struct InfectionStatus {
             HEPCState hepcState = HEPCState::NONE;
-            FibrosisState fibState = FibrosisState::NONE;
+            LiverState liverState = LiverState::NONE;
             int timeSinceHEPCStateChange = 0;
             int timeSinceFibStateChange = 0;
         };
