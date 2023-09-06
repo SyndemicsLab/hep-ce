@@ -65,8 +65,14 @@ namespace Event {
 
         /// @brief When making a decision with two or more choices, pick one
         /// based on the provided weight(s).
+        /// @details The weights specified in the argument \code{probs} must sum
+        /// to no greater than 1.0. In the case that probabilities sum to 1,
+        /// the return value is always an index of the vector (i.e. the return
+        /// is always < \code{probs.size()}). If the sum of the probabilities is
+        /// less than 1.0, then the difference (\code{1.0 - sum(probs)}) is
+        /// the probability to draw return value \code{probs.size()}.
         /// @param probs A vector containing the weights of each option.
-        /// @return
+        /// @return Integer representing the chosen state.
         int getDecision(std::vector<double> probs) {
             if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.0) {
                 // error -- sum of probabilities cannot exceed 1
@@ -85,8 +91,9 @@ namespace Event {
             }
             return (int)probs.size();
         }
+
     public:
-        ProbEvent(std::mt19937_64 &generator): generator(generator) {}
+        ProbEvent(std::mt19937_64 &generator) : generator(generator) {}
         virtual ~ProbEvent() = default;
     };
 } // namespace Event

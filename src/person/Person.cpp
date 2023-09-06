@@ -2,7 +2,7 @@
 
 namespace Person {
     Person::Person() {
-        this->behaviorState = { false, false, false };
+        this->behaviorState = {false, false, false};
         this->classifyBehavior();
     }
 
@@ -30,7 +30,9 @@ namespace Person {
     }
 
     void Person::updateBehavior(const BehaviorClassification bc) {
-        if (bc == this->behaviorClassification) { return; }
+        if (bc == this->behaviorClassification) {
+            return;
+        }
         switch (bc) {
         case BehaviorClassification::NEVER:
             // cannot transition to NEVER
@@ -59,9 +61,11 @@ namespace Person {
         if (this->behaviorState.everUsedDrugs) {
             if (this->behaviorState.activeDrugUse) {
                 if (this->behaviorState.injectionDrugUse) {
-                    this->behaviorClassification = BehaviorClassification::INJECTION;
+                    this->behaviorClassification =
+                        BehaviorClassification::INJECTION;
                 } else {
-                    this->behaviorClassification = BehaviorClassification::NONINJECTION;
+                    this->behaviorClassification =
+                        BehaviorClassification::NONINJECTION;
                 }
             } else {
                 this->behaviorClassification = BehaviorClassification::FORMER;

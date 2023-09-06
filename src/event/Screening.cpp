@@ -19,7 +19,7 @@
 
 namespace Event {
     Screening::Screening(std::mt19937_64 &generator)
-        : generator(generator){
+        : ProbEvent(generator){
               // QUERY backgroundProbability and interventionProbability Tables
               // Save to attributes
               // ensure lookup scheme for stratified age/IDU

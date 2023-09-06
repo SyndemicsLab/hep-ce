@@ -11,11 +11,8 @@
 #include <vector>
 
 namespace Event {
-
-    class Screening : public Event {
+    class Screening : public ProbEvent {
     private:
-        std::mt19937_64 &generator;
-        std::mutex generatorMutex;
         std::vector<double> backgroundProbability;
         std::vector<double> interventionProbability;
         std::vector<double> acceptTestProbability;

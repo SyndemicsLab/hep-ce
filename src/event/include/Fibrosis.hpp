@@ -21,7 +21,6 @@
 #include "Event.hpp"
 
 namespace Event {
-
     class Fibrosis : public Event {
     private:
         void doEvent(Person::Person &person) override;
@@ -30,7 +29,6 @@ namespace Event {
         Fibrosis(){};
         virtual ~Fibrosis() = default;
     };
-
 } // namespace Event
 
 #endif

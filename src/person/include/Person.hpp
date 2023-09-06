@@ -128,7 +128,8 @@ namespace Person {
         /// @param bc The intended resultant BehaviorClassification
         void updateBehavior(const BehaviorClassification bc);
 
-        /// @brief Classify the behavior of a person based on their BehaviorState
+        /// @brief Classify the behavior of a person based on their
+        /// BehaviorState
         void classifyBehavior();
 
         /// @brief Diagnose somebody's fibrosis
@@ -196,9 +197,7 @@ namespace Person {
 
         /// @brief
         /// @return
-        LiverState getLiverState() {
-            return this->infectionStatus.liverState;
-        }
+        LiverState getLiverState() { return this->infectionStatus.liverState; }
 
         /// @brief
         /// @return
@@ -210,7 +209,9 @@ namespace Person {
 
         /// @brief
         /// @return
-        BehaviorClassification getBehaviorClassification() { return this->behaviorClassification; }
+        BehaviorClassification getBehaviorClassification() {
+            return this->behaviorClassification;
+        }
 
         /// @brief
         /// @return

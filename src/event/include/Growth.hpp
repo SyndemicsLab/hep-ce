@@ -5,7 +5,6 @@
 #include "Person.hpp"
 
 namespace Event {
-
     class Growth : public Event {
     private:
         void doEvent(Person::Person &person) override;
@@ -14,7 +13,6 @@ namespace Event {
         Growth(){};
         virtual ~Growth() = default;
     };
-
 } // namespace Event
 
 #endif

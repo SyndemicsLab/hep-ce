@@ -6,12 +6,12 @@
 
 namespace Event {
 
-    class DiseaseProgression : public Event {
+    class DiseaseProgression : public ProbEvent {
     private:
         void doEvent(Person::Person &person) override;
 
     public:
-        DiseaseProgression(){};
+        using ProbEvent::ProbEvent;
         virtual ~DiseaseProgression() = default;
     };
 
