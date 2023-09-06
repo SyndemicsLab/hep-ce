@@ -24,12 +24,12 @@ Components of this event category are
 ### Clinical Events
 Clinical events are those within the healthcare setting, namely screening (testing), linkage, and treatment.
 
-- Intervention Screening
-- Background Screening
-- Linkage
-- Relinkage
-- Treatment
+- [ ] Intervention Screening
+- [ ] Background Screening
+- [ ] Linkage
+- [ ] Relinkage
+- [ ] Treatment
 
 ### Calculation Events
-- Cost
-- Transmission (Infection Rate Change)
+- [ ] Cost
+- [ ] Transmission (Infection Rate Change)

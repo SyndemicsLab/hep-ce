@@ -30,6 +30,7 @@ namespace Person {
     }
 
     void Person::updateBehavior(const BehaviorClassification bc) {
+        // nothing to do
         if (bc == this->behaviorClassification) {
             return;
         }
@@ -45,7 +46,8 @@ namespace Person {
             this->behaviorState.activeDrugUse = true;
             this->behaviorState.injectionDrugUse = false;
             break;
-        case BehaviorClassification::FORMER:
+        case BehaviorClassification::FORMER_NONINJECTION:
+        case BehaviorClassification::FORMER_INJECTION:
             this->behaviorState.activeDrugUse = false;
             break;
         }
@@ -58,9 +60,10 @@ namespace Person {
     }
 
     void Person::classifyBehavior() {
-        if (this->behaviorState.everUsedDrugs) {
-            if (this->behaviorState.activeDrugUse) {
-                if (this->behaviorState.injectionDrugUse) {
+        BehaviorState &bs = this->behaviorState;
+        if (bs.everUsedDrugs) {
+            if (bs.activeDrugUse) {
+                if (bs.injectionDrugUse) {
                     this->behaviorClassification =
                         BehaviorClassification::INJECTION;
                 } else {
@@ -68,7 +71,13 @@ namespace Person {
                         BehaviorClassification::NONINJECTION;
                 }
             } else {
-                this->behaviorClassification = BehaviorClassification::FORMER;
+                if (bs.injectionDrugUse) {
+                    this->behaviorClassification =
+                        BehaviorClassification::FORMER_INJECTION;
+                } else {
+                    this->behaviorClassification =
+                        BehaviorClassification::FORMER_NONINJECTION;
+                }
             }
         } else {
             this->behaviorClassification = BehaviorClassification::NEVER;

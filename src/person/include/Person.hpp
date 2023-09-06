@@ -32,14 +32,16 @@ namespace Person {
     enum class HEPCState { NONE, ACUTE, CHRONIC };
 
     /// @brief Usage Behavior Classification
-    /// @details There are four possible possible usage classifications:
+    /// @details There are five possible possible usage classifications:
     /// - No History of Opioid Use
-    /// - Former (Past) Opioid Use
+    /// - Former Non-injection Opioid Use
+    /// - Former Injection Opioid Use
     /// - Non-injection Opioid Use
     /// - Injection Opioid Use
     enum class BehaviorClassification {
         NEVER,
-        FORMER,
+        FORMER_NONINJECTION,
+        FORMER_INJECTION,
         NONINJECTION,
         INJECTION
     };
@@ -57,24 +59,12 @@ namespace Person {
     ///   the value of `injectionDrugUse`.
     ///   - When `activeDrugUse` is false, the person is in the Former Opioid
     ///   Use state.
-    ///
-    /// The complete truth table of Booleans to mapped behavior classifications
-    /// is provided below:
-    /// |`everUsedDrugs`|`injectionDrugUse`|`activeDrugUse`| Mapped State  |
-    /// |---------------|------------------|---------------|---------------|
-    /// |             0 |                0 |             0 | **NEVER**     |
-    /// |             1 |                0 |             0 | **FORMER**    |
-    /// |             0 |                1 |             0 | N/A           |
-    /// |             0 |                0 |             1 | N/A           |
-    /// |             1 |                1 |             0 | **FORMER**    |
-    /// |             1 |                0 |             1 | **NONINJECT** |
-    /// |             0 |                1 |             1 | N/A           |
-    /// |             1 |                1 |             1 | **INJECT**    |
     class BehaviorState {
     public:
         bool everUsedDrugs;
         bool injectionDrugUse;
         bool activeDrugUse;
+        // bool injectionHistory;
     };
 
     /// @brief Screening type that lead to Linkage
@@ -224,6 +214,12 @@ namespace Person {
         /// @return
         BehaviorClassification getBehaviorClassification() {
             return this->behaviorClassification;
+        }
+
+        /// @brief
+        /// @return
+        BehaviorState getBehaviorState() {
+            return this->behaviorState;
         }
 
         /// @brief

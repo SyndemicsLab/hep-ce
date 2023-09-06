@@ -108,3 +108,41 @@ TEST(PersonBehavior, BehaviorUpdate) {
     EXPECT_EQ(person.getBehaviorClassification(),
               Person::BehaviorClassification::NONINJECTION);
 }
+
+TEST(PersonBehavior, DefaultBehaviorState) {
+    Person::Person person;
+    const Person::BehaviorState &bs = person.getBehaviorState();
+    Person::BehaviorState ref = {false, false, false};
+    EXPECT_EQ(bs.everUsedDrugs, ref.everUsedDrugs);
+    EXPECT_EQ(bs.injectionDrugUse, ref.injectionDrugUse);
+    EXPECT_EQ(bs.activeDrugUse, ref.activeDrugUse);
+}
+
+TEST(PersonBehavior, UpdatedBehaviorState) {
+    Person::Person person;
+    const Person::BehaviorState &bs = person.getBehaviorState();
+    Person::BehaviorState never = {false, false, false};
+    EXPECT_EQ(bs.everUsedDrugs, never.everUsedDrugs);
+    EXPECT_EQ(bs.injectionDrugUse, never.injectionDrugUse);
+    EXPECT_EQ(bs.activeDrugUse, never.activeDrugUse);
+    person.updateBehavior(Person::BehaviorClassification::NONINJECTION);
+    const Person::BehaviorState &bs2 = person.getBehaviorState();
+    Person::BehaviorState ref = {true, false, true};
+    EXPECT_EQ(bs2.everUsedDrugs, ref.everUsedDrugs);
+    EXPECT_EQ(bs2.injectionDrugUse, ref.injectionDrugUse);
+    EXPECT_EQ(bs2.activeDrugUse, ref.activeDrugUse);
+}
+
+TEST(PersonBehavior, InvalidTransition) {
+    Person::Person person;
+    person.updateBehavior(Person::BehaviorClassification::NONINJECTION);
+    const Person::BehaviorState &bs = person.getBehaviorState();
+    Person::BehaviorState ref = {true, false, true};
+    EXPECT_EQ(bs.everUsedDrugs, ref.everUsedDrugs);
+    EXPECT_EQ(bs.injectionDrugUse, ref.injectionDrugUse);
+    EXPECT_EQ(bs.activeDrugUse, ref.activeDrugUse);
+    person.updateBehavior(Person::BehaviorClassification::NEVER);
+    EXPECT_EQ(bs.everUsedDrugs, ref.everUsedDrugs);
+    EXPECT_EQ(bs.injectionDrugUse, ref.injectionDrugUse);
+    EXPECT_EQ(bs.activeDrugUse, ref.activeDrugUse);
+}
