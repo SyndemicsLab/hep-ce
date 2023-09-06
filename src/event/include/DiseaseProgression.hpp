@@ -5,7 +5,6 @@
 #include "Person.hpp"
 
 namespace Event {
-
     class DiseaseProgression : public ProbEvent {
     private:
         void doEvent(Person::Person &person) override;
@@ -14,7 +13,5 @@ namespace Event {
         using ProbEvent::ProbEvent;
         virtual ~DiseaseProgression() = default;
     };
-
 } // namespace Event
-
 #endif

@@ -10,7 +10,7 @@ namespace Event {
         void doEvent(Person::Person &person) override;
 
     public:
-        BehaviorChanges(){};
+        using ProbEvent::ProbEvent;
         virtual ~BehaviorChanges() = default;
     };
 } // namespace Event

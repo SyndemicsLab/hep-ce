@@ -3,7 +3,7 @@
 namespace Event {
     void BehaviorChanges::doEvent(Person::Person &person) {
         // 1. Determine person's current behavior classification
-        // BehaviorClassification &bc = person.getBehaviorClassification();
+        Person::BehaviorClassification bc = person.getBehaviorClassification();
         // 2. Generate the transition probabilities based on the starting state
         // std::vector<double> probs = getTransitions(bc);
         // 3. Draw a behavior state to be transitioned to

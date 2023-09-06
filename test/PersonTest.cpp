@@ -100,4 +100,11 @@ TEST(PersonUnlink, UnableToUnlink) {
     EXPECT_EQ(person.getTimeLinkChange(), -1);
 }
 
-TEST(PersonUpdateBehavior, BehaviorUpdatedNormally) {}
+TEST(PersonBehavior, BehaviorUpdate) {
+    Person::Person person;
+    EXPECT_EQ(person.getBehaviorClassification(),
+              Person::BehaviorClassification::NEVER);
+    person.updateBehavior(Person::BehaviorClassification::NONINJECTION);
+    EXPECT_EQ(person.getBehaviorClassification(),
+              Person::BehaviorClassification::NONINJECTION);
+}
