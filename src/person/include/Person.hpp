@@ -21,7 +21,7 @@
 #include <cstdint>
 #include <string>
 
-/// @brief Namespace containing all code pertaining to a Person
+/// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
     /// @brief Classification of Liver Disease Stage
     /// @details HCV infection causes liver fibrosis and cirrhosis and increases
