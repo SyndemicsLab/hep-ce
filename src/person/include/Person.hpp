@@ -48,28 +48,6 @@ namespace Person {
         INJECTION
     };
 
-    /// @brief Drug Usage Status
-    /// @details Behavior states represent the drug usage state of a person.
-    /// Each of the usage classifications is represented in combinations of the
-    /// three boolean variables.
-    /// - `everUsedDrugs` is false only if a person has no history of opioid
-    /// use.
-    /// - `injectionDrugUse` and `activeDrugUse` are able to be flipped between
-    /// true and false.
-    ///   - When `activeDrugUse` is true, the person is in either the
-    ///   Non-injection Opioid Use or the Injection Opioid Use state, based on
-    ///   the value of `injectionDrugUse`.
-    ///   - When `activeDrugUse` is false, the person is in the Former Opioid
-    ///   Use state.
-    class BehaviorState {
-    public:
-        bool everUsedDrugs;
-        bool injectionDrugUse;
-        bool activeDrugUse;
-        // injection history may play a role at some point
-        // bool injectionHistory;
-    };
-
     /// @brief Screening type that lead to Linkage
     enum class LinkageType { BACKGROUND, INTERVENTION };
 
@@ -103,7 +81,6 @@ namespace Person {
         InfectionStatus infectionStatus;
 
         bool isAlive = true;
-        BehaviorState behaviorState;
         BehaviorClassification behaviorClassification;
 
         /// @brief Attributes describing Linkage
@@ -118,7 +95,7 @@ namespace Person {
     public:
         double age = 0;
 
-        Person();
+        Person(){};
         virtual ~Person() = default;
 
         /// @brief End a Person's life and set final age
@@ -135,11 +112,6 @@ namespace Person {
         /// @brief Update Opioid Use Behavior Classification
         /// @param bc The intended resultant BehaviorClassification
         void updateBehavior(const BehaviorClassification &bc);
-
-        /// @brief Classify the behavior of a person based on their
-        /// BehaviorState
-        /// @details A utility function for initializing the Person object.
-        void classifyBehavior();
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
@@ -221,10 +193,6 @@ namespace Person {
         BehaviorClassification getBehaviorClassification() {
             return this->behaviorClassification;
         }
-
-        /// @brief
-        /// @return
-        BehaviorState getBehaviorState() { return this->behaviorState; }
 
         /// @brief
         /// @return

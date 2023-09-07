@@ -16,8 +16,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
 #include "Simulation.hpp"
+#include <gtest/gtest.h>
 
 TEST(SimulationCreation, DefaultConstructor) {
     Simulation *sim = new Simulation();
