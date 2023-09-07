@@ -57,7 +57,7 @@ namespace Person {
     /// @brief class describing a Person
     class Person {
     private:
-        int id;
+        int id = count;
 
         // -1 if never screened, otherwise [0, currentTimestep-1)
         int timeSinceLastScreening = -1;
@@ -81,7 +81,8 @@ namespace Person {
         InfectionStatus infectionStatus;
 
         bool isAlive = true;
-        BehaviorClassification behaviorClassification;
+        BehaviorClassification behaviorClassification =
+            BehaviorClassification::NEVER;
 
         /// @brief Attributes describing Linkage
         struct LinkageDetails {
@@ -94,9 +95,10 @@ namespace Person {
 
     public:
         double age = 0;
+        static int count;
 
-        Person(){};
-        virtual ~Person() = default;
+        Person() { count++; }
+        virtual ~Person() { count--; }
 
         /// @brief End a Person's life and set final age
         void die();
@@ -227,6 +229,9 @@ namespace Person {
         /// @brief
         /// @return
         LinkageType getLinkageType() { return this->linkStatus.linkType; }
+
+        /// @brief Get the person's numeric ID
+        int getID() { return this->id; }
     };
 } // namespace Person
 #endif

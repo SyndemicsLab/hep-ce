@@ -1,6 +1,8 @@
 #include "Person.hpp"
 
 namespace Person {
+    int Person::count = 0;
+
     void Person::die() { this->isAlive = false; }
 
     void Person::grow() {
@@ -34,8 +36,9 @@ namespace Person {
     }
 
     void Person::updateBehavior(const BehaviorClassification &bc) {
-        // nothing to do
-        if (bc == this->behaviorClassification) {
+        // nothing to do -- cannot go back to NEVER
+        if (bc == this->behaviorClassification ||
+            bc == BehaviorClassification::NEVER) {
             return;
         }
         // update the behavior classification

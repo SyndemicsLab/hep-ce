@@ -1,4 +1,5 @@
 #include "BehaviorChanges.hpp"
+#include "Person.hpp"
 #include "Simulation.hpp"
 
 int main(int argc, char *argv[]) {

@@ -17,6 +17,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
+#include <vector>
 
 #include "Person.hpp"
 
@@ -24,6 +25,20 @@ TEST(PersonCreation, DefaultConstructor) {
     Person::Person *person = new Person::Person();
     EXPECT_TRUE(person);
     delete (person);
+}
+
+TEST(PersonCreation, PersonCountID) {
+    std::vector<Person::Person *> population;
+    for (int i = 0; i < 10; ++i) {
+        population.push_back(new Person::Person());
+    }
+    EXPECT_EQ(Person::Person::count, 10);
+    for (int i = 0; i < 10; ++i) {
+        EXPECT_EQ(population[i]->getID(), i);
+    }
+    for (auto &person : population) {
+        delete (person);
+    }
 }
 
 TEST(PersonDeath, DieFunction) {
