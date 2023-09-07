@@ -6,6 +6,7 @@ include_directories(mocks)
 
 add_executable(test
   PersonTest.cpp
+  SimTest.cpp
 )
 
 target_include_directories(test INTERFACE
@@ -18,6 +19,7 @@ target_link_libraries(test
   GTest::gmock
   GTest::gmock_main
   person
+  simulation
 )
 
 gtest_discover_tests(test)

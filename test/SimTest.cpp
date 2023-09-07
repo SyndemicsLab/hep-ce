@@ -1,4 +1,4 @@
-//===-- Death.hpp - Instruction class definition -------*- C++ -*-===//
+//===-- SimTest.cpp - Instruction class definition -------*- C++ -*-===//
 //
 // Part of the RESPOND - Researching Effective Strategies to Prevent Opioid
 // Death Project, under the AGPLv3 License. See https://www.gnu.org/licenses/
@@ -11,25 +11,16 @@
 /// This file contains the declaration of the Instruction class, which is the
 /// base class for all of the VM instructions.
 ///
-/// Created Date: Tuesday, August 15th 2023, 1:57:16 pm
+/// Created Date: Tuesday, August 15th 2023, 8:42:56 am
 /// Contact: Benjamin.Linas@bmc.org
 ///
 //===----------------------------------------------------------------------===//
-#ifndef EVENT_DEATH_HPP_
-#define EVENT_DEATH_HPP_
 
-#include "Event.hpp"
+#include <gtest/gtest.h>
+#include "Simulation.hpp"
 
-namespace Event {
-    class Death : public Event {
-    private:
-        void doEvent(Person::Person &person) override;
-        void die(Person::Person &person);
-
-    public:
-        Death(){};
-        virtual ~Death() = default;
-    };
-} // namespace Event
-
-#endif
+TEST(SimulationCreation, DefaultConstructor) {
+    Simulation *sim = new Simulation();
+    EXPECT_TRUE(sim);
+    delete (sim);
+}

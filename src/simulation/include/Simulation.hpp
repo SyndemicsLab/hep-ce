@@ -99,6 +99,11 @@ public:
     /// @brief
     /// @return
     std::vector<Person::Person> run();
+
+    /// @brief Access the random number generator, for events that need to
+    /// sample the pRNG
+    /// @return Reference to the simulation's pseudorandom number generator
+    std::mt19937_64 &getGenerator() { return generator; }
 };
 
 #endif

@@ -18,8 +18,8 @@ Components of this event category are
 - [ ] Birth
 - [X] Aging
 - [ ] Opioid Drug Use Behavior
-- [ ] HCV Infection
-- [ ] HCV Progression (if already infected)
+- [x] HCV Infection
+- [x] HCV Progression (if already infected)
 
 ### Clinical Events
 Clinical events are those within the healthcare setting, namely screening (testing), linkage, and treatment.
