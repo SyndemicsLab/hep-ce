@@ -6,9 +6,11 @@ namespace Event {
         Person::LiverState ls = person.getLiverState();
         // 2. Get the transition probabilities from that state
         // std::vector<double> probs = someFunction(ls);
+        std::vector<double> probs = { 0.2, 0.2, 0.2, 0.2, 0.2};
         // 3. Randomly draw the state to transition to
-        // Person::Liverstate toLS =
-        //     (Person::Liverstate)this->getDecision(probs);
+        Person::LiverState toLS =
+            (Person::LiverState)this->getDecision(probs);
         // 4. Transition to the new state
+        person.updateLiver(toLS);
     }
 } // namespace Event

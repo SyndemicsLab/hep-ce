@@ -26,6 +26,8 @@ namespace Person {
     /// @brief Classification of Liver Disease Stage
     /// @details HCV infection causes liver fibrosis and cirrhosis and increases
     /// the risk of development of hepatocellular carcinoma (HCC).
+    /// These states strictly increase, with the possibility of progressing to
+    /// HCC being possible at any time from stage F3 and higher.
     enum class LiverState { NONE, F0, F1, F2, F3, F4, DECOMP, EHCC, LHCC };
 
     /// @brief HEP-C Infection States
@@ -64,6 +66,7 @@ namespace Person {
         bool everUsedDrugs;
         bool injectionDrugUse;
         bool activeDrugUse;
+        // injection history may play a role at some point
         // bool injectionHistory;
     };
 
@@ -127,12 +130,15 @@ namespace Person {
         /// @brief Infect the person
         void infect();
 
+        void updateLiver(const LiverState &ls);
+
         /// @brief Update Opioid Use Behavior Classification
         /// @param bc The intended resultant BehaviorClassification
-        void updateBehavior(const BehaviorClassification bc);
+        void updateBehavior(const BehaviorClassification &bc);
 
         /// @brief Classify the behavior of a person based on their
         /// BehaviorState
+        /// @details A utility function for initializing the Person object.
         void classifyBehavior();
 
         /// @brief Diagnose somebody's fibrosis
@@ -218,9 +224,7 @@ namespace Person {
 
         /// @brief
         /// @return
-        BehaviorState getBehaviorState() {
-            return this->behaviorState;
-        }
+        BehaviorState getBehaviorState() { return this->behaviorState; }
 
         /// @brief
         /// @return

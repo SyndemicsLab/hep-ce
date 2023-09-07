@@ -10,8 +10,6 @@ namespace Data {
         }
     }
 
-    Database::~Database() { sqlite3_close(this->db); }
-
     SQLTable Database::readTable(std::string query) {
         SQLTable toReturn;
 

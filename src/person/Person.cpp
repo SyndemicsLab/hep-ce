@@ -29,7 +29,16 @@ namespace Person {
         this->infectionStatus.timeSinceLiverStateChange = 0;
     }
 
-    void Person::updateBehavior(const BehaviorClassification bc) {
+    void Person::updateLiver(const LiverState &ls) {
+        // nothing to do -- can only advance liver state
+        if (ls <= this->infectionStatus.liverState) {
+            return;
+        }
+        this->infectionStatus.liverState = ls;
+        this->infectionStatus.timeSinceLiverStateChange = 0;
+    }
+
+    void Person::updateBehavior(const BehaviorClassification &bc) {
         // nothing to do
         if (bc == this->behaviorClassification) {
             return;
