@@ -1,5 +1,5 @@
 #include "Growth.hpp"
 
 namespace Event {
-    void Growth::doEvent(Person::Person &person) {}
+    void Growth::doEvent(std::shared_ptr<Person::Person> person) {}
 } // namespace Event

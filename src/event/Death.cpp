@@ -1,8 +1,8 @@
 #include "Death.hpp"
 
 namespace Event {
-    void Death::doEvent(Person::Person &person) {
-        if (person.age >= 1200) {
+    void Death::doEvent(std::shared_ptr<Person::Person> person) {
+        if (person->age >= 1200) {
             this->die(person);
         }
 
@@ -10,7 +10,7 @@ namespace Event {
         double backgroundMortality = 1.0;
     }
 
-    void Death::die(Person::Person &person) {
+    void Death::die(std::shared_ptr<Person::Person> person) {
         // do the death thing here
     }
 } // namespace Event

@@ -33,7 +33,7 @@ namespace Event {
         /* data */
         int voluntaryRelinkDuration = 1024; // we should set this
 
-        void doEvent(Person::Person &person) override;
+        void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
         using ProbEvent::ProbEvent;

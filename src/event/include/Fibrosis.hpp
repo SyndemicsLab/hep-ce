@@ -23,7 +23,7 @@
 namespace Event {
     class Fibrosis : public Event {
     private:
-        void doEvent(Person::Person &person) override;
+        void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
         Fibrosis(){};

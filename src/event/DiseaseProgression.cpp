@@ -1,9 +1,9 @@
 #include "DiseaseProgression.hpp"
 
 namespace Event {
-    void DiseaseProgression::doEvent(Person::Person &person) {
+    void DiseaseProgression::doEvent(std::shared_ptr<Person::Person> person) {
         // 1. Get current disease status
-        Person::LiverState ls = person.getLiverState();
+        Person::LiverState ls = person->getLiverState();
         // 2. Get the transition probabilities from that state
         // std::vector<double> probs = someFunction(ls);
         // currently using placeholders to test compiling
@@ -11,6 +11,6 @@ namespace Event {
         // 3. Randomly draw the state to transition to
         Person::LiverState toLS = (Person::LiverState)this->getDecision(probs);
         // 4. Transition to the new state
-        person.updateLiver(toLS);
+        person->updateLiver(toLS);
     }
 } // namespace Event

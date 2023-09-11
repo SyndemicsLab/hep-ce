@@ -23,6 +23,7 @@
 #include "Person.hpp"
 
 #include <cstdint>
+#include <memory>
 #include <random>
 #include <string>
 #include <vector>
@@ -32,7 +33,7 @@ class Simulation {
 private:
     uint32_t currentTimestep = 0;
     uint64_t seed;
-    std::vector<Person::Person> population;
+    std::vector<std::shared_ptr<Person::Person>> population;
     std::vector<std::shared_ptr<Event::Event>> events;
     std::mt19937_64 generator;
 
@@ -53,8 +54,9 @@ public:
     uint32_t duration;
 
     /// @brief
+    /// @param N
     /// @return
-    std::vector<Person::Person> createPopulation();
+    void createPopulation(const int N);
 
     /// @brief
     /// @return
@@ -62,7 +64,7 @@ public:
 
     /// @brief
     /// @param population
-    void loadPopulation(std::vector<Person::Person> population);
+    void loadPopulation(std::vector<std::shared_ptr<Person::Person>> &population);
 
     /// @brief
     /// @param person
@@ -90,7 +92,7 @@ public:
 
     /// @brief
     /// @return
-    std::vector<Person::Person> getPopulation();
+    std::vector<std::shared_ptr<Person::Person>> getPopulation();
 
     /// @brief
     /// @return
@@ -98,7 +100,7 @@ public:
 
     /// @brief
     /// @return
-    std::vector<Person::Person> run();
+    std::vector<std::shared_ptr<Person::Person>> run();
 
     /// @brief Access the random number generator, for events that need to
     /// sample the pRNG

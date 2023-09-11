@@ -34,7 +34,7 @@ namespace Event {
     class Event {
     private:
         int currentTimestep = -1;
-        virtual void doEvent(Person::Person &person) = 0;
+        virtual void doEvent(std::shared_ptr<Person::Person> person) = 0;
 
     public:
         Event(){};
@@ -49,11 +49,14 @@ namespace Event {
         /// @param  timestep integer containing the current timestep of the
         /// simulation
         /// @return The population vector after the event is executed
-        void execute(std::vector<Person::Person> &population, int timestep) {
+        void execute(std::vector<std::shared_ptr<Person::Person>> &population, int timestep) {
             this->currentTimestep = timestep;
-            std::for_each(std::execution::par, std::begin(population),
-                          std::end(population),
-                          [this](Person::Person &p) { this->doEvent(p); });
+            std::for_each(
+                std::execution::par,
+                std::begin(population),
+                std::end(population),
+                [this](std::shared_ptr<Person::Person> &p) { this->doEvent(p); }
+            );
         }
     };
 

@@ -1,9 +1,9 @@
 #include "Treatment.hpp"
 
 namespace Event {
-    void Treatment::doEvent(Person::Person &person) {
-        Person::LiverState personLiverState = person.getLiverState();
-        if (person.getHEPCState() == Person::HEPCState::NONE &&
+    void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
+        Person::LiverState personLiverState = person->getLiverState();
+        if (person->getHEPCState() == Person::HEPCState::NONE &&
             personLiverState == Person::LiverState::NONE) {
             return;
         }

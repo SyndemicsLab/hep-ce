@@ -20,9 +20,10 @@
 
 // PUBLIC METHODS
 
-std::vector<Person::Person> Simulation::createPopulation() {
-    this->loadPopulation(std::vector<Person::Person>());
-    return this->getPopulation();
+void Simulation::createPopulation(const int N) {
+    for (int i = 0; i < N; ++i) {
+        this->population.push_back(std::make_shared<Person::Person>());
+    }
 }
 
 std::vector<std::shared_ptr<Event::Event>> Simulation::createEvents() {
@@ -30,7 +31,9 @@ std::vector<std::shared_ptr<Event::Event>> Simulation::createEvents() {
     return this->getEvents();
 }
 
-void Simulation::loadPopulation(std::vector<Person::Person> population) {}
+void Simulation::loadPopulation(std::vector<std::shared_ptr<Person::Person>> &population) {
+    this->population = population;
+}
 
 void Simulation::addPerson(Person::Person person) {}
 
@@ -50,7 +53,7 @@ bool Simulation::addEventToBeginning(Event::Event &event) { return false; }
 
 bool Simulation::addEventAtIndex(Event::Event &event, int idx) { return false; }
 
-std::vector<Person::Person> Simulation::getPopulation() {
+std::vector<std::shared_ptr<Person::Person>> Simulation::getPopulation() {
     return this->population;
 }
 
@@ -58,7 +61,7 @@ std::vector<std::shared_ptr<Event::Event>> Simulation::getEvents() {
     return this->events;
 }
 
-std::vector<Person::Person> Simulation::run() {
+std::vector<std::shared_ptr<Person::Person>> Simulation::run() {
     while (this->currentTimestep < this->duration) {
         for (std::shared_ptr<Event::Event> event : this->events) {
             event->execute(this->population, this->currentTimestep);

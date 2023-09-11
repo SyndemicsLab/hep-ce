@@ -25,15 +25,15 @@ namespace Event {
               // ensure lookup scheme for stratified age/IDU
           };
 
-    void Screening::doEvent(Person::Person &person) {
+    void Screening::doEvent(std::shared_ptr<Person::Person> person) {
         double prob = 0.5;
-        if ((person.isInterventionScreened() &&
-             person.getScreeningFrequency() == -1 &&
-             person.getTimeSinceLastScreening() == -1) ||
-            (person.isInterventionScreened() &&
-             person.getScreeningFrequency() != -1 &&
-             person.getTimeSinceLastScreening() >
-                 person.getScreeningFrequency())) {
+        if ((person->isInterventionScreened() &&
+             person->getScreeningFrequency() == -1 &&
+             person->getTimeSinceLastScreening() == -1) ||
+            (person->isInterventionScreened() &&
+             person->getScreeningFrequency() != -1 &&
+             person->getTimeSinceLastScreening() >
+                 person->getScreeningFrequency())) {
             // time one-time screen or periodic screen
         } else {
             std::bernoulli_distribution backgroundProbability(prob);
@@ -48,8 +48,8 @@ namespace Event {
         }
     }
 
-    void Screening::backgroundScreen(Person::Person &person) {
-        person.markScreened();
+    void Screening::backgroundScreen(std::shared_ptr<Person::Person> person) {
+        person->markScreened();
 
         if (!this->antibodyTest(person) && !this->antibodyTest(person)) {
             return; // run two tests and if both are negative do nothing
@@ -57,19 +57,19 @@ namespace Event {
 
         // if either is positive then...
         if (this->rnaTest(person)) {
-            person.link(this->getCurrentTimestep(),
+            person->link(this->getCurrentTimestep(),
                         Person::LinkageType::BACKGROUND);
             // what else needs to happen during a link?
         }
 
-        person.unlink(this->getCurrentTimestep());
+        person->unlink(this->getCurrentTimestep());
     }
 
     /// @brief
     /// @param person
-    void Screening::interventionScreen(Person::Person &person) {
+    void Screening::interventionScreen(std::shared_ptr<Person::Person> person) {
         std::bernoulli_distribution testAcceptanceProbability(
-            this->acceptTestProbability[person.age]); // need to also add idu
+            this->acceptTestProbability[person->age]); // need to also add idu
                                                       // stratification
         this->generatorMutex.lock();
         int accepted = testAcceptanceProbability(this->generator);
@@ -78,24 +78,24 @@ namespace Event {
             return;
         }
 
-        person.markScreened();
+        person->markScreened();
         if (!this->antibodyTest(person) && !this->antibodyTest(person)) {
         }
         if (this->rnaTest(person)) {
-            person.link(this->getCurrentTimestep(),
+            person->link(this->getCurrentTimestep(),
                         Person::LinkageType::INTERVENTION);
             // what else needs to happen during a link?
         }
-        person.unlink(this->getCurrentTimestep());
+        person->unlink(this->getCurrentTimestep());
     }
 
     /// @brief
     /// @param person
     /// @return
-    bool Screening::antibodyTest(Person::Person &person) {
+    bool Screening::antibodyTest(std::shared_ptr<Person::Person> person) {
         double probability = 0.5;
-        if (person.getSeropositivity()) {
-            Person::HEPCState infectionStatus = person.getHEPCState();
+        if (person->getSeropositivity()) {
+            Person::HEPCState infectionStatus = person->getHEPCState();
             if (infectionStatus == Person::HEPCState::ACUTE ||
                 infectionStatus == Person::HEPCState::NONE) {
                 // probability = acute_sensitivity
@@ -112,9 +112,9 @@ namespace Event {
         return value;
     }
 
-    bool Screening::rnaTest(Person::Person &person) {
+    bool Screening::rnaTest(std::shared_ptr<Person::Person> person) {
         double probability = 0.5;
-        Person::HEPCState infectionStatus = person.getHEPCState();
+        Person::HEPCState infectionStatus = person->getHEPCState();
         if (infectionStatus == Person::HEPCState::ACUTE) {
             // probability = acute_sensitivity
         } else if (infectionStatus == Person::HEPCState::CHRONIC) {

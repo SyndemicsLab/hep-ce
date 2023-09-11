@@ -19,25 +19,25 @@ namespace Event {
 
         /// @brief
         /// @param person
-        void doEvent(Person::Person &person) override;
+        void doEvent(std::shared_ptr<Person::Person> person) override;
 
         /// @brief
         /// @param person
-        void backgroundScreen(Person::Person &person);
+        void backgroundScreen(std::shared_ptr<Person::Person> person);
 
         /// @brief
         /// @param person
-        void interventionScreen(Person::Person &person);
-
-        /// @brief
-        /// @param person
-        /// @return
-        bool antibodyTest(Person::Person &person);
+        void interventionScreen(std::shared_ptr<Person::Person> person);
 
         /// @brief
         /// @param person
         /// @return
-        bool rnaTest(Person::Person &person);
+        bool antibodyTest(std::shared_ptr<Person::Person> person);
+
+        /// @brief
+        /// @param person
+        /// @return
+        bool rnaTest(std::shared_ptr<Person::Person> person);
 
     public:
         Screening(std::mt19937_64 &generator, Data::Database &database);
