@@ -20,6 +20,7 @@
 #define EVENT_EVENT_HPP_
 
 #include "Person.hpp"
+#include "SQLite3.hpp"
 #include <algorithm>
 #include <execution>
 #include <mutex>
@@ -61,6 +62,7 @@ namespace Event {
     class ProbEvent : public Event {
     protected:
         std::mt19937_64 &generator;
+        Data::Database &db;
         std::mutex generatorMutex;
 
         /// @brief When making a decision with two or more choices, pick one
@@ -93,7 +95,8 @@ namespace Event {
         }
 
     public:
-        ProbEvent(std::mt19937_64 &generator) : generator(generator) {}
+        ProbEvent(std::mt19937_64 &generator, Data::Database &database)
+            : generator(generator), db(database) {}
         virtual ~ProbEvent() = default;
     };
 } // namespace Event

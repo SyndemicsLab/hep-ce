@@ -17,6 +17,7 @@
 //===----------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
+#include <memory>
 #include <vector>
 
 #include "Person.hpp"
@@ -28,16 +29,15 @@ TEST(PersonCreation, DefaultConstructor) {
 }
 
 TEST(PersonCreation, PersonCountID) {
-    std::vector<Person::Person *> population;
+    std::vector<std::shared_ptr<Person::Person>> population;
+    // check population count
     for (int i = 0; i < 10; ++i) {
-        population.push_back(new Person::Person());
+        population.push_back(std::make_shared<Person::Person>());
     }
-    EXPECT_EQ(Person::Person::count, 10);
+    EXPECT_EQ(Person::count, 10);
+    // check individual person IDs
     for (int i = 0; i < 10; ++i) {
         EXPECT_EQ(population[i]->getID(), i);
-    }
-    for (auto &person : population) {
-        delete (person);
     }
 }
 

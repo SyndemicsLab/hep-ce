@@ -2,7 +2,7 @@
 #define EVENT_SCREENING_HPP_
 
 #include "Event.hpp"
-#include "sqlite3.h"
+#include "SQLite3.hpp"
 
 #include <algorithm>
 #include <execution>
@@ -16,7 +16,6 @@ namespace Event {
         std::vector<double> backgroundProbability;
         std::vector<double> interventionProbability;
         std::vector<double> acceptTestProbability;
-        sqlite3 *db;
 
         /// @brief
         /// @param person
@@ -41,7 +40,7 @@ namespace Event {
         bool rnaTest(Person::Person &person);
 
     public:
-        Screening(std::mt19937_64 &generator);
+        Screening(std::mt19937_64 &generator, Data::Database &database);
         virtual ~Screening() = default;
     };
 

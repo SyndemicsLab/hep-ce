@@ -1,8 +1,6 @@
 #include "Person.hpp"
 
 namespace Person {
-    int Person::count = 0;
-
     void Person::die() { this->isAlive = false; }
 
     void Person::grow() {

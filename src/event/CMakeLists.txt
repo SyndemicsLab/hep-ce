@@ -23,4 +23,5 @@ target_include_directories(event PUBLIC ${EVENT_INCLUDES})
 target_link_libraries(event
     person
     libs
+    data
 )

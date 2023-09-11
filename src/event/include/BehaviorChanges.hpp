@@ -3,11 +3,14 @@
 
 #include "Event.hpp"
 #include "Person.hpp"
+#include <string>
+#include <vector>
 
 namespace Event {
     class BehaviorChanges : public ProbEvent {
     private:
         void doEvent(Person::Person &person) override;
+        std::vector<double> getTransitions(Person::Person &person);
 
     public:
         using ProbEvent::ProbEvent;
