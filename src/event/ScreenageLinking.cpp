@@ -30,7 +30,7 @@ namespace Event {
         if (value) {
             // need to figure out how to pass in the LinkageType to the event
             person->link(this->getCurrentTimestep(),
-                        Person::LinkageType::BACKGROUND);
+                         Person::LinkageType::BACKGROUND);
         } else if (!value &&
                    person->getLinkState() == Person::LinkageState::LINKED) {
             person->unlink(this->getCurrentTimestep());

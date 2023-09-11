@@ -10,7 +10,8 @@ namespace Event {
     class BehaviorChanges : public ProbEvent {
     private:
         void doEvent(std::shared_ptr<Person::Person> person) override;
-        std::vector<double> getTransitions(std::shared_ptr<Person::Person> person);
+        std::vector<double>
+        getTransitions(std::shared_ptr<Person::Person> person);
 
     public:
         using ProbEvent::ProbEvent;

@@ -19,7 +19,7 @@
 
 namespace Event {
     Screening::Screening(std::mt19937_64 &generator, Data::Database &database)
-        : ProbEvent(generator, database) {
+        : ProbEvent(generator, database){
               // QUERY backgroundProbability and interventionProbability Tables
               // Save to attributes
               // ensure lookup scheme for stratified age/IDU
@@ -58,7 +58,7 @@ namespace Event {
         // if either is positive then...
         if (this->rnaTest(person)) {
             person->link(this->getCurrentTimestep(),
-                        Person::LinkageType::BACKGROUND);
+                         Person::LinkageType::BACKGROUND);
             // what else needs to happen during a link?
         }
 
@@ -70,7 +70,7 @@ namespace Event {
     void Screening::interventionScreen(std::shared_ptr<Person::Person> person) {
         std::bernoulli_distribution testAcceptanceProbability(
             this->acceptTestProbability[person->age]); // need to also add idu
-                                                      // stratification
+                                                       // stratification
         this->generatorMutex.lock();
         int accepted = testAcceptanceProbability(this->generator);
         this->generatorMutex.unlock();
@@ -83,7 +83,7 @@ namespace Event {
         }
         if (this->rnaTest(person)) {
             person->link(this->getCurrentTimestep(),
-                        Person::LinkageType::INTERVENTION);
+                         Person::LinkageType::INTERVENTION);
             // what else needs to happen during a link?
         }
         person->unlink(this->getCurrentTimestep());

@@ -64,7 +64,8 @@ public:
 
     /// @brief
     /// @param population
-    void loadPopulation(std::vector<std::shared_ptr<Person::Person>> &population);
+    void
+    loadPopulation(std::vector<std::shared_ptr<Person::Person>> &population);
 
     /// @brief
     /// @param person

@@ -31,7 +31,8 @@ std::vector<std::shared_ptr<Event::Event>> Simulation::createEvents() {
     return this->getEvents();
 }
 
-void Simulation::loadPopulation(std::vector<std::shared_ptr<Person::Person>> &population) {
+void Simulation::loadPopulation(
+    std::vector<std::shared_ptr<Person::Person>> &population) {
     this->population = population;
 }
 
