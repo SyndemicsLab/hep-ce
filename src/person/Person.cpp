@@ -10,6 +10,7 @@ namespace Person {
     }
 
     void Person::infect() {
+        // cannot be multiply infected
         if (this->infectionStatus.hepcState != HEPCState::NONE) {
             return;
         }

@@ -25,6 +25,8 @@ namespace Event {
     class Infections : public ProbEvent {
     private:
         void doEvent(std::shared_ptr<Person::Person> person) override;
+        std::vector<double>
+        getInfectProb(std::shared_ptr<Person::Person> person);
 
     public:
         using ProbEvent::ProbEvent;
