@@ -108,5 +108,4 @@ public:
     /// @return Reference to the simulation's pseudorandom number generator
     std::mt19937_64 &getGenerator() { return generator; }
 };
-
 #endif

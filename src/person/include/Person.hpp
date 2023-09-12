@@ -24,7 +24,7 @@
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
     /// @brief A running count of the number of people in the simulation
-    static int count = 0;
+    extern int count;
 
     /// @brief Classification of Liver Disease Stage
     /// @details HCV infection causes liver fibrosis and cirrhosis and increases

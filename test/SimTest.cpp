@@ -16,6 +16,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "Person.hpp"
 #include "Simulation.hpp"
 #include <gtest/gtest.h>
 
@@ -23,4 +24,16 @@ TEST(SimulationCreation, DefaultConstructor) {
     Simulation *sim = new Simulation();
     EXPECT_TRUE(sim);
     delete (sim);
+}
+
+TEST(SimulationPopulation, CreatePopulation) {
+    Simulation sim;
+    int N = 10;
+    sim.createPopulation(N);
+
+    // the population size should match the arg passed to createPopulation
+    const std::vector<std::shared_ptr<Person::Person>> population =
+        sim.getPopulation();
+    EXPECT_EQ(population.size(), N);
+    EXPECT_EQ(Person::count, N);
 }
