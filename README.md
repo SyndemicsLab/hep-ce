@@ -1,4 +1,6 @@
 # HEP-CE Simulation
+`HEP-CE` (HEPatitis c Cost Effectiveness) is a health economics Markov Chain Monte Carlo micro-simulation model focused on studying the syndemic of opioid use disorder (OUD) and the hepatitis C virus (HCV).
+
 ## Model Flow Structure
 At the top level, the model will be broken down into three categories of events:
 
@@ -17,8 +19,8 @@ Components of this event category are
 - [ ] Creation
 - [ ] Birth
 - [X] Aging
-- [ ] Opioid Drug Use Behavior
-- [x] HCV Infection
+- [x] Opioid Drug Use Behavior
+- [ ] HCV Infection
 - [x] HCV Progression (if already infected)
 
 ### Clinical Events

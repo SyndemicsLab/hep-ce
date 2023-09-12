@@ -51,7 +51,7 @@ TEST(PersonDeath, DieFunction) {
 TEST(PersonGrowth, GrowNormally) {
     Person::Person person;
     person.grow();
-    EXPECT_EQ(person.age, 1);
+    EXPECT_EQ(person.age, 1.0);
 }
 
 TEST(PersonGrowth, DeathAge) {
@@ -120,8 +120,34 @@ TEST(PersonBehavior, BehaviorUpdate) {
     // newly-generated person starts in the NEVER state
     EXPECT_EQ(person.getBehaviorClassification(),
               Person::BehaviorClassification::NEVER);
-    // change to the noninjection opioid usage state
+    // change to the NONINJECTION opioid usage state
     person.updateBehavior(Person::BehaviorClassification::NONINJECTION);
     EXPECT_EQ(person.getBehaviorClassification(),
               Person::BehaviorClassification::NONINJECTION);
+}
+
+TEST(PersonBehavior, InvalidTransition) {
+    Person::Person person;
+    person.updateBehavior(Person::BehaviorClassification::NONINJECTION);
+    // cannot transition back to NEVER
+    person.updateBehavior(Person::BehaviorClassification::NEVER);
+    EXPECT_EQ(person.getBehaviorClassification(),
+              Person::BehaviorClassification::NONINJECTION);
+}
+
+TEST(PersonLiver, LiverUpdate) {
+    Person::Person person;
+    // people start in the NONE state
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::NONE);
+    // change to a higher disease state
+    person.updateLiver(Person::LiverState::F4);
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::F4);
+}
+
+TEST(PersonLiver, InvalidTransition) {
+    Person::Person person;
+    person.updateLiver(Person::LiverState::F4);
+    // cannot transition to a lower disease state
+    person.updateLiver(Person::LiverState::F3);
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::F4);
 }

@@ -23,7 +23,7 @@
 
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
-    // @brief A running count of the number of people in the simulation
+    /// @brief A running count of the number of people in the simulation
     static int count = 0;
 
     /// @brief Classification of Liver Disease Stage
@@ -145,7 +145,7 @@ namespace Person {
 
         /// @brief
         /// @param timestep
-        void unlink(int timestep) {
+        void unlink(const int timestep) {
             if (this->linkStatus.linkState == LinkageState::LINKED) {
                 this->linkStatus.linkState = LinkageState::UNLINKED;
                 this->linkStatus.timeLinkChange = timestep;
