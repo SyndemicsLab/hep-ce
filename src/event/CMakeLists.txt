@@ -5,6 +5,7 @@ set (CMAKE_CXX_STANDARD 20)
 add_library(event
     Aging.cpp
     BehaviorChanges.cpp
+    Clearance.cpp
     Death.cpp
     DiseaseProgression.cpp
     Fibrosis.cpp

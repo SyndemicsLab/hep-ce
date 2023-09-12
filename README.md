@@ -16,12 +16,11 @@ Person-level events are events external to the healthcare setting that can impac
 
 Components of this event category are
 
-- [ ] Creation
-- [ ] Birth
 - [X] Aging
 - [x] Opioid Drug Use Behavior
-- [ ] HCV Infection
+- [x] HCV Infection
 - [x] HCV Progression (if already infected)
+- [ ] HCV Clearance
 
 ### Clinical Events
 Clinical events are those within the healthcare setting, namely screening (testing), linkage, and treatment.
