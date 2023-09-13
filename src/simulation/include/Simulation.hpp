@@ -91,11 +91,15 @@ public:
 
     /// @brief Retrieve the Population Vector from the Simulation
     /// @return List of People in the Simulation
-    std::vector<std::shared_ptr<Person::Person>> getPopulation();
+    std::vector<std::shared_ptr<Person::Person>> getPopulation() {
+        return this->population;
+    }
 
     /// @brief Retrieve the Events in the Simulation
     /// @return List of Events in the Simulation
-    std::vector<std::shared_ptr<Event::Event>> getEvents();
+    std::vector<std::shared_ptr<Event::Event>> getEvents() {
+        return this->events;
+    }
 
     /// @brief Execute the Simulation
     /// @return The Final State of the entire Population
