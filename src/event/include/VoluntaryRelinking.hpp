@@ -28,17 +28,15 @@
 
 namespace Event {
 
-    class VoluntaryRelinking : public Event {
+    class VoluntaryRelinking : public ProbEvent {
     private:
         /* data */
-        std::mt19937_64 &generator;
-        std::mutex generatorMutex;
         int voluntaryRelinkDuration = 1024; // we should set this
 
-        void doEvent(Person::Person &person) override;
+        void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
-        VoluntaryRelinking(std::mt19937_64 &generator) : generator(generator){};
+        using ProbEvent::ProbEvent;
         virtual ~VoluntaryRelinking() = default;
 
         void setVoluntaryRelinkDuration(int duration) {

@@ -17,6 +17,8 @@
 //===----------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
+#include <memory>
+#include <vector>
 
 #include "Person.hpp"
 
@@ -24,6 +26,19 @@ TEST(PersonCreation, DefaultConstructor) {
     Person::Person *person = new Person::Person();
     EXPECT_TRUE(person);
     delete (person);
+}
+
+TEST(PersonCreation, PersonCountID) {
+    std::vector<std::shared_ptr<Person::Person>> population;
+    // check population count
+    for (int i = 0; i < 10; ++i) {
+        population.push_back(std::make_shared<Person::Person>());
+    }
+    EXPECT_EQ(Person::count, 10);
+    // check individual person IDs
+    for (int i = 0; i < 10; ++i) {
+        EXPECT_EQ(population[i]->getID(), i);
+    }
 }
 
 TEST(PersonDeath, DieFunction) {
@@ -36,7 +51,7 @@ TEST(PersonDeath, DieFunction) {
 TEST(PersonGrowth, GrowNormally) {
     Person::Person person;
     person.grow();
-    EXPECT_EQ(person.age, 1);
+    EXPECT_EQ(person.age, 1.0);
 }
 
 TEST(PersonGrowth, DeathAge) {
@@ -53,8 +68,8 @@ TEST(PersonInfect, InfectNormally) {
     EXPECT_EQ(person.getTimeSinceHEPCStateChange(), 0);
     EXPECT_TRUE(person.getSeropositivity());
 
-    EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::NONE);
-    EXPECT_EQ(person.getTimeSinceFibrosisStateChange(), 0);
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::NONE);
+    EXPECT_EQ(person.getTimeSinceLiverStateChange(), 0);
 }
 
 TEST(PersonInfect, ResistMultiHCVInfect) {
@@ -68,10 +83,10 @@ TEST(PersonInfect, ResistMultiHCVInfect) {
 
 TEST(PersonInfect, ResistMultiFibrosisInfect) {
     Person::Person person;
-    person.diagnoseFibrosis(5);
+    person.diagnoseLiver(5);
     person.infect();
     EXPECT_EQ(person.getHEPCState(), Person::HEPCState::ACUTE);
-    EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::F0);
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::F0);
 }
 
 TEST(PersonLink, LinkNormally) {
@@ -100,4 +115,39 @@ TEST(PersonUnlink, UnableToUnlink) {
     EXPECT_EQ(person.getTimeLinkChange(), -1);
 }
 
-TEST(PersonUpdateBehavior, BehaviorUpdatedNormally) {}
+TEST(PersonBehavior, BehaviorUpdate) {
+    Person::Person person;
+    // newly-generated person starts in the NEVER state
+    EXPECT_EQ(person.getBehaviorClassification(),
+              Person::BehaviorClassification::NEVER);
+    // change to the NONINJECTION opioid usage state
+    person.updateBehavior(Person::BehaviorClassification::NONINJECTION);
+    EXPECT_EQ(person.getBehaviorClassification(),
+              Person::BehaviorClassification::NONINJECTION);
+}
+
+TEST(PersonBehavior, InvalidTransition) {
+    Person::Person person;
+    person.updateBehavior(Person::BehaviorClassification::NONINJECTION);
+    // cannot transition back to NEVER
+    person.updateBehavior(Person::BehaviorClassification::NEVER);
+    EXPECT_EQ(person.getBehaviorClassification(),
+              Person::BehaviorClassification::NONINJECTION);
+}
+
+TEST(PersonLiver, LiverUpdate) {
+    Person::Person person;
+    // people start in the NONE state
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::NONE);
+    // change to a higher disease state
+    person.updateLiver(Person::LiverState::F4);
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::F4);
+}
+
+TEST(PersonLiver, InvalidTransition) {
+    Person::Person person;
+    person.updateLiver(Person::LiverState::F4);
+    // cannot transition to a lower disease state
+    person.updateLiver(Person::LiverState::F3);
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::F4);
+}

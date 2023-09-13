@@ -19,7 +19,7 @@
 #include "VoluntaryRelinking.hpp"
 
 namespace Event {
-    void VoluntaryRelinking::doEvent(Person::Person &person) {
+    void VoluntaryRelinking::doEvent(std::shared_ptr<Person::Person> person) {
         double relinkProbability = 0.5; // Need to read this from a parameter
 
         std::bernoulli_distribution backgroundProbability(relinkProbability);
@@ -27,8 +27,8 @@ namespace Event {
         int relink = backgroundProbability(this->generator);
         this->generatorMutex.unlock();
 
-        if (person.getLinkState() != Person::LinkageState::UNLINKED ||
-            (this->getCurrentTimestep() - person.getTimeLinkChange()) >
+        if (person->getLinkState() != Person::LinkageState::UNLINKED ||
+            (this->getCurrentTimestep() - person->getTimeLinkChange()) >
                 this->voluntaryRelinkDuration ||
             !relink) {
             return; // if linked or never linked OR too long since last linked

@@ -21,17 +21,15 @@
 #include "Event.hpp"
 
 namespace Event {
-
     class Death : public Event {
     private:
-        void doEvent(Person::Person &person) override;
-        void die(Person::Person &person);
+        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void die(std::shared_ptr<Person::Person> person);
 
     public:
         Death(){};
         virtual ~Death() = default;
     };
-
 } // namespace Event
 
 #endif

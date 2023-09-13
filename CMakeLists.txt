@@ -18,5 +18,4 @@ if (BUILD_TESTS)
   add_subdirectory(test)
 endif()
 
-target_compile_definitions(src PRIVATE CMAKE_EXPORT_COMPILE_COMMANDS=1)
-
+target_compile_definitions(hepce PRIVATE CMAKE_EXPORT_COMPILE_COMMANDS=1)

@@ -1,17 +1,16 @@
-#ifndef EVENT_DISEASEPROGRESSION_HPP_
-#define EVENT_DISEASEPROGRESSION_HPP_
-
+#ifndef EVENT_CLEARANCE_HPP_
+#define EVENT_CLEARANCE_HPP_
 #include "Event.hpp"
 #include "Person.hpp"
 
 namespace Event {
-    class DiseaseProgression : public ProbEvent {
+    class Clearance : public ProbEvent {
     private:
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
         using ProbEvent::ProbEvent;
-        virtual ~DiseaseProgression() = default;
+        virtual ~Clearance() = default;
     };
 } // namespace Event
-#endif
+#endif // EVENT_CLEARANCE_HPP_

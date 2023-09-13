@@ -1,6 +1,8 @@
 #include "Person.hpp"
 
 namespace Person {
+    int count = 0;
+
     void Person::die() { this->isAlive = false; }
 
     void Person::grow() {
@@ -10,6 +12,7 @@ namespace Person {
     }
 
     void Person::infect() {
+        // cannot be multiply infected
         if (this->infectionStatus.hepcState != HEPCState::NONE) {
             return;
         }
@@ -17,27 +20,36 @@ namespace Person {
         this->infectionStatus.timeSinceHEPCStateChange = 0;
         this->seropositivity = true;
 
-        if (this->infectionStatus.fibState != FibrosisState::NONE) {
+        if (this->infectionStatus.liverState != LiverState::NONE) {
             return;
         }
-        this->infectionStatus.fibState = FibrosisState::NONE;
-        this->infectionStatus.timeSinceFibStateChange = 0;
+        this->infectionStatus.liverState = LiverState::NONE;
+        this->infectionStatus.timeSinceLiverStateChange = 0;
     }
 
-    void Person::updateBehavior() {
-        if (this->behaviorState == BehaviorState::NEVER) {
-            this->behaviorState = BehaviorState::CURRENT;
-        } else if (this->behaviorState == BehaviorState::CURRENT) {
-            this->behaviorState = BehaviorState::FORMER;
-        } else {
-            this->behaviorState = BehaviorState::CURRENT;
+    void Person::updateLiver(const LiverState &ls) {
+        // nothing to do -- can only advance liver state
+        if (ls <= this->infectionStatus.liverState) {
+            return;
         }
+        this->infectionStatus.liverState = ls;
+        this->infectionStatus.timeSinceLiverStateChange = 0;
     }
 
-    FibrosisState Person::diagnoseFibrosis(int timestep) {
+    void Person::updateBehavior(const BehaviorClassification &bc) {
+        // nothing to do -- cannot go back to NEVER
+        if (bc == this->behaviorClassification ||
+            bc == BehaviorClassification::NEVER) {
+            return;
+        }
+        // update the behavior classification
+        this->behaviorClassification = bc;
+    }
+
+    LiverState Person::diagnoseLiver(int timestep) {
         // need to add functionality here
-        this->infectionStatus.fibState = FibrosisState::F0;
-        return this->infectionStatus.fibState;
+        this->infectionStatus.liverState = LiverState::F0;
+        return this->infectionStatus.liverState;
     }
 
     HEPCState Person::diagnoseHEPC(int timestep) {

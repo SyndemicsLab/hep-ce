@@ -1,6 +1,7 @@
-#+TITLE: HEP-CE Rewrite Notes
+# HEP-CE Simulation
+`HEP-CE` (HEPatitis c Cost Effectiveness) is a health economics Markov Chain Monte Carlo micro-simulation model focused on studying the syndemic of opioid use disorder (OUD) and the hepatitis C virus (HCV).
 
-* Model Flow Structure
+## Model Flow Structure
 At the top level, the model will be broken down into three categories of events:
 
 1. Person-Level Events
@@ -10,26 +11,26 @@ At the top level, the model will be broken down into three categories of events:
 Each person simulated in the model cohort iterates through these event categories in this order.
 Each of these categories themself contains discrete events, explained in detail below.
 
-** Person-Level Events
+### Person-Level Events
 Person-level events are events external to the healthcare setting that can impact the likelihood or severity of an HCV infection, such as injection drug use, age, or, if already infected, HCV progression.
 
 Components of this event category are
 
-- Creation/Birth/Aging
-- Injection Drug Use State Transitions
-- HCV Infection
-- HCV Progression (if already infected)
+- [X] Aging
+- [x] Opioid Drug Use Behavior
+- [x] HCV Infection
+- [x] HCV Progression (if already infected)
+- [ ] HCV Clearance
 
-** Clinical Events
+### Clinical Events
 Clinical events are those within the healthcare setting, namely screening (testing), linkage, and treatment.
 
-- Intervention Screening
-- Background Screening
-- Linkage
-- Relinkage
-- Treatment
+- [ ] Intervention Screening
+- [ ] Background Screening
+- [ ] Linkage
+- [ ] Relinkage
+- [ ] Treatment
 
-** Calculation Events
-
-- Cost
-- Transmission (Infection Rate Change)
+### Calculation Events
+- [ ] Cost
+- [ ] Transmission (Infection Rate Change)

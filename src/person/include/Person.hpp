@@ -21,17 +21,35 @@
 #include <cstdint>
 #include <string>
 
-/// @brief Namespace containing all code pertaining to a Person
+/// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
+    /// @brief A running count of the number of people in the simulation
+    extern int count;
 
-    /// @brief Fibrosis States
-    enum class FibrosisState { NONE, F0, F1, F2, F3, F4, DECOMP };
+    /// @brief Classification of Liver Disease Stage
+    /// @details HCV infection causes liver fibrosis and cirrhosis and increases
+    /// the risk of development of hepatocellular carcinoma (HCC).
+    /// These states strictly increase, with the possibility of progressing to
+    /// HCC being possible at any time from stage F3 and higher.
+    enum class LiverState { NONE, F0, F1, F2, F3, F4, DECOMP, EHCC, LHCC };
 
     /// @brief HEP-C Infection States
     enum class HEPCState { NONE, ACUTE, CHRONIC };
 
-    /// @brief Opioid Usage Status
-    enum class BehaviorState { NEVER, CURRENT, FORMER };
+    /// @brief Usage Behavior Classification
+    /// @details There are five possible possible usage classifications:
+    /// - No History of Opioid Use
+    /// - Former Non-injection Opioid Use
+    /// - Former Injection Opioid Use
+    /// - Non-injection Opioid Use
+    /// - Injection Opioid Use
+    enum class BehaviorClassification {
+        NEVER,
+        FORMER_NONINJECTION,
+        FORMER_INJECTION,
+        NONINJECTION,
+        INJECTION
+    };
 
     /// @brief Screening type that lead to Linkage
     enum class LinkageType { BACKGROUND, INTERVENTION };
@@ -42,10 +60,10 @@ namespace Person {
     /// @brief class describing a Person
     class Person {
     private:
-        int id;
+        int id = count;
 
-        int timeSinceLastScreening =
-            -1; // -1 if never screened, otherwise [0, currentTimestep-1)
+        // -1 if never screened, otherwise [0, currentTimestep-1)
+        int timeSinceLastScreening = -1;
         int screeningFrequency = -1; // -1 if screened only once and never again
         bool interventionScreening = false;
         bool seropositivity = false;
@@ -59,16 +77,15 @@ namespace Person {
 
         struct InfectionStatus {
             HEPCState hepcState = HEPCState::NONE;
-            FibrosisState fibState = FibrosisState::NONE;
+            LiverState liverState = LiverState::NONE;
             int timeSinceHEPCStateChange = 0;
-            int timeSinceFibStateChange = 0;
+            int timeSinceLiverStateChange = 0;
         };
         InfectionStatus infectionStatus;
 
-        // FibrosisState fibState = FibrosisState::NONE;
-        // HEPCState hepceState = HEPCState::NONE;
         bool isAlive = true;
-        BehaviorState behaviorState = BehaviorState::NEVER;
+        BehaviorClassification behaviorClassification =
+            BehaviorClassification::NEVER;
 
         /// @brief Attributes describing Linkage
         struct LinkageDetails {
@@ -82,8 +99,8 @@ namespace Person {
     public:
         double age = 0;
 
-        Person(){};
-        virtual ~Person() = default;
+        Person() { count++; }
+        virtual ~Person() { count--; }
 
         /// @brief End a Person's life and set final age
         void die();
@@ -94,12 +111,15 @@ namespace Person {
         /// @brief Infect the person
         void infect();
 
-        /// @brief Update Opioid use behavior
-        void updateBehavior();
+        void updateLiver(const LiverState &ls);
+
+        /// @brief Update Opioid Use Behavior Classification
+        /// @param bc The intended resultant BehaviorClassification
+        void updateBehavior(const BehaviorClassification &bc);
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
-        FibrosisState diagnoseFibrosis(int timestep);
+        LiverState diagnoseLiver(int timestep);
 
         /// @brief Dignose somebody with HEPC
         /// @return HEPC state that was diagnosed
@@ -125,7 +145,7 @@ namespace Person {
 
         /// @brief
         /// @param timestep
-        void unlink(int timestep) {
+        void unlink(const int timestep) {
             if (this->linkStatus.linkState == LinkageState::LINKED) {
                 this->linkStatus.linkState = LinkageState::UNLINKED;
                 this->linkStatus.timeLinkChange = timestep;
@@ -162,9 +182,7 @@ namespace Person {
 
         /// @brief
         /// @return
-        FibrosisState getFibrosisState() {
-            return this->infectionStatus.fibState;
-        }
+        LiverState getLiverState() { return this->infectionStatus.liverState; }
 
         /// @brief
         /// @return
@@ -176,7 +194,9 @@ namespace Person {
 
         /// @brief
         /// @return
-        BehaviorState getBehaviorState() { return this->behaviorState; }
+        BehaviorClassification getBehaviorClassification() {
+            return this->behaviorClassification;
+        }
 
         /// @brief
         /// @return
@@ -186,8 +206,8 @@ namespace Person {
 
         /// @brief
         /// @return
-        int getTimeSinceFibrosisStateChange() {
-            return this->infectionStatus.timeSinceFibStateChange;
+        int getTimeSinceLiverStateChange() {
+            return this->infectionStatus.timeSinceLiverStateChange;
         }
 
         /// @brief
@@ -211,7 +231,9 @@ namespace Person {
         /// @brief
         /// @return
         LinkageType getLinkageType() { return this->linkStatus.linkType; }
-    };
 
+        /// @brief Get the person's numeric ID
+        int getID() { return this->id; }
+    };
 } // namespace Person
 #endif

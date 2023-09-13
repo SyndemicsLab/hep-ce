@@ -8,7 +8,7 @@ namespace Event {
 
     class Treatment : public Event {
     private:
-        void doEvent(Person::Person &person) override;
+        void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
         Treatment(){};

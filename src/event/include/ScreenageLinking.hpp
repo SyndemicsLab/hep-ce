@@ -18,7 +18,7 @@ namespace Event {
         /// @brief Supporting function called from execute. Use to establish
         /// links
         /// @param person Individual Person working through the event
-        void doEvent(Person::Person &person) override;
+        void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
         ScreenageLinking(){};

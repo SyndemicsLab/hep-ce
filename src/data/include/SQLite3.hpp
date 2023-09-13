@@ -20,22 +20,27 @@
 #include <unordered_map>
 
 namespace Data {
+    /// @brief Object that stores the contents of a SQL table after it has been
+    /// queried.
     class SQLTable {
     public:
         SQLTable() {}
         ~SQLTable() { sqlite3_free_table(this->data); }
+
         int nRows;
         int nCols;
         char **data;
         std::string name;
     };
 
+    /// @brief Object that facilitates interfacing between the model and SQLite3
+    /// databases.
     class Database {
     public:
         /// @brief Constructor for the class that handles SQLite3 interfacing
-        /// @param database
+        /// @param database The path to a SQLite3 database
         Database(std::string database);
-        ~Database();
+        ~Database() { sqlite3_close(this->db); }
 
         /// @brief
         /// @param
