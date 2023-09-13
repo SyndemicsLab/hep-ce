@@ -19,6 +19,13 @@
 
 namespace Event {
     void DiseaseProgression::doEvent(std::shared_ptr<Person::Person> person) {
+        // can only progress in fibrosis state if actively infected with HCV
+        // for people in F3 or later, there is still a chance of HCC progression
+        if (person->getHEPCState() == Person::HEPCState::NONE) {
+            if (person->getLiverState() < Person::LiverState::F3) {
+                return;
+            }
+        }
         // 1. Get current disease status
         Person::LiverState ls = person->getLiverState();
         // 2. Get the transition probabilities from that state

@@ -12,24 +12,23 @@ int main(int argc, char *argv[]) {
     Simulation sim(0, 0);
     Data::Database db("HEP-CE.db");
 
-    std::vector<std::shared_ptr<Event::Event>> person;
-    std::shared_ptr<Event::Event> aging =
-        std::make_shared<Event::Aging>();
-    person.push_back(aging);
+    std::vector<std::shared_ptr<Event::Event>> personEvents;
+    std::shared_ptr<Event::Event> aging = std::make_shared<Event::Aging>();
+    personEvents.push_back(aging);
     std::shared_ptr<Event::Event> behavior =
         std::make_shared<Event::BehaviorChanges>(sim.getGenerator(), db);
-    person.push_back(behavior);
-    std::shared_ptr<Event::Event> disease =
-        std::make_shared<Event::DiseaseProgression>(sim.getGenerator(), db);
-    person.push_back(disease);
+    personEvents.push_back(behavior);
     std::shared_ptr<Event::Event> clearance =
         std::make_shared<Event::Clearance>(sim.getGenerator(), db);
-    person.push_back(clearance);
+    personEvents.push_back(clearance);
     std::shared_ptr<Event::Event> infection =
         std::make_shared<Event::Infections>(sim.getGenerator(), db);
-    person.push_back(infection);
+    personEvents.push_back(infection);
+    std::shared_ptr<Event::Event> disease =
+        std::make_shared<Event::DiseaseProgression>(sim.getGenerator(), db);
+    personEvents.push_back(disease);
 
-    sim.loadEvents(person);
+    sim.loadEvents(personEvents);
 
     return 0;
 }

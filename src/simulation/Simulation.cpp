@@ -35,7 +35,9 @@ void Simulation::loadPopulation(
     this->population = population;
 }
 
-void Simulation::addPerson(Person::Person person) {}
+void Simulation::addPerson(Person::Person person) {
+    this->population.push_back(std::make_shared<Person::Person>(person));
+}
 
 void Simulation::loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
     if (events.empty()) {
@@ -48,6 +50,8 @@ void Simulation::loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
 }
 
 bool Simulation::addEventToEnd(Event::Event &event) {
+    // TODO: determine how to handle when this fails
+    // will probably involve try...catch
     // this->events.push_back(event);
     return false;
 }

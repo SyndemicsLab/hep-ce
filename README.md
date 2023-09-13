@@ -39,6 +39,7 @@ Clinical events are those within the healthcare setting, namely screening (testi
 
 - [ ] Intervention Screening
 - [ ] Background Screening
+- [ ] HCC Screening
 - [ ] Linkage
 - [ ] Relinkage
 - [ ] Treatment

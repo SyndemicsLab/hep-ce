@@ -23,8 +23,18 @@ namespace Person {
         if (this->infectionStatus.liverState != LiverState::NONE) {
             return;
         }
-        this->infectionStatus.liverState = LiverState::NONE;
+        // once infected, immediately enter F0
+        this->infectionStatus.liverState = LiverState::F0;
         this->infectionStatus.timeSinceLiverStateChange = 0;
+    }
+
+    void Person::clearHCV() {
+        // cannot clear if the person is not infected
+        if (this->infectionStatus.hepcState == HEPCState::NONE) {
+            return;
+        }
+        this->infectionStatus.hepcState = HEPCState::NONE;
+        this->infectionStatus.timeSinceHEPCStateChange = 0;
     }
 
     void Person::updateLiver(const LiverState &ls) {

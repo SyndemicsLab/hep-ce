@@ -27,6 +27,7 @@ namespace Event {
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
+        std::vector<double> getClearanceProb();
 
     public:
         using ProbEvent::ProbEvent;
