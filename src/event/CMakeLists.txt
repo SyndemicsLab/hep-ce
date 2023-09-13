@@ -9,7 +9,6 @@ add_library(event
     Death.cpp
     DiseaseProgression.cpp
     Fibrosis.cpp
-    Growth.cpp
     Infections.cpp
     ScreenageLinking.cpp
     Screening.cpp

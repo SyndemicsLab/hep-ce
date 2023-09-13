@@ -1,3 +1,19 @@
+//===-------------------------------*- C++ -*------------------------------===//
+//-*-===//
+//
+// Part of the HEP-CE Simulation Module, under the AGPLv3 License. See
+// https://www.gnu.org/licenses/ for license information.
+// SPDX-License-Identifier: AGPLv3
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains the declaration of the ScreenageLinking Event Subclass.
+///
+/// Created Date: Tuesday, August 15th 2023, 8:50:56 am
+/// Contact: Benjamin.Linas@bmc.org
+///
+//===----------------------------------------------------------------------===//
 #ifndef EVENT_SCREENAGELINKING_HPP_
 #define EVENT_SCREENAGELINKING_HPP_
 
@@ -10,14 +26,14 @@
 #include <random>
 #include <vector>
 
+/// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
 
-    /// @brief Linking subclass used to link people to treatment
+    /// @brief Subclass of Event used to Link People to Treatment
     class ScreenageLinking : public Event {
     private:
-        /// @brief Supporting function called from execute. Use to establish
-        /// links
-        /// @param person Individual Person working through the event
+        /// @brief Implementation of Virtual Function doEvent
+        /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
