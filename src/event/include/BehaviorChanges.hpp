@@ -30,7 +30,7 @@ namespace Event {
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
         /// @brief Retrieve Transition Rates for Behavior Changes for the
-        /// individual Person from the SQL Table76034
+        /// individual Person from the SQL Table
         /// @param person Person whom to retrieve transition rates for
         /// @return Vector of Transition Rates for each Behavior State
         std::vector<double>
