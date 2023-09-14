@@ -28,5 +28,6 @@ namespace Event {
 
     void Death::die(std::shared_ptr<Person::Person> person) {
         // do the death thing here
+        person->die();
     }
 } // namespace Event

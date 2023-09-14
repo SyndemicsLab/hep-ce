@@ -22,6 +22,7 @@
 #include "Aging.hpp"
 #include "BehaviorChanges.hpp"
 #include "Clearance.hpp"
+#include "Death.hpp"
 #include "Person.hpp"
 #include "Simulation.hpp"
 
@@ -85,3 +86,14 @@ TEST_F(EventTest, BehaviorChange) {
 }
 
 TEST_F(EventTest, Clearance) {}
+
+TEST_F(EventTest, DeathByOldAge) {
+    Person::Person expectedPerson;
+    expectedPerson.die();
+    std::shared_ptr<Event::Death> deathEvent = std::make_shared<Event::Death>();
+    livingPopulation[0]->age = 1210;
+    deathEvent->execute(livingPopulation, 1);
+    EXPECT_EQ(expectedPerson.getIsAlive(), livingPopulation[0]->getIsAlive());
+}
+
+TEST_F(EventTest, DiseaseProgression) {}
