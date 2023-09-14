@@ -19,19 +19,11 @@
 #include <memory>
 #include <vector>
 
-<<<<<<< HEAD
 #include "AllEvents.hpp"
 #include "Simulation.hpp"
 #include "Utils.hpp"
-    =======
-#include "Aging.hpp"
-#include "BehaviorChanges.hpp"
-#include "Clearance.hpp"
-#include "Person.hpp"
-#include "Simulation.hpp"
-    >>>>>>> 14d18cb (Adding Behavior Changes Test)
 
-    class EventTest : public ::testing::Test {
+class EventTest : public ::testing::Test {
 protected:
     std::vector<std::shared_ptr<Person::Person>> livingPopulation;
     std::vector<std::shared_ptr<Person::Person>> deadPopulation;
