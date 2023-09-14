@@ -49,14 +49,13 @@ void Simulation::loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
     this->events = events;
 }
 
-bool Simulation::addEventToEnd(std::shared_ptr<Event::Event> event) {
-    // TODO: determine how to handle when this fails
-    // will probably involve try...catch
-    // this->events.push_back(event);
-    return false;
+void Simulation::addEventToEnd(std::shared_ptr<Event::Event> event) {
+    this->events.push_back(event);
 }
 
-bool Simulation::addEventToBeginning(Event::Event &event) { return false; }
+void Simulation::addEventToBeginning(std::shared_ptr<Event::Event> event) {
+    this->events.insert(this->events.begin(), event);
+}
 
 bool Simulation::addEventAtIndex(Event::Event &event, int idx) { return false; }
 

@@ -21,6 +21,7 @@ target_link_libraries(test
   GTest::gmock_main
   person
   simulation
+  data
 )
 
 gtest_discover_tests(test)

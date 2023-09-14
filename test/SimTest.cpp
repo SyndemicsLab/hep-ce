@@ -18,6 +18,7 @@
 #include "AllEvents.hpp"
 #include "Person.hpp"
 #include "Simulation.hpp"
+#include "SQLite3.hpp"
 #include <gtest/gtest.h>
 
 TEST(SimulationCreation, DefaultConstructor) {
@@ -30,6 +31,7 @@ class SimulationTest : public ::testing::Test {
 protected:
     Simulation sim;
     int N = 10;
+    Data::Database db = Data::Database("HEP-CE.db");
     void SetUp() override {
         sim.createPopulation(N);
     }
@@ -51,11 +53,24 @@ TEST_F(SimulationTest, AddPerson) {
     const std::vector<std::shared_ptr<Person::Person>> &population =
         sim.getPopulation();
 
+    // check that the population size increased
     EXPECT_EQ(population[N]->getID(), N);
     EXPECT_EQ(population.size(), N+1);
 }
 
 TEST_F(SimulationTest, AddEventToEnd) {
+    // events is initialized to empty
+    EXPECT_EQ(sim.getEvents().size(), 0);
+
     std::shared_ptr<Event::Event> event = std::make_shared<Event::Aging>();
-    EXPECT_FALSE(sim.addEventToEnd(event));
+    sim.addEventToEnd(event);
+    EXPECT_EQ(sim.getEvents().size(), 1);
+}
+
+TEST_F(SimulationTest, AddEventToBeginning) {
+    sim.addEventToBeginning(nullptr);
+
+    std::shared_ptr<Event::Event> event = std::make_shared<Event::BehaviorChanges>(sim.getGenerator(), db);
+    sim.addEventToBeginning(event);
+    EXPECT_EQ(sim.getEvents()[0], event);
 }
