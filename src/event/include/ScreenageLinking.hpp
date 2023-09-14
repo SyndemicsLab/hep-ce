@@ -18,13 +18,6 @@
 #define EVENT_SCREENAGELINKING_HPP_
 
 #include "Event.hpp"
-#include "sqlite3.h"
-
-#include <algorithm>
-#include <execution>
-#include <mutex>
-#include <random>
-#include <vector>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {

@@ -21,13 +21,14 @@
 
 #include <string>
 
-/// @brief Namespace holding Data manipulation classes
+/// @brief Namespace containing the Data objects belonging to the Simulation
 namespace Data {
 
     /// @brief Main class for manipulating Data Files. Does not inlcude SQL DBs
     class Data {
     private:
-        std::string dataString;
+        /// @brief String of data pulled from a CSV file
+        std::string dataString = "";
 
     public:
         Data(){};

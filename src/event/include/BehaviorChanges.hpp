@@ -18,9 +18,6 @@
 #define EVENT_BEHAVIORCHANGES_HPP_
 
 #include "Event.hpp"
-#include "Person.hpp"
-#include <string>
-#include <vector>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {

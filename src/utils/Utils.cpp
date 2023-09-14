@@ -1,11 +1,23 @@
+//===-------------------------------*- C++ -*------------------------------===//
+//-*-===//
+//
+// Part of the HEP-CE Simulation Module, under the AGPLv3 License. See
+// https://www.gnu.org/licenses/ for license information.
+// SPDX-License-Identifier: AGPLv3
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains the implementation of the Utility Helper Functions.
+///
+/// Created Date: Tuesday, August 15th 2023, 8:50:56 am
+/// Contact: Benjamin.Linas@bmc.org
+///
+//===----------------------------------------------------------------------===//
 #include "Utils.hpp"
 
-/// @brief
 namespace Utils {
 
-    /// @brief
-    /// @param probability
-    /// @return
     double probabilityToRate(double probability) {
         if (probability < 0 || probability >= 1) {
             throw std::domain_error("Out of probability value range");
@@ -13,9 +25,6 @@ namespace Utils {
         return -log(1 - probability);
     }
 
-    /// @brief
-    /// @param rate
-    /// @return
     double rateToProbability(double rate) {
         if (rate < 0) {
             throw std::domain_error("Out of rate value range");
@@ -23,11 +32,6 @@ namespace Utils {
         return 1 - exp(-rate);
     }
 
-    /// @brief
-    /// @param valueToDiscount
-    /// @param discountRate
-    /// @param timestep
-    /// @return
     double discount(double valueToDiscount, double discountRate,
                     double timestep) {
         if (discountRate < 0 || timestep < 0) {

@@ -18,11 +18,6 @@
 #define EVENT_VOLUNTARYRELINK_HPP_
 
 #include "Event.hpp"
-#include "Person.hpp"
-#include "sqlite3.h"
-
-#include <mutex>
-#include <random>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {

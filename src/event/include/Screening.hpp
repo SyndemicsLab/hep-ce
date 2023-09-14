@@ -18,13 +18,6 @@
 #define EVENT_SCREENING_HPP_
 
 #include "Event.hpp"
-#include "SQLite3.hpp"
-
-#include <algorithm>
-#include <execution>
-#include <mutex>
-#include <random>
-#include <vector>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {

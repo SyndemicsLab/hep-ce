@@ -75,6 +75,7 @@ namespace Person {
         };
         IdentificationStatus idStatus;
 
+        /// @brief Attributes describing an Infection
         struct InfectionStatus {
             HEPCState hepcState = HEPCState::NONE;
             LiverState liverState = LiverState::NONE;
@@ -111,6 +112,8 @@ namespace Person {
         /// @brief Infect the person
         void infect();
 
+        /// @brief Update the Liver State
+        /// @param ls Current Liver State
         void updateLiver(const LiverState &ls);
 
         /// @brief Update Opioid Use Behavior Classification
@@ -143,8 +146,8 @@ namespace Person {
             this->seropositivity = seropositivity;
         }
 
-        /// @brief
-        /// @param timestep
+        /// @brief Reset a Person's Link State to Unlinked
+        /// @param timestep Timestep during which the Person is Unlinked
         void unlink(const int timestep) {
             if (this->linkStatus.linkState == LinkageState::LINKED) {
                 this->linkStatus.linkState = LinkageState::UNLINKED;
@@ -152,84 +155,84 @@ namespace Person {
             }
         }
 
-        /// @brief
-        /// @param timestep
-        /// @param linkType
+        /// @brief Reset a Person's Link State to Linked
+        /// @param timestep Timestep during which the Person is Linked
+        /// @param linkType The linkage type the Person recieves
         void link(int timestep, LinkageType linkType) {
             this->linkStatus.linkState = LinkageState::LINKED;
             this->linkStatus.timeLinkChange = timestep;
             this->linkStatus.linkType = linkType;
         }
 
-        /// @brief
-        /// @param timestep
+        /// @brief Mark a Person as Identified as Infected
+        /// @param timestep Timestep during which Identification Occurs
         void identifyAsInfected(int timestep) {
             this->idStatus.identifiedAsPositiveInfection = true;
             this->idStatus.timeIdentified = timestep;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for the Time Since the Last Screening
+        /// @return The Time Since the Last Screening
         int getTimeSinceLastScreening() { return this->timeSinceLastScreening; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for the Screening Frequency
+        /// @return The Screening Frequency
         int getScreeningFrequency() { return this->screeningFrequency; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for the if the Person was Screened via Interventions
+        /// @return Intervention Screening Status
         bool isInterventionScreened() { return this->interventionScreening; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for the Liver State
+        /// @return The Current Liver State
         LiverState getLiverState() { return this->infectionStatus.liverState; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for the HCV State
+        /// @return HCV State
         HEPCState getHEPCState() { return this->infectionStatus.hepcState; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for Alive Status
+        /// @return Alive Status
         bool getIsAlive() { return this->isAlive; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for Behavior Classification
+        /// @return Behavior Classification
         BehaviorClassification getBehaviorClassification() {
             return this->behaviorClassification;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for Time since HCV Change
+        /// @return Time Since HCV Change
         int getTimeSinceHEPCStateChange() {
             return this->infectionStatus.timeSinceHEPCStateChange;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for Time since Liver State Change
+        /// @return Time Since Liver State Change
         int getTimeSinceLiverStateChange() {
             return this->infectionStatus.timeSinceLiverStateChange;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for Seropositivity
+        /// @return Seropositivity
         bool getSeropositivity() { return this->seropositivity; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for Identification Status
+        /// @return Boolean Describing Indentified as Positive Status
         bool isIdentifiedAsInfected() {
             return this->idStatus.identifiedAsPositiveInfection;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for Link State
+        /// @return Link State
         LinkageState getLinkState() { return this->linkStatus.linkState; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for Time Link Change
+        /// @return Time Link Change
         int getTimeLinkChange() { return this->linkStatus.timeLinkChange; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for Linkage Type
+        /// @return Linkage Type
         LinkageType getLinkageType() { return this->linkStatus.linkType; }
 
         /// @brief Get the person's numeric ID

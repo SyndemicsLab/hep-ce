@@ -17,7 +17,6 @@
 #ifndef EVENT_CLEARANCE_HPP_
 #define EVENT_CLEARANCE_HPP_
 #include "Event.hpp"
-#include "Person.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
