@@ -19,11 +19,19 @@
 #include <memory>
 #include <vector>
 
+<<<<<<< HEAD
 #include "AllEvents.hpp"
 #include "Simulation.hpp"
 #include "Utils.hpp"
+    =======
+#include "Aging.hpp"
+#include "BehaviorChanges.hpp"
+#include "Clearance.hpp"
+#include "Person.hpp"
+#include "Simulation.hpp"
+    >>>>>>> 14d18cb (Adding Behavior Changes Test)
 
-class EventTest : public ::testing::Test {
+    class EventTest : public ::testing::Test {
 protected:
     std::vector<std::shared_ptr<Person::Person>> livingPopulation;
     std::vector<std::shared_ptr<Person::Person>> deadPopulation;
@@ -61,8 +69,22 @@ TEST_F(EventTest, BehaviorChange) {
     behavior.execute(livingPopulation, 1);
 
     Simulation expectedSim(0, 0);
-    Person::BehaviorClassification expectedClassification =
-        Person::BehaviorClassification::NEVER;
+    Person::BehaviorClassification expectedClassification;
+    std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
+    std::uniform_real_distribution<double> uniform(0.0, 1.0);
+    double value = uniform(expectedSim.getGenerator());
+    double reference = 0.0;
+    for (int i = 0; i < probs.size(); ++i) {
+        reference += probs[i];
+        if (value < reference) {
+            expectedClassification = (Person::BehaviorClassification)i;
+            break;
+        }
+    }
+    if (value > reference) {
+        expectedClassification =
+            (Person::BehaviorClassification)(int)probs.size();
+    }
 
     EXPECT_EQ(expectedClassification,
               livingPopulation.at(0)->getBehaviorClassification());
