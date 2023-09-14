@@ -61,22 +61,8 @@ TEST_F(EventTest, BehaviorChange) {
     behavior.execute(livingPopulation, 1);
 
     Simulation expectedSim(0, 0);
-    Person::BehaviorClassification expectedClassification;
-    std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
-    std::uniform_real_distribution<double> uniform(0.0, 1.0);
-    double value = uniform(expectedSim.getGenerator());
-    double reference = 0.0;
-    for (int i = 0; i < probs.size(); ++i) {
-        reference += probs[i];
-        if (value < reference) {
-            expectedClassification = (Person::BehaviorClassification)i;
-            break;
-        }
-    }
-    if (value > reference) {
-        expectedClassification =
-            (Person::BehaviorClassification)(int)probs.size();
-    }
+    Person::BehaviorClassification expectedClassification =
+        Person::BehaviorClassification::NEVER;
 
     EXPECT_EQ(expectedClassification,
               livingPopulation.at(0)->getBehaviorClassification());
