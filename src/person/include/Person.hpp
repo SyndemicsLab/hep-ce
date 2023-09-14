@@ -112,6 +112,9 @@ namespace Person {
         /// @brief Infect the person
         void infect();
 
+        /// @brief Clear of HCV
+        void clearHCV();
+
         /// @brief Update the Liver State
         /// @param ls Current Liver State
         void updateLiver(const LiverState &ls);

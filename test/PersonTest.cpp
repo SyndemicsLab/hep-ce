@@ -68,7 +68,7 @@ TEST(PersonInfect, InfectNormally) {
     EXPECT_EQ(person.getTimeSinceHEPCStateChange(), 0);
     EXPECT_TRUE(person.getSeropositivity());
 
-    EXPECT_EQ(person.getLiverState(), Person::LiverState::NONE);
+    EXPECT_EQ(person.getLiverState(), Person::LiverState::F0);
     EXPECT_EQ(person.getTimeSinceLiverStateChange(), 0);
 }
 

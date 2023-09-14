@@ -24,4 +24,5 @@ target_link_libraries(event
     person
     libs
     data
+    utils
 )

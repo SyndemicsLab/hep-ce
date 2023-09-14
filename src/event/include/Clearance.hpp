@@ -17,6 +17,7 @@
 #ifndef EVENT_CLEARANCE_HPP_
 #define EVENT_CLEARANCE_HPP_
 #include "Event.hpp"
+#include "Utils.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
@@ -27,6 +28,7 @@ namespace Event {
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
+        std::vector<double> getClearanceProb();
 
     public:
         using ProbEvent::ProbEvent;

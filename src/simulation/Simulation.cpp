@@ -29,10 +29,15 @@ std::vector<std::shared_ptr<Event::Event>> Simulation::createEvents() {
 
 void Simulation::loadPopulation(
     std::vector<std::shared_ptr<Person::Person>> &population) {
+    if (!this->population.empty()) {
+        // log that we are over-writing the population
+    }
     this->population = population;
 }
 
-void Simulation::addPerson(Person::Person person) {}
+void Simulation::addPerson(Person::Person person) {
+    this->population.push_back(std::make_shared<Person::Person>(person));
+}
 
 void Simulation::loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
     if (events.empty()) {
@@ -44,19 +49,16 @@ void Simulation::loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
     this->events = events;
 }
 
-bool Simulation::addEventToEnd(Event::Event &event) { return false; }
+bool Simulation::addEventToEnd(std::shared_ptr<Event::Event> event) {
+    // TODO: determine how to handle when this fails
+    // will probably involve try...catch
+    // this->events.push_back(event);
+    return false;
+}
 
 bool Simulation::addEventToBeginning(Event::Event &event) { return false; }
 
 bool Simulation::addEventAtIndex(Event::Event &event, int idx) { return false; }
-
-std::vector<std::shared_ptr<Person::Person>> Simulation::getPopulation() {
-    return this->population;
-}
-
-std::vector<std::shared_ptr<Event::Event>> Simulation::getEvents() {
-    return this->events;
-}
 
 std::vector<std::shared_ptr<Person::Person>> Simulation::run() {
     while (this->currentTimestep < this->duration) {
