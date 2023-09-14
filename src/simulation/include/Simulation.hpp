@@ -76,7 +76,7 @@ public:
     /// @brief Add an Event to the end of the Event List
     /// @param event Event to add to the Simulation Event List
     /// @return True if it succeeds, False if it fails
-    bool addEventToEnd(Event::Event &event);
+    bool addEventToEnd(std::shared_ptr<Event::Event> event);
 
     /// @brief Add an Event to the beginning of the Event List
     /// @param event Event to add to the Simulation Event List

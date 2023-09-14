@@ -36,7 +36,7 @@ namespace Event {
     }
 
     std::vector<double> Clearance::getClearanceProb() {
-        //
-        return {0.25};
+        // probabilityToRate doesn't include time, hence division by 6.0
+        return {Utils::probabilityToRate(0.25)/6.0};
     }
 } // namespace Event
