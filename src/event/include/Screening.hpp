@@ -1,42 +1,57 @@
+//===-------------------------------*- C++ -*------------------------------===//
+//-*-===//
+//
+// Part of the HEP-CE Simulation Module, under the AGPLv3 License. See
+// https://www.gnu.org/licenses/ for license information.
+// SPDX-License-Identifier: AGPLv3
+//
+//===----------------------------------------------------------------------===//
+///
+/// \file
+/// This file contains the declaration of the Screening Event Subclass.
+///
+/// Created Date: Tuesday, August 15th 2023, 8:50:56 am
+/// Contact: Benjamin.Linas@bmc.org
+///
+//===----------------------------------------------------------------------===//
 #ifndef EVENT_SCREENING_HPP_
 #define EVENT_SCREENING_HPP_
 
 #include "Event.hpp"
-#include "SQLite3.hpp"
 
-#include <algorithm>
-#include <execution>
-#include <mutex>
-#include <random>
-#include <vector>
-
+/// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
+
+    /// @brief Subclass of Event used to Screen People for Diseases
     class Screening : public ProbEvent {
     private:
         std::vector<double> backgroundProbability;
         std::vector<double> interventionProbability;
         std::vector<double> acceptTestProbability;
 
-        /// @brief
-        /// @param person
+        /// @brief Implementation of Virtual Function doEvent
+        /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
-        /// @brief
-        /// @param person
+        /// @brief The Background Screening Event Undertaken on a Person
+        /// @param person The Person undergoing a background Screening
         void backgroundScreen(std::shared_ptr<Person::Person> person);
 
-        /// @brief
-        /// @param person
+        /// @brief The Intervention Screening Event Undertaken on a Person
+        /// @param person The Person undergoing an Intervention Screening
         void interventionScreen(std::shared_ptr<Person::Person> person);
 
-        /// @brief
-        /// @param person
-        /// @return
+        /// @brief The antibody test to determine if the person is positive for
+        /// HCV
+        /// @param person The Person undergoing an antibody test
+        /// @return Boolean True for a Positive Result, False for a Negative
+        /// Result
         bool antibodyTest(std::shared_ptr<Person::Person> person);
 
-        /// @brief
-        /// @param person
-        /// @return
+        /// @brief The RNA test to determine if the person is positive for HCV
+        /// @param person The Person undergoing an RNA test
+        /// @return Boolean True for a Positive Result, False for a Negative
+        /// Result
         bool rnaTest(std::shared_ptr<Person::Person> person);
 
     public:

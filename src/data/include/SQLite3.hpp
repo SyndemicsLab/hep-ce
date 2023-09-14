@@ -19,6 +19,7 @@
 #include <string>
 #include <unordered_map>
 
+/// @brief Namespace containing the Data objects belonging to the Simulation
 namespace Data {
     /// @brief Object that stores the contents of a SQL table after it has been
     /// queried.
