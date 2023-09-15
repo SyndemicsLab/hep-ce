@@ -85,7 +85,7 @@ public:
     /// @param event Even to add to the Simulation Event List
     /// @param idx Index of the location to add the Event
     /// @return True if it succeeds, False if it fails
-    bool addEventAtIndex(Event::Event &event, int idx);
+    bool addEventAtIndex(std::shared_ptr<Event::Event> event, int idx);
 
     /// @brief Retrieve the Population Vector from the Simulation
     /// @return List of People in the Simulation

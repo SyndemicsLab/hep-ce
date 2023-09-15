@@ -17,8 +17,8 @@
 
 #include "AllEvents.hpp"
 #include "Person.hpp"
-#include "Simulation.hpp"
 #include "SQLite3.hpp"
+#include "Simulation.hpp"
 #include <gtest/gtest.h>
 
 TEST(SimulationCreation, DefaultConstructor) {
@@ -31,10 +31,7 @@ class SimulationTest : public ::testing::Test {
 protected:
     Simulation sim;
     int N = 10;
-    Data::Database db = Data::Database("HEP-CE.db");
-    void SetUp() override {
-        sim.createPopulation(N);
-    }
+    void SetUp() override { sim.createPopulation(N); }
     void TearDown() override {}
 };
 
@@ -55,22 +52,50 @@ TEST_F(SimulationTest, AddPerson) {
 
     // check that the population size increased
     EXPECT_EQ(population[N]->getID(), N);
-    EXPECT_EQ(population.size(), N+1);
+    EXPECT_EQ(population.size(), N + 1);
 }
 
 TEST_F(SimulationTest, AddEventToEnd) {
-    // events is initialized to empty
-    EXPECT_EQ(sim.getEvents().size(), 0);
-
     std::shared_ptr<Event::Event> event = std::make_shared<Event::Aging>();
+
+    sim.addEventToEnd(nullptr);
     sim.addEventToEnd(event);
-    EXPECT_EQ(sim.getEvents().size(), 1);
+    sim.addEventToEnd(nullptr);
+
+    const auto &events = sim.getEvents();
+    EXPECT_EQ(events.size(), 3);
+    EXPECT_EQ(events[1], event);
+    EXPECT_EQ(events[2], nullptr);
 }
 
 TEST_F(SimulationTest, AddEventToBeginning) {
     sim.addEventToBeginning(nullptr);
+    Data::Database db("HEP-CE.db");
 
-    std::shared_ptr<Event::Event> event = std::make_shared<Event::BehaviorChanges>(sim.getGenerator(), db);
+    std::shared_ptr<Event::Event> event =
+        std::make_shared<Event::BehaviorChanges>(sim.getGenerator(), db);
     sim.addEventToBeginning(event);
     EXPECT_EQ(sim.getEvents()[0], event);
+}
+
+TEST_F(SimulationTest, AddEventAtIndex) {
+    sim.addEventToEnd(nullptr);
+    sim.addEventToEnd(nullptr);
+    sim.addEventToEnd(nullptr);
+
+    std::shared_ptr<Event::Event> event = std::make_shared<Event::Aging>();
+    sim.addEventAtIndex(event, 1);
+    EXPECT_EQ(sim.getEvents()[1], event);
+    EXPECT_EQ(sim.getEvents().size(), 4);
+}
+
+TEST_F(SimulationTest, AddEventAtInvalidIndex) {
+    sim.addEventToEnd(nullptr);
+    sim.addEventToEnd(nullptr);
+    sim.addEventToEnd(nullptr);
+
+    std::shared_ptr<Event::Event> event = std::make_shared<Event::Aging>();
+    // index out of range
+    EXPECT_FALSE(sim.addEventAtIndex(event, 4));
+    EXPECT_EQ(sim.getEvents().size(), 3);
 }

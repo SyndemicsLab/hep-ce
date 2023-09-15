@@ -57,7 +57,14 @@ void Simulation::addEventToBeginning(std::shared_ptr<Event::Event> event) {
     this->events.insert(this->events.begin(), event);
 }
 
-bool Simulation::addEventAtIndex(Event::Event &event, int idx) { return false; }
+bool Simulation::addEventAtIndex(std::shared_ptr<Event::Event> event, int idx) {
+    if (idx >= this->events.size() || idx < 0) {
+        // index out of range
+        return false;
+    }
+    this->events.insert(this->events.begin() + idx, event);
+    return true;
+}
 
 std::vector<std::shared_ptr<Person::Person>> Simulation::run() {
     while (this->currentTimestep < this->duration) {
