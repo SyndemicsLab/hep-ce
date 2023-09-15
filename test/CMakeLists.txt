@@ -7,6 +7,7 @@ include_directories(mocks)
 add_executable(test
   PersonTest.cpp
   SimTest.cpp
+  EventTest.cpp
 )
 
 target_include_directories(test INTERFACE
