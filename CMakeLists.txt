@@ -7,7 +7,7 @@ project (hepce_simulation)
 # When both standard and multithreaded (mt) boost libraries exist, use standard
 set(Boost_USE_MULTITHREADED OFF)
 
-add_subdirectory(libs)
+add_subdirectory(libs/DataManagement)
 add_subdirectory(src)
 
 # Only compile tests if desired
