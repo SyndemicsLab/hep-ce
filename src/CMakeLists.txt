@@ -3,7 +3,6 @@ set (CMAKE_CXX_STANDARD 20)
 
 add_executable(hepce main.cpp)
 
-add_subdirectory(data)
 add_subdirectory(event)
 add_subdirectory(person)
 add_subdirectory(simulation)
@@ -17,6 +16,5 @@ target_link_libraries(hepce
   event
   person
   simulation
-  libs
   utils
 )
