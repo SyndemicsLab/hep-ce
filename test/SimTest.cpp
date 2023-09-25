@@ -17,7 +17,6 @@
 
 #include "AllEvents.hpp"
 #include "Person.hpp"
-#include "SQLite3.hpp"
 #include "Simulation.hpp"
 #include <gtest/gtest.h>
 
