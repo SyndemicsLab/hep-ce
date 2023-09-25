@@ -75,19 +75,17 @@ public:
 
     /// @brief Add an Event to the end of the Event List
     /// @param event Event to add to the Simulation Event List
-    /// @return True if it succeeds, False if it fails
-    bool addEventToEnd(std::shared_ptr<Event::Event> event);
+    void addEventToEnd(std::shared_ptr<Event::Event> event);
 
     /// @brief Add an Event to the beginning of the Event List
     /// @param event Event to add to the Simulation Event List
-    /// @return True if it succeeds, False if it fails
-    bool addEventToBeginning(Event::Event &event);
+    void addEventToBeginning(std::shared_ptr<Event::Event> event);
 
     /// @brief Add an Event to the provided index in the Event List
     /// @param event Even to add to the Simulation Event List
     /// @param idx Index of the location to add the Event
     /// @return True if it succeeds, False if it fails
-    bool addEventAtIndex(Event::Event &event, int idx);
+    bool addEventAtIndex(std::shared_ptr<Event::Event> event, int idx);
 
     /// @brief Retrieve the Population Vector from the Simulation
     /// @return List of People in the Simulation

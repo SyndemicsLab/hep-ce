@@ -30,9 +30,7 @@ class SimulationTest : public ::testing::Test {
 protected:
     Simulation sim;
     int N = 10;
-    void SetUp() override {
-        sim.createPopulation(N);
-    }
+    void SetUp() override { sim.createPopulation(N); }
     void TearDown() override {}
 };
 
@@ -51,11 +49,52 @@ TEST_F(SimulationTest, AddPerson) {
     const std::vector<std::shared_ptr<Person::Person>> &population =
         sim.getPopulation();
 
+    // check that the population size increased
     EXPECT_EQ(population[N]->getID(), N);
-    EXPECT_EQ(population.size(), N+1);
+    EXPECT_EQ(population.size(), N + 1);
 }
 
 TEST_F(SimulationTest, AddEventToEnd) {
     std::shared_ptr<Event::Event> event = std::make_shared<Event::Aging>();
-    EXPECT_FALSE(sim.addEventToEnd(event));
+
+    sim.addEventToEnd(nullptr);
+    sim.addEventToEnd(event);
+    sim.addEventToEnd(nullptr);
+
+    const auto &events = sim.getEvents();
+    EXPECT_EQ(events.size(), 3);
+    EXPECT_EQ(events[1], event);
+    EXPECT_EQ(events[2], nullptr);
+}
+
+TEST_F(SimulationTest, AddEventToBeginning) {
+    sim.addEventToBeginning(nullptr);
+    Data::Database db("HEP-CE.db");
+
+    std::shared_ptr<Event::Event> event =
+        std::make_shared<Event::BehaviorChanges>(sim.getGenerator(), db);
+    sim.addEventToBeginning(event);
+    EXPECT_EQ(sim.getEvents()[0], event);
+}
+
+TEST_F(SimulationTest, AddEventAtIndex) {
+    sim.addEventToEnd(nullptr);
+    sim.addEventToEnd(nullptr);
+    sim.addEventToEnd(nullptr);
+
+    std::shared_ptr<Event::Event> event = std::make_shared<Event::Aging>();
+    sim.addEventAtIndex(event, 1);
+    EXPECT_EQ(sim.getEvents()[1], event);
+    EXPECT_EQ(sim.getEvents().size(), 4);
+}
+
+TEST_F(SimulationTest, AddEventAtInvalidIndex) {
+    sim.addEventToEnd(nullptr);
+    sim.addEventToEnd(nullptr);
+    sim.addEventToEnd(nullptr);
+
+    std::shared_ptr<Event::Event> event = std::make_shared<Event::Aging>();
+    // index out of range
+    EXPECT_FALSE(sim.addEventAtIndex(event, 4));
+    EXPECT_EQ(sim.getEvents().size(), 3);
 }
