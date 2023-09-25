@@ -32,7 +32,7 @@ Components of this event category are
 - [x] Opioid Drug Use Behavior
 - [x] HCV Infection
 - [x] HCV/Liver Progression (if already infected)
-- [ ] HCV Clearance
+- [x] HCV Clearance
 
 ### Clinical Events
 Clinical events are those within the healthcare setting, namely screening (testing), linkage, and treatment.
