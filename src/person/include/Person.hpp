@@ -85,8 +85,14 @@ namespace Person {
         InfectionStatus infectionStatus;
 
         bool isAlive = true;
-        BehaviorClassification behaviorClassification =
-            BehaviorClassification::NEVER;
+
+        /// @brief Attributes describing drug use behavior
+        struct BehaviorDetails {
+            BehaviorClassification behaviorClassification =
+                BehaviorClassification::NEVER;
+            int timeSinceActive = -1;
+        };
+        BehaviorDetails behaviorDetails;
 
         /// @brief Attributes describing Linkage
         struct LinkageDetails {
@@ -94,7 +100,6 @@ namespace Person {
             int timeLinkChange = -1;
             LinkageType linkType = LinkageType::BACKGROUND;
         };
-
         LinkageDetails linkStatus;
 
     public:
@@ -209,7 +214,13 @@ namespace Person {
         /// @brief Getter for Behavior Classification
         /// @return Behavior Classification
         BehaviorClassification getBehaviorClassification() const {
-            return this->behaviorClassification;
+            return this->behaviorDetails.behaviorClassification;
+        }
+
+        /// @brief Getter for time since active drug use
+        /// @return Time since the person left an active drug use state
+        int getTimeBehaviorChange() {
+            return this->behaviorDetails.timeSinceActive;
         }
 
         /// @brief Getter for Time since HCV Change
