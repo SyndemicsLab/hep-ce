@@ -40,7 +40,7 @@ namespace Event {
         Event(){};
         virtual ~Event() = default;
 
-        int getCurrentTimestep() { return this->currentTimestep; }
+        int getCurrentTimestep() const { return this->currentTimestep; }
 
         /// @brief Primary function required in all Event subclasses. Used to
         /// run the event
