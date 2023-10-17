@@ -17,8 +17,8 @@
 #include "Screening.hpp"
 
 namespace Event {
-    Screening::Screening(std::mt19937_64 &generator, Data::Database &database)
-        : ProbEvent(generator, database){
+    Screening::Screening(std::mt19937_64 &generator, Data::DataTable &table)
+        : ProbEvent(generator, table){
               // QUERY backgroundProbability and interventionProbability Tables
               // Save to attributes
               // ensure lookup scheme for stratified age/IDU

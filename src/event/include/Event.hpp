@@ -19,6 +19,7 @@
 #ifndef EVENT_EVENT_HPP_
 #define EVENT_EVENT_HPP_
 
+#include "DataTable.hpp"
 #include "Person.hpp"
 #include "SQLite3.hpp"
 #include <algorithm>
@@ -65,8 +66,8 @@ namespace Event {
     class ProbEvent : public Event {
     protected:
         std::mt19937_64 &generator;
-        Data::Database &db;
         std::mutex generatorMutex;
+        Data::DataTable &table;
 
         /// @brief When making a decision with two or more choices, pick one
         /// based on the provided weight(s).
@@ -98,8 +99,8 @@ namespace Event {
         }
 
     public:
-        ProbEvent(std::mt19937_64 &generator, Data::Database &database)
-            : generator(generator), db(database) {}
+        ProbEvent(std::mt19937_64 &generator, Data::DataTable &table)
+            : generator(generator), table(table) {}
         virtual ~ProbEvent() = default;
     };
 } // namespace Event
