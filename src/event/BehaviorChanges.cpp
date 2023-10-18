@@ -36,8 +36,8 @@ namespace Event {
     BehaviorChanges::getTransitions(std::shared_ptr<Person::Person> person) {
         // 1. Determine what strata impact behavior transitions
         // 2. Implement a way to generate the query string
-        std::string query = "";
-        Data::SQLTable result = this->db.readTable(query);
+        // std::string query = "";
+        // Data::SQLTable result = this->db.readTable(query);
         return {};
     }
 } // namespace Event

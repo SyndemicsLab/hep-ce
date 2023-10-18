@@ -17,8 +17,8 @@
 #include "Screening.hpp"
 
 namespace Event {
-    Screening::Screening(std::mt19937_64 &generator, Data::Database &database)
-        : ProbEvent(generator, database){
+    Screening::Screening(std::mt19937_64 &generator, Data::DataTable &table)
+        : ProbEvent(generator, table){
               // QUERY backgroundProbability and interventionProbability Tables
               // Save to attributes
               // ensure lookup scheme for stratified age/IDU
@@ -48,6 +48,10 @@ namespace Event {
     }
 
     void Screening::backgroundScreen(std::shared_ptr<Person::Person> person) {
+        if (person->getTimeSinceLastScreening() == 0 &&
+            this->getCurrentTimestep() > 0) {
+            return;
+        }
         person->markScreened();
 
         if (!this->antibodyTest(person) && !this->antibodyTest(person)) {
@@ -65,6 +69,11 @@ namespace Event {
     }
 
     void Screening::interventionScreen(std::shared_ptr<Person::Person> person) {
+        if (person->getTimeSinceLastScreening() == 0 &&
+            this->getCurrentTimestep() > 0) {
+            return;
+        }
+        person->markScreened();
         std::bernoulli_distribution testAcceptanceProbability(
             this->acceptTestProbability[person->age]); // need to also add idu
                                                        // stratification

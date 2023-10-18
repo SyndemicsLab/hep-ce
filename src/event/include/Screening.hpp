@@ -55,7 +55,7 @@ namespace Event {
         bool rnaTest(std::shared_ptr<Person::Person> person);
 
     public:
-        Screening(std::mt19937_64 &generator, Data::Database &database);
+        Screening(std::mt19937_64 &generator, Data::DataTable &table);
         virtual ~Screening() = default;
     };
 

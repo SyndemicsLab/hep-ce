@@ -176,70 +176,80 @@ namespace Person {
 
         /// @brief Getter for the Time Since the Last Screening
         /// @return The Time Since the Last Screening
-        int getTimeSinceLastScreening() { return this->timeSinceLastScreening; }
+        int getTimeSinceLastScreening() const {
+            return this->timeSinceLastScreening;
+        }
 
         /// @brief Getter for the Screening Frequency
         /// @return The Screening Frequency
-        int getScreeningFrequency() { return this->screeningFrequency; }
+        int getScreeningFrequency() const { return this->screeningFrequency; }
 
         /// @brief Getter for the if the Person was Screened via Interventions
         /// @return Intervention Screening Status
-        bool isInterventionScreened() { return this->interventionScreening; }
+        bool isInterventionScreened() const {
+            return this->interventionScreening;
+        }
 
         /// @brief Getter for the Liver State
         /// @return The Current Liver State
-        LiverState getLiverState() { return this->infectionStatus.liverState; }
+        LiverState getLiverState() const {
+            return this->infectionStatus.liverState;
+        }
 
         /// @brief Getter for the HCV State
         /// @return HCV State
-        HEPCState getHEPCState() { return this->infectionStatus.hepcState; }
+        HEPCState getHEPCState() const {
+            return this->infectionStatus.hepcState;
+        }
 
         /// @brief Getter for Alive Status
         /// @return Alive Status
-        bool getIsAlive() { return this->isAlive; }
+        bool getIsAlive() const { return this->isAlive; }
 
         /// @brief Getter for Behavior Classification
         /// @return Behavior Classification
-        BehaviorClassification getBehaviorClassification() {
+        BehaviorClassification getBehaviorClassification() const {
             return this->behaviorClassification;
         }
 
         /// @brief Getter for Time since HCV Change
         /// @return Time Since HCV Change
-        int getTimeSinceHEPCStateChange() {
+        int getTimeSinceHEPCStateChange() const {
             return this->infectionStatus.timeSinceHEPCStateChange;
         }
 
         /// @brief Getter for Time since Liver State Change
         /// @return Time Since Liver State Change
-        int getTimeSinceLiverStateChange() {
+        int getTimeSinceLiverStateChange() const {
             return this->infectionStatus.timeSinceLiverStateChange;
         }
 
         /// @brief Getter for Seropositivity
         /// @return Seropositivity
-        bool getSeropositivity() { return this->seropositivity; }
+        bool getSeropositivity() const { return this->seropositivity; }
 
         /// @brief Getter for Identification Status
         /// @return Boolean Describing Indentified as Positive Status
-        bool isIdentifiedAsInfected() {
+        bool isIdentifiedAsInfected() const {
             return this->idStatus.identifiedAsPositiveInfection;
         }
 
         /// @brief Getter for Link State
         /// @return Link State
-        LinkageState getLinkState() { return this->linkStatus.linkState; }
+        LinkageState getLinkState() const { return this->linkStatus.linkState; }
 
         /// @brief Getter for Time Link Change
         /// @return Time Link Change
-        int getTimeLinkChange() { return this->linkStatus.timeLinkChange; }
+        int getTimeLinkChange() const {
+            return this->linkStatus.timeLinkChange;
+        }
 
         /// @brief Getter for Linkage Type
         /// @return Linkage Type
-        LinkageType getLinkageType() { return this->linkStatus.linkType; }
+        LinkageType getLinkageType() const { return this->linkStatus.linkType; }
 
         /// @brief Get the person's numeric ID
-        int getID() { return this->id; }
+        int getID() const { return this->id; }
     };
 } // namespace Person
 #endif
