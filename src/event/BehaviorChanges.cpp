@@ -18,16 +18,30 @@
 
 namespace Event {
     void BehaviorChanges::doEvent(std::shared_ptr<Person::Person> person) {
-        // 1. Determine person's current behavior classification
+        // Determine person's current behavior classification
         Person::BehaviorClassification bc = person->getBehaviorClassification();
-        // 2. Generate the transition probabilities based on the starting state
-        // std::vector<double> probs = getTransitions(bc);
+
+        // MOUD
+        // positioned before transitioning to use so that people do not start
+        // treatment the same time they become an opioid abuser.
+        // Can only enter MOUD if in an active use state.
+        if (!(bc >= Person::BehaviorClassification::NONINJECTION)) {
+            // 1. Check the person's current MOUD status
+            // 2. Draw probability of changing MOUD state.
+            // 3. Make a transition decision.
+            // 4. If the person stays on MOUD, increment their time on MOUD.
+            // Otherwise, set or keep their time on MOUD as 0.
+        }
+
+        // Typical Behavior Change
+        // 1. Generate the transition probabilities based on the starting state
+        // std::vector<double> probs = getTransitions(person);
         // currently using placeholders to test compiling
         std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
-        // 3. Draw a behavior state to be transitioned to
+        // 2. Draw a behavior state to be transitioned to
         Person::BehaviorClassification toBC =
             (Person::BehaviorClassification)this->getDecision(probs);
-        // 4. If the drawn state differs from the current state, change the
+        // 3. If the drawn state differs from the current state, change the
         // bools in BehaviorState to match
         person->updateBehavior(toBC);
     }

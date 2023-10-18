@@ -24,6 +24,12 @@ namespace Event {
 
         // "Calculate background mortality rate based on age, gender, and IDU"
         double backgroundMortality = 1.0;
+
+        // Fatal Overdose
+        // 1. Check if the person overdosed this timestep.
+        // 2. If no, return. Otherwise, get fatal OD probability.
+        // 3. Decide whether the person dies. If not, unset their overdose
+        // property.
     }
 
     void Death::die(std::shared_ptr<Person::Person> person) {

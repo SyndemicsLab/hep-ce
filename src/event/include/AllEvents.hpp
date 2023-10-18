@@ -6,6 +6,7 @@
 #include "Event.hpp"
 #include "Fibrosis.hpp"
 #include "Infections.hpp"
+#include "Overdose.hpp"
 #include "ScreenageLinking.hpp"
 #include "Screening.hpp"
 #include "Treatment.hpp"
