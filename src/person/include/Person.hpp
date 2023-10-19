@@ -57,6 +57,9 @@ namespace Person {
     /// @brief Status of Linkage
     enum class LinkageState { NEVER, LINKED, UNLINKED };
 
+    /// @brief Opioid Use Disorder Treatment States (MOUDs)
+    enum class MOUD { NONE, CURRENT, POST };
+
     /// @brief class describing a Person
     class Person {
     private:
@@ -85,8 +88,14 @@ namespace Person {
         InfectionStatus infectionStatus;
 
         bool isAlive = true;
-        BehaviorClassification behaviorClassification =
-            BehaviorClassification::NEVER;
+
+        /// @brief Attributes describing drug use behavior
+        struct BehaviorDetails {
+            BehaviorClassification behaviorClassification =
+                BehaviorClassification::NEVER;
+            int timeSinceActive = -1;
+        };
+        BehaviorDetails behaviorDetails;
 
         /// @brief Attributes describing Linkage
         struct LinkageDetails {
@@ -94,8 +103,16 @@ namespace Person {
             int timeLinkChange = -1;
             LinkageType linkType = LinkageType::BACKGROUND;
         };
-
         LinkageDetails linkStatus;
+
+        bool overdose = false;
+
+        /// @brief Attributes describing MOUD status
+        struct MOUDDetails {
+            MOUD moudState = MOUD::NONE;
+            int timeOnMOUD = 0;
+        };
+        MOUDDetails moudDetails;
 
     public:
         double age = 0;
@@ -190,6 +207,13 @@ namespace Person {
             return this->interventionScreening;
         }
 
+        /// @brief Flips the person's overdose state
+        void toggleOverdose() { this->overdose = !this->overdose; }
+
+        /// @brief Getter for the person's overdose state
+        /// @return Boolean representing overdose or not
+        bool getOverdose() { return this->overdose; }
+
         /// @brief Getter for the Liver State
         /// @return The Current Liver State
         LiverState getLiverState() const {
@@ -209,7 +233,13 @@ namespace Person {
         /// @brief Getter for Behavior Classification
         /// @return Behavior Classification
         BehaviorClassification getBehaviorClassification() const {
-            return this->behaviorClassification;
+            return this->behaviorDetails.behaviorClassification;
+        }
+
+        /// @brief Getter for time since active drug use
+        /// @return Time since the person left an active drug use state
+        int getTimeBehaviorChange() {
+            return this->behaviorDetails.timeSinceActive;
         }
 
         /// @brief Getter for Time since HCV Change

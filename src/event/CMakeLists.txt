@@ -10,6 +10,7 @@ add_library(event
     DiseaseProgression.cpp
     Fibrosis.cpp
     Infections.cpp
+    Overdose.cpp
     ScreenageLinking.cpp
     Screening.cpp
     Treatment.cpp

@@ -48,12 +48,17 @@ namespace Person {
 
     void Person::updateBehavior(const BehaviorClassification &bc) {
         // nothing to do -- cannot go back to NEVER
-        if (bc == this->behaviorClassification ||
+        if (bc == this->behaviorDetails.behaviorClassification ||
             bc == BehaviorClassification::NEVER) {
             return;
         }
+        // count for timeSinceActive if switching from active to non-active use
+        if ((bc == BehaviorClassification::FORMER_NONINJECTION) ||
+            (bc == BehaviorClassification::FORMER_INJECTION)) {
+            this->behaviorDetails.timeSinceActive = 0;
+        }
         // update the behavior classification
-        this->behaviorClassification = bc;
+        this->behaviorDetails.behaviorClassification = bc;
     }
 
     LiverState Person::diagnoseLiver(int timestep) {
