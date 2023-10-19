@@ -102,6 +102,8 @@ namespace Person {
         };
         LinkageDetails linkStatus;
 
+        bool overdose = false;
+
     public:
         double age = 0;
 
@@ -194,6 +196,13 @@ namespace Person {
         bool isInterventionScreened() const {
             return this->interventionScreening;
         }
+
+        /// @brief Flips the person's overdose state
+        void toggleOverdose() { this->overdose = !this->overdose; }
+
+        /// @brief Getter for the person's overdose state
+        /// @return Boolean representing overdose or not
+        bool getOverdose() { return this->overdose; }
 
         /// @brief Getter for the Liver State
         /// @return The Current Liver State

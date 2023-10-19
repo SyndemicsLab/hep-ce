@@ -26,14 +26,28 @@ namespace Event {
         double backgroundMortality = 1.0;
 
         // Fatal Overdose
-        // 1. Check if the person overdosed this timestep.
-        // 2. If no, return. Otherwise, get fatal OD probability.
+        // 1. Check if the person overdosed this timestep. If no, return.
+        if (!person->getOverdose()) {
+            return;
+        }
+        // 2. Get fatal OD probability.
+        double prob = this->getFatalODProb(person);
         // 3. Decide whether the person dies. If not, unset their overdose
         // property.
+        if (this->getDecision({prob})) {
+            this->die(person);
+        } else {
+            person->toggleOverdose();
+        }
     }
 
     void Death::die(std::shared_ptr<Person::Person> person) {
         // do the death thing here
         person->die();
+    }
+
+    double Death::getFatalODProb(std::shared_ptr<Person::Person> person) {
+        // determine fatal overdose probability based on person traits
+        return 0.5;
     }
 } // namespace Event

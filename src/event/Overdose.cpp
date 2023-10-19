@@ -15,7 +15,7 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "BehaviorChanges.hpp"
+#include "Overdose.hpp"
 
 namespace Event {
     void Overdose::doEvent(std::shared_ptr<Person::Person> person) {
@@ -28,7 +28,7 @@ namespace Event {
         double overdoseProbability = this->getProbability(person);
         // determine if person overdoses
         if (this->getDecision({overdoseProbability})) {
-            person->setOverdose();
+            person->toggleOverdose();
         }
     }
 
