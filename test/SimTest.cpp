@@ -69,10 +69,10 @@ TEST_F(SimulationTest, AddEventToEnd) {
 
 TEST_F(SimulationTest, AddEventToBeginning) {
     sim.addEventToBeginning(nullptr);
-    Data::Database db("HEP-CE.db");
+    Data::DataTable table;
 
     std::shared_ptr<Event::Event> event =
-        std::make_shared<Event::BehaviorChanges>(sim.getGenerator(), db);
+        std::make_shared<Event::BehaviorChanges>(sim.getGenerator(), table);
     sim.addEventToBeginning(event);
     EXPECT_EQ(sim.getEvents()[0], event);
 }
