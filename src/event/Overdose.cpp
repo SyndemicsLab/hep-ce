@@ -33,7 +33,8 @@ namespace Event {
     }
 
     double Overdose::getProbability(std::shared_ptr<Person::Person> person) {
-        // overdose probability is stratified by behavior classification
+        // overdose probability is stratified by behavior classification and
+        // MOUD state
         return 0.0;
     }
 } // namespace Event

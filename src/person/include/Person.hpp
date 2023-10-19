@@ -57,6 +57,9 @@ namespace Person {
     /// @brief Status of Linkage
     enum class LinkageState { NEVER, LINKED, UNLINKED };
 
+    /// @brief Opioid Use Disorder Treatment States (MOUDs)
+    enum class MOUD { NONE, CURRENT, POST };
+
     /// @brief class describing a Person
     class Person {
     private:
@@ -103,6 +106,13 @@ namespace Person {
         LinkageDetails linkStatus;
 
         bool overdose = false;
+
+        /// @brief Attributes describing MOUD status
+        struct MOUDDetails {
+            MOUD moudState = MOUD::NONE;
+            int timeOnMOUD = 0;
+        };
+        MOUDDetails moudDetails;
 
     public:
         double age = 0;
