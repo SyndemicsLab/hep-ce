@@ -28,6 +28,11 @@ namespace Event {
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
+        bool isEligible(std::shared_ptr<Person::Person> const person) const;
+
+        Person::LiverState eligibleLiverState = Person::LiverState::NONE;
+        int eligibleTimeSinceLinked = -1;
+        int eligibleTimeBehaviorChange = -1;
 
     public:
         Treatment(){};
