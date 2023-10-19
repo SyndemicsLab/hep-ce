@@ -56,8 +56,8 @@ TEST_F(EventTest, AgingDead) {
 
 TEST_F(EventTest, BehaviorChange) {
     Simulation sim(0, 0);
-    Data::Database db("HEP-CE.db");
-    Event::BehaviorChanges behavior(sim.getGenerator(), db);
+    Data::DataTable table;
+    Event::BehaviorChanges behavior(sim.getGenerator(), table);
     behavior.execute(livingPopulation, 1);
 
     Simulation expectedSim(0, 0);
@@ -70,8 +70,8 @@ TEST_F(EventTest, BehaviorChange) {
 
 TEST_F(EventTest, Clearance) {
     Simulation sim(0, 0);
-    Data::Database db("HEP-CE.db");
-    Event::Clearance clearance(sim.getGenerator(), db);
+    Data::DataTable table;
+    Event::Clearance clearance(sim.getGenerator(), table);
     livingPopulation[0]->infect();
     clearance.execute(livingPopulation, 1);
     EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
@@ -80,16 +80,18 @@ TEST_F(EventTest, Clearance) {
 TEST_F(EventTest, DeathByOldAge) {
     Person::Person expectedPerson;
     expectedPerson.die();
-    std::shared_ptr<Event::Death> deathEvent = std::make_shared<Event::Death>();
+    Simulation sim(0, 0);
+    Data::DataTable table;
+    Event::Death deathEvent(sim.getGenerator(), table);
     livingPopulation[0]->age = 1210;
-    deathEvent->execute(livingPopulation, 1);
+    deathEvent.execute(livingPopulation, 1);
     EXPECT_EQ(expectedPerson.getIsAlive(), livingPopulation[0]->getIsAlive());
 }
 
 TEST_F(EventTest, DiseaseProgression) {
     Simulation sim(0, 0);
-    Data::Database db("HEP-CE.db");
-    Event::DiseaseProgression diseaseProgression(sim.getGenerator(), db);
+    Data::DataTable table;
+    Event::DiseaseProgression diseaseProgression(sim.getGenerator(), table);
     livingPopulation[0]->infect();
     diseaseProgression.execute(livingPopulation, 1);
     EXPECT_EQ(Person::LiverState::F0, livingPopulation[0]->getLiverState());
@@ -99,8 +101,8 @@ TEST_F(EventTest, Fibrosis) {}
 
 TEST_F(EventTest, Infections) {
     Simulation sim(0, 0);
-    Data::Database db("HEP-CE.db");
-    Event::Infections infections(sim.getGenerator(), db);
+    Data::DataTable table;
+    Event::Infections infections(sim.getGenerator(), table);
     infections.execute(livingPopulation, 1);
     EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
 }
