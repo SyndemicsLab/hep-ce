@@ -14,7 +14,9 @@ make
 ```
 
 ## Model Flow Structure
-At the top level, the model will be broken down into three categories of events:
+This recapitulation of `HEP-CE` iterates across timesteps and events rather than over person lives, as past versions did. Each timestep (month), the simulated population is subjected to discrete "events".
+
+At the top level, the model is broken down into three categories of events:
 
 1. Person-Level Events
 2. Clinical Events
@@ -26,24 +28,26 @@ Each of these categories themself contains discrete events, explained in detail 
 ### Person-Level Events
 Person-level events are events external to the healthcare setting that can impact the likelihood or severity of an HCV infection, such as injection drug use, age, or, if already infected, HCV progression.
 
-Components of this event category are
-
 - [X] Aging
-- [x] Opioid Drug Use Behavior
-- [x] HCV Infection
-- [x] HCV/Liver Progression (if already infected)
-- [x] HCV Clearance
+- [X] Overdose
+- [X] Death & Fatal Overdose
+- [X] Opioid Drug Use Behavior & MOUD
+- [X] HCV Infection
+- [X] HCV/Liver Progression (if already infected)
+- [X] HCV Clearance
 
 ### Clinical Events
 Clinical events are those within the healthcare setting, namely screening (testing), linkage, and treatment.
 
-- [ ] Intervention Screening
-- [ ] Background Screening
+- [X] Intervention Screening
+- [X] Background Screening
 - [ ] HCC Screening
 - [ ] Linkage
-- [ ] Relinkage
+- [X] Relinkage
 - [ ] Treatment
 
 ### Calculation Events
+
 - [ ] Cost
+- [ ] "Time Spent In" Updates
 - [ ] Transmission (Infection Rate Change)

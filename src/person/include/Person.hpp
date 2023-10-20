@@ -36,7 +36,7 @@ namespace Person {
     /// @brief HEP-C Infection States
     enum class HEPCState { NONE, ACUTE, CHRONIC };
 
-    /// @brief Usage Behavior Classification
+    /// @brief Opioid Usage Behavior Classification
     /// @details There are five possible possible usage classifications:
     /// - No History of Opioid Use
     /// - Former Non-injection Opioid Use
@@ -117,6 +117,7 @@ namespace Person {
         bool incompleteTreatment = false;
 
     public:
+        /// @brief Person age in years
         double age = 0;
 
         Person() { count++; }

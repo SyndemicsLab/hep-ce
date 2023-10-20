@@ -18,13 +18,8 @@
 #define SIMULATION_HPP_
 
 #include "Event.hpp"
-#include "Person.hpp"
 
-#include <cstdint>
 #include <memory>
-#include <random>
-#include <string>
-#include <vector>
 
 /// @brief Namespace containing Simulation Level Attributes
 class Simulation {

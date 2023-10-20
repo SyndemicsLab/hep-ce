@@ -21,7 +21,6 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
-
     /// @brief Subclass of Event used to Increase the Age of a Person
     class Aging : public Event {
     private:
@@ -34,5 +33,4 @@ namespace Event {
         virtual ~Aging() = default;
     };
 } // namespace Event
-
 #endif
