@@ -39,6 +39,12 @@ namespace Event {
         virtual ~Treatment() = default;
     };
 
+    class Regiment {
+    private:
+    public:
+        void execute();
+    }
+
 } // namespace Event
 
 #endif

@@ -27,11 +27,16 @@ namespace Event {
             return;
         }
 
-        if (personLiverState == Person::LiverState::DECOMP ||
-            personLiverState == Person::LiverState::F4) {
-            // assign cirrhotic state?
+        if (personLiverState > Person::LiverState::F3) {
+            if (person->beenOnTreatment()) {
+
+            } else {
+            }
         } else {
-            // assign non-cirrhotic state?
+            if (person->beenOnTreatment()) {
+
+            } else {
+            }
         }
         // Need to do stuff for building a treatment
     }
