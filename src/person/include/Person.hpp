@@ -114,6 +114,8 @@ namespace Person {
         };
         MOUDDetails moudDetails;
 
+        bool treatmentHistory = false;
+
     public:
         double age = 0;
 
@@ -280,6 +282,14 @@ namespace Person {
 
         /// @brief Get the person's numeric ID
         int getID() const { return this->id; }
+
+        /// @brief
+        /// @return
+        bool beenOnTreatment() const { return this->treatmentHistory; }
+
+        void setTreatmentHistory(bool treatmentHistory) {
+            this->treatmentHistory = treatmentHistory;
+        }
     };
 } // namespace Person
 #endif

@@ -28,10 +28,31 @@ namespace Event {
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
+        bool isEligible(std::shared_ptr<Person::Person> const person) const;
+
+        Person::LiverState eligibleLiverState = Person::LiverState::NONE;
+        int eligibleTimeSinceLinked = -1;
+        int eligibleTimeBehaviorChange = -1;
 
     public:
         Treatment(){};
         virtual ~Treatment() = default;
+    };
+
+    struct Component {
+        std::string name;
+        double cost;
+    };
+
+    struct Regimen {
+        std::vector<Component> components;
+        int duration;
+        double withdrawalPercent;
+    };
+
+    struct Course {
+        std::vector<Regimen> regimens;
+        int duration;
     };
 
 } // namespace Event

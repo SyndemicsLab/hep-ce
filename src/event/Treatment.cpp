@@ -18,18 +18,45 @@
 
 namespace Event {
     void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
+        if (!this->isEligible(person)) {
+            return;
+        }
         Person::LiverState personLiverState = person->getLiverState();
         if (person->getHEPCState() == Person::HEPCState::NONE &&
             personLiverState == Person::LiverState::NONE) {
             return;
         }
 
-        if (personLiverState == Person::LiverState::DECOMP ||
-            personLiverState == Person::LiverState::F4) {
-            // assign cirrhotic state?
+        if (personLiverState > Person::LiverState::F3) {
+            if (person->beenOnTreatment()) {
+
+            } else {
+            }
         } else {
-            // assign non-cirrhotic state?
+            if (person->beenOnTreatment()) {
+
+            } else {
+            }
         }
         // Need to do stuff for building a treatment
+    }
+
+    bool
+    Treatment::isEligible(std::shared_ptr<Person::Person> const person) const {
+        Person::LiverState liverState = person->getLiverState();
+        int timeSinceLinked = person->getTimeLinkChange();
+        Person::BehaviorClassification behavior =
+            person->getBehaviorClassification();
+        int timeBehaviorChange =
+            person->getTimeBehaviorChange(); // Implemented in Future PR
+        if ((liverState > eligibleLiverState) ||
+            (timeSinceLinked > eligibleTimeSinceLinked) ||
+            (behavior == Person::BehaviorClassification::INJECTION) ||
+            (behavior == Person::BehaviorClassification::FORMER_INJECTION &&
+             timeBehaviorChange < eligibleTimeBehaviorChange)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 } // namespace Event
