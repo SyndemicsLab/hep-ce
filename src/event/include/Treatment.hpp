@@ -39,11 +39,21 @@ namespace Event {
         virtual ~Treatment() = default;
     };
 
-    class Regiment {
-    private:
-    public:
-        void execute();
-    }
+    struct Component {
+        std::string name;
+        double cost;
+    };
+
+    struct Regimen {
+        std::vector<Component> components;
+        int duration;
+        double withdrawalPercent;
+    };
+
+    struct Course {
+        std::vector<Regimen> regimens;
+        int duration;
+    };
 
 } // namespace Event
 

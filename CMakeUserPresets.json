@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "/home/matt/Repos/HEPCESimulationv2/build/Debug/generators/CMakePresets.json"
+    ]
+}

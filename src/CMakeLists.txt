@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.19)
 set (CMAKE_CXX_STANDARD 20)
 
+find_package(GTest REQUIRED)
+
 add_executable(hepce main.cpp)
 
 add_subdirectory(event)
