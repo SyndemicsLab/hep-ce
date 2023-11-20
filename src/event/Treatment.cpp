@@ -26,18 +26,6 @@ namespace Event {
             personLiverState == Person::LiverState::NONE) {
             return;
         }
-
-        if (personLiverState > Person::LiverState::F3) {
-            if (person->beenOnTreatment()) {
-
-            } else {
-            }
-        } else {
-            if (person->beenOnTreatment()) {
-
-            } else {
-            }
-        }
         // Need to do stuff for building a treatment
     }
 
@@ -47,9 +35,8 @@ namespace Event {
         int timeSinceLinked = person->getTimeLinkChange();
         Person::BehaviorClassification behavior =
             person->getBehaviorClassification();
-        int timeBehaviorChange =
-            person->getTimeBehaviorChange(); // Implemented in Future PR
-        if ((liverState > eligibleLiverState) ||
+        int timeBehaviorChange = person->getTimeBehaviorChange();
+        if (!isEligibleFibrosisStage(liverState) ||
             (timeSinceLinked > eligibleTimeSinceLinked) ||
             (behavior == Person::BehaviorClassification::INJECTION) ||
             (behavior == Person::BehaviorClassification::FORMER_INJECTION &&
@@ -59,4 +46,32 @@ namespace Event {
             return true;
         }
     }
+
+    bool
+    Treatment::isEligibleFibrosisStage(Person::LiverState liverState) const {
+        for (Person::LiverState eligibleState : this->eligibleLiverStates) {
+            if (liverState < eligibleState) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    Course Treatment::getTreatmentCourse(
+        std::shared_ptr<Person::Person> const person) const {
+        Person::LiverState personLiverState = person->getLiverState();
+        if (personLiverState > Person::LiverState::F3) {
+            if (person->hadIncompleteTreatment()) {
+
+            } else {
+            }
+        } else {
+            if (person->hadIncompleteTreatment()) {
+
+            } else {
+            }
+        }
+        return {};
+    }
+
 } // namespace Event

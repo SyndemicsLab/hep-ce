@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.24)
 project(HEPCETest CXX)
 
-find_package(GTest REQUIRED)
+find_package(GTest REQUIRED CONFIG)
+
+find_package(spdlog REQUIRED)
 
 add_executable(hepceTest
   PersonTest.cpp
@@ -21,6 +23,8 @@ target_link_libraries(hepceTest
   person
   simulation
   data
+  event
+  spdlog::spdlog
 )
 
 # gtest_discover_tests(test)

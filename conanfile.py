@@ -6,7 +6,7 @@ import os
 
 
 class HEPCERecipe(ConanFile):
-    name = "HEP-CE"
+    name = "hepce"
     version = "2.0.0"
 
     options = {
@@ -53,4 +53,4 @@ class HEPCERecipe(ConanFile):
         cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["HEP-CE"]
+        self.cpp_info.libs = ["HEPCE"]
