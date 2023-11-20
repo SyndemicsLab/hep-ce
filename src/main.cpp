@@ -1,6 +1,5 @@
 #include "AllEvents.hpp"
 #include "DataTable.hpp"
-#include "Person.hpp"
 #include "Simulation.hpp"
 #include <memory>
 
