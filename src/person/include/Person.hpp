@@ -20,6 +20,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
@@ -38,11 +39,11 @@ namespace Person {
 
     /// @brief Opioid Usage Behavior Classification
     /// @details There are five possible possible usage classifications:
-    /// - No History of Opioid Use
-    /// - Former Non-injection Opioid Use
-    /// - Former Injection Opioid Use
-    /// - Non-injection Opioid Use
-    /// - Injection Opioid Use
+    /// - No History of Opioid Use (\code{NEVER})
+    /// - Former Non-injection Opioid Use (\code{FORMER_NONINJECTION})
+    /// - Former Injection Opioid Use (\code{FORMER_INJECTION})
+    /// - Non-injection Opioid Use (\code{NONINJECTION})
+    /// - Injection Opioid Use (\code{INJECTION})
     enum class BehaviorClassification {
         NEVER,
         FORMER_NONINJECTION,
@@ -60,10 +61,21 @@ namespace Person {
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
     enum class MOUD { NONE, CURRENT, POST };
 
+    /// @brief Biological Sex
+    enum class Sex { MALE, FEMALE };
+
+    /// @brief Pregnancy Classification
+    /// @details There are three possible pregnancy states:
+    /// - NEVER
+    /// - PREGNANT
+    /// - POSTPARTUM
+    enum class PregnancyState { NEVER, PREGNANT, POSPARTUM };
+
     /// @brief class describing a Person
     class Person {
     private:
         int id = count;
+        Sex sex = Sex::MALE;
 
         // -1 if never screened, otherwise [0, currentTimestep-1)
         int timeSinceLastScreening = -1;
@@ -116,11 +128,25 @@ namespace Person {
 
         bool incompleteTreatment = false;
 
+        /// @brief Attributes describing pregnancy
+        struct PregnancyDetails {
+            bool pregnant = false;
+            int timeSpentPregnant = -1;
+            int infantCount = 0;
+            int miscarriageCount = 0;
+            PregnancyState pregnancyState = PregnancyState::NEVER;
+        };
+        PregnancyDetails pregnancyDetails;
+
     public:
         /// @brief Person age in years
         double age = 0;
 
+        /// @brief Default constructor for Person
         Person() { count++; }
+        /// @brief Constructor that allows person attributes to be set at
+        /// creation time.
+        // Person(const std::unordered_map &attributes);
         virtual ~Person() { count--; }
 
         /// @brief End a Person's life and set final age

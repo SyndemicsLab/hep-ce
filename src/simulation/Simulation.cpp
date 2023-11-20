@@ -50,10 +50,12 @@ void Simulation::loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
 }
 
 void Simulation::addEventToEnd(std::shared_ptr<Event::Event> event) {
+    // log that an event is being added to the end of the event list
     this->events.push_back(event);
 }
 
 void Simulation::addEventToBeginning(std::shared_ptr<Event::Event> event) {
+    // log that an event is being inserted at the beginning of the event list
     this->events.insert(this->events.begin(), event);
 }
 
@@ -62,6 +64,7 @@ bool Simulation::addEventAtIndex(std::shared_ptr<Event::Event> event, int idx) {
         // index out of range
         return false;
     }
+    // log that an event is being added to the event list in index idx
     this->events.insert(this->events.begin() + idx, event);
     return true;
 }

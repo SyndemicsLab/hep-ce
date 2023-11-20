@@ -13,7 +13,7 @@ cmake ..
 make
 ```
 
-## Model Flow Structure
+## Model Flow
 This recapitulation of `HEP-CE` iterates across timesteps and events rather than over person lives, as past versions did. Each timestep (month), the simulated population is subjected to discrete "events".
 
 At the top level, the model is broken down into three categories of events:
