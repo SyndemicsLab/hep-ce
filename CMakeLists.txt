@@ -5,7 +5,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(Boost_USE_MULTITHREADED OFF)
 
 # Only compile tests if desired
-option(BUILD_TESTS "enable HEPCE tests" ON)
+option(BUILD_TESTS "enable HEPCE tests" OFF)
+
+
+
 
 # Set some basic project attributes
 project (hepce_simulation)

@@ -22,6 +22,23 @@
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
 
+    struct Component {
+        std::string name = "";
+        double cost = 0.0;
+    };
+
+    struct Regimen {
+        std::vector<Component> components = {};
+        int duration = 0;
+    };
+
+    struct Course {
+        std::vector<Regimen> regimens = {};
+        int duration = 0;
+        double withdrawalProbability = 0.0;
+        double svrProbability = 0.0;
+    };
+
     /// @brief Subclass of Event used to Provide Treatment to People
     class Treatment : public Event {
     private:
@@ -29,30 +46,18 @@ namespace Event {
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
         bool isEligible(std::shared_ptr<Person::Person> const person) const;
+        bool isEligibleFibrosisStage(Person::LiverState liverState) const;
+        Course
+        getTreatmentCourse(std::shared_ptr<Person::Person> const person) const;
 
-        Person::LiverState eligibleLiverState = Person::LiverState::NONE;
+        std::vector<Person::LiverState> eligibleLiverStates = {
+            Person::LiverState::NONE};
         int eligibleTimeSinceLinked = -1;
         int eligibleTimeBehaviorChange = -1;
 
     public:
         Treatment(){};
         virtual ~Treatment() = default;
-    };
-
-    struct Component {
-        std::string name;
-        double cost;
-    };
-
-    struct Regimen {
-        std::vector<Component> components;
-        int duration;
-        double withdrawalPercent;
-    };
-
-    struct Course {
-        std::vector<Regimen> regimens;
-        int duration;
     };
 
 } // namespace Event

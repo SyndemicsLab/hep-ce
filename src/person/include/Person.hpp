@@ -114,7 +114,7 @@ namespace Person {
         };
         MOUDDetails moudDetails;
 
-        bool treatmentHistory = false;
+        bool incompleteTreatment = false;
 
     public:
         double age = 0;
@@ -285,10 +285,12 @@ namespace Person {
 
         /// @brief
         /// @return
-        bool beenOnTreatment() const { return this->treatmentHistory; }
+        bool hadIncompleteTreatment() const {
+            return this->incompleteTreatment;
+        }
 
-        void setTreatmentHistory(bool treatmentHistory) {
-            this->treatmentHistory = treatmentHistory;
+        void setIncompleteTreatment(bool incompleteTreatment) {
+            this->incompleteTreatment = incompleteTreatment;
         }
     };
 } // namespace Person
