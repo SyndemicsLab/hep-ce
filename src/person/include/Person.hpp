@@ -20,7 +20,6 @@
 
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
@@ -200,9 +199,6 @@ namespace Person {
 
         /// @brief Default constructor for Person
         Person() { count++; }
-        // @brief Constructor that allows person attributes to be set at
-        // creation time.
-        // Person(const std::unordered_map &attributes);
 
         /// @brief Default destructor for Person
         virtual ~Person() { count--; }

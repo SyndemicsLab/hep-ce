@@ -3,8 +3,6 @@
 namespace Person {
     int count = 0;
 
-    // Person::Person(const std::unordered_map &attributes) { count++; }
-
     void Person::die() { this->isAlive = false; }
 
     void Person::grow() {
