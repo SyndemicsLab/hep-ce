@@ -31,39 +31,106 @@ namespace Person {
     /// the risk of development of hepatocellular carcinoma (HCC).
     /// These states strictly increase, with the possibility of progressing to
     /// HCC being possible at any time from stage F3 and higher.
-    enum class LiverState { NONE, F0, F1, F2, F3, F4, DECOMP, EHCC, LHCC };
+    enum class LiverState {
+        /// No adverse liver effects
+        NONE,
+        /// No scarring
+        F0,
+        /// Mild liver scarring
+        F1,
+        /// Scarring has occurred and extends outside the liver area
+        F2,
+        /// Fibrosis spreading and forming bridges with other fibrotic liver
+        /// areas
+        F3,
+        /// Cirrhosis or advanced scarring
+        F4,
+        /// Symptomatic cirrhosis; overt complications
+        DECOMP,
+        /// Early-stage hepatocellular carcinoma
+        EHCC,
+        /// Late-stage hepatocellular carcinoma
+        LHCC
+    };
 
     /// @brief HEP-C Infection States
-    enum class HEPCState { NONE, ACUTE, CHRONIC };
+    enum class HEPCState {
+        /// No HCV infection
+        NONE,
+        /// New HCV infection; sub-6 months infected
+        ACUTE,
+        /// Long-term HCV infection
+        CHRONIC
+    };
 
-    /// @brief Usage Behavior Classification
-    /// @details There are five possible possible usage classifications:
-    /// - No History of Opioid Use
-    /// - Former Non-injection Opioid Use
-    /// - Former Injection Opioid Use
-    /// - Non-injection Opioid Use
-    /// - Injection Opioid Use
+    /// @brief Opioid Usage Behavior Classification
+    /// @details There are five possible possible usage classifications.
     enum class BehaviorClassification {
+        /// No history of opioid use
         NEVER,
+        /// Former non-injection opioid use
         FORMER_NONINJECTION,
+        /// Former injection opioid use
         FORMER_INJECTION,
+        /// Non-injection opioid use
         NONINJECTION,
+        /// Injection opioid use
         INJECTION
     };
 
-    /// @brief Screening type that lead to Linkage
-    enum class LinkageType { BACKGROUND, INTERVENTION };
+    /// @brief Screening type that led to linkage
+    enum class LinkageType {
+        /// Linked through background screening
+        BACKGROUND,
+        /// Linked through intervention screening
+        INTERVENTION
+    };
 
     /// @brief Status of Linkage
-    enum class LinkageState { NEVER, LINKED, UNLINKED };
+    enum class LinkageState {
+        /// Person has never been linked to care
+        NEVER,
+        /// Person is currently linked to care
+        LINKED,
+        /// Person was previously linked to care, but is not currently linked
+        UNLINKED
+    };
 
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
-    enum class MOUD { NONE, CURRENT, POST };
+    enum class MOUD {
+        /// Never in MOUD
+        NONE,
+        /// Currently in MOUD
+        CURRENT,
+        /// Recently dropped out of MOUD
+        POST
+    };
 
-    /// @brief class describing a Person
+    /// @brief Biological Sex
+    enum class Sex {
+        /// Assigned male at birth
+        MALE,
+        /// Assigned female at birth
+        FEMALE
+    };
+
+    /// @brief Pregnancy Classification
+    /// @details There are three possible pregnancy states.
+    enum class PregnancyState {
+        /// Never pregnant
+        NEVER,
+        /// Actively pregnant
+        PREGNANT,
+        /// Post-pregnancy
+        POSTPARTUM
+    };
+
+    /// @brief Class describing a Person
     class Person {
     private:
+        // set person ID to the current number of total people in the runtime
         int id = count;
+        Sex sex = Sex::MALE;
 
         // -1 if never screened, otherwise [0, currentTimestep-1)
         int timeSinceLastScreening = -1;
@@ -116,10 +183,24 @@ namespace Person {
 
         bool incompleteTreatment = false;
 
+        /// @brief Attributes describing pregnancy
+        struct PregnancyDetails {
+            bool pregnant = false;
+            int timeSpentPregnant = -1;
+            int infantCount = 0;
+            int miscarriageCount = 0;
+            PregnancyState pregnancyState = PregnancyState::NEVER;
+        };
+        PregnancyDetails pregnancyDetails;
+
     public:
+        /// @brief Person age in years
         double age = 0;
 
+        /// @brief Default constructor for Person
         Person() { count++; }
+
+        /// @brief Default destructor for Person
         virtual ~Person() { count--; }
 
         /// @brief End a Person's life and set final age
