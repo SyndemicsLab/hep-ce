@@ -21,14 +21,14 @@
 #include <gtest/gtest.h>
 
 TEST(SimulationCreation, DefaultConstructor) {
-    Simulation *sim = new Simulation();
+    Simulation::Simulation *sim = new Simulation::Simulation();
     EXPECT_TRUE(sim);
     delete (sim);
 }
 
 class SimulationTest : public ::testing::Test {
 protected:
-    Simulation sim;
+    Simulation::Simulation sim;
     int N = 10;
     void SetUp() override { sim.createPopulation(N); }
     void TearDown() override {}
