@@ -13,7 +13,7 @@ sharedEvent makeEvent(std::mt19937_64 &generator, Data::DataTable &table) {
 }
 
 int main(int argc, char *argv[]) {
-    Simulation sim(0, 0);
+    Simulation::Simulation sim(0, 0);
     Data::DataTable table;
 
     // create the person-level event vector

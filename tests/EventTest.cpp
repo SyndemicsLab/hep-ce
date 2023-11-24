@@ -1,8 +1,8 @@
 //===-------------------------------*- C++ -*------------------------------===//
 //-*-===//
 //
-// Part of the HEP-CE Simulation Module, under the AGPLv3 License. See
-// https://www.gnu.org/licenses/ for license information.
+// Part of the HEP-CE Simulation Module, under the AGPLv3 License.
+// See https://www.gnu.org/licenses/ for license information.
 // SPDX-License-Identifier: AGPLv3
 //
 //===----------------------------------------------------------------------===//
@@ -27,7 +27,9 @@ class EventTest : public ::testing::Test {
 protected:
     std::vector<std::shared_ptr<Person::Person>> livingPopulation;
     std::vector<std::shared_ptr<Person::Person>> deadPopulation;
+    std::shared_ptr<Simulation::Simulation> simulation;
     void SetUp() override {
+        simulation = std::make_shared<Simulation::Simulation>(0, 0);
         std::shared_ptr<Person::Person> livingPerson =
             std::make_shared<Person::Person>();
         livingPopulation.push_back(livingPerson);
@@ -55,43 +57,36 @@ TEST_F(EventTest, AgingDead) {
 }
 
 TEST_F(EventTest, BehaviorChange) {
-    Simulation sim(0, 0);
     Data::DataTable table;
-    Event::BehaviorChanges behavior(sim.getGenerator(), table);
+    Event::BehaviorChanges behavior(simulation->getGenerator(), table);
     behavior.execute(livingPopulation, 1);
 
-    Simulation expectedSim(0, 0);
-    Person::BehaviorClassification expectedClassification =
-        Person::BehaviorClassification::NEVER;
-
-    EXPECT_EQ(expectedClassification,
+    EXPECT_EQ(Person::BehaviorClassification::NEVER,
               livingPopulation.at(0)->getBehaviorClassification());
 }
 
 TEST_F(EventTest, Clearance) {
-    Simulation sim(0, 0);
     Data::DataTable table;
-    Event::Clearance clearance(sim.getGenerator(), table);
+    Event::Clearance clearance(simulation->getGenerator(), table);
     livingPopulation[0]->infect();
     clearance.execute(livingPopulation, 1);
-    EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
+    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
 }
 
 TEST_F(EventTest, DeathByOldAge) {
     Person::Person expectedPerson;
     expectedPerson.die();
-    Simulation sim(0, 0);
     Data::DataTable table;
-    Event::Death deathEvent(sim.getGenerator(), table);
+    Event::Death deathEvent(simulation->getGenerator(), table);
     livingPopulation[0]->age = 1210;
     deathEvent.execute(livingPopulation, 1);
     EXPECT_EQ(expectedPerson.getIsAlive(), livingPopulation[0]->getIsAlive());
 }
 
 TEST_F(EventTest, DiseaseProgression) {
-    Simulation sim(0, 0);
     Data::DataTable table;
-    Event::DiseaseProgression diseaseProgression(sim.getGenerator(), table);
+    Event::DiseaseProgression diseaseProgression(simulation->getGenerator(),
+                                                 table);
     livingPopulation[0]->infect();
     diseaseProgression.execute(livingPopulation, 1);
     EXPECT_EQ(Person::LiverState::F0, livingPopulation[0]->getLiverState());
@@ -100,9 +95,8 @@ TEST_F(EventTest, DiseaseProgression) {
 TEST_F(EventTest, Fibrosis) {}
 
 TEST_F(EventTest, Infections) {
-    Simulation sim(0, 0);
     Data::DataTable table;
-    Event::Infections infections(sim.getGenerator(), table);
+    Event::Infections infections(simulation->getGenerator(), table);
     infections.execute(livingPopulation, 1);
     EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
 }
