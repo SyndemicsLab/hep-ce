@@ -31,9 +31,9 @@ namespace Event {
         // 1. Get the probability of acute clearance
         std::vector<double> prob = this->getClearanceProb();
         // 2. Decide whether the person clears
-        int value = this->getDecision(prob);
+        int doesNotClear = this->getDecision(prob);
         // if you do not clear, return immediately
-        if (value) {
+        if (doesNotClear) {
             return;
         }
         person->clearHCV();
