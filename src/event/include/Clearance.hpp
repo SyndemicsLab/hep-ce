@@ -21,11 +21,12 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
-    extern double CLEARANCE_PROB;
-
     /// @brief Subclass of Event used to Clear HCV Infections
     class Clearance : public ProbEvent {
     private:
+        // probabilityToRate doesn't include time, hence division by 6.0
+        double clearanceProb = Utils::probabilityToRate(0.25) / 6.0;
+
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
