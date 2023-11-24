@@ -21,5 +21,7 @@
     )
 
     source Debug/generators/deactivate_conanbuild.sh
-    tests/hepceTest
+    if [[ -f tests/hepceTest ]]; then
+	tests/hepceTest
+    fi
 )
