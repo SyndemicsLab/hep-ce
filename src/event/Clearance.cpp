@@ -28,15 +28,15 @@ namespace Event {
         // 1. Get the probability of acute clearance
         std::vector<double> prob = this->getClearanceProb();
         // 2. Decide whether the person clears
-        int value = this->getDecision(prob);
-        if (!value) {
+        int doesNotClear = this->getDecision(prob);
+        // if you do not clear, return immediately
+        if (doesNotClear) {
             return;
         }
         person->clearHCV();
     }
 
     std::vector<double> Clearance::getClearanceProb() {
-        // probabilityToRate doesn't include time, hence division by 6.0
-        return {Utils::probabilityToRate(0.25) / 6.0};
+        return {this->clearanceProb};
     }
 } // namespace Event

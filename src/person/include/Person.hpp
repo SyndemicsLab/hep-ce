@@ -26,33 +26,6 @@ namespace Person {
     /// @brief A running count of the number of people in the simulation
     extern int count;
 
-    /// @brief Classification of Liver Disease Stage
-    /// @details HCV infection causes liver fibrosis and cirrhosis and increases
-    /// the risk of development of hepatocellular carcinoma (HCC).
-    /// These states strictly increase, with the possibility of progressing to
-    /// HCC being possible at any time from stage F3 and higher.
-    enum class LiverState {
-        /// No adverse liver effects
-        NONE,
-        /// No scarring
-        F0,
-        /// Mild liver scarring
-        F1,
-        /// Scarring has occurred and extends outside the liver area
-        F2,
-        /// Fibrosis spreading and forming bridges with other fibrotic liver
-        /// areas
-        F3,
-        /// Cirrhosis or advanced scarring
-        F4,
-        /// Symptomatic cirrhosis; overt complications
-        DECOMP,
-        /// Early-stage hepatocellular carcinoma
-        EHCC,
-        /// Late-stage hepatocellular carcinoma
-        LHCC
-    };
-
     /// @brief HEP-C Infection States
     enum class HEPCState {
         /// No HCV infection
@@ -96,6 +69,33 @@ namespace Person {
         UNLINKED
     };
 
+    /// @brief Classification of Liver Disease Stage
+    /// @details HCV infection causes liver fibrosis and cirrhosis and increases
+    /// the risk of development of hepatocellular carcinoma (HCC).
+    /// These states strictly increase, with the possibility of progressing to
+    /// HCC being possible at any time from stage F3 and higher.
+    enum class LiverState {
+        /// No adverse liver effects
+        NONE,
+        /// No scarring
+        F0,
+        /// Mild liver scarring
+        F1,
+        /// Scarring has occurred and extends outside the liver area
+        F2,
+        /// Fibrosis spreading and forming bridges with other fibrotic liver
+        /// areas
+        F3,
+        /// Cirrhosis or advanced scarring
+        F4,
+        /// Symptomatic cirrhosis; overt complications
+        DECOMP,
+        /// Early-stage hepatocellular carcinoma
+        EHCC,
+        /// Late-stage hepatocellular carcinoma
+        LHCC
+    };
+
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
     enum class MOUD {
         /// Never in MOUD
@@ -125,72 +125,68 @@ namespace Person {
         POSTPARTUM
     };
 
+    /// @brief Attributes describing Identification
+    struct IdentificationStatus {
+        bool identifiedAsPositiveInfection = false;
+        int timeIdentified = -1;
+    };
+
+    /// @brief Attributes describing an Infection
+    struct InfectionStatus {
+        HEPCState hepcState = HEPCState::NONE;
+        LiverState liverState = LiverState::NONE;
+        int timeSinceHEPCStateChange = 0;
+        int timeSinceLiverStateChange = 0;
+    };
+
+    /// @brief Attributes describing drug use behavior
+    struct BehaviorDetails {
+        BehaviorClassification behaviorClassification =
+            BehaviorClassification::NEVER;
+        int timeSinceActive = -1;
+    };
+
+    /// @brief Attributes describing Linkage
+    struct LinkageDetails {
+        LinkageState linkState = LinkageState::NEVER;
+        int timeLinkChange = -1;
+        LinkageType linkType = LinkageType::BACKGROUND;
+    };
+
+    /// @brief Attributes describing MOUD status
+    struct MOUDDetails {
+        MOUD moudState = MOUD::NONE;
+        int timeOnMOUD = 0;
+    };
+
+    /// @brief Attributes describing pregnancy
+    struct PregnancyDetails {
+        bool pregnant = false;
+        int timeSpentPregnant = -1;
+        int infantCount = 0;
+        int miscarriageCount = 0;
+        PregnancyState pregnancyState = PregnancyState::NEVER;
+    };
+
     /// @brief Class describing a Person
     class Person {
     private:
         // set person ID to the current number of total people in the runtime
         int id = count;
         Sex sex = Sex::MALE;
-
+        bool isAlive = true;
         // -1 if never screened, otherwise [0, currentTimestep-1)
         int timeSinceLastScreening = -1;
         int screeningFrequency = -1; // -1 if screened only once and never again
         bool interventionScreening = false;
         bool seropositivity = false;
-
-        /// @brief Attributes describing Identification
-        struct IdentificationStatus {
-            bool identifiedAsPositiveInfection = false;
-            int timeIdentified = -1;
-        };
         IdentificationStatus idStatus;
-
-        /// @brief Attributes describing an Infection
-        struct InfectionStatus {
-            HEPCState hepcState = HEPCState::NONE;
-            LiverState liverState = LiverState::NONE;
-            int timeSinceHEPCStateChange = 0;
-            int timeSinceLiverStateChange = 0;
-        };
         InfectionStatus infectionStatus;
-
-        bool isAlive = true;
-
-        /// @brief Attributes describing drug use behavior
-        struct BehaviorDetails {
-            BehaviorClassification behaviorClassification =
-                BehaviorClassification::NEVER;
-            int timeSinceActive = -1;
-        };
         BehaviorDetails behaviorDetails;
-
-        /// @brief Attributes describing Linkage
-        struct LinkageDetails {
-            LinkageState linkState = LinkageState::NEVER;
-            int timeLinkChange = -1;
-            LinkageType linkType = LinkageType::BACKGROUND;
-        };
         LinkageDetails linkStatus;
-
         bool overdose = false;
-
-        /// @brief Attributes describing MOUD status
-        struct MOUDDetails {
-            MOUD moudState = MOUD::NONE;
-            int timeOnMOUD = 0;
-        };
-        MOUDDetails moudDetails;
-
         bool incompleteTreatment = false;
-
-        /// @brief Attributes describing pregnancy
-        struct PregnancyDetails {
-            bool pregnant = false;
-            int timeSpentPregnant = -1;
-            int infantCount = 0;
-            int miscarriageCount = 0;
-            PregnancyState pregnancyState = PregnancyState::NEVER;
-        };
+        MOUDDetails moudDetails;
         PregnancyDetails pregnancyDetails;
 
     public:
