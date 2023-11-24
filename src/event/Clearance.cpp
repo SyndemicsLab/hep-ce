@@ -17,6 +17,9 @@
 #include "Clearance.hpp"
 
 namespace Event {
+    // probabilityToRate doesn't include time, hence division by 6.0
+    double CLEARANCE_PROB = Utils::probabilityToRate(0.25) / 6.0;
+
     void Clearance::doEvent(std::shared_ptr<Person::Person> person) {
         // people infected with hcv have some probability of spontaneous
         // clearance.
@@ -29,14 +32,14 @@ namespace Event {
         std::vector<double> prob = this->getClearanceProb();
         // 2. Decide whether the person clears
         int value = this->getDecision(prob);
-        if (!value) {
+        // if you do not clear, return immediately
+        if (value) {
             return;
         }
         person->clearHCV();
     }
 
     std::vector<double> Clearance::getClearanceProb() {
-        // probabilityToRate doesn't include time, hence division by 6.0
-        return {Utils::probabilityToRate(0.25) / 6.0};
+        return {CLEARANCE_PROB};
     }
 } // namespace Event

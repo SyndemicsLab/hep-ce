@@ -21,6 +21,7 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
+    extern double CLEARANCE_PROB;
 
     /// @brief Subclass of Event used to Clear HCV Infections
     class Clearance : public ProbEvent {
@@ -28,6 +29,9 @@ namespace Event {
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
+        /// @brief Returns the probability of acute clearance
+        /// @details Typically, there's a 25% chance of acute hcv clearance in
+        /// the first six months of infection.
         std::vector<double> getClearanceProb();
 
     public:
