@@ -96,6 +96,20 @@ namespace Person {
         LHCC
     };
 
+    /// @brief Clinically staged liver fibrosis stage
+    enum class MeasuredLiverState {
+        /// Person has never been screened before
+        NONE,
+        /// Person is measured to be either F0 or F1
+        F01,
+        /// Person is measured to be either F2 or F3
+        F23,
+        /// Person is measured to be F4
+        F4,
+        /// Person has decompensated liver
+        DECOMP
+    };
+
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
     enum class MOUD {
         /// Never in MOUD
@@ -188,6 +202,7 @@ namespace Person {
         bool incompleteTreatment = false;
         MOUDDetails moudDetails;
         PregnancyDetails pregnancyDetails;
+        MeasuredLiverState measuredLiverState = MeasuredLiverState::NONE;
 
     public:
         /// @brief Person age in years

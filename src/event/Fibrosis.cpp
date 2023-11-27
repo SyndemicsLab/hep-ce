@@ -17,5 +17,13 @@
 #include "Fibrosis.hpp"
 
 namespace Event {
-    void Fibrosis::doEvent(std::shared_ptr<Person::Person> person) {}
+    void Fibrosis::doEvent(std::shared_ptr<Person::Person> person) {
+        // 1. Check the time since the person's last fibrosis staging test. If
+        // the person's last test is more recent than the limit, exit event.
+        // 2. Check the person's true liver state.
+        // 3. Get a vector of the probabilities of each of the possible fibrosis
+        // outcomes.
+        // 4. Decide which stage is assigned to the person.
+        // 5. Assign this state to the person.
+    }
 } // namespace Event
