@@ -30,7 +30,7 @@ namespace Event {
         if (!value) {
             return;
         }
-        person->infect();
+        person->infect(this->getCurrentTimestep());
     }
 
     std::vector<double>

@@ -62,20 +62,20 @@ TEST(PersonGrowth, DeathAge) {
 
 TEST(PersonInfect, InfectNormally) {
     Person::Person person;
-    person.infect();
+    person.infect(0);
     EXPECT_EQ(person.getHEPCState(), Person::HEPCState::ACUTE);
-    EXPECT_EQ(person.getTimeSinceHEPCStateChange(), 0);
+    EXPECT_EQ(person.getTimeHEPCStateChanged(), 0);
     EXPECT_TRUE(person.getSeropositivity());
 
     EXPECT_EQ(person.getLiverState(), Person::LiverState::F0);
-    EXPECT_EQ(person.getTimeSinceLiverStateChange(), 0);
+    EXPECT_EQ(person.getTimeLiverStateChanged(), 0);
 }
 
 TEST(PersonInfect, ResistMultiHCVInfect) {
     Person::Person person;
     person.diagnoseHEPC(5);
     person.setSeropositivity(false);
-    person.infect();
+    person.infect(0);
     EXPECT_EQ(person.getHEPCState(), Person::HEPCState::ACUTE);
     EXPECT_FALSE(person.getSeropositivity());
 }
@@ -83,7 +83,7 @@ TEST(PersonInfect, ResistMultiHCVInfect) {
 TEST(PersonInfect, ResistMultiFibrosisInfect) {
     Person::Person person;
     person.diagnoseLiver(5);
-    person.infect();
+    person.infect(0);
     EXPECT_EQ(person.getHEPCState(), Person::HEPCState::ACUTE);
     EXPECT_EQ(person.getLiverState(), Person::LiverState::F0);
 }
@@ -94,7 +94,7 @@ TEST(PersonLink, LinkNormally) {
     Person::LinkageType linkType = Person::LinkageType::BACKGROUND;
     person.link(timestep, linkType);
     EXPECT_EQ(person.getLinkState(), Person::LinkageState::LINKED);
-    EXPECT_EQ(person.getTimeLinkChange(), timestep);
+    EXPECT_EQ(person.getTimeOfLinkChange(), timestep);
     EXPECT_EQ(person.getLinkageType(), linkType);
 }
 
@@ -105,13 +105,13 @@ TEST(PersonUnlink, UnlinkNormally) {
     int unlinkTimestep = 10;
     person.unlink(unlinkTimestep);
     EXPECT_EQ(person.getLinkState(), Person::LinkageState::UNLINKED);
-    EXPECT_EQ(person.getTimeLinkChange(), unlinkTimestep);
+    EXPECT_EQ(person.getTimeOfLinkChange(), unlinkTimestep);
 }
 
 TEST(PersonUnlink, UnableToUnlink) {
     Person::Person person;
     person.unlink(10);
-    EXPECT_EQ(person.getTimeLinkChange(), -1);
+    EXPECT_EQ(person.getTimeOfLinkChange(), -1);
 }
 
 TEST(PersonBehavior, BehaviorUpdate) {
@@ -120,16 +120,16 @@ TEST(PersonBehavior, BehaviorUpdate) {
     EXPECT_EQ(person.getBehaviorClassification(),
               Person::BehaviorClassification::NEVER);
     // change to the NONINJECTION opioid usage state
-    person.updateBehavior(Person::BehaviorClassification::NONINJECTION);
+    person.updateBehavior(Person::BehaviorClassification::NONINJECTION, 0);
     EXPECT_EQ(person.getBehaviorClassification(),
               Person::BehaviorClassification::NONINJECTION);
 }
 
 TEST(PersonBehavior, InvalidTransition) {
     Person::Person person;
-    person.updateBehavior(Person::BehaviorClassification::NONINJECTION);
+    person.updateBehavior(Person::BehaviorClassification::NONINJECTION, 0);
     // cannot transition back to NEVER
-    person.updateBehavior(Person::BehaviorClassification::NEVER);
+    person.updateBehavior(Person::BehaviorClassification::NEVER, 0);
     EXPECT_EQ(person.getBehaviorClassification(),
               Person::BehaviorClassification::NONINJECTION);
 }
@@ -139,14 +139,14 @@ TEST(PersonLiver, LiverUpdate) {
     // people start in the NONE state
     EXPECT_EQ(person.getLiverState(), Person::LiverState::NONE);
     // change to a higher disease state
-    person.updateLiver(Person::LiverState::F4);
+    person.updateLiver(Person::LiverState::F4, 0);
     EXPECT_EQ(person.getLiverState(), Person::LiverState::F4);
 }
 
 TEST(PersonLiver, InvalidTransition) {
     Person::Person person;
-    person.updateLiver(Person::LiverState::F4);
+    person.updateLiver(Person::LiverState::F4, 0);
     // cannot transition to a lower disease state
-    person.updateLiver(Person::LiverState::F3);
+    person.updateLiver(Person::LiverState::F3, 0);
     EXPECT_EQ(person.getLiverState(), Person::LiverState::F4);
 }

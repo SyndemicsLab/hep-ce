@@ -32,12 +32,13 @@ namespace Event {
     bool
     Treatment::isEligible(std::shared_ptr<Person::Person> const person) const {
         Person::LiverState liverState = person->getLiverState();
-        int timeSinceLinked = person->getTimeLinkChange();
+        int timeSinceLinked = person->getTimeOfLinkChange();
         Person::BehaviorClassification behavior =
             person->getBehaviorClassification();
         int timeBehaviorChange = person->getTimeBehaviorChange();
         if (!isEligibleFibrosisStage(liverState) ||
-            (timeSinceLinked > eligibleTimeSinceLinked) ||
+            ((this->getCurrentTimestep() - timeSinceLinked) >
+             eligibleTimeSinceLinked) ||
             (behavior == Person::BehaviorClassification::INJECTION) ||
             (behavior == Person::BehaviorClassification::FORMER_INJECTION &&
              timeBehaviorChange < eligibleTimeBehaviorChange)) {

@@ -35,6 +35,6 @@ namespace Event {
         // 3. Randomly draw the state to transition to
         Person::LiverState toLS = (Person::LiverState)this->getDecision(probs);
         // 4. Transition to the new state
-        person->updateLiver(toLS);
+        person->updateLiver(toLS, this->getCurrentTimestep());
     }
 } // namespace Event
