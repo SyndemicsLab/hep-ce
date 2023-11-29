@@ -33,7 +33,7 @@ namespace Event {
         if (doesNotClear) {
             return;
         }
-        person->clearHCV();
+        person->clearHCV(this->getCurrentTimestep());
     }
 
     std::vector<double> Clearance::getClearanceProb() {

@@ -11,13 +11,13 @@ namespace Person {
         }
     }
 
-    void Person::infect() {
+    void Person::infect(int timestep) {
         // cannot be multiply infected
         if (this->infectionStatus.hepcState != HEPCState::NONE) {
             return;
         }
         this->infectionStatus.hepcState = HEPCState::ACUTE;
-        this->infectionStatus.timeSinceHEPCStateChange = 0;
+        this->infectionStatus.timeHEPCStateChanged = timestep;
         this->seropositivity = true;
 
         if (this->infectionStatus.liverState != LiverState::NONE) {
@@ -25,28 +25,29 @@ namespace Person {
         }
         // once infected, immediately enter F0
         this->infectionStatus.liverState = LiverState::F0;
-        this->infectionStatus.timeSinceLiverStateChange = 0;
+        this->infectionStatus.timeLiverStateChanged = timestep;
     }
 
-    void Person::clearHCV() {
+    void Person::clearHCV(int timestep) {
         // cannot clear if the person is not infected
         if (this->infectionStatus.hepcState == HEPCState::NONE) {
             return;
         }
         this->infectionStatus.hepcState = HEPCState::NONE;
-        this->infectionStatus.timeSinceHEPCStateChange = 0;
+        this->infectionStatus.timeHEPCStateChanged = timestep;
     }
 
-    void Person::updateLiver(const LiverState &ls) {
+    void Person::updateLiver(const LiverState &ls, int timestep) {
         // nothing to do -- can only advance liver state
         if (ls <= this->infectionStatus.liverState) {
             return;
         }
         this->infectionStatus.liverState = ls;
-        this->infectionStatus.timeSinceLiverStateChange = 0;
+        this->infectionStatus.timeLiverStateChanged = timestep;
     }
 
-    void Person::updateBehavior(const BehaviorClassification &bc) {
+    void Person::updateBehavior(const BehaviorClassification &bc,
+                                int timestep) {
         // nothing to do -- cannot go back to NEVER
         if (bc == this->behaviorDetails.behaviorClassification ||
             bc == BehaviorClassification::NEVER) {
@@ -55,7 +56,7 @@ namespace Person {
         // count for timeSinceActive if switching from active to non-active use
         if ((bc == BehaviorClassification::FORMER_NONINJECTION) ||
             (bc == BehaviorClassification::FORMER_INJECTION)) {
-            this->behaviorDetails.timeSinceActive = 0;
+            this->behaviorDetails.timeLastActive = timestep;
         }
         // update the behavior classification
         this->behaviorDetails.behaviorClassification = bc;

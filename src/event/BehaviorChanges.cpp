@@ -51,7 +51,7 @@ namespace Event {
             (Person::BehaviorClassification)this->getDecision(probs);
         // 3. If the drawn state differs from the current state, change the
         // bools in BehaviorState to match
-        person->updateBehavior(toBC);
+        person->updateBehavior(toBC, this->getCurrentTimestep());
     }
 
     std::vector<double>

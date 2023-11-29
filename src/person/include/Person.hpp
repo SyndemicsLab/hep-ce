@@ -149,34 +149,34 @@ namespace Person {
     struct InfectionStatus {
         HEPCState hepcState = HEPCState::NONE;
         LiverState liverState = LiverState::NONE;
-        int timeSinceHEPCStateChange = 0;
-        int timeSinceLiverStateChange = 0;
+        int timeHEPCStateChanged = 0;
+        int timeLiverStateChanged = 0;
     };
 
     /// @brief Attributes describing drug use behavior
     struct BehaviorDetails {
         BehaviorClassification behaviorClassification =
             BehaviorClassification::NEVER;
-        int timeSinceActive = -1;
+        int timeLastActive = -1;
     };
 
     /// @brief Attributes describing Linkage
     struct LinkageDetails {
         LinkageState linkState = LinkageState::NEVER;
-        int timeLinkChange = -1;
+        int timeOfLinkChange = -1;
         LinkageType linkType = LinkageType::BACKGROUND;
     };
 
     /// @brief Attributes describing MOUD status
     struct MOUDDetails {
         MOUD moudState = MOUD::NONE;
-        int timeOnMoud = -1;
+        int timeStartedMoud = -1;
     };
 
     /// @brief Attributes describing pregnancy
     struct PregnancyDetails {
         PregnancyState pregnancyState = PregnancyState::NEVER;
-        int timeSpentPregnant = -1;
+        int timeOfPregnancyChange = -1;
         int infantCount = 0;
         int miscarriageCount = 0;
     };
@@ -184,7 +184,7 @@ namespace Person {
     /// @brief Person attributes describing clinically assessed liver stage
     struct StagingDetails {
         MeasuredLiverState measuredLiverState = MeasuredLiverState::NONE;
-        int timeSinceStaging = -1;
+        int timeOfLastStaging = -1;
     };
 
     /// @brief Class describing a Person
@@ -226,18 +226,22 @@ namespace Person {
         void grow();
 
         /// @brief Infect the person
-        void infect();
+        /// @param timestep Current simulation timestep
+        void infect(int timestep);
 
         /// @brief Clear of HCV
-        void clearHCV();
+        /// @param timestep Current simulation timestep
+        void clearHCV(int timestep);
 
         /// @brief Update the Liver State
         /// @param ls Current Liver State
-        void updateLiver(const LiverState &ls);
+        /// @param timestep Current simulation timestep
+        void updateLiver(const LiverState &ls, int timestep);
 
         /// @brief Update Opioid Use Behavior Classification
         /// @param bc The intended resultant BehaviorClassification
-        void updateBehavior(const BehaviorClassification &bc);
+        /// @param timestep Current simulation timestep
+        void updateBehavior(const BehaviorClassification &bc, int timestep);
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
@@ -270,7 +274,7 @@ namespace Person {
         void unlink(const int timestep) {
             if (this->linkStatus.linkState == LinkageState::LINKED) {
                 this->linkStatus.linkState = LinkageState::UNLINKED;
-                this->linkStatus.timeLinkChange = timestep;
+                this->linkStatus.timeOfLinkChange = timestep;
             }
         }
 
@@ -279,7 +283,7 @@ namespace Person {
         /// @param linkType The linkage type the Person recieves
         void link(int timestep, LinkageType linkType) {
             this->linkStatus.linkState = LinkageState::LINKED;
-            this->linkStatus.timeLinkChange = timestep;
+            this->linkStatus.timeOfLinkChange = timestep;
             this->linkStatus.linkType = linkType;
         }
 
@@ -338,19 +342,19 @@ namespace Person {
         /// @brief Getter for time since active drug use
         /// @return Time since the person left an active drug use state
         int getTimeBehaviorChange() {
-            return this->behaviorDetails.timeSinceActive;
+            return this->behaviorDetails.timeLastActive;
         }
 
-        /// @brief Getter for Time since HCV Change
+        /// @brief Getter for timestep in which HCV last changed
         /// @return Time Since HCV Change
-        int getTimeSinceHEPCStateChange() const {
-            return this->infectionStatus.timeSinceHEPCStateChange;
+        int getTimeHEPCStateChanged() const {
+            return this->infectionStatus.timeHEPCStateChanged;
         }
 
         /// @brief Getter for Time since Liver State Change
         /// @return Time Since Liver State Change
-        int getTimeSinceLiverStateChange() const {
-            return this->infectionStatus.timeSinceLiverStateChange;
+        int getTimeLiverStateChanged() const {
+            return this->infectionStatus.timeLiverStateChanged;
         }
 
         /// @brief Getter for Seropositivity
@@ -367,10 +371,10 @@ namespace Person {
         /// @return Link State
         LinkageState getLinkState() const { return this->linkStatus.linkState; }
 
-        /// @brief Getter for Time Link Change
+        /// @brief Getter for Timestep in which linkage changed
         /// @return Time Link Change
-        int getTimeLinkChange() const {
-            return this->linkStatus.timeLinkChange;
+        int getTimeOfLinkChange() const {
+            return this->linkStatus.timeOfLinkChange;
         }
 
         /// @brief Getter for Linkage Type
@@ -378,6 +382,7 @@ namespace Person {
         LinkageType getLinkageType() const { return this->linkStatus.linkType; }
 
         /// @brief Get the person's numeric ID
+        /// @return Person's numeric ID
         int getID() const { return this->id; }
 
         /// @brief
@@ -386,6 +391,9 @@ namespace Person {
             return this->incompleteTreatment;
         }
 
+        /// @brief
+        /// @param incompleteTreatment
+        /// @return
         void setIncompleteTreatment(bool incompleteTreatment) {
             this->incompleteTreatment = incompleteTreatment;
         }
@@ -396,10 +404,10 @@ namespace Person {
             return this->pregnancyDetails.pregnancyState;
         }
 
-        /// @brief Getter for time spent pregnant
-        /// @return Time spent pregnant
-        int getTimeSpentPregnant() {
-            return this->pregnancyDetails.timeSpentPregnant;
+        /// @brief Getter for timestep in which last pregnancy change happened
+        /// @return Time pregnancy state last changed
+        int getTimeOfPregnancyChange() {
+            return this->pregnancyDetails.timeOfPregnancyChange;
         }
 
         /// @brief Getter for number of infants
@@ -418,19 +426,20 @@ namespace Person {
             return this->stagingDetails.measuredLiverState;
         }
 
-        /// @brief Getter for time since last liver staging
-        /// @return Time since person's last liver staging
-        int getTimeSinceLiverStaging() {
-            return this->stagingDetails.timeSinceStaging;
+        /// @brief Getter for timestep in which the last liver staging test
+        /// happened
+        /// @return Timestep of person's last liver staging
+        int getTimeOfLastStaging() {
+            return this->stagingDetails.timeOfLastStaging;
         }
 
         /// @brief Getter for MOUD State
         /// @return MOUD State
         MOUD getMoudState() { return this->moudDetails.moudState; }
 
-        /// @brief Getter for time spent on MOUD
+        /// @brief Getter for timestep in which MOUD was started
         /// @return Time spent on MOUD
-        int getTimeOnMoud() { return this->moudDetails.timeOnMoud; }
+        int getTimeStartedMoud() { return this->moudDetails.timeStartedMoud; }
     };
 } // namespace Person
 #endif

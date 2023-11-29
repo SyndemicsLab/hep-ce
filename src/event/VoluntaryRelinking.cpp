@@ -27,7 +27,7 @@ namespace Event {
         this->generatorMutex.unlock();
 
         if (person->getLinkState() != Person::LinkageState::UNLINKED ||
-            (this->getCurrentTimestep() - person->getTimeLinkChange()) >
+            (this->getCurrentTimestep() - person->getTimeOfLinkChange()) >
                 this->voluntaryRelinkDuration ||
             !relink) {
             return; // if linked or never linked OR too long since last linked

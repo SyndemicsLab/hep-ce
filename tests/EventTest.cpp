@@ -68,7 +68,7 @@ TEST_F(EventTest, BehaviorChange) {
 TEST_F(EventTest, Clearance) {
     Data::DataTable table;
     Event::Clearance clearance(simulation->getGenerator(), table);
-    livingPopulation[0]->infect();
+    livingPopulation[0]->infect(0);
     clearance.execute(livingPopulation, 1);
     EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
 }
@@ -87,7 +87,7 @@ TEST_F(EventTest, DiseaseProgression) {
     Data::DataTable table;
     Event::DiseaseProgression diseaseProgression(simulation->getGenerator(),
                                                  table);
-    livingPopulation[0]->infect();
+    livingPopulation[0]->infect(0);
     diseaseProgression.execute(livingPopulation, 1);
     EXPECT_EQ(Person::LiverState::F0, livingPopulation[0]->getLiverState());
 }
