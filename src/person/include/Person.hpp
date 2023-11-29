@@ -170,7 +170,7 @@ namespace Person {
     /// @brief Attributes describing MOUD status
     struct MOUDDetails {
         MOUD moudState = MOUD::NONE;
-        int timeOnMOUD = 0;
+        int timeOnMoud = -1;
     };
 
     /// @brief Attributes describing pregnancy
@@ -390,24 +390,24 @@ namespace Person {
             this->incompleteTreatment = incompleteTreatment;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for pregnancy status
+        /// @return Pregnancy State
         PregnancyState getPregnancyState() {
             return this->pregnancyDetails.pregnancyState;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for time spent pregnant
+        /// @return Time spent pregnant
         int getTimeSpentPregnant() {
             return this->pregnancyDetails.timeSpentPregnant;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for number of infants
+        /// @return Number of infants born to this person
         int getInfantCount() { return this->pregnancyDetails.infantCount; }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for number of miscarriages
+        /// @return Number of miscarriages this person has experienced
         int getMiscarriageCount() {
             return this->pregnancyDetails.miscarriageCount;
         }
@@ -423,6 +423,14 @@ namespace Person {
         int getTimeSinceLiverStaging() {
             return this->stagingDetails.timeSinceStaging;
         }
+
+        /// @brief Getter for MOUD State
+        /// @return MOUD State
+        MOUD getMoudState() { return this->moudDetails.moudState; }
+
+        /// @brief Getter for time spent on MOUD
+        /// @return Time spent on MOUD
+        int getTimeOnMoud() { return this->moudDetails.timeOnMoud; }
     };
 } // namespace Person
 #endif

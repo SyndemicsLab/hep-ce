@@ -61,7 +61,7 @@ TEST_F(EventTest, BehaviorChange) {
     Event::BehaviorChanges behavior(simulation->getGenerator(), table);
     behavior.execute(livingPopulation, 1);
 
-    EXPECT_EQ(Person::BehaviorClassification::NEVER,
+    EXPECT_EQ(Person::BehaviorClassification::FORMER_INJECTION,
               livingPopulation.at(0)->getBehaviorClassification());
 }
 
