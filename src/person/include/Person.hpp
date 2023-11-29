@@ -175,11 +175,16 @@ namespace Person {
 
     /// @brief Attributes describing pregnancy
     struct PregnancyDetails {
-        bool pregnant = false;
+        PregnancyState pregnancyState = PregnancyState::NEVER;
         int timeSpentPregnant = -1;
         int infantCount = 0;
         int miscarriageCount = 0;
-        PregnancyState pregnancyState = PregnancyState::NEVER;
+    };
+
+    /// @brief Person attributes describing clinically assessed liver stage
+    struct StagingDetails {
+        MeasuredLiverState measuredLiverState = MeasuredLiverState::NONE;
+        int timeSinceStaging = -1;
     };
 
     /// @brief Class describing a Person
@@ -202,7 +207,7 @@ namespace Person {
         bool incompleteTreatment = false;
         MOUDDetails moudDetails;
         PregnancyDetails pregnancyDetails;
-        MeasuredLiverState measuredLiverState = MeasuredLiverState::NONE;
+        StagingDetails stagingDetails;
 
     public:
         /// @brief Person age in years
@@ -383,6 +388,40 @@ namespace Person {
 
         void setIncompleteTreatment(bool incompleteTreatment) {
             this->incompleteTreatment = incompleteTreatment;
+        }
+
+        /// @brief
+        /// @return
+        PregnancyState getPregnancyState() {
+            return this->pregnancyDetails.pregnancyState;
+        }
+
+        /// @brief
+        /// @return
+        int getTimeSpentPregnant() {
+            return this->pregnancyDetails.timeSpentPregnant;
+        }
+
+        /// @brief
+        /// @return
+        int getInfantCount() { return this->pregnancyDetails.infantCount; }
+
+        /// @brief
+        /// @return
+        int getMiscarriageCount() {
+            return this->pregnancyDetails.miscarriageCount;
+        }
+
+        /// @brief Getter for measured liver state
+        /// @return Measured Liver State
+        MeasuredLiverState getMeasuredLiverState() {
+            return this->stagingDetails.measuredLiverState;
+        }
+
+        /// @brief Getter for time since last liver staging
+        /// @return Time since person's last liver staging
+        int getTimeSinceLiverStaging() {
+            return this->stagingDetails.timeSinceStaging;
         }
     };
 } // namespace Person

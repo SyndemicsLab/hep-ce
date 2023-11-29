@@ -15,7 +15,7 @@ conan install . --build=missing --settings=build_type=Debug
 # use a subshell to enter the build folder and build HEP-CE
 (
     cd "build/" || exit
-    # check if the conan generator file worked correctly
+    # check if the conan generator file was generated successfully
     if [[ -f "Debug/generators/conanbuild.sh" ]]; then
 	source "Debug/generators/conanbuild.sh"
     else
