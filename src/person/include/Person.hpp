@@ -96,6 +96,20 @@ namespace Person {
         LHCC
     };
 
+    /// @brief Clinically staged liver fibrosis stage
+    enum class MeasuredLiverState {
+        /// Person has never been screened before
+        NONE,
+        /// Person is measured to be either F0 or F1
+        F01,
+        /// Person is measured to be either F2 or F3
+        F23,
+        /// Person is measured to be F4
+        F4,
+        /// Person has decompensated liver
+        DECOMP
+    };
+
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
     enum class MOUD {
         /// Never in MOUD
@@ -161,11 +175,16 @@ namespace Person {
 
     /// @brief Attributes describing pregnancy
     struct PregnancyDetails {
-        bool pregnant = false;
+        PregnancyState pregnancyState = PregnancyState::NEVER;
         int timeSpentPregnant = -1;
         int infantCount = 0;
         int miscarriageCount = 0;
-        PregnancyState pregnancyState = PregnancyState::NEVER;
+    };
+
+    /// @brief Person attributes describing clinically assessed liver stage
+    struct StagingDetails {
+        MeasuredLiverState measuredLiverState = MeasuredLiverState::NONE;
+        int timeSinceStaging = -1;
     };
 
     /// @brief Class describing a Person
@@ -188,6 +207,7 @@ namespace Person {
         bool incompleteTreatment = false;
         MOUDDetails moudDetails;
         PregnancyDetails pregnancyDetails;
+        StagingDetails stagingDetails;
 
     public:
         /// @brief Person age in years
@@ -368,6 +388,40 @@ namespace Person {
 
         void setIncompleteTreatment(bool incompleteTreatment) {
             this->incompleteTreatment = incompleteTreatment;
+        }
+
+        /// @brief
+        /// @return
+        PregnancyState getPregnancyState() {
+            return this->pregnancyDetails.pregnancyState;
+        }
+
+        /// @brief
+        /// @return
+        int getTimeSpentPregnant() {
+            return this->pregnancyDetails.timeSpentPregnant;
+        }
+
+        /// @brief
+        /// @return
+        int getInfantCount() { return this->pregnancyDetails.infantCount; }
+
+        /// @brief
+        /// @return
+        int getMiscarriageCount() {
+            return this->pregnancyDetails.miscarriageCount;
+        }
+
+        /// @brief Getter for measured liver state
+        /// @return Measured Liver State
+        MeasuredLiverState getMeasuredLiverState() {
+            return this->stagingDetails.measuredLiverState;
+        }
+
+        /// @brief Getter for time since last liver staging
+        /// @return Time since person's last liver staging
+        int getTimeSinceLiverStaging() {
+            return this->stagingDetails.timeSinceStaging;
         }
     };
 } // namespace Person
