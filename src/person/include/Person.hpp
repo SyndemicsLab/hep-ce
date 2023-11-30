@@ -149,6 +149,7 @@ namespace Person {
     struct InfectionStatus {
         HEPCState hepcState = HEPCState::NONE;
         LiverState liverState = LiverState::NONE;
+        bool seropositivity = false;
         int timeHEPCStateChanged = 0;
         int timeLiverStateChanged = 0;
     };
@@ -187,6 +188,13 @@ namespace Person {
         int timeOfLastStaging = -1;
     };
 
+    struct ScreeningDetails {
+        // -1 if never screened, otherwise [0, currentTimestep-1)
+        int timeOfLastScreening = -1;
+        int screeningFrequency = -1; // -1 if screened only once and never again
+        bool interventionScreening = false;
+    };
+
     /// @brief Class describing a Person
     class Person {
     private:
@@ -194,11 +202,6 @@ namespace Person {
         int id = count;
         Sex sex = Sex::MALE;
         bool isAlive = true;
-        // -1 if never screened, otherwise [0, currentTimestep-1)
-        int timeSinceLastScreening = -1;
-        int screeningFrequency = -1; // -1 if screened only once and never again
-        bool interventionScreening = false;
-        bool seropositivity = false;
         IdentificationStatus idStatus;
         InfectionStatus infectionStatus;
         BehaviorDetails behaviorDetails;
@@ -208,6 +211,7 @@ namespace Person {
         MOUDDetails moudDetails;
         PregnancyDetails pregnancyDetails;
         StagingDetails stagingDetails;
+        ScreeningDetails screeningDetails;
 
     public:
         /// @brief Person age in years
@@ -252,21 +256,23 @@ namespace Person {
         HEPCState diagnoseHEPC(int timestep);
 
         /// @brief Mark somebody as having been screened this timestep
-        void markScreened() { this->timeSinceLastScreening = 0; }
+        void markScreened() { this->screeningDetails.timeOfLastScreening = 0; }
 
         /// @brief Set the frequency in which to screen this person
         /// @param screeningFrequency Frequency in which to screen this person
         void setScreeningFrequency(int screeningFrequency) {
-            this->screeningFrequency = screeningFrequency;
+            this->screeningDetails.screeningFrequency = screeningFrequency;
         }
 
         /// @brief Add intervention screening to this person
-        void addInterventionScreening() { this->interventionScreening = true; }
+        void addInterventionScreening() {
+            this->screeningDetails.interventionScreening = true;
+        }
 
         /// @brief Set the Seropositivity value
         /// @param seropositivity Seropositivity status to set
         void setSeropositivity(bool seropositivity) {
-            this->seropositivity = seropositivity;
+            this->infectionStatus.seropositivity = seropositivity;
         }
 
         /// @brief Reset a Person's Link State to Unlinked
@@ -296,18 +302,20 @@ namespace Person {
 
         /// @brief Getter for the Time Since the Last Screening
         /// @return The Time Since the Last Screening
-        int getTimeSinceLastScreening() const {
-            return this->timeSinceLastScreening;
+        int getTimeOfLastScreening() const {
+            return this->screeningDetails.timeOfLastScreening;
         }
 
         /// @brief Getter for the Screening Frequency
         /// @return The Screening Frequency
-        int getScreeningFrequency() const { return this->screeningFrequency; }
+        int getScreeningFrequency() const {
+            return this->screeningDetails.screeningFrequency;
+        }
 
         /// @brief Getter for the if the Person was Screened via Interventions
         /// @return Intervention Screening Status
         bool isInterventionScreened() const {
-            return this->interventionScreening;
+            return this->screeningDetails.interventionScreening;
         }
 
         /// @brief Flips the person's overdose state
@@ -359,7 +367,9 @@ namespace Person {
 
         /// @brief Getter for Seropositivity
         /// @return Seropositivity
-        bool getSeropositivity() const { return this->seropositivity; }
+        bool getSeropositivity() const {
+            return this->infectionStatus.seropositivity;
+        }
 
         /// @brief Getter for Identification Status
         /// @return Boolean Describing Indentified as Positive Status

@@ -18,7 +18,7 @@ namespace Person {
         }
         this->infectionStatus.hepcState = HEPCState::ACUTE;
         this->infectionStatus.timeHEPCStateChanged = timestep;
-        this->seropositivity = true;
+        this->infectionStatus.seropositivity = true;
 
         if (this->infectionStatus.liverState != LiverState::NONE) {
             return;
