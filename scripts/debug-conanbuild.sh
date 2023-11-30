@@ -1,5 +1,14 @@
 #!/usr/bin/bash
 
+check-submodules () {
+    if [[ ! -d "libs/DataManagement" ]]; then
+	git submodule init
+    fi
+    if ! git submodule update --recursive; then
+	echo "There was an issue trying to load git submodules."
+    fi
+}
+
 #ensure the "build/" directory exists
 ([[ -d "build/" ]] && rm -rf build/*) || mkdir "build/"
 
@@ -8,6 +17,9 @@ if ! command -v conan &>/dev/null; then
     echo "The \`conan\` command is not found!"
     exit 1
 fi
+
+# ensure that DataManagement is present before trying to build
+check-submodules
 
 # use conan to build dependencies if not found on the current system
 conan install . --build=missing --settings=build_type=Debug

@@ -3,14 +3,22 @@
 
 ## Building the Simulation
 ### Dependencies
-- GoogleTest/`gtest` (optional)
+- [DataManagement](https://github.com/SyndemicsLab/DataManagement)
+- [conan2](https://conan.io)
+- [GoogleTest/`gtest`](https://github.com/google/googletest) (optional)
 
 ### Unix-based Systems
+
 ```sh
 git clone git@github.com:SyndemicsLab/HEPCESimulationv2
-cd HEPCESimulationv2/build
-cmake ..
-make
+scripts/debug-conanbuild.sh
+```
+
+### Windows
+```bat
+git clone git@github.com:SyndemicsLab/HEPCESimulationv2
+cd scripts
+debug-conanbuild.bat
 ```
 
 ## Model Flow
