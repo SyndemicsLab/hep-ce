@@ -3,6 +3,22 @@
 namespace Person {
     int count = 0;
 
+    Person::Person(std::vector<std::string> dataTableRow, int simCycle) {
+        count++;
+        if (dataTableRow.empty() || dataTableRow.size() < 28) {
+            return;
+        }
+
+        this->id = stoi(dataTableRow[0]);
+
+        std::transform(dataTableRow[1].begin(), dataTableRow[1].end(),
+                       dataTableRow[1].begin(), ::tolower);
+
+        this->sex =
+            (dataTableRow[1] == std::string("male")) ? Sex::MALE : Sex::FEMALE;
+        // age, gender, idu, infection, fibrosis,
+    }
+
     void Person::die() { this->isAlive = false; }
 
     void Person::grow() {

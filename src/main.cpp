@@ -1,5 +1,3 @@
-#include <filesystem>
-
 #include "run.cpp"
 
 /// @brief
@@ -34,6 +32,7 @@ int main(int argc, char *argv[]) {
                       sim.loadEvents(personEvents);
 
                       std::vector<sharedPerson> population;
+                      loadPopulation(population, tables, sim);
                       sim.loadPopulation(population);
                   });
 

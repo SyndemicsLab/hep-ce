@@ -20,6 +20,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
@@ -219,6 +220,8 @@ namespace Person {
 
         /// @brief Default constructor for Person
         Person() { count++; }
+
+        Person(std::vector<std::string> dataTableRow, int simCycle);
 
         /// @brief Default destructor for Person
         virtual ~Person() { count--; }

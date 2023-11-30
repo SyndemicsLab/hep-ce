@@ -103,6 +103,8 @@ namespace Simulation {
         /// sample the pRNG
         /// @return Reference to the simulation's pseudorandom number generator
         std::mt19937_64 &getGenerator() { return generator; }
+
+        uint32_t getCurrentTimestep() { return this->currentTimestep; }
     };
 
 } // namespace Simulation
