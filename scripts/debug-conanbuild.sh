@@ -1,9 +1,9 @@
 #!/usr/bin/bash
 
 check-submodules () {
-    if [[ ! -d "libs/DataManagement" ]]; then
-	git submodule init
-    fi
+    # ensure that the submodules are included in the config
+    git submodule init
+    # check if the submodules update without error, otherwise display a message.
     if ! git submodule update --recursive; then
 	echo "There was an issue trying to load git submodules."
     fi
