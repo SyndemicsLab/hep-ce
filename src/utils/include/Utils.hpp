@@ -18,7 +18,9 @@
 #define UTILS_UTILS_HPP_
 
 #include <cmath>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 
 /// @brief Namespace containing Utility Helper Functions
 namespace Utils {

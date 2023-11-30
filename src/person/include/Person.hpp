@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "Utils.hpp"
+
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
     /// @brief A running count of the number of people in the simulation
@@ -217,6 +219,21 @@ namespace Person {
     public:
         /// @brief Person age in years
         double age = 0;
+
+        static std::unordered_map<std::string, HEPCState> hepcStateMap;
+        static std::unordered_map<std::string, BehaviorClassification>
+            Person::behaviorClassificationMap;
+        static std::unordered_map<std::string, LinkageType> linkageTypeMap;
+        static std::unordered_map<std::string, LinkageState> linkageStateMap;
+
+        static std::unordered_map<std::string, LiverState> liverStateMap;
+        static std::unordered_map<std::string, MeasuredLiverState>
+            measuredLiverStateMap;
+        static std::unordered_map<std::string, MOUD> moudMap;
+        static std::unordered_map<std::string, Sex> sexMap;
+
+        static std::unordered_map<std::string, PregnancyState>
+            pregnancyStateMap;
 
         /// @brief Default constructor for Person
         Person() { count++; }
