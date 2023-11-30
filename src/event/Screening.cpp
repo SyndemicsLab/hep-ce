@@ -28,10 +28,10 @@ namespace Event {
         double prob = 0.5;
         if ((person->isInterventionScreened() &&
              person->getScreeningFrequency() == -1 &&
-             person->getTimeSinceLastScreening() == -1) ||
+             person->getTimeOfLastScreening() == -1) ||
             (person->isInterventionScreened() &&
              person->getScreeningFrequency() != -1 &&
-             person->getTimeSinceLastScreening() >
+             (this->getCurrentTimestep() - person->getTimeOfLastScreening()) >
                  person->getScreeningFrequency())) {
             // time one-time screen or periodic screen
         } else {
@@ -48,7 +48,8 @@ namespace Event {
     }
 
     void Screening::backgroundScreen(std::shared_ptr<Person::Person> person) {
-        if (person->getTimeSinceLastScreening() == 0 &&
+        if ((this->getCurrentTimestep() - person->getTimeOfLastScreening()) ==
+                0 &&
             this->getCurrentTimestep() > 0) {
             return;
         }
@@ -69,7 +70,8 @@ namespace Event {
     }
 
     void Screening::interventionScreen(std::shared_ptr<Person::Person> person) {
-        if (person->getTimeSinceLastScreening() == 0 &&
+        if ((this->getCurrentTimestep() - person->getTimeOfLastScreening()) ==
+                0 &&
             this->getCurrentTimestep() > 0) {
             return;
         }
