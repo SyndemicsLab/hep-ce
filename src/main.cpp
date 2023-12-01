@@ -1,39 +1,40 @@
-#include "AllEvents.hpp"
-#include "DataTable.hpp"
-#include "Simulation.hpp"
-#include <memory>
+#include "run.hpp"
 
-using sharedEvent = std::shared_ptr<Event::Event>;
-
-template <typename T> sharedEvent makeEvent() { return std::make_shared<T>(); }
-
-template <typename T>
-sharedEvent makeEvent(std::mt19937_64 &generator, Data::DataTable &table) {
-    return std::make_shared<T>(generator, table);
-}
-
+/// @brief
+/// @param argc
+/// @param argv
+/// @return
 int main(int argc, char *argv[]) {
-    Simulation::Simulation sim(0, 0);
-    Data::DataTable table;
+    int taskStart;
+    int taskEnd;
+    std::string rootInputDir;
+    if (!argChecks(argc, argv, rootInputDir, taskStart, taskEnd)) {
+        return 0;
+    }
 
-    // create the person-level event vector
-    std::vector<sharedEvent> personEvents;
-    sharedEvent aging = makeEvent<Event::Aging>();
-    personEvents.push_back(aging);
-    sharedEvent behavior =
-        makeEvent<Event::BehaviorChanges>(sim.getGenerator(), table);
-    personEvents.push_back(behavior);
-    sharedEvent clearance =
-        makeEvent<Event::Clearance>(sim.getGenerator(), table);
-    personEvents.push_back(clearance);
-    sharedEvent disease =
-        makeEvent<Event::DiseaseProgression>(sim.getGenerator(), table);
-    personEvents.push_back(disease);
-    sharedEvent infection =
-        makeEvent<Event::Infections>(sim.getGenerator(), table);
-    personEvents.push_back(infection);
+    std::vector<int> runs((taskEnd + 1) - taskStart);
+    std::iota(std::begin(runs), std::end(runs), taskStart);
 
-    sim.loadEvents(personEvents);
+    std::for_each(std::execution::par_unseq, std::begin(runs), std::end(runs),
+                  [&](int i) {
+                      Simulation::Simulation sim(0, 0);
+                      std::unordered_map<std::string, Data::DataTable> tables;
+
+                      std::filesystem::path inputSet =
+                          ((std::filesystem::path)rootInputDir) /
+                          ("input" + std::to_string(i));
+
+                      loadTables(tables, inputSet.string());
+
+                      // create the person-level event vector
+                      //   std::vector<sharedEvent> personEvents;
+                      //   loadEvents(personEvents, tables, sim);
+                      //   sim.loadEvents(personEvents);
+
+                      std::vector<sharedPerson> population;
+                      loadPopulation(population, tables, sim);
+                      sim.loadPopulation(population);
+                  });
 
     return 0;
 }

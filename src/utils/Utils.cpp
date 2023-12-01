@@ -39,4 +39,18 @@ namespace Utils {
         }
         return valueToDiscount / pow(1 + discountRate, timestep);
     }
+
+    std::string toLower(std::string string) {
+        std::string temp = string;
+        std::transform(temp.begin(), temp.end(), temp.begin(), ::tolower);
+        return temp;
+    }
+
+    bool stobool(std::string string) {
+        std::string temp = toLower(string);
+        std::istringstream is(temp);
+        bool b;
+        is >> std::boolalpha >> b;
+        return b;
+    }
 } // namespace Utils

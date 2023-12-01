@@ -18,7 +18,9 @@
 #define UTILS_UTILS_HPP_
 
 #include <cmath>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 
 /// @brief Namespace containing Utility Helper Functions
 namespace Utils {
@@ -39,6 +41,16 @@ namespace Utils {
     /// @return
     double discount(double valueToDiscount, double discountRate,
                     double timestep);
+
+    /// @brief
+    /// @param string
+    /// @return
+    std::string toLower(std::string string);
+
+    /// @brief
+    /// @param string
+    /// @return
+    bool stobool(std::string string);
 } // namespace Utils
 
 #endif
