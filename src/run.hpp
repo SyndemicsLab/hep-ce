@@ -1,0 +1,73 @@
+#include "AllEvents.hpp"
+#include "DataTable.hpp"
+#include "Simulation.hpp"
+#include <filesystem>
+#include <memory>
+#include <unordered_map>
+
+/// @brief
+using sharedEvent = std::shared_ptr<Event::Event>;
+
+/// @brief
+using sharedPerson = std::shared_ptr<Person::Person>;
+
+/// @brief
+/// @tparam T
+/// @return
+template <typename T> sharedEvent makeEvent() { return std::make_shared<T>(); }
+
+/// @brief
+/// @tparam T
+/// @param generator
+/// @param table
+/// @return
+template <typename T>
+sharedEvent makeEvent(std::mt19937_64 &generator, Data::DataTable &table) {
+    return std::make_shared<T>(generator, table);
+}
+
+/// @brief
+/// @tparam T
+/// @return
+template <typename T> sharedPerson makePerson() {
+    return std::make_shared<T>();
+}
+
+/// @brief
+/// @tparam T
+/// @return
+template <typename T>
+sharedPerson makePerson(std::vector<std::string> rowData, int simCycle) {
+    return std::make_shared<T>(rowData, simCycle);
+}
+
+/// @brief
+/// @param argc
+/// @param argv
+/// @param rootInputDir
+/// @param taskStart
+/// @param taskEnd
+/// @return
+bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
+               int &taskEnd);
+
+/// @brief
+/// @param personEvents
+/// @param tables
+/// @param sim
+void loadEvents(std::vector<sharedEvent> &personEvents,
+                std::unordered_map<std::string, Data::DataTable> &tables,
+                Simulation::Simulation &sim);
+
+/// @brief
+/// @param tables
+void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
+                std::string dirpath);
+
+/// @brief
+/// @param population
+/// @param tables
+/// @param sim
+void loadPopulation(std::vector<sharedPerson> &population,
+                    std::unordered_map<std::string, Data::DataTable> &tables,
+                    Simulation::Simulation &sim);

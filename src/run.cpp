@@ -1,23 +1,5 @@
-#include "AllEvents.hpp"
-#include "DataTable.hpp"
-#include "Simulation.hpp"
-#include <filesystem>
-#include <memory>
-#include <unordered_map>
+#include "run.hpp"
 
-/// @brief
-using sharedEvent = std::shared_ptr<Event::Event>;
-
-/// @brief
-using sharedPerson = std::shared_ptr<Person::Person>;
-
-/// @brief
-/// @param argc
-/// @param argv
-/// @param rootInputDir
-/// @param taskStart
-/// @param taskEnd
-/// @return
 bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
                int &taskEnd) {
     if (argc > 1 && argc != 4) {
@@ -44,47 +26,15 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
     return true;
 }
 
-/// @brief
-/// @tparam T
-/// @return
-template <typename T> sharedEvent makeEvent() { return std::make_shared<T>(); }
-
-/// @brief
-/// @tparam T
-/// @param generator
-/// @param table
-/// @return
-template <typename T>
-sharedEvent makeEvent(std::mt19937_64 &generator, Data::DataTable &table) {
-    return std::make_shared<T>(generator, table);
-}
-
-/// @brief
-/// @tparam T
-/// @return
-template <typename T> sharedPerson makePerson() {
-    return std::make_shared<T>();
-}
-
-/// @brief
-/// @tparam T
-/// @return
-template <typename T>
-sharedPerson makePerson(std::vector<std::string> rowData, int simCycle) {
-    return std::make_shared<T>(rowData, int simCycle);
-}
-
-/// @brief
-/// @param personEvents
-/// @param tables
-/// @param sim
 void loadEvents(std::vector<sharedEvent> &personEvents,
                 std::unordered_map<std::string, Data::DataTable> &tables,
                 Simulation::Simulation &sim) {
 
     sharedEvent aging = makeEvent<Event::Aging>();
-    sharedEvent overdose = makeEvent<Event::Overdose>();
-    sharedEvent death = makeEvent<Event::Death>();
+    sharedEvent overdose =
+        makeEvent<Event::Overdose>(sim.getGenerator(), tables["overdose"]);
+    sharedEvent death =
+        makeEvent<Event::Death>(sim.getGenerator(), tables["death"]);
     sharedEvent behavior = makeEvent<Event::BehaviorChanges>(
         sim.getGenerator(), tables["behavior"]);
     sharedEvent clearance =
@@ -107,8 +57,6 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
                          fibrosis, treatment});
 }
 
-/// @brief
-/// @param tables
 void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
                 std::string dirpath) {
     std::filesystem::path f =
@@ -124,10 +72,6 @@ void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
     f = ((std::filesystem::path)dirpath) / "behavior_params.csv";
     Data::DataTable behavior(f);
     tables["behavior"] = behavior;
-
-    f = ((std::filesystem::path)dirpath) / "background_cost_utilities.csv";
-    Data::DataTable backgroundCost(f);
-    tables["backgroundCost"] = backgroundCost;
 
     f = ((std::filesystem::path)dirpath) / "fibrosis.csv";
     Data::DataTable fibrosis(f);
@@ -145,7 +89,7 @@ void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
     Data::DataTable incidence(f);
     tables["incidence"] = incidence;
 
-    f = ((std::filesystem::path)dirpath) / "init_cohort.csv";
+    f = ((std::filesystem::path)dirpath) / "new_init_cohort.csv";
     Data::DataTable population(f);
     tables["population"] = population;
 

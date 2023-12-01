@@ -43,15 +43,13 @@ namespace Person {
     std::unordered_map<std::string, MOUD> Person::moudMap = {
         {"none", MOUD::NONE}, {"current", MOUD::CURRENT}, {"post", MOUD::POST}};
 
-    std::unordered_map<std::string, Sex> Person::sexMap = {{"male", Sex::MALE},
-                                                           {"female",
-                                                            Sex::FEMALE}}
+    std::unordered_map<std::string, Sex> Person::sexMap = {
+        {"male", Sex::MALE}, {"female", Sex::FEMALE}};
 
-    std::unordered_map<std::string, PregnancyState>
-        Person::pregnancyStateMap = {
-            {"never", PregnancyState::NEVER},
-            {"pregnant", PregnancyState::PREGNANT},
-            {"postpartum", PregnancyState::POSTPARTUM}};
+    std::unordered_map<std::string, PregnancyState> Person::pregnancyStateMap =
+        {{"never", PregnancyState::NEVER},
+         {"pregnant", PregnancyState::PREGNANT},
+         {"postpartum", PregnancyState::POSTPARTUM}};
 
     Person::Person(std::vector<std::string> dataTableRow, int simCycle) {
         count++;

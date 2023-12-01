@@ -20,6 +20,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "Utils.hpp"
@@ -222,7 +223,7 @@ namespace Person {
 
         static std::unordered_map<std::string, HEPCState> hepcStateMap;
         static std::unordered_map<std::string, BehaviorClassification>
-            Person::behaviorClassificationMap;
+            behaviorClassificationMap;
         static std::unordered_map<std::string, LinkageType> linkageTypeMap;
         static std::unordered_map<std::string, LinkageState> linkageStateMap;
 

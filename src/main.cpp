@@ -1,4 +1,4 @@
-#include "run.cpp"
+#include "run.hpp"
 
 /// @brief
 /// @param argc
@@ -27,9 +27,9 @@ int main(int argc, char *argv[]) {
                       loadTables(tables, inputSet.string());
 
                       // create the person-level event vector
-                      std::vector<sharedEvent> personEvents;
-                      loadEvents(personEvents, tables, sim);
-                      sim.loadEvents(personEvents);
+                      //   std::vector<sharedEvent> personEvents;
+                      //   loadEvents(personEvents, tables, sim);
+                      //   sim.loadEvents(personEvents);
 
                       std::vector<sharedPerson> population;
                       loadPopulation(population, tables, sim);
