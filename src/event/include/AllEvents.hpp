@@ -4,7 +4,7 @@
 #include "Death.hpp"
 #include "DiseaseProgression.hpp"
 #include "Event.hpp"
-#include "Fibrosis.hpp"
+#include "FibrosisStaging.hpp"
 #include "Infections.hpp"
 #include "Overdose.hpp"
 #include "ScreenageLinking.hpp"

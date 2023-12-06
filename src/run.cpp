@@ -48,7 +48,7 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
     sharedEvent backgroundScreen =
         makeEvent<Event::Screening>(sim.getGenerator(), tables["screen"]);
     sharedEvent linking = makeEvent<Event::ScreenageLinking>();
-    sharedEvent fibrosis = makeEvent<Event::Fibrosis>();
+    sharedEvent fibrosis = makeEvent<Event::FibrosisStaging>();
     sharedEvent treatment = makeEvent<Event::Treatment>();
 
     personEvents.insert(personEvents.end(),

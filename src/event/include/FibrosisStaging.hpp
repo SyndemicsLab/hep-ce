@@ -24,15 +24,15 @@
 namespace Event {
 
     /// @brief Subclass of Event used to Progress Fibrosis Stages
-    class Fibrosis : public Event {
+    class FibrosisStaging : public Event {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
-        Fibrosis(){};
-        virtual ~Fibrosis() = default;
+        FibrosisStaging(){};
+        virtual ~FibrosisStaging() = default;
     };
 } // namespace Event
 
