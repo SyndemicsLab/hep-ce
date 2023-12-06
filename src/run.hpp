@@ -1,4 +1,5 @@
 #include "AllEvents.hpp"
+#include "Configuration.hpp"
 #include "DataTable.hpp"
 #include "Simulation.hpp"
 #include <filesystem>
