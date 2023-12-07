@@ -136,7 +136,7 @@ namespace Person {
     /// @details There are three possible pregnancy states.
     enum class PregnancyState {
         /// Never pregnant
-        NEVER,
+        NONE,
         /// Actively pregnant
         PREGNANT,
         /// Post-pregnancy
@@ -180,7 +180,7 @@ namespace Person {
 
     /// @brief Attributes describing pregnancy
     struct PregnancyDetails {
-        PregnancyState pregnancyState = PregnancyState::NEVER;
+        PregnancyState pregnancyState = PregnancyState::NONE;
         int timeOfPregnancyChange = -1;
         int infantCount = 0;
         int miscarriageCount = 0;
@@ -235,6 +235,25 @@ namespace Person {
 
         static std::unordered_map<std::string, PregnancyState>
             pregnancyStateMap;
+
+        static std::unordered_map<HEPCState, std::string>
+            hepcStateEnumToStringMap;
+        static std::unordered_map<BehaviorClassification, std::string>
+            behaviorClassificationEnumToStringMap;
+        static std::unordered_map<LinkageType, std::string>
+            linkageTypeEnumToStringMap;
+        static std::unordered_map<LinkageState, std::string>
+            linkageStateEnumToStringMap;
+
+        static std::unordered_map<LiverState, std::string>
+            liverStateEnumToStringMap;
+        static std::unordered_map<MeasuredLiverState, std::string>
+            measuredLiverStateEnumToStringMap;
+        static std::unordered_map<MOUD, std::string> moudEnumToStringMap;
+        static std::unordered_map<Sex, std::string> sexEnumToStringMap;
+
+        static std::unordered_map<PregnancyState, std::string>
+            pregnancyStateEnumToStringMap;
 
         /// @brief Default constructor for Person
         Person() { count++; }
@@ -471,6 +490,8 @@ namespace Person {
         /// @brief Getter for timestep in which MOUD was started
         /// @return Time spent on MOUD
         int getTimeStartedMoud() { return this->moudDetails.timeStartedMoud; }
+
+        Sex getSex() { return this->sex; }
     };
 } // namespace Person
 #endif

@@ -17,6 +17,8 @@
 #ifndef EVENT_INFECTIONS_HPP_
 #define EVENT_INFECTIONS_HPP_
 
+#include <cmath>
+
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation

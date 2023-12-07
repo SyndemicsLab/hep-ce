@@ -39,7 +39,7 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
         sim.getGenerator(), tables["diseaseProgression"], config);
     sharedEvent infection = makeEvent<Event::Infections>(
         sim.getGenerator(), tables["incidence"], config);
-    sharedEvent backgroundScreen = makeEvent<Event::Screening>(
+    sharedEvent screen = makeEvent<Event::Screening>(
         sim.getGenerator(), tables["screenTestLink"], config);
     sharedEvent linking =
         makeEvent<Event::ScreenageLinking>(tables["screenTestLink"], config);
@@ -55,9 +55,9 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
         makeEvent<Event::Death>(sim.getGenerator(), tables["death"], config);
 
     personEvents.insert(personEvents.end(),
-                        {aging, overdose, death, behavior, clearance, disease,
-                         infection, voluntaryRelink, backgroundScreen, linking,
-                         fibrosis, treatment});
+                        {aging, behavior, clearance, disease, infection, screen,
+                         linking, voluntaryRelink, fibrosis, treatment,
+                         overdose, death});
 }
 
 void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,

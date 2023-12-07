@@ -47,9 +47,57 @@ namespace Person {
         {"male", Sex::MALE}, {"female", Sex::FEMALE}};
 
     std::unordered_map<std::string, PregnancyState> Person::pregnancyStateMap =
-        {{"never", PregnancyState::NEVER},
+        {{"none", PregnancyState::NONE},
          {"pregnant", PregnancyState::PREGNANT},
          {"postpartum", PregnancyState::POSTPARTUM}};
+
+    std::unordered_map<HEPCState, std::string>
+        Person::hepcStateEnumToStringMap = {{HEPCState::NONE, "none"},
+                                            {HEPCState::ACUTE, "acute"},
+                                            {HEPCState::CHRONIC, "chronic"}};
+    ;
+    std::unordered_map<BehaviorClassification, std::string>
+        Person::behaviorClassificationEnumToStringMap = {
+            {BehaviorClassification::NEVER, "never"},
+            {BehaviorClassification::FORMER_NONINJECTION,
+             "former_noninjection"},
+            {BehaviorClassification::FORMER_INJECTION, "former_injection"},
+            {BehaviorClassification::NONINJECTION, "noninjection"},
+            {BehaviorClassification::INJECTION, "injection"}};
+    std::unordered_map<LinkageType, std::string>
+        Person::linkageTypeEnumToStringMap = {
+            {LinkageType::BACKGROUND, "background"},
+            {LinkageType::INTERVENTION, "intervention"}};
+    std::unordered_map<LinkageState, std::string>
+        Person::linkageStateEnumToStringMap = {
+            {LinkageState::NEVER, "never"},
+            {LinkageState::LINKED, "linked"},
+            {LinkageState::UNLINKED, "unlinked"}};
+
+    std::unordered_map<LiverState, std::string>
+        Person::liverStateEnumToStringMap = {
+            {LiverState::NONE, "none"},     {LiverState::F0, "f0"},
+            {LiverState::F1, "f1"},         {LiverState::F2, "f2"},
+            {LiverState::F3, "f3"},         {LiverState::F4, "f4"},
+            {LiverState::DECOMP, "decomp"}, {LiverState::EHCC, "ehcc"},
+            {LiverState::LHCC, "lhcc"}};
+    std::unordered_map<MeasuredLiverState, std::string>
+        Person::measuredLiverStateEnumToStringMap = {
+            {MeasuredLiverState::NONE, "none"},
+            {MeasuredLiverState::F01, "f01"},
+            {MeasuredLiverState::F23, "f23"},
+            {MeasuredLiverState::F4, "f4"},
+            {MeasuredLiverState::DECOMP, "decomp"}};
+    std::unordered_map<MOUD, std::string> Person::moudEnumToStringMap = {
+        {MOUD::NONE, "none"}, {MOUD::CURRENT, "current"}, {MOUD::POST, "post"}};
+    std::unordered_map<Sex, std::string> Person::sexEnumToStringMap = {
+        {Sex::MALE, "male"}, {Sex::FEMALE, "female"}};
+
+    std::unordered_map<PregnancyState, std::string>
+        Person::pregnancyStateEnumToStringMap = {
+            {PregnancyState::NONE, "none"},
+            {PregnancyState::PREGNANT, "pregnant"},
+            {PregnancyState::POSTPARTUM, "postpartum"}};
 
     Person::Person(std::vector<std::string> dataTableRow, int simCycle) {
         count++;
