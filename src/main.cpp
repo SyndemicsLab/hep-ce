@@ -24,6 +24,10 @@ int main(int argc, char *argv[]) {
                           ((std::filesystem::path)rootInputDir) /
                           ("input" + std::to_string(i));
 
+                      std::filesystem::path configPath = inputSet / "sim.conf";
+
+                      Data::Configuration config(configPath.string());
+
                       loadTables(tables, inputSet.string());
 
                       // create the person-level event vector

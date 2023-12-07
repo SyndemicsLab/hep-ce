@@ -8,7 +8,7 @@ add_library(event
     Clearance.cpp
     Death.cpp
     DiseaseProgression.cpp
-    Fibrosis.cpp
+    FibrosisStaging.cpp
     Infections.cpp
     Overdose.cpp
     ScreenageLinking.cpp
