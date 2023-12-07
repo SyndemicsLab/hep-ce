@@ -31,13 +31,15 @@ int main(int argc, char *argv[]) {
                       loadTables(tables, inputSet.string());
 
                       // create the person-level event vector
-                      //   std::vector<sharedEvent> personEvents;
-                      //   loadEvents(personEvents, tables, sim);
-                      //   sim.loadEvents(personEvents);
+                      std::vector<sharedEvent> personEvents;
+                      loadEvents(personEvents, tables, sim, config);
+                      sim.loadEvents(personEvents);
 
                       std::vector<sharedPerson> population;
                       loadPopulation(population, tables, sim);
                       sim.loadPopulation(population);
+
+                      //   sim.run();
                   });
 
     return 0;
