@@ -15,7 +15,9 @@ using sharedPerson = std::shared_ptr<Person::Person>;
 /// @brief
 /// @tparam T
 /// @return
-template <typename T> sharedEvent makeEvent() { return std::make_shared<T>(); }
+template <typename T> sharedEvent makeEvent(Data::Configuration &config) {
+    return std::make_shared<T>(config);
+}
 
 /// @brief
 /// @tparam T
@@ -23,8 +25,9 @@ template <typename T> sharedEvent makeEvent() { return std::make_shared<T>(); }
 /// @param table
 /// @return
 template <typename T>
-sharedEvent makeEvent(std::mt19937_64 &generator, Data::DataTable &table) {
-    return std::make_shared<T>(generator, table);
+sharedEvent makeEvent(std::mt19937_64 &generator, Data::DataTable &table,
+                      Data::Configuration &config) {
+    return std::make_shared<T>(generator, table, config);
 }
 
 /// @brief
@@ -58,7 +61,7 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 /// @param sim
 void loadEvents(std::vector<sharedEvent> &personEvents,
                 std::unordered_map<std::string, Data::DataTable> &tables,
-                Simulation::Simulation &sim);
+                Simulation::Simulation &sim, Data::Configuration &config);
 
 /// @brief
 /// @param tables

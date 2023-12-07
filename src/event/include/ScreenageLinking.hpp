@@ -30,7 +30,7 @@ namespace Event {
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
-        ScreenageLinking(){};
+        ScreenageLinking(Data::Configuration &config) : Event(config){};
         virtual ~ScreenageLinking() = default;
     };
 

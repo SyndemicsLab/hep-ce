@@ -19,6 +19,7 @@
 #ifndef EVENT_EVENT_HPP_
 #define EVENT_EVENT_HPP_
 
+#include "Configuration.hpp"
 #include "DataTable.hpp"
 #include "Person.hpp"
 #include "SQLite3.hpp"
@@ -36,9 +37,10 @@ namespace Event {
     private:
         int currentTimestep = -1;
         virtual void doEvent(std::shared_ptr<Person::Person> person) = 0;
+        Data::Configuration &config;
 
     public:
-        Event(){};
+        Event(Data::Configuration &config) : config(config){};
         virtual ~Event() = default;
 
         int getCurrentTimestep() const { return this->currentTimestep; }
@@ -99,8 +101,9 @@ namespace Event {
         }
 
     public:
-        ProbEvent(std::mt19937_64 &generator, Data::DataTable &table)
-            : generator(generator), table(table) {}
+        ProbEvent(std::mt19937_64 &generator, Data::DataTable &table,
+                  Data::Configuration &config)
+            : generator(generator), table(table), Event(config) {}
         virtual ~ProbEvent() = default;
     };
 } // namespace Event

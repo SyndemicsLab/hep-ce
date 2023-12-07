@@ -44,21 +44,26 @@ protected:
 
 TEST_F(EventTest, AgingLiving) {
     double expectedAge = 1.0 / 12.0;
-    std::shared_ptr<Event::Aging> agingEvent = std::make_shared<Event::Aging>();
+    Data::Configuration config;
+    std::shared_ptr<Event::Aging> agingEvent =
+        std::make_shared<Event::Aging>(config);
     agingEvent->execute(livingPopulation, 1);
     EXPECT_DOUBLE_EQ(expectedAge, livingPopulation[0]->age);
 }
 
 TEST_F(EventTest, AgingDead) {
     double expectedAge = 0.0;
-    std::shared_ptr<Event::Aging> agingEvent = std::make_shared<Event::Aging>();
+    Data::Configuration config;
+    std::shared_ptr<Event::Aging> agingEvent =
+        std::make_shared<Event::Aging>(config);
     agingEvent->execute(deadPopulation, 1);
     EXPECT_DOUBLE_EQ(expectedAge, deadPopulation[0]->age);
 }
 
 TEST_F(EventTest, BehaviorChange) {
     Data::DataTable table;
-    Event::BehaviorChanges behavior(simulation->getGenerator(), table);
+    Data::Configuration config;
+    Event::BehaviorChanges behavior(simulation->getGenerator(), table, config);
     behavior.execute(livingPopulation, 1);
 
     EXPECT_EQ(Person::BehaviorClassification::NEVER,
@@ -67,7 +72,8 @@ TEST_F(EventTest, BehaviorChange) {
 
 TEST_F(EventTest, Clearance) {
     Data::DataTable table;
-    Event::Clearance clearance(simulation->getGenerator(), table);
+    Data::Configuration config;
+    Event::Clearance clearance(simulation->getGenerator(), table, config);
     livingPopulation[0]->infect(0);
     clearance.execute(livingPopulation, 1);
     EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
@@ -77,7 +83,8 @@ TEST_F(EventTest, DeathByOldAge) {
     Person::Person expectedPerson;
     expectedPerson.die();
     Data::DataTable table;
-    Event::Death deathEvent(simulation->getGenerator(), table);
+    Data::Configuration config;
+    Event::Death deathEvent(simulation->getGenerator(), table, config);
     livingPopulation[0]->age = 1210;
     deathEvent.execute(livingPopulation, 1);
     EXPECT_EQ(expectedPerson.getIsAlive(), livingPopulation[0]->getIsAlive());
@@ -85,8 +92,9 @@ TEST_F(EventTest, DeathByOldAge) {
 
 TEST_F(EventTest, DiseaseProgression) {
     Data::DataTable table;
+    Data::Configuration config;
     Event::DiseaseProgression diseaseProgression(simulation->getGenerator(),
-                                                 table);
+                                                 table, config);
     livingPopulation[0]->infect(0);
     diseaseProgression.execute(livingPopulation, 1);
     EXPECT_EQ(Person::LiverState::F0, livingPopulation[0]->getLiverState());
@@ -96,7 +104,8 @@ TEST_F(EventTest, Fibrosis) {}
 
 TEST_F(EventTest, Infections) {
     Data::DataTable table;
-    Event::Infections infections(simulation->getGenerator(), table);
+    Data::Configuration config;
+    Event::Infections infections(simulation->getGenerator(), table, config);
     infections.execute(livingPopulation, 1);
     EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
 }
