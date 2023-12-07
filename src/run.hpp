@@ -15,8 +15,9 @@ using sharedPerson = std::shared_ptr<Person::Person>;
 /// @brief
 /// @tparam T
 /// @return
-template <typename T> sharedEvent makeEvent(Data::Configuration &config) {
-    return std::make_shared<T>(config);
+template <typename T>
+sharedEvent makeEvent(Data::DataTable &table, Data::Configuration &config) {
+    return std::make_shared<T>(table, config);
 }
 
 /// @brief

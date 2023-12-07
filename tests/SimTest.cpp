@@ -55,9 +55,10 @@ TEST_F(SimulationTest, AddPerson) {
 }
 
 TEST_F(SimulationTest, AddEventToEnd) {
+    Data::DataTable table;
     Data::Configuration config;
     std::shared_ptr<Event::Event> event =
-        std::make_shared<Event::Aging>(config);
+        std::make_shared<Event::Aging>(table, config);
 
     sim.addEventToEnd(nullptr);
     sim.addEventToEnd(event);
@@ -86,10 +87,11 @@ TEST_F(SimulationTest, AddEventAtIndex) {
     sim.addEventToEnd(nullptr);
     sim.addEventToEnd(nullptr);
 
+    Data::DataTable table;
     Data::Configuration config;
 
     std::shared_ptr<Event::Event> event =
-        std::make_shared<Event::Aging>(config);
+        std::make_shared<Event::Aging>(table, config);
     sim.addEventAtIndex(event, 1);
     EXPECT_EQ(sim.getEvents()[1], event);
     EXPECT_EQ(sim.getEvents().size(), 4);
@@ -100,10 +102,11 @@ TEST_F(SimulationTest, AddEventAtInvalidIndex) {
     sim.addEventToEnd(nullptr);
     sim.addEventToEnd(nullptr);
 
+    Data::DataTable table;
     Data::Configuration config;
 
     std::shared_ptr<Event::Event> event =
-        std::make_shared<Event::Aging>(config);
+        std::make_shared<Event::Aging>(table, config);
     // index out of range
     EXPECT_FALSE(sim.addEventAtIndex(event, 4));
     EXPECT_EQ(sim.getEvents().size(), 3);

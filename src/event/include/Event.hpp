@@ -38,9 +38,11 @@ namespace Event {
         int currentTimestep = -1;
         virtual void doEvent(std::shared_ptr<Person::Person> person) = 0;
         Data::Configuration &config;
+        Data::DataTable &table;
 
     public:
-        Event(Data::Configuration &config) : config(config){};
+        Event(Data::DataTable &table, Data::Configuration &config)
+            : table(table), config(config){};
         virtual ~Event() = default;
 
         int getCurrentTimestep() const { return this->currentTimestep; }
@@ -69,7 +71,6 @@ namespace Event {
     protected:
         std::mt19937_64 &generator;
         std::mutex generatorMutex;
-        Data::DataTable &table;
 
         /// @brief When making a decision with two or more choices, pick one
         /// based on the provided weight(s).
@@ -103,7 +104,7 @@ namespace Event {
     public:
         ProbEvent(std::mt19937_64 &generator, Data::DataTable &table,
                   Data::Configuration &config)
-            : generator(generator), table(table), Event(config) {}
+            : generator(generator), Event(table, config) {}
         virtual ~ProbEvent() = default;
     };
 } // namespace Event

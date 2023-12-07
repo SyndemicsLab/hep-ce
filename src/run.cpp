@@ -30,26 +30,29 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
                 std::unordered_map<std::string, Data::DataTable> &tables,
                 Simulation::Simulation &sim, Data::Configuration &config) {
 
-    sharedEvent aging = makeEvent<Event::Aging>(config);
+    sharedEvent aging = makeEvent<Event::Aging>(tables["blank"], config);
+    sharedEvent behavior = makeEvent<Event::BehaviorChanges>(
+        sim.getGenerator(), tables["behaviorTransitions"], config);
+    sharedEvent clearance = makeEvent<Event::Clearance>(
+        sim.getGenerator(), tables["blank"], config);
+    sharedEvent disease = makeEvent<Event::DiseaseProgression>(
+        sim.getGenerator(), tables["disease"], config);
+    sharedEvent infection = makeEvent<Event::Infections>(
+        sim.getGenerator(), tables["incidence"], config);
+    sharedEvent backgroundScreen = makeEvent<Event::Screening>(
+        sim.getGenerator(), tables["screenTestLink"], config);
+    sharedEvent linking =
+        makeEvent<Event::ScreenageLinking>(tables["screenTestLink"], config);
+    sharedEvent voluntaryRelink = makeEvent<Event::VoluntaryRelinking>(
+        sim.getGenerator(), tables["blank"], config);
+    sharedEvent fibrosis =
+        makeEvent<Event::FibrosisStaging>(tables["fibrosis"], config);
+    sharedEvent treatment =
+        makeEvent<Event::Treatment>(tables["blank"], config);
     sharedEvent overdose = makeEvent<Event::Overdose>(
         sim.getGenerator(), tables["overdose"], config);
     sharedEvent death =
         makeEvent<Event::Death>(sim.getGenerator(), tables["death"], config);
-    sharedEvent behavior = makeEvent<Event::BehaviorChanges>(
-        sim.getGenerator(), tables["behavior"], config);
-    sharedEvent clearance = makeEvent<Event::Clearance>(
-        sim.getGenerator(), tables["clearance"], config);
-    sharedEvent disease = makeEvent<Event::DiseaseProgression>(
-        sim.getGenerator(), tables["disease"], config);
-    sharedEvent infection = makeEvent<Event::Infections>(
-        sim.getGenerator(), tables["infection"], config);
-    sharedEvent voluntaryRelink = makeEvent<Event::VoluntaryRelinking>(
-        sim.getGenerator(), tables["relink"], config);
-    sharedEvent backgroundScreen = makeEvent<Event::Screening>(
-        sim.getGenerator(), tables["screen"], config);
-    sharedEvent linking = makeEvent<Event::ScreenageLinking>(config);
-    sharedEvent fibrosis = makeEvent<Event::FibrosisStaging>(config);
-    sharedEvent treatment = makeEvent<Event::Treatment>(config);
 
     personEvents.insert(personEvents.end(),
                         {aging, overdose, death, behavior, clearance, disease,
@@ -111,11 +114,14 @@ void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
 
     f = ((std::filesystem::path)dirpath) / "screening_and_linkage.csv";
     Data::DataTable screen(f);
-    tables["screen"] = screen;
+    tables["screenTestLink"] = screen;
 
     f = ((std::filesystem::path)dirpath) / "SMR.csv";
     Data::DataTable smr(f);
     tables["SMR"] = smr;
+
+    Data::DataTable blank;
+    tables["blank"] = blank;
 }
 
 void loadPopulation(std::vector<sharedPerson> &population,

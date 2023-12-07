@@ -44,18 +44,20 @@ protected:
 
 TEST_F(EventTest, AgingLiving) {
     double expectedAge = 1.0 / 12.0;
+    Data::DataTable table;
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
-        std::make_shared<Event::Aging>(config);
+        std::make_shared<Event::Aging>(table, config);
     agingEvent->execute(livingPopulation, 1);
     EXPECT_DOUBLE_EQ(expectedAge, livingPopulation[0]->age);
 }
 
 TEST_F(EventTest, AgingDead) {
     double expectedAge = 0.0;
+    Data::DataTable table;
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
-        std::make_shared<Event::Aging>(config);
+        std::make_shared<Event::Aging>(table, config);
     agingEvent->execute(deadPopulation, 1);
     EXPECT_DOUBLE_EQ(expectedAge, deadPopulation[0]->age);
 }
