@@ -31,7 +31,8 @@ namespace Event {
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
-        FibrosisStaging(){};
+        FibrosisStaging(Data::DataTable &table, Data::Configuration &config)
+            : Event(table, config){};
         virtual ~FibrosisStaging() = default;
     };
 } // namespace Event

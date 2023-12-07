@@ -29,7 +29,8 @@ namespace Event {
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
-        Aging(){};
+        Aging(Data::DataTable &table, Data::Configuration &config)
+            : Event(table, config){};
         virtual ~Aging() = default;
     };
 } // namespace Event

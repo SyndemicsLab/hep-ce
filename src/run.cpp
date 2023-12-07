@@ -28,28 +28,31 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 
 void loadEvents(std::vector<sharedEvent> &personEvents,
                 std::unordered_map<std::string, Data::DataTable> &tables,
-                Simulation::Simulation &sim) {
+                Simulation::Simulation &sim, Data::Configuration &config) {
 
-    sharedEvent aging = makeEvent<Event::Aging>();
-    sharedEvent overdose =
-        makeEvent<Event::Overdose>(sim.getGenerator(), tables["overdose"]);
-    sharedEvent death =
-        makeEvent<Event::Death>(sim.getGenerator(), tables["death"]);
+    sharedEvent aging = makeEvent<Event::Aging>(tables["blank"], config);
     sharedEvent behavior = makeEvent<Event::BehaviorChanges>(
-        sim.getGenerator(), tables["behavior"]);
-    sharedEvent clearance =
-        makeEvent<Event::Clearance>(sim.getGenerator(), tables["clearance"]);
+        sim.getGenerator(), tables["behaviorTransitions"], config);
+    sharedEvent clearance = makeEvent<Event::Clearance>(
+        sim.getGenerator(), tables["blank"], config);
     sharedEvent disease = makeEvent<Event::DiseaseProgression>(
-        sim.getGenerator(), tables["disease"]);
-    sharedEvent infection =
-        makeEvent<Event::Infections>(sim.getGenerator(), tables["infection"]);
+        sim.getGenerator(), tables["diseaseProgression"], config);
+    sharedEvent infection = makeEvent<Event::Infections>(
+        sim.getGenerator(), tables["incidence"], config);
+    sharedEvent backgroundScreen = makeEvent<Event::Screening>(
+        sim.getGenerator(), tables["screenTestLink"], config);
+    sharedEvent linking =
+        makeEvent<Event::ScreenageLinking>(tables["screenTestLink"], config);
     sharedEvent voluntaryRelink = makeEvent<Event::VoluntaryRelinking>(
-        sim.getGenerator(), tables["relink"]);
-    sharedEvent backgroundScreen =
-        makeEvent<Event::Screening>(sim.getGenerator(), tables["screen"]);
-    sharedEvent linking = makeEvent<Event::ScreenageLinking>();
-    sharedEvent fibrosis = makeEvent<Event::FibrosisStaging>();
-    sharedEvent treatment = makeEvent<Event::Treatment>();
+        sim.getGenerator(), tables["blank"], config);
+    sharedEvent fibrosis =
+        makeEvent<Event::FibrosisStaging>(tables["fibrosis"], config);
+    sharedEvent treatment =
+        makeEvent<Event::Treatment>(tables["blank"], config);
+    sharedEvent overdose = makeEvent<Event::Overdose>(
+        sim.getGenerator(), tables["overdose"], config);
+    sharedEvent death =
+        makeEvent<Event::Death>(sim.getGenerator(), tables["death"], config);
 
     personEvents.insert(personEvents.end(),
                         {aging, overdose, death, behavior, clearance, disease,
@@ -60,62 +63,77 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
 void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
                 std::string dirpath) {
 
-    std::filesystem::path f =
-        ((std::filesystem::path)dirpath) / "antibody_testing.csv";
-    Data::DataTable antibody(f);
-    tables["antibody"] = antibody;
+    // Added blank table for events that do not need tabular data
+    Data::DataTable blank;
+    tables["blank"] = blank;
 
-    f = ((std::filesystem::path)dirpath) / "background_costs.csv";
+    // Costs and Utilities
+
+    std::filesystem::path f =
+        ((std::filesystem::path)dirpath) / "background_costs.csv";
     Data::DataTable backgroundCost(f);
     tables["backgroundCost"] = backgroundCost;
 
-    f = ((std::filesystem::path)dirpath) / "background_mortality.csv";
-    Data::DataTable backgroundMortality(f);
-    tables["backgroundMortality"] = backgroundMortality;
-
-    f = ((std::filesystem::path)dirpath) / "background_utilities.csv";
-    Data::DataTable backgroundUtilities(f);
-    tables["backgroundUtilities"] = backgroundUtilities;
-
     f = ((std::filesystem::path)dirpath) / "behavior_costs.csv";
     Data::DataTable behaviorCosts(f);
-    tables["behaviorCosts"] = behaviorCosts;
-
-    f = ((std::filesystem::path)dirpath) / "behavior_transitions.csv";
-    Data::DataTable behaviorTransitions(f);
-    tables["behaviorTransitions"] = behaviorTransitions;
-
-    f = ((std::filesystem::path)dirpath) / "behavior_utilities.csv";
-    Data::DataTable behaviorUtilities(f);
-    tables["behaviorUtilities"] = behaviorUtilities;
-
-    f = ((std::filesystem::path)dirpath) / "fibrosis.csv";
-    Data::DataTable fibrosis(f);
-    tables["fibrosis"] = fibrosis;
+    tables["behaviorCost"] = behaviorCosts;
 
     f = ((std::filesystem::path)dirpath) / "hcv_costs.csv";
     Data::DataTable hcv_cost(f);
     tables["hcvCost"] = hcv_cost;
 
+    f = ((std::filesystem::path)dirpath) / "background_utilities.csv";
+    Data::DataTable backgroundUtilities(f);
+    tables["backgroundUtilities"] = backgroundUtilities;
+
+    f = ((std::filesystem::path)dirpath) / "behavior_utilities.csv";
+    Data::DataTable behaviorUtilities(f);
+    tables["behaviorUtilities"] = behaviorUtilities;
+
     f = ((std::filesystem::path)dirpath) / "hcv_utilities.csv";
     Data::DataTable hcv_utilities(f);
     tables["hcvUtilities"] = hcv_utilities;
+
+    // Events
+
+    f = ((std::filesystem::path)dirpath) / "behavior_transitions.csv";
+    Data::DataTable behaviorTransitions(f);
+    tables["behaviorTransitions"] = behaviorTransitions;
+
+    // TODO: Develop Disease Progression Tabular Data
+    Data::DataTable diseaseProgression;
+    tables["diseaseProgression"] = diseaseProgression;
+
+    f = ((std::filesystem::path)dirpath) / "fibrosis.csv";
+    Data::DataTable fibrosis(f);
+    tables["fibrosis"] = fibrosis;
 
     f = ((std::filesystem::path)dirpath) / "incidence.csv";
     Data::DataTable incidence(f);
     tables["incidence"] = incidence;
 
-    f = ((std::filesystem::path)dirpath) / "population.csv";
-    Data::DataTable population(f);
-    tables["population"] = population;
-
     f = ((std::filesystem::path)dirpath) / "screening_and_linkage.csv";
     Data::DataTable screen(f);
-    tables["screen"] = screen;
+    tables["screenTestLink"] = screen;
+
+    // TODO: Develop Overdose Tabular Data
+    Data::DataTable overdose;
+    tables["overdose"] = overdose;
+
+    f = ((std::filesystem::path)dirpath) / "background_mortality.csv";
+    Data::DataTable backgroundMortality(f);
 
     f = ((std::filesystem::path)dirpath) / "SMR.csv";
     Data::DataTable smr(f);
-    tables["SMR"] = smr;
+
+    // TODO: InnerJoin with SMR, BackgroundMortality, and Overdoses
+    tables["death"] = backgroundMortality;
+
+    // People
+
+    f = ((std::filesystem::path)dirpath) / "population.csv";
+    Data::DataTable population(f);
+    tables["population"] = population;
 }
 
 void loadPopulation(std::vector<sharedPerson> &population,

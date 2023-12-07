@@ -56,7 +56,8 @@ namespace Event {
         int eligibleTimeBehaviorChange = -1;
 
     public:
-        Treatment(){};
+        Treatment(Data::DataTable &table, Data::Configuration &config)
+            : Event(table, config){};
         virtual ~Treatment() = default;
     };
 
