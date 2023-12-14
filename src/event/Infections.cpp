@@ -35,6 +35,11 @@ namespace Event {
 
     std::vector<double>
     Infections::getInfectProb(std::shared_ptr<Person::Person> person) {
+        std::string age = std::to_string((int)std::round(person->age));
+        std::string sex = person->sexEnumToStringMap[person->getSex()];
+        std::string behavior = person->behaviorClassificationEnumToStringMap
+                                   [person->getBehaviorClassification()];
+
         // need to add actual functionality
         // query the sqlite database based on infection probability strata
         return {0.5};

@@ -42,7 +42,7 @@ template <typename T> sharedPerson makePerson() {
 /// @tparam T
 /// @return
 template <typename T>
-sharedPerson makePerson(std::vector<std::string> rowData, int simCycle) {
+sharedPerson makePerson(Data::DataTable rowData, int simCycle) {
     return std::make_shared<T>(rowData, simCycle);
 }
 

@@ -47,67 +47,131 @@ namespace Person {
         {"male", Sex::MALE}, {"female", Sex::FEMALE}};
 
     std::unordered_map<std::string, PregnancyState> Person::pregnancyStateMap =
-        {{"never", PregnancyState::NEVER},
+        {{"none", PregnancyState::NONE},
          {"pregnant", PregnancyState::PREGNANT},
          {"postpartum", PregnancyState::POSTPARTUM}};
 
-    Person::Person(std::vector<std::string> dataTableRow, int simCycle) {
+    std::unordered_map<HEPCState, std::string>
+        Person::hepcStateEnumToStringMap = {{HEPCState::NONE, "none"},
+                                            {HEPCState::ACUTE, "acute"},
+                                            {HEPCState::CHRONIC, "chronic"}};
+    ;
+    std::unordered_map<BehaviorClassification, std::string>
+        Person::behaviorClassificationEnumToStringMap = {
+            {BehaviorClassification::NEVER, "never"},
+            {BehaviorClassification::FORMER_NONINJECTION,
+             "former_noninjection"},
+            {BehaviorClassification::FORMER_INJECTION, "former_injection"},
+            {BehaviorClassification::NONINJECTION, "noninjection"},
+            {BehaviorClassification::INJECTION, "injection"}};
+    std::unordered_map<LinkageType, std::string>
+        Person::linkageTypeEnumToStringMap = {
+            {LinkageType::BACKGROUND, "background"},
+            {LinkageType::INTERVENTION, "intervention"}};
+    std::unordered_map<LinkageState, std::string>
+        Person::linkageStateEnumToStringMap = {
+            {LinkageState::NEVER, "never"},
+            {LinkageState::LINKED, "linked"},
+            {LinkageState::UNLINKED, "unlinked"}};
+
+    std::unordered_map<LiverState, std::string>
+        Person::liverStateEnumToStringMap = {
+            {LiverState::NONE, "none"},     {LiverState::F0, "f0"},
+            {LiverState::F1, "f1"},         {LiverState::F2, "f2"},
+            {LiverState::F3, "f3"},         {LiverState::F4, "f4"},
+            {LiverState::DECOMP, "decomp"}, {LiverState::EHCC, "ehcc"},
+            {LiverState::LHCC, "lhcc"}};
+    std::unordered_map<MeasuredLiverState, std::string>
+        Person::measuredLiverStateEnumToStringMap = {
+            {MeasuredLiverState::NONE, "none"},
+            {MeasuredLiverState::F01, "f01"},
+            {MeasuredLiverState::F23, "f23"},
+            {MeasuredLiverState::F4, "f4"},
+            {MeasuredLiverState::DECOMP, "decomp"}};
+    std::unordered_map<MOUD, std::string> Person::moudEnumToStringMap = {
+        {MOUD::NONE, "none"}, {MOUD::CURRENT, "current"}, {MOUD::POST, "post"}};
+    std::unordered_map<Sex, std::string> Person::sexEnumToStringMap = {
+        {Sex::MALE, "male"}, {Sex::FEMALE, "female"}};
+
+    std::unordered_map<PregnancyState, std::string>
+        Person::pregnancyStateEnumToStringMap = {
+            {PregnancyState::NONE, "none"},
+            {PregnancyState::PREGNANT, "pregnant"},
+            {PregnancyState::POSTPARTUM, "postpartum"}};
+
+    Person::Person(Data::DataTable dataTableRow, int simCycle) {
         count++;
-        if (dataTableRow.empty() || dataTableRow.size() < 29) {
+        if (dataTableRow.empty() || dataTableRow.ncols() < 29) {
             return;
         }
 
-        this->id = stoi(dataTableRow[0]);
+        this->id = stoi(dataTableRow["id"][0]);
 
-        this->sex = Person::sexMap[Utils::toLower(dataTableRow[1])];
-        this->age = stod(dataTableRow[2]);
+        this->sex = Person::sexMap[Utils::toLower(dataTableRow["sex"][0])];
+        this->age = stod(dataTableRow["age"][0]);
 
-        this->isAlive = Utils::stobool(dataTableRow[3]);
+        this->isAlive = Utils::stobool(dataTableRow["isAlive"][0]);
 
-        this->screeningDetails.timeOfLastScreening = stoi(dataTableRow[4]);
-        this->screeningDetails.screeningFrequency = stoi(dataTableRow[5]);
+        this->screeningDetails.timeOfLastScreening =
+            stoi(dataTableRow["timeOfLastScreening"][0]);
+        this->screeningDetails.screeningFrequency =
+            stoi(dataTableRow["screeningFrequency"][0]);
         this->screeningDetails.interventionScreening =
-            Utils::stobool(dataTableRow[6]);
+            Utils::stobool(dataTableRow["hasInterventionScreening"][0]);
 
-        this->idStatus.timeIdentified = stoi(dataTableRow[7]);
+        this->idStatus.timeIdentified = stoi(dataTableRow["timeIdentified"][0]);
         this->idStatus.identifiedAsPositiveInfection =
-            Utils::stobool(dataTableRow[8]);
+            Utils::stobool(dataTableRow["identifiedAsPositive"][0]);
 
         this->infectionStatus.hepcState =
-            Person::hepcStateMap[Utils::toLower(dataTableRow[9])];
-        this->infectionStatus.timeHEPCStateChanged = stoi(dataTableRow[10]);
-        this->infectionStatus.seropositivity = Utils::stobool(dataTableRow[11]);
-        this->infectionStatus.liverState =
-            Person::liverStateMap[Utils::toLower(dataTableRow[12])];
-        this->infectionStatus.timeLiverStateChanged = stoi(dataTableRow[13]);
+            Person::hepcStateMap[Utils::toLower(dataTableRow["hepcState"][0])];
+        this->infectionStatus.timeHEPCStateChanged =
+            stoi(dataTableRow["timeHEPCStateChanged"][0]);
+        this->infectionStatus.seropositivity =
+            Utils::stobool(dataTableRow["seropositivity"][0]);
+        this->infectionStatus.liverState = Person::liverStateMap[Utils::toLower(
+            dataTableRow["liverState"][0])];
+        this->infectionStatus.timeLiverStateChanged =
+            stoi(dataTableRow["timeLiverStateChanged"][0]);
 
         this->stagingDetails.measuredLiverState =
-            Person::measuredLiverStateMap[Utils::toLower(dataTableRow[14])];
-        this->stagingDetails.timeOfLastStaging = stoi(dataTableRow[15]);
+            Person::measuredLiverStateMap[Utils::toLower(
+                dataTableRow["measuredLiverState"][0])];
+        this->stagingDetails.timeOfLastStaging =
+            stoi(dataTableRow["timeOfLastStaging"][0]);
 
         this->behaviorDetails.behaviorClassification =
-            Person::behaviorClassificationMap[Utils::toLower(dataTableRow[16])];
-        this->behaviorDetails.timeLastActive = stoi(dataTableRow[17]);
+            Person::behaviorClassificationMap[Utils::toLower(
+                dataTableRow["drugBehavior"][0])];
+        this->behaviorDetails.timeLastActive =
+            stoi(dataTableRow["timeLastActiveDrugUse"][0]);
 
-        this->linkStatus.linkState =
-            Person::linkageStateMap[Utils::toLower(dataTableRow[18])];
-        this->linkStatus.timeOfLinkChange = stoi(dataTableRow[19]);
-        this->linkStatus.linkType =
-            Person::linkageTypeMap[Utils::toLower(dataTableRow[20])];
+        this->linkStatus.linkState = Person::linkageStateMap[Utils::toLower(
+            dataTableRow["linkageState"][0])];
+        this->linkStatus.timeOfLinkChange =
+            stoi(dataTableRow["timeOfLinkChange"][0]);
+        this->linkStatus.linkType = Person::linkageTypeMap[Utils::toLower(
+            dataTableRow["linkageType"][0])];
 
-        this->overdose = Utils::stobool(dataTableRow[21]);
+        this->overdose = Utils::stobool(dataTableRow["isOverdosed"][0]);
 
-        this->incompleteTreatment = Utils::stobool(dataTableRow[22]);
+        this->incompleteTreatment =
+            Utils::stobool(dataTableRow["hasIncompleteTreatment"][0]);
 
         this->moudDetails.moudState =
-            Person::moudMap[Utils::toLower(dataTableRow[23])];
-        this->moudDetails.timeStartedMoud = stoi(dataTableRow[24]);
+            Person::moudMap[Utils::toLower(dataTableRow["MOUDState"][0])];
+        this->moudDetails.timeStartedMoud =
+            stoi(dataTableRow["timeStartedMOUD"][0]);
 
         this->pregnancyDetails.pregnancyState =
-            Person::pregnancyStateMap[Utils::toLower(dataTableRow[25])];
-        this->pregnancyDetails.timeOfPregnancyChange = stoi(dataTableRow[26]);
-        this->pregnancyDetails.infantCount = stoi(dataTableRow[27]);
-        this->pregnancyDetails.miscarriageCount = stoi(dataTableRow[28]);
+            Person::pregnancyStateMap[Utils::toLower(
+                dataTableRow["pregnancyState"][0])];
+        this->pregnancyDetails.timeOfPregnancyChange =
+            stoi(dataTableRow["timeOfPregnancyChange"][0]);
+        this->pregnancyDetails.infantCount =
+            stoi(dataTableRow["infantCount"][0]);
+        this->pregnancyDetails.miscarriageCount =
+            stoi(dataTableRow["miscarriageCount"][0]);
     }
 
     void Person::die() { this->isAlive = false; }

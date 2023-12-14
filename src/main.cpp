@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
                       loadPopulation(population, tables, sim);
                       sim.loadPopulation(population);
 
-                      //   sim.run();
+                      sim.run();
                   });
 
     return 0;
