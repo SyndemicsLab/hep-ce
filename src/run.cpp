@@ -100,7 +100,7 @@ void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
     Data::DataTable behaviorTransitions(f);
     tables["behaviorTransitions"] = behaviorTransitions;
 
-    // TODO: Develop Disease Progression Tabular Data
+    f = ((std::filesystem::path)dirpath) / "disease_progression.csv";
     Data::DataTable diseaseProgression;
     tables["diseaseProgression"] = diseaseProgression;
 
@@ -116,9 +116,9 @@ void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
     Data::DataTable screen(f);
     tables["screenTestLink"] = screen;
 
-    // TODO: Develop Overdose Tabular Data
-    Data::DataTable overdose;
-    tables["overdose"] = overdose;
+    f = ((std::filesystem::path)dirpath) / "all_types_overdose.csv";
+    Data::DataTable overdoses(f);
+    tables["overdoses"] = overdoses;
 
     f = ((std::filesystem::path)dirpath) / "background_mortality.csv";
     Data::DataTable backgroundMortality(f);
@@ -126,8 +126,19 @@ void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
     f = ((std::filesystem::path)dirpath) / "SMR.csv";
     Data::DataTable smr(f);
 
-    // TODO: InnerJoin with SMR, BackgroundMortality, and Overdoses
-    tables["death"] = backgroundMortality;
+    f = ((std::filesystem::path)dirpath) / "fatal_overdose.csv";
+    Data::DataTable fatalOverdoses(f);
+
+    f = ((std::filesystem::path)dirpath) / "fibrosis_deaths.csv";
+    Data::DataTable fibrosisDeaths(f);
+
+    Data::DataTable death =
+        backgroundMortality.innerJoin(smr, "gender", "gender");
+
+    death = death.innerJoin(fatalOverdoses, "gender", "gender");
+    death = death.innerJoin(fibrosisDeaths, "gender", "gender");
+
+    tables["death"] = death;
 
     // People
 
@@ -142,8 +153,9 @@ void loadPopulation(std::vector<sharedPerson> &population,
     if (tables.find("population") != tables.end()) {
         for (int rowIdx = 0;
              rowIdx < tables["population"].getShape().getNRows(); ++rowIdx) {
-            population.push_back(makePerson<Person::Person>(
-                tables["population"][rowIdx], (int)sim.getCurrentTimestep()));
+            population.push_back(
+                makePerson<Person::Person>(tables["population"].getRow(rowIdx),
+                                           (int)sim.getCurrentTimestep()));
         }
     }
 }

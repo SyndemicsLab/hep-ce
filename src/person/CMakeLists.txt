@@ -8,4 +8,4 @@ set(PERSON_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
 
 target_include_directories(person PUBLIC ${PERSON_INCLUDES})
 
-target_link_libraries(person utils)
+target_link_libraries(person utils data)
