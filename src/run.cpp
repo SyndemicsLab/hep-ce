@@ -163,4 +163,70 @@ void loadPopulation(std::vector<sharedPerson> &population,
 }
 
 void writePopulation(std::vector<sharedPerson> &population,
-                     std::string dirpath) {}
+                     std::string dirpath) {
+    Data::DataTable newDT;
+    for (int i = 0; i < population.size(); ++i) {
+        if (newDT.empty()) {
+            newDT = personToDataTable(population[i]);
+        } else {
+            newDT = newDT + personToDataTable(population[i]);
+        }
+    }
+    std::filesystem::path f =
+        ((std::filesystem::path)dirpath) / "population.csv";
+
+    newDT.toCSV(f.string());
+}
+
+Data::DataTable personToDataTable(sharedPerson &person) {
+    std::map<std::string, std::vector<std::string>> data;
+    data["id"] = {std::to_string(person->getID())};
+    data["sex"] = {person->sexEnumToStringMap[person->getSex()]};
+    data["age"] = {std::to_string(person->age)};
+    data["isAlive"] = {boolToString(person->getIsAlive())};
+    data["timeOfLastScreening"] = {
+        std::to_string(person->getTimeOfLastScreening())};
+    data["screeningFrequency"] = {
+        std::to_string(person->getScreeningFrequency())};
+    data["hasInterventionScreening"] = {
+        boolToString(person->isInterventionScreened())};
+    data["timeIdentified"] = {std::to_string(person->getTimeIdentified())};
+    data["identifiedAsPositive"] = {
+        boolToString(person->isIdentifiedAsInfected())};
+    data["hepcState"] = {
+        person->hepcStateEnumToStringMap[person->getHEPCState()]};
+    data["timeHEPCStateChanged"] = {
+        std::to_string(person->getTimeHEPCStateChanged())};
+    data["seropositivity"] = {boolToString(person->getSeropositivity())};
+    data["liverState"] = {
+        person->liverStateEnumToStringMap[person->getLiverState()]};
+    data["timeLiverStateChanged"] = {
+        std::to_string(person->getTimeLiverStateChanged())};
+    data["measuredLiverState"] = {person->measuredLiverStateEnumToStringMap
+                                      [person->getMeasuredLiverState()]};
+    data["timeOfLastStaging"] = {
+        std::to_string(person->getTimeOfLastStaging())};
+    data["drugBehavior"] = {person->behaviorClassificationEnumToStringMap
+                                [person->getBehaviorClassification()]};
+    data["timeLastActiveDrugUse"] = {
+        std::to_string(person->getTimeBehaviorChange())};
+    data["linkageState"] = {
+        person->linkageStateEnumToStringMap[person->getLinkState()]};
+    data["timeOfLinkChange"] = {std::to_string(person->getTimeOfLinkChange())};
+    data["linkageType"] = {
+        person->linkageTypeEnumToStringMap[person->getLinkageType()]};
+    data["isOverdosed"] = {boolToString(person->getOverdose())};
+    data["hasIncompleteTreatment"] = {
+        boolToString(person->hadIncompleteTreatment())};
+    data["MOUDState"] = {person->moudEnumToStringMap[person->getMoudState()]};
+    data["timeStartedMOUD"] = {std::to_string(person->getTimeStartedMoud())};
+    data["pregnancyState"] = {
+        person->pregnancyStateEnumToStringMap[person->getPregnancyState()]};
+    data["timeOfPregnancyChange"] = {
+        std::to_string(person->getTimeOfPregnancyChange())};
+    data["infantCount"] = {std::to_string(person->getInfantCount())};
+    data["miscarriageCount"] = {std::to_string(person->getMiscarriageCount())};
+    Data::DataTableShape newShape(1, 29);
+    Data::DataTable newDT(data, newShape);
+    return newDT;
+}

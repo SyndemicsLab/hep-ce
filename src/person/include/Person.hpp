@@ -250,6 +250,8 @@ namespace Person {
             return this->idStatus.identifiedAsPositiveInfection;
         }
 
+        int getTimeIdentified() const { return this->idStatus.timeIdentified; }
+
         /// @brief Getter for Link State
         /// @return Link State
         LinkageState getLinkState() const { return this->linkStatus.linkState; }

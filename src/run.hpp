@@ -82,5 +82,11 @@ void loadPopulation(std::vector<sharedPerson> &population,
                     std::unordered_map<std::string, Data::DataTable> &tables,
                     Simulation::Simulation &sim);
 
+Data::DataTable personToDataTable(sharedPerson &person);
+
 void writePopulation(std::vector<sharedPerson> &population,
                      std::string dirpath);
+
+inline std::string const boolToString(bool b) {
+    return b ? std::string("true") : std::string("false");
+}
