@@ -42,10 +42,10 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
     sharedEvent screen = makeEvent<Event::Screening>(
         sim.getGenerator(), tables["screenTestLink"], config);
     sharedEvent linking =
-        makeEvent<Event::ScreenageLinking>(tables["screenTestLink"], config);
+        makeEvent<Event::Linking>(tables["screenTestLink"], config);
     sharedEvent voluntaryRelink = makeEvent<Event::VoluntaryRelinking>(
         sim.getGenerator(), tables["blank"], config);
-    sharedEvent fibrosis =
+    sharedEvent fibrosisStaging =
         makeEvent<Event::FibrosisStaging>(tables["fibrosis"], config);
     sharedEvent treatment =
         makeEvent<Event::Treatment>(tables["blank"], config);
@@ -56,9 +56,11 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
 
     personEvents.insert(personEvents.end(),
                         {aging, behavior, clearance, disease, infection, screen,
-                         linking, voluntaryRelink, fibrosis, treatment,
+                         linking, voluntaryRelink, fibrosisStaging, treatment,
                          overdose, death});
 }
+
+void writeEvents(std::vector<sharedEvent> &personEvents, std::string dirpath) {}
 
 void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
                 std::string dirpath) {
@@ -159,3 +161,6 @@ void loadPopulation(std::vector<sharedPerson> &population,
         }
     }
 }
+
+void writePopulation(std::vector<sharedPerson> &population,
+                     std::string dirpath) {}

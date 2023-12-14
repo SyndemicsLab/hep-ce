@@ -112,7 +112,7 @@ TEST_F(EventTest, Infections) {
     EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
 }
 
-TEST_F(EventTest, ScreenageLinking) {}
+TEST_F(EventTest, Linking) {}
 
 TEST_F(EventTest, Screening) {}
 

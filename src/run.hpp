@@ -65,6 +65,11 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
                 Simulation::Simulation &sim, Data::Configuration &config);
 
 /// @brief
+/// @param personEvents
+/// @param dirpath
+void writeEvents(std::vector<sharedEvent> &personEvents, std::string dirpath);
+
+/// @brief
 /// @param tables
 void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
                 std::string dirpath);
@@ -76,3 +81,6 @@ void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
 void loadPopulation(std::vector<sharedPerson> &population,
                     std::unordered_map<std::string, Data::DataTable> &tables,
                     Simulation::Simulation &sim);
+
+void writePopulation(std::vector<sharedPerson> &population,
+                     std::string dirpath);
