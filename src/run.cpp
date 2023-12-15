@@ -180,6 +180,35 @@ void writePopulation(std::vector<sharedPerson> &population,
 
 Data::DataTable personToDataTable(sharedPerson &person) {
     std::map<std::string, std::vector<std::string>> data;
+    std::vector<std::string> headerOrder = {"id",
+                                            "sex",
+                                            "age",
+                                            "isAlive",
+                                            "timeOfLastScreening",
+                                            "screeningFrequency",
+                                            "hasInterventionScreening",
+                                            "timeIdentified",
+                                            "identifiedAsPositive",
+                                            "hepcState",
+                                            "timeHEPCStateChanged",
+                                            "seropositivity",
+                                            "liverState",
+                                            "timeLiverStateChanged",
+                                            "measuredLiverState",
+                                            "timeOfLastStaging",
+                                            "drugBehavior",
+                                            "timeLastActiveDrugUse",
+                                            "linkageState",
+                                            "timeOfLinkChange",
+                                            "linkageType",
+                                            "isOverdosed",
+                                            "hasIncompleteTreatment",
+                                            "MOUDState",
+                                            "timeStartedMOUD",
+                                            "pregnancyState",
+                                            "timeOfPregnancyChange",
+                                            "infantCount",
+                                            "miscarriageCount"};
     data["id"] = {std::to_string(person->getID())};
     data["sex"] = {person->sexEnumToStringMap[person->getSex()]};
     data["age"] = {std::to_string(person->age)};
@@ -227,6 +256,6 @@ Data::DataTable personToDataTable(sharedPerson &person) {
     data["infantCount"] = {std::to_string(person->getInfantCount())};
     data["miscarriageCount"] = {std::to_string(person->getMiscarriageCount())};
     Data::DataTableShape newShape(1, 29);
-    Data::DataTable newDT(data, newShape);
+    Data::DataTable newDT(data, newShape, headerOrder);
     return newDT;
 }
