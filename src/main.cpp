@@ -40,6 +40,16 @@ int main(int argc, char *argv[]) {
                       sim.loadPopulation(population);
 
                       sim.run();
+
+                      population = sim.getPopulation();
+                      personEvents = sim.getEvents();
+
+                      std::filesystem::path outputSet =
+                          ((std::filesystem::path)rootInputDir) /
+                          ("output" + std::to_string(i));
+
+                      writeEvents(personEvents, outputSet.string());
+                      writePopulation(population, outputSet.string());
                   });
 
     return 0;
