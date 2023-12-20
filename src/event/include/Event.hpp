@@ -23,6 +23,7 @@
 #include "DataTable.hpp"
 #include "Person.hpp"
 #include "SQLite3.hpp"
+#include "spdlog/spdlog.h"
 #include <algorithm>
 #include <execution>
 #include <mutex>
@@ -39,10 +40,13 @@ namespace Event {
         virtual void doEvent(std::shared_ptr<Person::Person> person) = 0;
         Data::Configuration &config;
         Data::DataTable &table;
+        std::shared_ptr<spdlog::logger> logger;
 
     public:
-        Event(Data::DataTable &table, Data::Configuration &config)
-            : table(table), config(config){};
+        Event(Data::DataTable &table, Data::Configuration &config,
+              std::shared_ptr<spdlog::logger> logger =
+                  std::make_shared<spdlog::logger>("default"))
+            : table(table), config(config), logger(logger){};
         virtual ~Event() = default;
 
         int getCurrentTimestep() const { return this->currentTimestep; }
@@ -103,8 +107,10 @@ namespace Event {
 
     public:
         ProbEvent(std::mt19937_64 &generator, Data::DataTable &table,
-                  Data::Configuration &config)
-            : generator(generator), Event(table, config) {}
+                  Data::Configuration &config,
+                  std::shared_ptr<spdlog::logger> logger =
+                      std::make_shared<spdlog::logger>("default"))
+            : generator(generator), Event(table, config, logger) {}
         virtual ~ProbEvent() = default;
     };
 } // namespace Event

@@ -117,6 +117,8 @@ namespace Simulation {
         /// @return Reference to the simulation's pseudorandom number generator
         std::mt19937_64 &getGenerator() { return generator; }
 
+        /// @brief A getter for the Current Timestep variable
+        /// @return currentTimestep as a uint32_t
         uint32_t getCurrentTimestep() { return this->currentTimestep; }
     };
 

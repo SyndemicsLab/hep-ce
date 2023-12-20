@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 
                       // create the person-level event vector
                       std::vector<sharedEvent> personEvents;
-                      loadEvents(personEvents, tables, sim, config);
+                      loadEvents(personEvents, tables, sim, config, logger);
                       sim.loadEvents(personEvents);
 
                       std::vector<sharedPerson> population;

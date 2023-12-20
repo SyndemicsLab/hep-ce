@@ -28,31 +28,33 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 
 void loadEvents(std::vector<sharedEvent> &personEvents,
                 std::unordered_map<std::string, Data::DataTable> &tables,
-                Simulation::Simulation &sim, Data::Configuration &config) {
+                Simulation::Simulation &sim, Data::Configuration &config,
+                std::shared_ptr<spdlog::logger> logger) {
 
-    sharedEvent aging = makeEvent<Event::Aging>(tables["blank"], config);
+    sharedEvent aging =
+        makeEvent<Event::Aging>(tables["blank"], config, logger);
     sharedEvent behavior = makeEvent<Event::BehaviorChanges>(
-        sim.getGenerator(), tables["behaviorTransitions"], config);
+        sim.getGenerator(), tables["behaviorTransitions"], config, logger);
     sharedEvent clearance = makeEvent<Event::Clearance>(
-        sim.getGenerator(), tables["blank"], config);
+        sim.getGenerator(), tables["blank"], config, logger);
     sharedEvent disease = makeEvent<Event::DiseaseProgression>(
-        sim.getGenerator(), tables["diseaseProgression"], config);
+        sim.getGenerator(), tables["diseaseProgression"], config, logger);
     sharedEvent infection = makeEvent<Event::Infections>(
-        sim.getGenerator(), tables["incidence"], config);
+        sim.getGenerator(), tables["incidence"], config, logger);
     sharedEvent screen = makeEvent<Event::Screening>(
-        sim.getGenerator(), tables["screenTestLink"], config);
+        sim.getGenerator(), tables["screenTestLink"], config, logger);
     sharedEvent linking =
-        makeEvent<Event::Linking>(tables["screenTestLink"], config);
+        makeEvent<Event::Linking>(tables["screenTestLink"], config, logger);
     sharedEvent voluntaryRelink = makeEvent<Event::VoluntaryRelinking>(
-        sim.getGenerator(), tables["blank"], config);
+        sim.getGenerator(), tables["blank"], config, logger);
     sharedEvent fibrosisStaging =
-        makeEvent<Event::FibrosisStaging>(tables["fibrosis"], config);
+        makeEvent<Event::FibrosisStaging>(tables["fibrosis"], config, logger);
     sharedEvent treatment =
-        makeEvent<Event::Treatment>(tables["blank"], config);
+        makeEvent<Event::Treatment>(tables["blank"], config, logger);
     sharedEvent overdose = makeEvent<Event::Overdose>(
-        sim.getGenerator(), tables["overdose"], config);
-    sharedEvent death =
-        makeEvent<Event::Death>(sim.getGenerator(), tables["death"], config);
+        sim.getGenerator(), tables["overdose"], config, logger);
+    sharedEvent death = makeEvent<Event::Death>(
+        sim.getGenerator(), tables["death"], config, logger);
 
     personEvents.insert(personEvents.end(),
                         {aging, behavior, clearance, disease, infection, screen,

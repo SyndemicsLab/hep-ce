@@ -21,8 +21,9 @@ using sharedPerson = std::shared_ptr<Person::Person>;
 /// @tparam T
 /// @return
 template <typename T>
-sharedEvent makeEvent(Data::DataTable &table, Data::Configuration &config) {
-    return std::make_shared<T>(table, config);
+sharedEvent makeEvent(Data::DataTable &table, Data::Configuration &config,
+                      std::shared_ptr<spdlog::logger> logger) {
+    return std::make_shared<T>(table, config, logger);
 }
 
 /// @brief
@@ -32,8 +33,9 @@ sharedEvent makeEvent(Data::DataTable &table, Data::Configuration &config) {
 /// @return
 template <typename T>
 sharedEvent makeEvent(std::mt19937_64 &generator, Data::DataTable &table,
-                      Data::Configuration &config) {
-    return std::make_shared<T>(generator, table, config);
+                      Data::Configuration &config,
+                      std::shared_ptr<spdlog::logger> logger) {
+    return std::make_shared<T>(generator, table, config, logger);
 }
 
 /// @brief
@@ -67,7 +69,9 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 /// @param sim
 void loadEvents(std::vector<sharedEvent> &personEvents,
                 std::unordered_map<std::string, Data::DataTable> &tables,
-                Simulation::Simulation &sim, Data::Configuration &config);
+                Simulation::Simulation &sim, Data::Configuration &config,
+                std::shared_ptr<spdlog::logger> logger =
+                    std::make_shared<spdlog::logger>("default"));
 
 /// @brief
 /// @param personEvents

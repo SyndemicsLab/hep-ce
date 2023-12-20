@@ -17,14 +17,6 @@
 #include "Screening.hpp"
 
 namespace Event {
-    Screening::Screening(std::mt19937_64 &generator, Data::DataTable &table,
-                         Data::Configuration &config)
-        : ProbEvent(generator, table, config){
-              // QUERY backgroundProbability and interventionProbability Tables
-              // Save to attributes
-              // ensure lookup scheme for stratified age/IDU
-          };
-
     void Screening::doEvent(std::shared_ptr<Person::Person> person) {
         double prob = 0.5;
         if ((person->isInterventionScreened() &&

@@ -35,7 +35,8 @@ namespace Simulation {
     void Simulation::loadPopulation(
         std::vector<std::shared_ptr<Person::Person>> &population) {
         if (!this->population.empty()) {
-            // log that we are over-writing the population
+            this->logger->info("Simulation Population not empty, overwriting "
+                               "existing population.");
         }
         this->population = population;
     }
@@ -47,43 +48,49 @@ namespace Simulation {
     void
     Simulation::loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
         if (events.empty()) {
-            // log that we are writing an empty event vector
+            this->logger->warn("Empty Event being added to simulation event "
+                               "list! Make sure this is intentional.");
         }
         if (!this->events.empty()) {
-            // log that we are overwriting this->events
+            this->logger->info(
+                "Simulation Events not empty, overwriting existing events.");
         }
         this->events = events;
     }
 
     void Simulation::addEventToEnd(std::shared_ptr<Event::Event> event) {
-        // log that an event is being added to the end of the event list
+        this->logger->info("Event being added to end of Event Queue");
         this->events.push_back(event);
     }
 
     void Simulation::addEventToBeginning(std::shared_ptr<Event::Event> event) {
-        // log that an event is being inserted at the beginning of the event
-        // list
+        this->logger->info("Event being added to beginning of Event Queue.");
         this->events.insert(this->events.begin(), event);
     }
 
     bool Simulation::addEventAtIndex(std::shared_ptr<Event::Event> event,
                                      int idx) {
         if (idx >= this->events.size() || idx < 0) {
-            // index out of range
+            this->logger->warn(
+                "Index {0} out of Event Queue Range of size {1}!",
+                std::to_string(idx), std::to_string(this->events.size()));
             return false;
         }
-        // log that an event is being added to the event list in index idx
+        this->logger->info("Event being added to index {0} of Event Queue.",
+                           std::to_string(idx));
         this->events.insert(this->events.begin() + idx, event);
         return true;
     }
 
     std::vector<std::shared_ptr<Person::Person>> Simulation::run() {
+        this->logger->info("Simulation Run Started");
         while (this->currentTimestep < this->duration) {
             for (std::shared_ptr<Event::Event> event : this->events) {
                 event->execute(this->population, this->currentTimestep);
             }
             this->currentTimestep++;
         }
+        this->logger->info("Simulation Run Ended");
         return this->population;
     }
 } // namespace Simulation

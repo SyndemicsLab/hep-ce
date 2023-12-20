@@ -27,6 +27,8 @@
 #include "DataTable.hpp"
 #include "Utils.hpp"
 
+#include "spdlog/spdlog.h"
+
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
     /// @brief A running count of the number of people in the simulation
