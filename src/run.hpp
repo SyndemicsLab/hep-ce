@@ -1,7 +1,12 @@
+#ifndef RUN_HPP_
+#define RUN_HPP_
+
 #include "AllEvents.hpp"
 #include "Configuration.hpp"
 #include "DataTable.hpp"
 #include "Simulation.hpp"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/spdlog.h"
 #include <filesystem>
 #include <memory>
 #include <unordered_map>
@@ -90,3 +95,5 @@ void writePopulation(std::vector<sharedPerson> &population,
 inline std::string const boolToString(bool b) {
     return b ? std::string("true") : std::string("false");
 }
+
+#endif

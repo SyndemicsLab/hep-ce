@@ -17,7 +17,6 @@ int main(int argc, char *argv[]) {
 
     std::for_each(std::execution::par_unseq, std::begin(runs), std::end(runs),
                   [&](int i) {
-                      Simulation::Simulation sim(0, 0);
                       std::unordered_map<std::string, Data::DataTable> tables;
 
                       std::filesystem::path inputSet =
@@ -28,7 +27,23 @@ int main(int argc, char *argv[]) {
 
                       Data::Configuration config(configPath.string());
 
+                      std::filesystem::path outputSet =
+                          ((std::filesystem::path)rootInputDir) /
+                          ("output" + std::to_string(i));
+
+                      std::shared_ptr<spdlog::logger> logger;
+                      try {
+                          logger = spdlog::basic_logger_mt(
+                              "basic_logger", outputSet.string() + "/log.txt");
+                      } catch (const spdlog::spdlog_ex &ex) {
+                          std::cout << "Log init failed: " << ex.what()
+                                    << std::endl;
+                          exit(-1);
+                      }
+
                       loadTables(tables, inputSet.string());
+
+                      Simulation::Simulation sim(0, 0, logger);
 
                       // create the person-level event vector
                       std::vector<sharedEvent> personEvents;
@@ -43,10 +58,6 @@ int main(int argc, char *argv[]) {
 
                       population = sim.getPopulation();
                       personEvents = sim.getEvents();
-
-                      std::filesystem::path outputSet =
-                          ((std::filesystem::path)rootInputDir) /
-                          ("output" + std::to_string(i));
 
                       writeEvents(personEvents, outputSet.string());
                       writePopulation(population, outputSet.string());

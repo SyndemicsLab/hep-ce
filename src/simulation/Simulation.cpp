@@ -19,6 +19,9 @@
 namespace Simulation {
     std::mt19937_64 Simulation::generator;
     void Simulation::createPopulation(const int N) {
+        if (N > 0) {
+            this->population = {};
+        }
         for (int i = 0; i < N; ++i) {
             this->population.push_back(std::make_shared<Person::Person>());
         }
