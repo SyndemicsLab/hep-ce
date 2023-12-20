@@ -38,6 +38,8 @@ namespace Event {
     private:
         int currentTimestep = -1;
         virtual void doEvent(std::shared_ptr<Person::Person> person) = 0;
+
+    protected:
         Data::Configuration &config;
         Data::DataTable &table;
         std::shared_ptr<spdlog::logger> logger;
