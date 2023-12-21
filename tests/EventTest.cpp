@@ -69,8 +69,7 @@ TEST_F(EventTest, AgingDead) {
 
 TEST_F(EventTest, BehaviorChange) {
 
-    std::shared_ptr<MockDataTable> mockedTable =
-        std::make_shared<MockDataTable>();
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
 
     std::map<std::string, std::vector<std::string>> retData;
     retData["never"] = {"1.0"};
@@ -88,10 +87,9 @@ TEST_F(EventTest, BehaviorChange) {
     std::shared_ptr<Data::IDataTable> retVal =
         std::make_shared<Data::DataTable>(retData, retShape, retHeader);
 
-    EXPECT_CALL((*mockedTable), selectWhere(_)).WillRepeatedly(Return(retVal));
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
     Data::Configuration config;
-    Event::BehaviorChanges behavior(simulation->getGenerator(), mockedTable,
-                                    config);
+    Event::BehaviorChanges behavior(simulation->getGenerator(), table, config);
     behavior.execute(livingPopulation, 1);
 
     EXPECT_EQ(Person::BehaviorClassification::NEVER,
@@ -119,13 +117,29 @@ TEST_F(EventTest, DeathByOldAge) {
 }
 
 TEST_F(EventTest, DiseaseProgression) {
-    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+
+    std::map<std::string, std::vector<std::string>> retData;
+    retData["initial_state"] = {"f0", "f0"};
+    retData["new_state"] = {"f0", "f1"};
+    retData["probability"] = {"0.0", "1.0"};
+
+    std::vector<std::string> retHeader = {"initial_state", "new_state",
+                                          "probability"};
+
+    Data::DataTableShape retShape(2, 3);
+
+    std::shared_ptr<Data::IDataTable> retVal =
+        std::make_shared<Data::DataTable>(retData, retShape, retHeader);
+
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
+
     Data::Configuration config;
     Event::DiseaseProgression diseaseProgression(simulation->getGenerator(),
                                                  table, config);
     livingPopulation[0]->infect(0);
     diseaseProgression.execute(livingPopulation, 1);
-    EXPECT_EQ(Person::LiverState::F0, livingPopulation[0]->getLiverState());
+    EXPECT_EQ(Person::LiverState::F1, livingPopulation[0]->getLiverState());
 }
 
 TEST_F(EventTest, Fibrosis) {}

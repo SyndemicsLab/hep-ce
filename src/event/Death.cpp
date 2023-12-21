@@ -31,10 +31,13 @@ namespace Event {
             return;
         }
         // 2. Get fatal OD probability.
-        double prob = this->getFatalODProb(person);
+        this->getMortalityProbabilities(person);
         // 3. Decide whether the person dies. If not, unset their overdose
         // property.
-        if (this->getDecision({prob})) {
+
+        double prob = (this->backgroundMortProb * this->smr) +
+                      this->fatalOverdoseProb + this->fibrosisDeathProb;
+        if (this->getDecision({1.0 - prob, prob})) {
             this->die(person);
         } else {
             person->toggleOverdose();
@@ -46,8 +49,38 @@ namespace Event {
         person->die();
     }
 
-    double Death::getFatalODProb(std::shared_ptr<Person::Person> person) {
-        // determine fatal overdose probability based on person traits
-        return 0.5;
+    void Death::getMortalityProbabilities(
+        std::shared_ptr<Person::Person> const person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["age_years"] = std::to_string((int)person->age);
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        selectCriteria["drug_behavior"] =
+            Person::Person::behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+        selectCriteria["fibrosis_state"] =
+            Person::Person::liverStateEnumToStringMap[person->getLiverState()];
+
+        auto resultTable = table->selectWhere(selectCriteria);
+
+        this->backgroundMortProb =
+            stod((*resultTable)["background_mortality"][0]);
+
+        this->smr = stod((*resultTable)["SMR"][0]);
+
+        if (person->getLiverState() > Person::LiverState::F3) {
+            this->fibrosisDeathProb =
+                stod((*resultTable)["fib_death_probability"][0]);
+        }
+
+        if (person->getOverdose()) {
+            // we need to figure out how we're gonna make this time based
+            this->fatalOverdoseProb =
+                stod((*resultTable)["fatal_overdose_cycle52"][0]);
+        }
+
+        // size_t last_index = str.find_last_not_of("0123456789");
+        // string result = str.substr(last_index + 1);
     }
 } // namespace Event
