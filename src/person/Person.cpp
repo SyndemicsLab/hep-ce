@@ -2,12 +2,12 @@
 
 namespace Person {
     int count = 0;
-    std::unordered_map<std::string, HEPCState> Person::hepcStateMap = {
+    std::map<std::string, HEPCState> Person::hepcStateMap = {
         {"none", HEPCState::NONE},
         {"acute", HEPCState::ACUTE},
         {"chronic", HEPCState::CHRONIC}};
 
-    std::unordered_map<std::string, BehaviorClassification>
+    std::map<std::string, BehaviorClassification>
         Person::behaviorClassificationMap = {
             {"never", BehaviorClassification::NEVER},
             {"former_noninjection",
@@ -16,47 +16,46 @@ namespace Person {
             {"noninjection", BehaviorClassification::NONINJECTION},
             {"injection", BehaviorClassification::INJECTION}};
 
-    std::unordered_map<std::string, LinkageType> Person::linkageTypeMap = {
+    std::map<std::string, LinkageType> Person::linkageTypeMap = {
         {"background", LinkageType::BACKGROUND},
         {"intervention", LinkageType::INTERVENTION}};
 
-    std::unordered_map<std::string, LinkageState> Person::linkageStateMap = {
+    std::map<std::string, LinkageState> Person::linkageStateMap = {
         {"never", LinkageState::NEVER},
         {"linked", LinkageState::LINKED},
         {"unlinked", LinkageState::UNLINKED}};
 
-    std::unordered_map<std::string, LiverState> Person::liverStateMap = {
+    std::map<std::string, LiverState> Person::liverStateMap = {
         {"none", LiverState::NONE},     {"f0", LiverState::F0},
         {"f1", LiverState::F1},         {"f2", LiverState::F2},
         {"f3", LiverState::F3},         {"f4", LiverState::F4},
         {"decomp", LiverState::DECOMP}, {"ehcc", LiverState::EHCC},
         {"lhcc", LiverState::LHCC}};
 
-    std::unordered_map<std::string, MeasuredLiverState>
-        Person::measuredLiverStateMap = {
-            {"none", MeasuredLiverState::NONE},
-            {"f01", MeasuredLiverState::F01},
-            {"f23", MeasuredLiverState::F23},
-            {"f4", MeasuredLiverState::F4},
-            {"decomp", MeasuredLiverState::DECOMP}};
+    std::map<std::string, MeasuredLiverState> Person::measuredLiverStateMap = {
+        {"none", MeasuredLiverState::NONE},
+        {"f01", MeasuredLiverState::F01},
+        {"f23", MeasuredLiverState::F23},
+        {"f4", MeasuredLiverState::F4},
+        {"decomp", MeasuredLiverState::DECOMP}};
 
-    std::unordered_map<std::string, MOUD> Person::moudMap = {
+    std::map<std::string, MOUD> Person::moudMap = {
         {"none", MOUD::NONE}, {"current", MOUD::CURRENT}, {"post", MOUD::POST}};
 
-    std::unordered_map<std::string, Sex> Person::sexMap = {
-        {"male", Sex::MALE}, {"female", Sex::FEMALE}};
+    std::map<std::string, Sex> Person::sexMap = {{"male", Sex::MALE},
+                                                 {"female", Sex::FEMALE}};
 
-    std::unordered_map<std::string, PregnancyState> Person::pregnancyStateMap =
-        {{"none", PregnancyState::NONE},
-         {"pregnant", PregnancyState::PREGNANT},
-         {"postpartum", PregnancyState::POSTPARTUM}};
+    std::map<std::string, PregnancyState> Person::pregnancyStateMap = {
+        {"none", PregnancyState::NONE},
+        {"pregnant", PregnancyState::PREGNANT},
+        {"postpartum", PregnancyState::POSTPARTUM}};
 
-    std::unordered_map<HEPCState, std::string>
-        Person::hepcStateEnumToStringMap = {{HEPCState::NONE, "none"},
-                                            {HEPCState::ACUTE, "acute"},
-                                            {HEPCState::CHRONIC, "chronic"}};
+    std::map<HEPCState, std::string> Person::hepcStateEnumToStringMap = {
+        {HEPCState::NONE, "none"},
+        {HEPCState::ACUTE, "acute"},
+        {HEPCState::CHRONIC, "chronic"}};
     ;
-    std::unordered_map<BehaviorClassification, std::string>
+    std::map<BehaviorClassification, std::string>
         Person::behaviorClassificationEnumToStringMap = {
             {BehaviorClassification::NEVER, "never"},
             {BehaviorClassification::FORMER_NONINJECTION,
@@ -64,36 +63,33 @@ namespace Person {
             {BehaviorClassification::FORMER_INJECTION, "former_injection"},
             {BehaviorClassification::NONINJECTION, "noninjection"},
             {BehaviorClassification::INJECTION, "injection"}};
-    std::unordered_map<LinkageType, std::string>
-        Person::linkageTypeEnumToStringMap = {
-            {LinkageType::BACKGROUND, "background"},
-            {LinkageType::INTERVENTION, "intervention"}};
-    std::unordered_map<LinkageState, std::string>
-        Person::linkageStateEnumToStringMap = {
-            {LinkageState::NEVER, "never"},
-            {LinkageState::LINKED, "linked"},
-            {LinkageState::UNLINKED, "unlinked"}};
+    std::map<LinkageType, std::string> Person::linkageTypeEnumToStringMap = {
+        {LinkageType::BACKGROUND, "background"},
+        {LinkageType::INTERVENTION, "intervention"}};
+    std::map<LinkageState, std::string> Person::linkageStateEnumToStringMap = {
+        {LinkageState::NEVER, "never"},
+        {LinkageState::LINKED, "linked"},
+        {LinkageState::UNLINKED, "unlinked"}};
 
-    std::unordered_map<LiverState, std::string>
-        Person::liverStateEnumToStringMap = {
-            {LiverState::NONE, "none"},     {LiverState::F0, "f0"},
-            {LiverState::F1, "f1"},         {LiverState::F2, "f2"},
-            {LiverState::F3, "f3"},         {LiverState::F4, "f4"},
-            {LiverState::DECOMP, "decomp"}, {LiverState::EHCC, "ehcc"},
-            {LiverState::LHCC, "lhcc"}};
-    std::unordered_map<MeasuredLiverState, std::string>
+    std::map<LiverState, std::string> Person::liverStateEnumToStringMap = {
+        {LiverState::NONE, "none"},     {LiverState::F0, "f0"},
+        {LiverState::F1, "f1"},         {LiverState::F2, "f2"},
+        {LiverState::F3, "f3"},         {LiverState::F4, "f4"},
+        {LiverState::DECOMP, "decomp"}, {LiverState::EHCC, "ehcc"},
+        {LiverState::LHCC, "lhcc"}};
+    std::map<MeasuredLiverState, std::string>
         Person::measuredLiverStateEnumToStringMap = {
             {MeasuredLiverState::NONE, "none"},
             {MeasuredLiverState::F01, "f01"},
             {MeasuredLiverState::F23, "f23"},
             {MeasuredLiverState::F4, "f4"},
             {MeasuredLiverState::DECOMP, "decomp"}};
-    std::unordered_map<MOUD, std::string> Person::moudEnumToStringMap = {
+    std::map<MOUD, std::string> Person::moudEnumToStringMap = {
         {MOUD::NONE, "none"}, {MOUD::CURRENT, "current"}, {MOUD::POST, "post"}};
-    std::unordered_map<Sex, std::string> Person::sexEnumToStringMap = {
+    std::map<Sex, std::string> Person::sexEnumToStringMap = {
         {Sex::MALE, "male"}, {Sex::FEMALE, "female"}};
 
-    std::unordered_map<PregnancyState, std::string>
+    std::map<PregnancyState, std::string>
         Person::pregnancyStateEnumToStringMap = {
             {PregnancyState::NONE, "none"},
             {PregnancyState::PREGNANT, "pregnant"},

@@ -16,12 +16,17 @@
 //===----------------------------------------------------------------------===//
 
 #include <gtest/gtest.h>
+#include <iostream>
 #include <memory>
 #include <vector>
 
 #include "AllEvents.hpp"
 #include "Simulation.hpp"
 #include "Utils.hpp"
+#include "mocks/MockDataTable.hpp"
+
+using ::testing::_;
+using ::testing::Return;
 
 class EventTest : public ::testing::Test {
 protected:
@@ -44,7 +49,7 @@ protected:
 
 TEST_F(EventTest, AgingLiving) {
     double expectedAge = 1.0 / 12.0;
-    Data::IDataTablePtr table;
+    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
@@ -54,7 +59,7 @@ TEST_F(EventTest, AgingLiving) {
 
 TEST_F(EventTest, AgingDead) {
     double expectedAge = 0.0;
-    Data::IDataTablePtr table;
+    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
@@ -63,17 +68,38 @@ TEST_F(EventTest, AgingDead) {
 }
 
 TEST_F(EventTest, BehaviorChange) {
-    Data::IDataTablePtr table;
+
+    std::shared_ptr<MockDataTable> mockedTable =
+        std::make_shared<MockDataTable>();
+
+    std::map<std::string, std::vector<std::string>> retData;
+    retData["never"] = {"1.0"};
+    retData["former_noninjection"] = {"0.0"};
+    retData["former_injection"] = {"0.0"};
+    retData["noninjection"] = {"0.0"};
+    retData["injection"] = {"0.0"};
+
+    std::vector<std::string> retHeader = {"never", "former_noninjection",
+                                          "former_injection", "noninjection",
+                                          "injection"};
+
+    Data::DataTableShape retShape(1, 5);
+
+    std::shared_ptr<Data::IDataTable> retVal =
+        std::make_shared<Data::DataTable>(retData, retShape, retHeader);
+
+    EXPECT_CALL((*mockedTable), selectWhere(_)).WillRepeatedly(Return(retVal));
     Data::Configuration config;
-    Event::BehaviorChanges behavior(simulation->getGenerator(), table, config);
+    Event::BehaviorChanges behavior(simulation->getGenerator(), mockedTable,
+                                    config);
     behavior.execute(livingPopulation, 1);
 
-    EXPECT_EQ(Person::BehaviorClassification::FORMER_INJECTION,
+    EXPECT_EQ(Person::BehaviorClassification::NEVER,
               livingPopulation.at(0)->getBehaviorClassification());
 }
 
 TEST_F(EventTest, Clearance) {
-    Data::IDataTablePtr table;
+    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Configuration config;
     Event::Clearance clearance(simulation->getGenerator(), table, config);
     livingPopulation[0]->infect(0);
@@ -84,7 +110,7 @@ TEST_F(EventTest, Clearance) {
 TEST_F(EventTest, DeathByOldAge) {
     Person::Person expectedPerson;
     expectedPerson.die();
-    Data::IDataTablePtr table;
+    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Configuration config;
     Event::Death deathEvent(simulation->getGenerator(), table, config);
     livingPopulation[0]->age = 1210;
@@ -93,7 +119,7 @@ TEST_F(EventTest, DeathByOldAge) {
 }
 
 TEST_F(EventTest, DiseaseProgression) {
-    Data::IDataTablePtr table;
+    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Configuration config;
     Event::DiseaseProgression diseaseProgression(simulation->getGenerator(),
                                                  table, config);
@@ -105,7 +131,7 @@ TEST_F(EventTest, DiseaseProgression) {
 TEST_F(EventTest, Fibrosis) {}
 
 TEST_F(EventTest, Infections) {
-    Data::IDataTablePtr table;
+    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Configuration config;
     Event::Infections infections(simulation->getGenerator(), table, config);
     infections.execute(livingPopulation, 1);

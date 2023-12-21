@@ -19,8 +19,8 @@
 #define PERSON_PERSON_HPP_
 
 #include <cstdint>
+#include <map>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "Containers.hpp"
@@ -56,38 +56,32 @@ namespace Person {
         /// @brief Person age in years
         double age = 0;
 
-        static std::unordered_map<std::string, HEPCState> hepcStateMap;
-        static std::unordered_map<std::string, BehaviorClassification>
+        static std::map<std::string, HEPCState> hepcStateMap;
+        static std::map<std::string, BehaviorClassification>
             behaviorClassificationMap;
-        static std::unordered_map<std::string, LinkageType> linkageTypeMap;
-        static std::unordered_map<std::string, LinkageState> linkageStateMap;
+        static std::map<std::string, LinkageType> linkageTypeMap;
+        static std::map<std::string, LinkageState> linkageStateMap;
 
-        static std::unordered_map<std::string, LiverState> liverStateMap;
-        static std::unordered_map<std::string, MeasuredLiverState>
-            measuredLiverStateMap;
-        static std::unordered_map<std::string, MOUD> moudMap;
-        static std::unordered_map<std::string, Sex> sexMap;
+        static std::map<std::string, LiverState> liverStateMap;
+        static std::map<std::string, MeasuredLiverState> measuredLiverStateMap;
+        static std::map<std::string, MOUD> moudMap;
+        static std::map<std::string, Sex> sexMap;
 
-        static std::unordered_map<std::string, PregnancyState>
-            pregnancyStateMap;
+        static std::map<std::string, PregnancyState> pregnancyStateMap;
 
-        static std::unordered_map<HEPCState, std::string>
-            hepcStateEnumToStringMap;
-        static std::unordered_map<BehaviorClassification, std::string>
+        static std::map<HEPCState, std::string> hepcStateEnumToStringMap;
+        static std::map<BehaviorClassification, std::string>
             behaviorClassificationEnumToStringMap;
-        static std::unordered_map<LinkageType, std::string>
-            linkageTypeEnumToStringMap;
-        static std::unordered_map<LinkageState, std::string>
-            linkageStateEnumToStringMap;
+        static std::map<LinkageType, std::string> linkageTypeEnumToStringMap;
+        static std::map<LinkageState, std::string> linkageStateEnumToStringMap;
 
-        static std::unordered_map<LiverState, std::string>
-            liverStateEnumToStringMap;
-        static std::unordered_map<MeasuredLiverState, std::string>
+        static std::map<LiverState, std::string> liverStateEnumToStringMap;
+        static std::map<MeasuredLiverState, std::string>
             measuredLiverStateEnumToStringMap;
-        static std::unordered_map<MOUD, std::string> moudEnumToStringMap;
-        static std::unordered_map<Sex, std::string> sexEnumToStringMap;
+        static std::map<MOUD, std::string> moudEnumToStringMap;
+        static std::map<Sex, std::string> sexEnumToStringMap;
 
-        static std::unordered_map<PregnancyState, std::string>
+        static std::map<PregnancyState, std::string>
             pregnancyStateEnumToStringMap;
 
         /// @brief Default constructor for Person

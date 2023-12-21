@@ -43,9 +43,9 @@ namespace Event {
 
         // Typical Behavior Change
         // 1. Generate the transition probabilities based on the starting state
-        // std::vector<double> probs = getTransitions(person);
+        std::vector<double> probs = getTransitions(person);
         // currently using placeholders to test compiling
-        std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
+        // std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
         // 2. Draw a behavior state to be transitioned to
         Person::BehaviorClassification toBC =
             (Person::BehaviorClassification)this->getDecision(probs);
