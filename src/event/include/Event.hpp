@@ -41,11 +41,11 @@ namespace Event {
 
     protected:
         Data::Configuration &config;
-        Data::DataTable &table;
+        Data::IDataTablePtr table;
         std::shared_ptr<spdlog::logger> logger;
 
     public:
-        Event(Data::DataTable &table, Data::Configuration &config,
+        Event(Data::IDataTablePtr table, Data::Configuration &config,
               std::shared_ptr<spdlog::logger> logger =
                   std::make_shared<spdlog::logger>("default"))
             : table(table), config(config), logger(logger){};
@@ -108,7 +108,7 @@ namespace Event {
         }
 
     public:
-        ProbEvent(std::mt19937_64 &generator, Data::DataTable &table,
+        ProbEvent(std::mt19937_64 &generator, Data::IDataTablePtr table,
                   Data::Configuration &config,
                   std::shared_ptr<spdlog::logger> logger =
                       std::make_shared<spdlog::logger>("default"))

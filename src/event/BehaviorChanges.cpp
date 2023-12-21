@@ -68,11 +68,11 @@ namespace Event {
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
 
-        auto resultTable = table.selectWhere(selectCriteria);
+        auto resultTable = table->selectWhere(selectCriteria);
 
         std::vector<double> result = {};
         for (auto kv : Person::Person::behaviorClassificationEnumToStringMap) {
-            result.push_back(std::stod(resultTable[kv.second][0]));
+            result.push_back(std::stod((*resultTable)[kv.second][0]));
         }
         return result;
     }

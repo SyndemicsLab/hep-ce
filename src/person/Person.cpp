@@ -99,79 +99,80 @@ namespace Person {
             {PregnancyState::PREGNANT, "pregnant"},
             {PregnancyState::POSTPARTUM, "postpartum"}};
 
-    Person::Person(Data::DataTable dataTableRow, int simCycle) {
+    Person::Person(Data::IDataTablePtr dataTableRow, int simCycle) {
         count++;
-        if (dataTableRow.empty() || dataTableRow.ncols() < 29) {
+        if (dataTableRow->empty() || dataTableRow->ncols() < 29) {
             return;
         }
 
-        this->id = stoi(dataTableRow["id"][0]);
+        this->id = stoi((*dataTableRow)["id"][0]);
 
-        this->sex = Person::sexMap[Utils::toLower(dataTableRow["sex"][0])];
-        this->age = stod(dataTableRow["age"][0]);
+        this->sex = Person::sexMap[Utils::toLower((*dataTableRow)["sex"][0])];
+        this->age = stod((*dataTableRow)["age"][0]);
 
-        this->isAlive = Utils::stobool(dataTableRow["isAlive"][0]);
+        this->isAlive = Utils::stobool((*dataTableRow)["isAlive"][0]);
 
         this->screeningDetails.timeOfLastScreening =
-            stoi(dataTableRow["timeOfLastScreening"][0]);
+            stoi((*dataTableRow)["timeOfLastScreening"][0]);
         this->screeningDetails.screeningFrequency =
-            stoi(dataTableRow["screeningFrequency"][0]);
+            stoi((*dataTableRow)["screeningFrequency"][0]);
         this->screeningDetails.interventionScreening =
-            Utils::stobool(dataTableRow["hasInterventionScreening"][0]);
+            Utils::stobool((*dataTableRow)["hasInterventionScreening"][0]);
 
-        this->idStatus.timeIdentified = stoi(dataTableRow["timeIdentified"][0]);
+        this->idStatus.timeIdentified =
+            stoi((*dataTableRow)["timeIdentified"][0]);
         this->idStatus.identifiedAsPositiveInfection =
-            Utils::stobool(dataTableRow["identifiedAsPositive"][0]);
+            Utils::stobool((*dataTableRow)["identifiedAsPositive"][0]);
 
-        this->infectionStatus.hepcState =
-            Person::hepcStateMap[Utils::toLower(dataTableRow["hepcState"][0])];
+        this->infectionStatus.hepcState = Person::hepcStateMap[Utils::toLower(
+            (*dataTableRow)["hepcState"][0])];
         this->infectionStatus.timeHEPCStateChanged =
-            stoi(dataTableRow["timeHEPCStateChanged"][0]);
+            stoi((*dataTableRow)["timeHEPCStateChanged"][0]);
         this->infectionStatus.seropositivity =
-            Utils::stobool(dataTableRow["seropositivity"][0]);
+            Utils::stobool((*dataTableRow)["seropositivity"][0]);
         this->infectionStatus.liverState = Person::liverStateMap[Utils::toLower(
-            dataTableRow["liverState"][0])];
+            (*dataTableRow)["liverState"][0])];
         this->infectionStatus.timeLiverStateChanged =
-            stoi(dataTableRow["timeLiverStateChanged"][0]);
+            stoi((*dataTableRow)["timeLiverStateChanged"][0]);
 
         this->stagingDetails.measuredLiverState =
             Person::measuredLiverStateMap[Utils::toLower(
-                dataTableRow["measuredLiverState"][0])];
+                (*dataTableRow)["measuredLiverState"][0])];
         this->stagingDetails.timeOfLastStaging =
-            stoi(dataTableRow["timeOfLastStaging"][0]);
+            stoi((*dataTableRow)["timeOfLastStaging"][0]);
 
         this->behaviorDetails.behaviorClassification =
             Person::behaviorClassificationMap[Utils::toLower(
-                dataTableRow["drugBehavior"][0])];
+                (*dataTableRow)["drugBehavior"][0])];
         this->behaviorDetails.timeLastActive =
-            stoi(dataTableRow["timeLastActiveDrugUse"][0]);
+            stoi((*dataTableRow)["timeLastActiveDrugUse"][0]);
 
         this->linkStatus.linkState = Person::linkageStateMap[Utils::toLower(
-            dataTableRow["linkageState"][0])];
+            (*dataTableRow)["linkageState"][0])];
         this->linkStatus.timeOfLinkChange =
-            stoi(dataTableRow["timeOfLinkChange"][0]);
+            stoi((*dataTableRow)["timeOfLinkChange"][0]);
         this->linkStatus.linkType = Person::linkageTypeMap[Utils::toLower(
-            dataTableRow["linkageType"][0])];
+            (*dataTableRow)["linkageType"][0])];
 
-        this->overdose = Utils::stobool(dataTableRow["isOverdosed"][0]);
+        this->overdose = Utils::stobool((*dataTableRow)["isOverdosed"][0]);
 
         this->incompleteTreatment =
-            Utils::stobool(dataTableRow["hasIncompleteTreatment"][0]);
+            Utils::stobool((*dataTableRow)["hasIncompleteTreatment"][0]);
 
         this->moudDetails.moudState =
-            Person::moudMap[Utils::toLower(dataTableRow["MOUDState"][0])];
+            Person::moudMap[Utils::toLower((*dataTableRow)["MOUDState"][0])];
         this->moudDetails.timeStartedMoud =
-            stoi(dataTableRow["timeStartedMOUD"][0]);
+            stoi((*dataTableRow)["timeStartedMOUD"][0]);
 
         this->pregnancyDetails.pregnancyState =
             Person::pregnancyStateMap[Utils::toLower(
-                dataTableRow["pregnancyState"][0])];
+                (*dataTableRow)["pregnancyState"][0])];
         this->pregnancyDetails.timeOfPregnancyChange =
-            stoi(dataTableRow["timeOfPregnancyChange"][0]);
+            stoi((*dataTableRow)["timeOfPregnancyChange"][0]);
         this->pregnancyDetails.infantCount =
-            stoi(dataTableRow["infantCount"][0]);
+            stoi((*dataTableRow)["infantCount"][0]);
         this->pregnancyDetails.miscarriageCount =
-            stoi(dataTableRow["miscarriageCount"][0]);
+            stoi((*dataTableRow)["miscarriageCount"][0]);
     }
 
     void Person::die() { this->isAlive = false; }

@@ -27,7 +27,7 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 }
 
 void loadEvents(std::vector<sharedEvent> &personEvents,
-                std::unordered_map<std::string, Data::DataTable> &tables,
+                std::unordered_map<std::string, Data::IDataTablePtr> &tables,
                 Simulation::Simulation &sim, Data::Configuration &config,
                 std::shared_ptr<spdlog::logger> logger) {
 
@@ -64,101 +64,106 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
 
 void writeEvents(std::vector<sharedEvent> &personEvents, std::string dirpath) {}
 
-void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
+void loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
                 std::string dirpath) {
 
     // Added blank table for events that do not need tabular data
-    Data::DataTable blank;
+    Data::IDataTablePtr blank;
     tables["blank"] = blank;
 
     // Costs and Utilities
 
     std::filesystem::path f =
         ((std::filesystem::path)dirpath) / "background_costs.csv";
-    Data::DataTable backgroundCost(f);
+    Data::IDataTablePtr backgroundCost = std::make_shared<Data::DataTable>(f);
     tables["backgroundCost"] = backgroundCost;
 
     f = ((std::filesystem::path)dirpath) / "behavior_costs.csv";
-    Data::DataTable behaviorCosts(f);
+    Data::IDataTablePtr behaviorCosts = std::make_shared<Data::DataTable>(f);
     tables["behaviorCost"] = behaviorCosts;
 
     f = ((std::filesystem::path)dirpath) / "hcv_costs.csv";
-    Data::DataTable hcv_cost(f);
+    Data::IDataTablePtr hcv_cost = std::make_shared<Data::DataTable>(f);
     tables["hcvCost"] = hcv_cost;
 
     f = ((std::filesystem::path)dirpath) / "background_utilities.csv";
-    Data::DataTable backgroundUtilities(f);
+    Data::IDataTablePtr backgroundUtilities =
+        std::make_shared<Data::DataTable>(f);
     tables["backgroundUtilities"] = backgroundUtilities;
 
     f = ((std::filesystem::path)dirpath) / "behavior_utilities.csv";
-    Data::DataTable behaviorUtilities(f);
+    Data::IDataTablePtr behaviorUtilities =
+        std::make_shared<Data::DataTable>(f);
     tables["behaviorUtilities"] = behaviorUtilities;
 
     f = ((std::filesystem::path)dirpath) / "hcv_utilities.csv";
-    Data::DataTable hcv_utilities(f);
+    Data::IDataTablePtr hcv_utilities = std::make_shared<Data::DataTable>(f);
     tables["hcvUtilities"] = hcv_utilities;
 
     // Events
 
     f = ((std::filesystem::path)dirpath) / "behavior_transitions.csv";
-    Data::DataTable behaviorTransitions(f);
+    Data::IDataTablePtr behaviorTransitions =
+        std::make_shared<Data::DataTable>(f);
     tables["behaviorTransitions"] = behaviorTransitions;
 
     f = ((std::filesystem::path)dirpath) / "disease_progression.csv";
-    Data::DataTable diseaseProgression;
+    Data::IDataTablePtr diseaseProgression;
     tables["diseaseProgression"] = diseaseProgression;
 
     f = ((std::filesystem::path)dirpath) / "fibrosis.csv";
-    Data::DataTable fibrosis(f);
+    Data::IDataTablePtr fibrosis = std::make_shared<Data::DataTable>(f);
     tables["fibrosis"] = fibrosis;
 
     f = ((std::filesystem::path)dirpath) / "incidence.csv";
-    Data::DataTable incidence(f);
+    Data::IDataTablePtr incidence = std::make_shared<Data::DataTable>(f);
     tables["incidence"] = incidence;
 
     f = ((std::filesystem::path)dirpath) / "screening_and_linkage.csv";
-    Data::DataTable screen(f);
+    Data::IDataTablePtr screen = std::make_shared<Data::DataTable>(f);
     tables["screenTestLink"] = screen;
 
     f = ((std::filesystem::path)dirpath) / "all_types_overdose.csv";
-    Data::DataTable overdoses(f);
+    Data::IDataTablePtr overdoses = std::make_shared<Data::DataTable>(f);
     tables["overdoses"] = overdoses;
 
     f = ((std::filesystem::path)dirpath) / "background_mortality.csv";
-    Data::DataTable backgroundMortality(f);
+    Data::IDataTablePtr backgroundMortality =
+        std::make_shared<Data::DataTable>(f);
 
     f = ((std::filesystem::path)dirpath) / "SMR.csv";
-    Data::DataTable smr(f);
+    Data::IDataTablePtr smr = std::make_shared<Data::DataTable>(f);
 
     f = ((std::filesystem::path)dirpath) / "fatal_overdose.csv";
-    Data::DataTable fatalOverdoses(f);
+    Data::IDataTablePtr fatalOverdoses = std::make_shared<Data::DataTable>(f);
 
     f = ((std::filesystem::path)dirpath) / "fibrosis_deaths.csv";
-    Data::DataTable fibrosisDeaths(f);
+    Data::IDataTablePtr fibrosisDeaths = std::make_shared<Data::DataTable>(f);
 
-    Data::DataTable death =
-        backgroundMortality.innerJoin(smr, "gender", "gender");
+    Data::IDataTablePtr death =
+        backgroundMortality->innerJoin(smr, "gender", "gender");
 
-    death = death.innerJoin(fatalOverdoses, "gender", "gender");
-    death = death.innerJoin(fibrosisDeaths, "gender", "gender");
+    death = death->innerJoin(fatalOverdoses, "gender", "gender");
+    death = death->innerJoin(fibrosisDeaths, "gender", "gender");
 
     tables["death"] = death;
 
     // People
 
     f = ((std::filesystem::path)dirpath) / "population.csv";
-    Data::DataTable population(f);
+    Data::IDataTablePtr population = std::make_shared<Data::DataTable>(f);
     tables["population"] = population;
 }
 
-void loadPopulation(std::vector<sharedPerson> &population,
-                    std::unordered_map<std::string, Data::DataTable> &tables,
-                    Simulation::Simulation &sim) {
+void loadPopulation(
+    std::vector<sharedPerson> &population,
+    std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+    Simulation::Simulation &sim) {
     if (tables.find("population") != tables.end()) {
         for (int rowIdx = 0;
-             rowIdx < tables["population"].getShape().getNRows(); ++rowIdx) {
+             rowIdx < tables["population"]->getShape().getNRows(); ++rowIdx) {
             population.push_back(
-                makePerson<Person::Person>(tables["population"].getRow(rowIdx),
+                makePerson<Person::Person>(tables["population"]->getRow(rowIdx),
                                            (int)sim.getCurrentTimestep()));
         }
     }
@@ -166,21 +171,21 @@ void loadPopulation(std::vector<sharedPerson> &population,
 
 void writePopulation(std::vector<sharedPerson> &population,
                      std::string dirpath) {
-    Data::DataTable newDT;
+    Data::IDataTablePtr newDT;
     for (int i = 0; i < population.size(); ++i) {
-        if (newDT.empty()) {
+        if (newDT->empty()) {
             newDT = personToDataTable(population[i]);
         } else {
-            newDT = newDT + personToDataTable(population[i]);
+            newDT = (*newDT) + (*personToDataTable(population[i]));
         }
     }
     std::filesystem::path f =
         ((std::filesystem::path)dirpath) / "population.csv";
 
-    newDT.toCSV(f.string());
+    newDT->toCSV(f.string());
 }
 
-Data::DataTable personToDataTable(sharedPerson &person) {
+Data::IDataTablePtr personToDataTable(sharedPerson &person) {
     std::map<std::string, std::vector<std::string>> data;
     std::vector<std::string> headerOrder = {"id",
                                             "sex",
@@ -258,6 +263,7 @@ Data::DataTable personToDataTable(sharedPerson &person) {
     data["infantCount"] = {std::to_string(person->getInfantCount())};
     data["miscarriageCount"] = {std::to_string(person->getMiscarriageCount())};
     Data::DataTableShape newShape(1, 29);
-    Data::DataTable newDT(data, newShape, headerOrder);
+    Data::IDataTablePtr newDT =
+        std::make_shared<Data::DataTable>(data, newShape, headerOrder);
     return newDT;
 }

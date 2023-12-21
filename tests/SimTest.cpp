@@ -55,7 +55,7 @@ TEST_F(SimulationTest, AddPerson) {
 }
 
 TEST_F(SimulationTest, AddEventToEnd) {
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
     std::shared_ptr<Event::Event> event =
         std::make_shared<Event::Aging>(table, config);
@@ -72,7 +72,7 @@ TEST_F(SimulationTest, AddEventToEnd) {
 
 TEST_F(SimulationTest, AddEventToBeginning) {
     sim.addEventToBeginning(nullptr);
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
 
     std::shared_ptr<Event::Event> event =
@@ -87,7 +87,7 @@ TEST_F(SimulationTest, AddEventAtIndex) {
     sim.addEventToEnd(nullptr);
     sim.addEventToEnd(nullptr);
 
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
 
     std::shared_ptr<Event::Event> event =
@@ -102,7 +102,7 @@ TEST_F(SimulationTest, AddEventAtInvalidIndex) {
     sim.addEventToEnd(nullptr);
     sim.addEventToEnd(nullptr);
 
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
 
     std::shared_ptr<Event::Event> event =

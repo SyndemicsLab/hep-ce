@@ -44,7 +44,7 @@ protected:
 
 TEST_F(EventTest, AgingLiving) {
     double expectedAge = 1.0 / 12.0;
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
@@ -54,7 +54,7 @@ TEST_F(EventTest, AgingLiving) {
 
 TEST_F(EventTest, AgingDead) {
     double expectedAge = 0.0;
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
@@ -63,17 +63,17 @@ TEST_F(EventTest, AgingDead) {
 }
 
 TEST_F(EventTest, BehaviorChange) {
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
     Event::BehaviorChanges behavior(simulation->getGenerator(), table, config);
     behavior.execute(livingPopulation, 1);
 
-    EXPECT_EQ(Person::BehaviorClassification::NEVER,
+    EXPECT_EQ(Person::BehaviorClassification::FORMER_INJECTION,
               livingPopulation.at(0)->getBehaviorClassification());
 }
 
 TEST_F(EventTest, Clearance) {
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
     Event::Clearance clearance(simulation->getGenerator(), table, config);
     livingPopulation[0]->infect(0);
@@ -84,7 +84,7 @@ TEST_F(EventTest, Clearance) {
 TEST_F(EventTest, DeathByOldAge) {
     Person::Person expectedPerson;
     expectedPerson.die();
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
     Event::Death deathEvent(simulation->getGenerator(), table, config);
     livingPopulation[0]->age = 1210;
@@ -93,7 +93,7 @@ TEST_F(EventTest, DeathByOldAge) {
 }
 
 TEST_F(EventTest, DiseaseProgression) {
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
     Event::DiseaseProgression diseaseProgression(simulation->getGenerator(),
                                                  table, config);
@@ -105,7 +105,7 @@ TEST_F(EventTest, DiseaseProgression) {
 TEST_F(EventTest, Fibrosis) {}
 
 TEST_F(EventTest, Infections) {
-    Data::DataTable table;
+    Data::IDataTablePtr table;
     Data::Configuration config;
     Event::Infections infections(simulation->getGenerator(), table, config);
     infections.execute(livingPopulation, 1);

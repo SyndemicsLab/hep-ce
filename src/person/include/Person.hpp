@@ -93,7 +93,7 @@ namespace Person {
         /// @brief Default constructor for Person
         Person() { count++; }
 
-        Person(Data::DataTable dataTableRow, int simCycle);
+        Person(Data::IDataTablePtr dataTableRow, int simCycle);
 
         /// @brief Default destructor for Person
         virtual ~Person() { count--; }

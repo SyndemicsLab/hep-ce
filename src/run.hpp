@@ -21,7 +21,7 @@ using sharedPerson = std::shared_ptr<Person::Person>;
 /// @tparam T
 /// @return
 template <typename T>
-sharedEvent makeEvent(Data::DataTable &table, Data::Configuration &config,
+sharedEvent makeEvent(Data::IDataTablePtr table, Data::Configuration &config,
                       std::shared_ptr<spdlog::logger> logger) {
     return std::make_shared<T>(table, config, logger);
 }
@@ -32,7 +32,7 @@ sharedEvent makeEvent(Data::DataTable &table, Data::Configuration &config,
 /// @param table
 /// @return
 template <typename T>
-sharedEvent makeEvent(std::mt19937_64 &generator, Data::DataTable &table,
+sharedEvent makeEvent(std::mt19937_64 &generator, Data::IDataTablePtr table,
                       Data::Configuration &config,
                       std::shared_ptr<spdlog::logger> logger) {
     return std::make_shared<T>(generator, table, config, logger);
@@ -49,7 +49,7 @@ template <typename T> sharedPerson makePerson() {
 /// @tparam T
 /// @return
 template <typename T>
-sharedPerson makePerson(Data::DataTable rowData, int simCycle) {
+sharedPerson makePerson(Data::IDataTablePtr rowData, int simCycle) {
     return std::make_shared<T>(rowData, simCycle);
 }
 
@@ -68,7 +68,7 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 /// @param tables
 /// @param sim
 void loadEvents(std::vector<sharedEvent> &personEvents,
-                std::unordered_map<std::string, Data::DataTable> &tables,
+                std::unordered_map<std::string, Data::IDataTablePtr> &tables,
                 Simulation::Simulation &sim, Data::Configuration &config,
                 std::shared_ptr<spdlog::logger> logger =
                     std::make_shared<spdlog::logger>("default"));
@@ -80,18 +80,19 @@ void writeEvents(std::vector<sharedEvent> &personEvents, std::string dirpath);
 
 /// @brief
 /// @param tables
-void loadTables(std::unordered_map<std::string, Data::DataTable> &tables,
+void loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
                 std::string dirpath);
 
 /// @brief
 /// @param population
 /// @param tables
 /// @param sim
-void loadPopulation(std::vector<sharedPerson> &population,
-                    std::unordered_map<std::string, Data::DataTable> &tables,
-                    Simulation::Simulation &sim);
+void loadPopulation(
+    std::vector<sharedPerson> &population,
+    std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+    Simulation::Simulation &sim);
 
-Data::DataTable personToDataTable(sharedPerson &person);
+Data::IDataTablePtr personToDataTable(sharedPerson &person);
 
 void writePopulation(std::vector<sharedPerson> &population,
                      std::string dirpath);

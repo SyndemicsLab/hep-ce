@@ -30,7 +30,7 @@ namespace Event {
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
     public:
-        Linking(Data::DataTable &table, Data::Configuration &config,
+        Linking(Data::IDataTablePtr table, Data::Configuration &config,
                 std::shared_ptr<spdlog::logger> logger =
                     std::make_shared<spdlog::logger>("default"))
             : Event(table, config, logger){};
