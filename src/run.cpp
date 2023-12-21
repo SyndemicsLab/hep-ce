@@ -171,7 +171,7 @@ void loadPopulation(
 
 void writePopulation(std::vector<sharedPerson> &population,
                      std::string dirpath) {
-    Data::IDataTablePtr newDT;
+    Data::IDataTablePtr newDT = std::make_shared<Data::DataTable>();
     for (int i = 0; i < population.size(); ++i) {
         if (newDT->empty()) {
             newDT = personToDataTable(population[i]);
