@@ -56,10 +56,6 @@ namespace Event {
 
     std::vector<double>
     BehaviorChanges::getTransitions(std::shared_ptr<Person::Person> person) {
-        // 1. Determine what strata impact behavior transitions
-        // 2. Implement a way to generate the query string
-        // std::string query = "";
-        // Data::SQLTable result = this->db.readTable(query);
         std::unordered_map<std::string, std::string> selectCriteria;
 
         // intentional truncation
