@@ -22,11 +22,60 @@ namespace Event {
         // the person's last test is more recent than the limit, exit event.
         int timeSinceStaging =
             this->getCurrentTimestep() - person->getTimeOfLastStaging();
-        // 2. Check the person's true liver state.
+        if (timeSinceStaging < 0) {
+            // log an error
+            return;
+        }
+
+        uint32_t period = this->config.get<uint32_t>("fibrosis_staging.period");
+        if (((uint32_t)timeSinceStaging) < period) {
+            return;
+        }
+
+        std::unordered_map<std::string, std::string> selectCriteria;
+        selectCriteria["true_fib"] =
+            Person::Person::liverStateEnumToStringMap[person->getLiverState()];
+        auto resultTable = this->table->selectWhere(selectCriteria);
 
         // 3. Get a vector of the probabilities of each of the possible fibrosis
         // outcomes.
+        std::vector<double> probs =
+            getTransitions(resultTable, "fibrosis_staging.test_one");
+
         // 4. Decide which stage is assigned to the person.
+        Person::MeasuredLiverState stateOne =
+            (Person::MeasuredLiverState)this->getDecision(probs);
+
+        // 3. Get a vector of the probabilities of each of the possible fibrosis
+        // outcomes.
+        std::vector<double> probs =
+            getTransitions(resultTable, "fibrosis_staging.test_two");
+
+        // 4. Decide which stage is assigned to the person.
+        if (!probs.empty()) {
+            Person::MeasuredLiverState stateTwo =
+                (Person::MeasuredLiverState)this->getDecision(probs);
+        }
+
         // 5. Assign this state to the person.
+        person->setMeasuredLiverState(stateOne);
+    }
+
+    std::vector<double>
+    FibrosisStaging::getTransitions(Data::IDataTablePtr table,
+                                    std::string configLookupKey) {
+
+        std::shared_ptr<std::string> stageTest =
+            this->config.optional<std::string>(configLookupKey);
+        if (stageTest) {
+            std::vector<std::string> testColumn = table->getColumn(*stageTest);
+            std::vector<double> probs;
+            for (std::string c : testColumn) {
+                probs.push_back(stod(c));
+            }
+            return probs;
+        } else {
+            return {};
+        }
     }
 } // namespace Event

@@ -24,17 +24,16 @@
 namespace Event {
 
     /// @brief Subclass of Event used to Progress Fibrosis Stages
-    class FibrosisStaging : public Event {
+    class FibrosisStaging : public ProbEvent {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
+        std::vector<double> getTransitions(Data::IDataTablePtr table,
+                                           std::string configLookupKey);
 
     public:
-        FibrosisStaging(Data::IDataTablePtr table, Data::Configuration &config,
-                        std::shared_ptr<spdlog::logger> logger =
-                            std::make_shared<spdlog::logger>("default"))
-            : Event(table, config, logger){};
+        using ProbEvent::ProbEvent;
         virtual ~FibrosisStaging() = default;
     };
 } // namespace Event

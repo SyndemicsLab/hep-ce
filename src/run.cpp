@@ -47,8 +47,8 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
         makeEvent<Event::Linking>(tables["screenTestLink"], config, logger);
     sharedEvent voluntaryRelink = makeEvent<Event::VoluntaryRelinking>(
         sim.getGenerator(), tables["blank"], config, logger);
-    sharedEvent fibrosisStaging =
-        makeEvent<Event::FibrosisStaging>(tables["fibrosis"], config, logger);
+    sharedEvent fibrosisStaging = makeEvent<Event::FibrosisStaging>(
+        sim.getGenerator(), tables["fibrosis"], config, logger);
     sharedEvent treatment =
         makeEvent<Event::Treatment>(tables["blank"], config, logger);
     sharedEvent overdose = makeEvent<Event::Overdose>(
