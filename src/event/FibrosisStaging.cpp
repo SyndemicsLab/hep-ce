@@ -20,7 +20,10 @@ namespace Event {
     void FibrosisStaging::doEvent(std::shared_ptr<Person::Person> person) {
         // 1. Check the time since the person's last fibrosis staging test. If
         // the person's last test is more recent than the limit, exit event.
+        int timeSinceStaging =
+            this->getCurrentTimestep() - person->getTimeOfLastStaging();
         // 2. Check the person's true liver state.
+
         // 3. Get a vector of the probabilities of each of the possible fibrosis
         // outcomes.
         // 4. Decide which stage is assigned to the person.
