@@ -30,14 +30,27 @@ namespace Event {
         if (!person->getOverdose()) {
             return;
         }
+
+        double backgroundMortProb = 0.0;
+        double smr = 0.0;
+        double fatalOverdoseProb = 0.0;
+        double fibrosisDeathProb = 0.0;
+
         // 2. Get fatal OD probability.
-        this->getMortalityProbabilities(person);
+        this->getMortalityProbabilities(person, backgroundMortProb, smr,
+                                        fatalOverdoseProb, fibrosisDeathProb);
         // 3. Decide whether the person dies. If not, unset their overdose
         // property.
 
-        double prob = (this->backgroundMortProb * this->smr) +
-                      this->fatalOverdoseProb + this->fibrosisDeathProb;
-        if (this->getDecision({1.0 - prob, prob})) {
+        double totalProb =
+            (backgroundMortProb * smr) + fatalOverdoseProb + fibrosisDeathProb;
+
+        std::vector<double> probVec = {(backgroundMortProb * smr),
+                                       fatalOverdoseProb, fibrosisDeathProb,
+                                       1 - totalProb};
+
+        int retIdx = this->getDecision(probVec);
+        if (retIdx != 3) {
             this->die(person);
         } else {
             person->toggleOverdose();
@@ -50,7 +63,8 @@ namespace Event {
     }
 
     void Death::getMortalityProbabilities(
-        std::shared_ptr<Person::Person> const person) {
+        std::shared_ptr<Person::Person> const person, double &fatalOverdoseProb,
+        double &backgroundMortProb, double &smr, double &fibrosisDeathProb) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age_years"] = std::to_string((int)person->age);
@@ -64,19 +78,18 @@ namespace Event {
 
         auto resultTable = table->selectWhere(selectCriteria);
 
-        this->backgroundMortProb =
-            stod((*resultTable)["background_mortality"][0]);
+        backgroundMortProb = stod((*resultTable)["background_mortality"][0]);
 
-        this->smr = stod((*resultTable)["SMR"][0]);
+        smr = stod((*resultTable)["SMR"][0]);
 
         if (person->getLiverState() > Person::LiverState::F3) {
-            this->fibrosisDeathProb =
+            fibrosisDeathProb =
                 stod((*resultTable)["fib_death_probability"][0]);
         }
 
         if (person->getOverdose()) {
             // we need to figure out how we're gonna make this time based
-            this->fatalOverdoseProb =
+            fatalOverdoseProb =
                 stod((*resultTable)["fatal_overdose_cycle52"][0]);
         }
 

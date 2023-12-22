@@ -46,13 +46,31 @@ namespace Event {
         selectCriteria["initial_state"] =
             Person::Person::liverStateEnumToStringMap[person->getLiverState()];
         auto resultTable = table->selectWhere(selectCriteria);
-        std::vector<std::string> dataTable =
-            resultTable->getColumn("probability");
+        std::map<Person::LiverState, double> probMap =
+            getProbabilityMap(resultTable);
 
-        std::vector<double> result = {0.0};
-        for (std::string row : dataTable) {
-            result.push_back(std::stod(row));
+        std::vector<double> result = {};
+        for (auto kv : probMap) {
+            result.push_back(kv.second);
         }
         return result;
+    }
+    std::map<Person::LiverState, double>
+    DiseaseProgression::getProbabilityMap(Data::IDataTablePtr subTable) const {
+        std::map<Person::LiverState, double> probMap;
+        for (auto kv : Person::Person::liverStateEnumToStringMap) {
+            probMap[kv.first] = 0.0;
+        }
+
+        std::vector<std::string> newStateColumn =
+            subTable->getColumn("new_state");
+        std::vector<std::string> probColumn =
+            subTable->getColumn("probability");
+
+        for (int i = 0; i < newStateColumn.size(); ++i) {
+            probMap[Person::Person::liverStateMap[newStateColumn[i]]] =
+                stod(probColumn[i]);
+        }
+        return probMap;
     }
 } // namespace Event

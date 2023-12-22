@@ -25,10 +25,6 @@ namespace Event {
     /// @brief Subclass of Event used to End the Aging Process of Individuals
     class Death : public ProbEvent {
     private:
-        double fatalOverdoseProb = 0.0;
-        double backgroundMortProb = 0.0;
-        double smr = 0.0;
-        double fibrosisDeathProb = 0.0;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
@@ -38,7 +34,10 @@ namespace Event {
         void die(std::shared_ptr<Person::Person> person);
 
         void
-        getMortalityProbabilities(std::shared_ptr<Person::Person> const person);
+        getMortalityProbabilities(std::shared_ptr<Person::Person> const person,
+                                  double &fatalOverdoseProb,
+                                  double &backgroundMortProb, double &smr,
+                                  double &fibrosisDeathProb);
 
     public:
         using ProbEvent::ProbEvent;

@@ -18,6 +18,7 @@
 #define EVENT_DISEASEPROGRESSION_HPP_
 
 #include "Event.hpp"
+#include <map>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
@@ -31,6 +32,9 @@ namespace Event {
 
         std::vector<double>
         getTransitions(std::shared_ptr<Person::Person> person);
+
+        std::map<Person::LiverState, double>
+        getProbabilityMap(Data::IDataTablePtr subTable) const;
 
     public:
         using ProbEvent::ProbEvent;
