@@ -27,7 +27,8 @@ namespace Event {
         // check od probability
         double overdoseProbability = this->getProbability(person);
         // determine if person overdoses
-        if (this->getDecision({overdoseProbability})) {
+        if (this->getDecision(
+                {1.0 - overdoseProbability, overdoseProbability})) {
             person->toggleOverdose();
         }
     }

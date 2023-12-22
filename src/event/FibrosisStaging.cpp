@@ -48,8 +48,7 @@ namespace Event {
 
         // 3. Get a vector of the probabilities of each of the possible fibrosis
         // outcomes.
-        std::vector<double> probs =
-            getTransitions(resultTable, "fibrosis_staging.test_two");
+        probs = getTransitions(resultTable, "fibrosis_staging.test_two");
 
         // 4. Decide which stage is assigned to the person.
         if (!probs.empty()) {
