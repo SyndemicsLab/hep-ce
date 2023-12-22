@@ -15,42 +15,53 @@ int main(int argc, char *argv[]) {
     std::vector<int> runs((taskEnd + 1) - taskStart);
     std::iota(std::begin(runs), std::end(runs), taskStart);
 
-    std::for_each(std::execution::par_unseq, std::begin(runs), std::end(runs),
-                  [&](int i) {
-                      Simulation::Simulation sim(0, 0);
-                      std::unordered_map<std::string, Data::DataTable> tables;
+    std::for_each(
+        std::execution::par_unseq, std::begin(runs), std::end(runs),
+        [&](int i) {
+            std::unordered_map<std::string, Data::IDataTablePtr> tables;
 
-                      std::filesystem::path inputSet =
-                          ((std::filesystem::path)rootInputDir) /
-                          ("input" + std::to_string(i));
+            std::filesystem::path inputSet =
+                ((std::filesystem::path)rootInputDir) /
+                ("input" + std::to_string(i));
 
-                      std::filesystem::path configPath = inputSet / "sim.conf";
+            std::filesystem::path configPath = inputSet / "sim.conf";
 
-                      Data::Configuration config(configPath.string());
+            Data::Configuration config(configPath.string());
 
-                      loadTables(tables, inputSet.string());
+            std::filesystem::path outputSet =
+                ((std::filesystem::path)rootInputDir) /
+                ("output" + std::to_string(i));
 
-                      // create the person-level event vector
-                      std::vector<sharedEvent> personEvents;
-                      loadEvents(personEvents, tables, sim, config);
-                      sim.loadEvents(personEvents);
+            std::shared_ptr<spdlog::logger> logger;
+            try {
+                logger = spdlog::basic_logger_mt(
+                    "basic_logger", outputSet.string() + "/log.txt");
+            } catch (const spdlog::spdlog_ex &ex) {
+                std::cout << "Log init failed: " << ex.what() << std::endl;
+                exit(-1);
+            }
 
-                      std::vector<sharedPerson> population;
-                      loadPopulation(population, tables, sim);
-                      sim.loadPopulation(population);
+            loadTables(tables, inputSet.string());
 
-                      sim.run();
+            Simulation::Simulation sim(0, 0, logger);
 
-                      population = sim.getPopulation();
-                      personEvents = sim.getEvents();
+            // create the person-level event vector
+            std::vector<sharedEvent> personEvents;
+            loadEvents(personEvents, tables, sim, config, logger);
+            sim.loadEvents(personEvents);
 
-                      std::filesystem::path outputSet =
-                          ((std::filesystem::path)rootInputDir) /
-                          ("output" + std::to_string(i));
+            std::vector<sharedPerson> population;
+            loadPopulation(population, tables, sim);
+            sim.loadPopulation(population);
 
-                      writeEvents(personEvents, outputSet.string());
-                      writePopulation(population, outputSet.string());
-                  });
+            sim.run();
+
+            population = sim.getPopulation();
+            personEvents = sim.getEvents();
+
+            writeEvents(personEvents, outputSet.string());
+            writePopulation(population, outputSet.string());
+        });
 
     return 0;
 }

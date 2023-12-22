@@ -33,11 +33,11 @@ namespace Event {
         /// @param person Person who dies
         void die(std::shared_ptr<Person::Person> person);
 
-        /// @brief Get the probability of fatal overdose given an overdose this
-        /// timestep
-        /// @param person Person who overdosed
-        /// @return Probability of overdose based on person's relevant strata
-        double getFatalODProb(std::shared_ptr<Person::Person> person);
+        void
+        getMortalityProbabilities(std::shared_ptr<Person::Person> const person,
+                                  double &fatalOverdoseProb,
+                                  double &backgroundMortProb, double &smr,
+                                  double &fibrosisDeathProb);
 
     public:
         using ProbEvent::ProbEvent;

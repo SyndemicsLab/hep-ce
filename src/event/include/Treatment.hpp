@@ -56,8 +56,10 @@ namespace Event {
         int eligibleTimeBehaviorChange = -1;
 
     public:
-        Treatment(Data::DataTable &table, Data::Configuration &config)
-            : Event(table, config){};
+        Treatment(Data::IDataTablePtr table, Data::Configuration &config,
+                  std::shared_ptr<spdlog::logger> logger =
+                      std::make_shared<spdlog::logger>("default"))
+            : Event(table, config, logger){};
         virtual ~Treatment() = default;
     };
 

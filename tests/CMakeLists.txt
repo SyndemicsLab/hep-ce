@@ -13,6 +13,7 @@ add_executable(hepceTest
 
 target_include_directories(hepceTest INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}
+  "mocks/"
 )
 
 target_link_libraries(hepceTest

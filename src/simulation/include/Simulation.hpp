@@ -18,6 +18,8 @@
 #define SIMULATION_HPP_
 
 #include "Event.hpp"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/spdlog.h"
 
 #include <memory>
 
@@ -27,8 +29,9 @@ namespace Simulation {
     private:
         uint32_t currentTimestep = 0;
         uint64_t seed;
-        std::vector<std::shared_ptr<Person::Person>> population;
-        std::vector<std::shared_ptr<Event::Event>> events;
+        std::vector<std::shared_ptr<Person::Person>> population = {};
+        std::vector<std::shared_ptr<Event::Event>> events = {};
+        std::shared_ptr<spdlog::logger> logger;
         static std::mt19937_64 generator;
 
     public:
@@ -38,9 +41,19 @@ namespace Simulation {
 
         Simulation(uint32_t duration) : Simulation((uint64_t)0, duration){};
 
-        Simulation(uint64_t seed, uint32_t duration) {
+        Simulation(uint64_t seed, uint32_t duration)
+            : Simulation(seed, duration, NULL) {}
+
+        Simulation(uint64_t seed, uint32_t duration,
+                   std::shared_ptr<spdlog::logger> logger) {
             this->generator.seed(this->seed);
             this->duration = duration;
+            if (logger) {
+                this->logger = logger;
+            } else {
+                this->logger =
+                    std::make_shared<spdlog::logger>("default_logger");
+            }
         }
 
         virtual ~Simulation() = default;
@@ -104,6 +117,8 @@ namespace Simulation {
         /// @return Reference to the simulation's pseudorandom number generator
         std::mt19937_64 &getGenerator() { return generator; }
 
+        /// @brief A getter for the Current Timestep variable
+        /// @return currentTimestep as a uint32_t
         uint32_t getCurrentTimestep() { return this->currentTimestep; }
     };
 

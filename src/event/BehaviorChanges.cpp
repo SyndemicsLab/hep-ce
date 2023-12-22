@@ -43,9 +43,9 @@ namespace Event {
 
         // Typical Behavior Change
         // 1. Generate the transition probabilities based on the starting state
-        // std::vector<double> probs = getTransitions(person);
+        std::vector<double> probs = getTransitions(person);
         // currently using placeholders to test compiling
-        std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
+        // std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
         // 2. Draw a behavior state to be transitioned to
         Person::BehaviorClassification toBC =
             (Person::BehaviorClassification)this->getDecision(probs);
@@ -56,10 +56,24 @@ namespace Event {
 
     std::vector<double>
     BehaviorChanges::getTransitions(std::shared_ptr<Person::Person> person) {
-        // 1. Determine what strata impact behavior transitions
-        // 2. Implement a way to generate the query string
-        // std::string query = "";
-        // Data::SQLTable result = this->db.readTable(query);
-        return {};
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        // intentional truncation
+        selectCriteria["age_years"] = (int)person->age;
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        selectCriteria["moud"] =
+            Person::Person::moudEnumToStringMap[person->getMoudState()];
+        selectCriteria["drug_behavior"] =
+            Person::Person::behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+
+        auto resultTable = table->selectWhere(selectCriteria);
+
+        std::vector<double> result = {};
+        for (auto kv : Person::Person::behaviorClassificationEnumToStringMap) {
+            result.push_back(std::stod((*resultTable)[kv.second][0]));
+        }
+        return result;
     }
 } // namespace Event

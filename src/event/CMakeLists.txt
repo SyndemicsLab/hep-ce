@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.19)
 
 set (CMAKE_CXX_STANDARD 20)
 
+find_package(spdlog REQUIRED)
+
 add_library(event
     Aging.cpp
     BehaviorChanges.cpp
@@ -25,4 +27,5 @@ target_link_libraries(event
     person
     data
     utils
+    spdlog::spdlog
 )
