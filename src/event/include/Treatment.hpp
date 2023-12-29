@@ -40,7 +40,7 @@ namespace Event {
     };
 
     /// @brief Subclass of Event used to Provide Treatment to People
-    class Treatment : public Event {
+    class Treatment : public ProbEvent {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
@@ -49,6 +49,7 @@ namespace Event {
         bool isEligibleFibrosisStage(Person::LiverState liverState) const;
         Course
         getTreatmentCourse(std::shared_ptr<Person::Person> const person) const;
+        void populateCourses();
 
         std::vector<Person::LiverState> eligibleLiverStates = {
             Person::LiverState::NONE};
@@ -56,10 +57,7 @@ namespace Event {
         int eligibleTimeBehaviorChange = -1;
 
     public:
-        Treatment(Data::IDataTablePtr table, Data::Configuration &config,
-                  std::shared_ptr<spdlog::logger> logger =
-                      std::make_shared<spdlog::logger>("default"))
-            : Event(table, config, logger){};
+        using ProbEvent::ProbEvent;
         virtual ~Treatment() = default;
     };
 

@@ -57,16 +57,18 @@ namespace Event {
 
         // 7. Decide which stage is assigned to the person.
         if (!probs.empty()) {
-            this->config.optional Person::MeasuredLiverState stateTwo =
+            Person::MeasuredLiverState stateTwo =
                 (Person::MeasuredLiverState)this->getDecision(probs);
 
             // determine whether to use latest test value or greatest
-            std::shared_ptr<std::string> method = this->config.get<std::string>(
+            std::string method = this->config.get<std::string>(
                 "fibrosis_staging.multitest_result_method");
+
+            Person::MeasuredLiverState measured;
             if (method == "latest") {
-                Person::MeasuredLiverState measured = stateTwo;
+                measured = stateTwo;
             } else if (method == "maximum") {
-                Person::MeasuredLiverState measured =
+                measured =
                     std::max<Person::MeasuredLiverState>(stateOne, stateTwo);
             } else {
                 // log an error

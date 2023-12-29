@@ -18,15 +18,30 @@
 
 namespace Event {
     void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
+        // 1. Determine person's treatment eligibility.
         if (!this->isEligible(person)) {
             return;
         }
-        Person::LiverState personLiverState = person->getLiverState();
-        if (person->getHEPCState() == Person::HEPCState::NONE &&
-            personLiverState == Person::LiverState::NONE) {
-            return;
-        }
-        // Need to do stuff for building a treatment
+
+        // accounting for when the person was a false positive -- do these make
+        // it this far?
+
+        // Person::LiverState personLiverState = person->getLiverState();
+        // if (person->getHEPCState() == Person::HEPCState::NONE &&
+        //     personLiverState == Person::LiverState::NONE) {
+        //     return;
+        // }
+
+        // 2. Draw the probability that person will initiate treatment.
+        // 3. Select the treatment course for a person based on their measured
+        // fibrosis stage.
+        // 4. Check the time since treatment initiation.
+        // 5. If time since treatment initiation > 0, draw probability of
+        // adverse outcome (TOX), then draw probability of withdrawing from
+        // treatment prior to completion. TOX does not lead to withdrawal from
+        // care but withdrawal probabilities are stratified by TOX.
+        // 6. Compare the treatment duration to the time since treatment
+        // initiation. If equal, draw for cure (SVR) vs no cure (EOT).
     }
 
     bool
@@ -75,4 +90,18 @@ namespace Event {
         return {};
     }
 
+    void Treatment::populateCourses() {
+        std::vector<std::string> courseList =
+            this->config.getStringVector("treatment.courses");
+        for (std::string &course : courseList) {
+            std::string subsectionCourses =
+                "treatment_" + course + ".components";
+            std::vector<std::string> componentList =
+                this->config.getStringVector(subsectionCourses);
+            for (std::string &component : componentList) {
+                std::string subsectionComponent = "treatment_" + component;
+                this->config.get<double>(subsectionComponent + ".cost");
+            }
+        }
+    }
 } // namespace Event

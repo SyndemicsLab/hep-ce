@@ -49,8 +49,8 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
         sim.getGenerator(), tables["blank"], config, logger);
     sharedEvent fibrosisStaging = makeEvent<Event::FibrosisStaging>(
         sim.getGenerator(), tables["fibrosis"], config, logger);
-    sharedEvent treatment =
-        makeEvent<Event::Treatment>(tables["blank"], config, logger);
+    sharedEvent treatment = makeEvent<Event::Treatment>(
+        sim.getGenerator(), tables["blank"], config, logger);
     sharedEvent overdose = makeEvent<Event::Overdose>(
         sim.getGenerator(), tables["overdose"], config, logger);
     sharedEvent death = makeEvent<Event::Death>(
