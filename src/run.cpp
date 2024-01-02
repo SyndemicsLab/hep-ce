@@ -108,7 +108,8 @@ void loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     tables["behaviorTransitions"] = behaviorTransitions;
 
     f = ((std::filesystem::path)dirpath) / "disease_progression.csv";
-    Data::IDataTablePtr diseaseProgression;
+    Data::IDataTablePtr diseaseProgression =
+        std::make_shared<Data::DataTable>(f);
     tables["diseaseProgression"] = diseaseProgression;
 
     f = ((std::filesystem::path)dirpath) / "fibrosis.csv";

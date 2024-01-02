@@ -5,44 +5,44 @@ namespace Person {
     /// @brief HEP-C Infection States
     enum class HEPCState {
         /// No HCV infection
-        NONE,
+        NONE = 0,
         /// New HCV infection; sub-6 months infected
-        ACUTE,
+        ACUTE = 1,
         /// Long-term HCV infection
-        CHRONIC
+        CHRONIC = 2
     };
 
     /// @brief Opioid Usage Behavior Classification
     /// @details There are five possible possible usage classifications.
     enum class BehaviorClassification {
         /// No history of opioid use
-        NEVER,
+        NEVER = 0,
         /// Former non-injection opioid use
-        FORMER_NONINJECTION,
+        FORMER_NONINJECTION = 1,
         /// Former injection opioid use
-        FORMER_INJECTION,
+        FORMER_INJECTION = 2,
         /// Non-injection opioid use
-        NONINJECTION,
+        NONINJECTION = 3,
         /// Injection opioid use
-        INJECTION
+        INJECTION = 4
     };
 
     /// @brief Screening type that led to linkage
     enum class LinkageType {
         /// Linked through background screening
-        BACKGROUND,
+        BACKGROUND = 0,
         /// Linked through intervention screening
-        INTERVENTION
+        INTERVENTION = 1
     };
 
     /// @brief Status of Linkage
     enum class LinkageState {
         /// Person has never been linked to care
-        NEVER,
+        NEVER = 0,
         /// Person is currently linked to care
-        LINKED,
+        LINKED = 1,
         /// Person was previously linked to care, but is not currently linked
-        UNLINKED
+        UNLINKED = 2
     };
 
     /// @brief Classification of Liver Disease Stage
@@ -52,67 +52,67 @@ namespace Person {
     /// HCC being possible at any time from stage F3 and higher.
     enum class LiverState {
         /// No adverse liver effects
-        NONE,
+        NONE = 0,
         /// No scarring
-        F0,
+        F0 = 1,
         /// Mild liver scarring
-        F1,
+        F1 = 2,
         /// Scarring has occurred and extends outside the liver area
-        F2,
+        F2 = 3,
         /// Fibrosis spreading and forming bridges with other fibrotic liver
         /// areas
-        F3,
+        F3 = 4,
         /// Cirrhosis or advanced scarring
-        F4,
+        F4 = 5,
         /// Symptomatic cirrhosis; overt complications
-        DECOMP,
+        DECOMP = 6,
         /// Early-stage hepatocellular carcinoma
-        EHCC,
+        EHCC = 7,
         /// Late-stage hepatocellular carcinoma
-        LHCC
+        LHCC = 8
     };
 
     /// @brief Clinically staged liver fibrosis stage
     enum class MeasuredLiverState {
         /// Person has never been screened before
-        NONE,
+        NONE = 0,
         /// Person is measured to be either F0 or F1
-        F01,
+        F01 = 1,
         /// Person is measured to be either F2 or F3
-        F23,
+        F23 = 2,
         /// Person is measured to be F4
-        F4,
+        F4 = 3,
         /// Person has decompensated liver
-        DECOMP
+        DECOMP = 4
     };
 
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
     enum class MOUD {
         /// Never in MOUD
-        NONE,
+        NONE = 0,
         /// Currently in MOUD
-        CURRENT,
+        CURRENT = 1,
         /// Recently dropped out of MOUD
-        POST
+        POST = 2
     };
 
     /// @brief Biological Sex
     enum class Sex {
         /// Assigned male at birth
-        MALE,
+        MALE = 0,
         /// Assigned female at birth
-        FEMALE
+        FEMALE = 1
     };
 
     /// @brief Pregnancy Classification
     /// @details There are three possible pregnancy states.
     enum class PregnancyState {
         /// Never pregnant
-        NONE,
+        NONE = 0,
         /// Actively pregnant
-        PREGNANT,
+        PREGNANT = 1,
         /// Post-pregnancy
-        POSTPARTUM
+        POSTPARTUM = 2
     };
 
     /// @brief Attributes describing Identification

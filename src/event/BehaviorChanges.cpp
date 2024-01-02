@@ -59,7 +59,7 @@ namespace Event {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         // intentional truncation
-        selectCriteria["age_years"] = (int)person->age;
+        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
         selectCriteria["moud"] =
@@ -71,8 +71,11 @@ namespace Event {
         auto resultTable = table->selectWhere(selectCriteria);
 
         std::vector<double> result = {};
+
+        std::vector<std::string> columnVec = resultTable->getColumnNames();
         for (auto kv : Person::Person::behaviorClassificationEnumToStringMap) {
-            result.push_back(std::stod((*resultTable)[kv.second][0]));
+            auto res = (*resultTable)[kv.second];
+            result.push_back(std::stod(res[0]));
         }
         return result;
     }

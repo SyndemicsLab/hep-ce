@@ -90,7 +90,8 @@ namespace Simulation {
             }
             this->currentTimestep++;
         }
-        this->logger->info("Simulation Run Ended");
+        this->logger->info("Simulation Run Ended with timestep {}",
+                           this->currentTimestep);
         return this->population;
     }
 } // namespace Simulation

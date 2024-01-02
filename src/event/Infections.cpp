@@ -37,16 +37,15 @@ namespace Event {
     Infections::getInfectProb(std::shared_ptr<Person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
-        selectCriteria["age_years"] =
-            std::to_string((int)std::round(person->age));
-        selectCriteria["gender"] = person->sexEnumToStringMap[person->getSex()];
+        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            person->behaviorClassificationEnumToStringMap
+            Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
         auto resultTable = table->selectWhere(selectCriteria);
 
-        double probInfected =
-            std::stod((*resultTable).getColumn("incidence")[0]);
+        double probInfected = std::stod((*resultTable)["incidence"][0]);
         std::vector<double> result = {probInfected, 1 - probInfected};
         return result;
     }
