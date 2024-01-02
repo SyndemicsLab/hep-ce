@@ -6,7 +6,7 @@ namespace Data {
     static std::vector<std::string> SCREENING_ATTRIBUTES = {
         "cost", "acute_sensitivity", "chronic_sensitivity", "specificity"};
 
-    class Config {
+    class Config : public Configuration {
     public:
         Config(std::string configFile);
         // simulation section
@@ -111,8 +111,5 @@ namespace Data {
         // getTreatments();
         // cost section
         double getDiscountRate();
-
-    private:
-        Configuration configuration;
     };
 } // namespace Data

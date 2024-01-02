@@ -20,10 +20,88 @@ namespace Event {
     void FibrosisStaging::doEvent(std::shared_ptr<Person::Person> person) {
         // 1. Check the time since the person's last fibrosis staging test. If
         // the person's last test is more recent than the limit, exit event.
-        // 2. Check the person's true liver state.
+        int timeSinceStaging =
+            this->getCurrentTimestep() - person->getTimeOfLastStaging();
+        if (timeSinceStaging < 0) {
+            // log an error
+            return;
+        }
+
+        uint32_t period = this->config.get<uint32_t>("fibrosis_staging.period");
+        if (((uint32_t)timeSinceStaging) < period) {
+            return;
+        }
+
+        // 2. Check the person's true fibrosis state and use it to search for
+        // the input table to grab only test characteristics for this state.
+        std::unordered_map<std::string, std::string> selectCriteria;
+        selectCriteria["true_fib"] =
+            Person::Person::liverStateEnumToStringMap[person->getLiverState()];
+        auto resultTable = this->table->selectWhere(selectCriteria);
+
         // 3. Get a vector of the probabilities of each of the possible fibrosis
-        // outcomes.
+        // outcomes (test one).
+        std::vector<double> probs =
+            getTransitions(resultTable, "fibrosis_staging.test_one");
+
         // 4. Decide which stage is assigned to the person.
-        // 5. Assign this state to the person.
+        Person::MeasuredLiverState stateOne =
+            (Person::MeasuredLiverState)this->getDecision(probs);
+
+        // 5. Assign this value as the person's measured state.
+        person->setMeasuredLiverState(stateOne);
+
+        // 6. Get a vector of the probabilities of each of the possible fibrosis
+        // outcomes (test two) provided there is a second test.
+        probs = getTransitions(resultTable, "fibrosis_staging.test_two");
+
+        // 7. Decide which stage is assigned to the person.
+        if (!probs.empty()) {
+            Person::MeasuredLiverState stateTwo =
+                (Person::MeasuredLiverState)this->getDecision(probs);
+
+            // determine whether to use latest test value or greatest
+            std::string method = this->config.get<std::string>(
+                "fibrosis_staging.multitest_result_method");
+
+            Person::MeasuredLiverState measured;
+            if (method == "latest") {
+                measured = stateTwo;
+            } else if (method == "maximum") {
+                measured =
+                    std::max<Person::MeasuredLiverState>(stateOne, stateTwo);
+            } else {
+                // log an error
+                return;
+            }
+            // 8. Assign this state to the person.
+            person->setMeasuredLiverState(measured);
+        } else {
+            // either means the name provided is incorrect or there is no second
+            // test
+            std::shared_ptr<std::string> testTwo =
+                this->config.optional("fibrosis_staging.test_two");
+            if (testTwo) {
+                // log an error
+            }
+        }
+    }
+
+    std::vector<double>
+    FibrosisStaging::getTransitions(Data::IDataTablePtr table,
+                                    std::string configLookupKey) {
+
+        std::shared_ptr<std::string> stageTest =
+            this->config.optional(configLookupKey);
+        if (stageTest) {
+            std::vector<std::string> testColumn = table->getColumn(*stageTest);
+            std::vector<double> probs;
+            for (std::string c : testColumn) {
+                probs.push_back(stod(c));
+            }
+            return probs;
+        } else {
+            return {};
+        }
     }
 } // namespace Event

@@ -30,28 +30,61 @@ namespace Event {
             person->identifyAsInfected(this->getCurrentTimestep());
         }
 
+        std::vector<double> probs;
         if (person->getLinkageType() == Person::LinkageType::BACKGROUND) {
             // link probability
+            probs = getTransitions(person, "background_linking");
         } else {
             // add intervention cost
             // link probability
+            probs = getTransitions(person, "intervention_linking");
         }
 
         if (person->getLinkState() == Person::LinkageState::UNLINKED) {
             // scale by relink multiplier
+            double relinkScalar =
+                this->config.get<double>("linking.relink_multiplier");
+            probs[1] = probs[1] * relinkScalar;
+            probs[0] = 1 - probs[1];
         }
 
         // draw from link probability
-        bool value = false;
+        bool doLink = (bool)this->getDecision(probs);
 
-        if (value) {
+        if (doLink) {
             // need to figure out how to pass in the LinkageType to the event
-            person->link(this->getCurrentTimestep(),
-                         Person::LinkageType::BACKGROUND);
-        } else if (!value &&
+            person->link(this->getCurrentTimestep(), person->getLinkageType());
+        } else if (!doLink &&
                    person->getLinkState() == Person::LinkageState::LINKED) {
             person->unlink(this->getCurrentTimestep());
         }
+    }
+
+    std::vector<double>
+    Linking::getTransitions(std::shared_ptr<Person::Person> person,
+                            std::string columnKey) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        // intentional truncation
+        selectCriteria["age_years"] = (int)person->age;
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        selectCriteria["drug_behavior"] =
+            Person::Person::behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+
+        auto resultTable = table->selectWhere(selectCriteria);
+
+        std::vector<std::string> col = resultTable->getColumn(columnKey);
+
+        std::vector<double> doubleVector(col.size());
+        std::transform(col.begin(), col.end(), doubleVector.begin(),
+                       [](const std::string &val) { return std::stod(val); });
+
+        // {0: don't link, 1: link}
+        std::vector<double> result = {1 - doubleVector[0], doubleVector[0]};
+
+        return result;
     }
 
 } // namespace Event

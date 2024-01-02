@@ -23,17 +23,17 @@
 namespace Event {
 
     /// @brief Subclass of Event used to Link People to Treatment
-    class Linking : public Event {
+    class Linking : public ProbEvent {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
+        std::vector<double>
+        getTransitions(std::shared_ptr<Person::Person> person,
+                       std::string columnKey);
 
     public:
-        Linking(Data::IDataTablePtr table, Data::Configuration &config,
-                std::shared_ptr<spdlog::logger> logger =
-                    std::make_shared<spdlog::logger>("default"))
-            : Event(table, config, logger){};
+        using ProbEvent::ProbEvent;
         virtual ~Linking() = default;
     };
 

@@ -25,9 +25,9 @@ namespace Event {
 
         // draw new infection probability
         std::vector<double> prob = this->getInfectProb(person);
-        // decide whether person is infected; if value == 1, infect
+        // decide whether person is infected; if value == 0, infect
         int value = this->getDecision(prob);
-        if (!value) {
+        if (value != 0) {
             return;
         }
         person->infect(this->getCurrentTimestep());
@@ -35,13 +35,19 @@ namespace Event {
 
     std::vector<double>
     Infections::getInfectProb(std::shared_ptr<Person::Person> person) {
-        std::string age = std::to_string((int)std::round(person->age));
-        std::string sex = person->sexEnumToStringMap[person->getSex()];
-        std::string behavior = person->behaviorClassificationEnumToStringMap
-                                   [person->getBehaviorClassification()];
+        std::unordered_map<std::string, std::string> selectCriteria;
 
-        // need to add actual functionality
-        // query the sqlite database based on infection probability strata
-        return {0.5};
+        selectCriteria["age_years"] =
+            std::to_string((int)std::round(person->age));
+        selectCriteria["gender"] = person->sexEnumToStringMap[person->getSex()];
+        selectCriteria["drug_behavior"] =
+            person->behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+        auto resultTable = table->selectWhere(selectCriteria);
+
+        double probInfected =
+            std::stod((*resultTable).getColumn("incidence")[0]);
+        std::vector<double> result = {probInfected, 1 - probInfected};
+        return result;
     }
 } // namespace Event

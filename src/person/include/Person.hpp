@@ -301,6 +301,10 @@ namespace Person {
             return this->pregnancyDetails.miscarriageCount;
         }
 
+        void setMeasuredLiverState(MeasuredLiverState state) {
+            this->stagingDetails.measuredLiverState = state;
+        }
+
         /// @brief Getter for measured liver state
         /// @return Measured Liver State
         MeasuredLiverState getMeasuredLiverState() {

@@ -145,7 +145,24 @@ TEST_F(EventTest, DiseaseProgression) {
 TEST_F(EventTest, Fibrosis) {}
 
 TEST_F(EventTest, Infections) {
-    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+
+    std::map<std::string, std::vector<std::string>> retData;
+    retData["age_years"] = {"0"};
+    retData["gender"] = {"male"};
+    retData["drug_behavior"] = {"never"};
+    retData["incidence"] = {"0"};
+
+    std::vector<std::string> retHeader = {"age_years", "gender",
+                                          "drug_behavior", "incidence"};
+
+    Data::DataTableShape retShape(1, 4);
+
+    std::shared_ptr<Data::IDataTable> retVal =
+        std::make_shared<Data::DataTable>(retData, retShape, retHeader);
+
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
+
     Data::Configuration config;
     Event::Infections infections(simulation->getGenerator(), table, config);
     infections.execute(livingPopulation, 1);
