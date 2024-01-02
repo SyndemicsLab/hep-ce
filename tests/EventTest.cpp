@@ -48,7 +48,7 @@ protected:
 };
 
 TEST_F(EventTest, AgingLiving) {
-    double expectedAge = 1.0 / 12.0;
+    uint32_t expectedAge = 1;
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
@@ -58,7 +58,7 @@ TEST_F(EventTest, AgingLiving) {
 }
 
 TEST_F(EventTest, AgingDead) {
-    double expectedAge = 0.0;
+    uint32_t expectedAge = 0;
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =

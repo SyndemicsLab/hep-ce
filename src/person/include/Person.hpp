@@ -53,8 +53,8 @@ namespace Person {
         ScreeningDetails screeningDetails;
 
     public:
-        /// @brief Person age in years
-        double age = 0;
+        /// @brief Person age in months
+        uint32_t age = 0;
 
         static std::map<std::string, HEPCState> hepcStateMap;
         static std::map<std::string, BehaviorClassification>

@@ -50,7 +50,7 @@ TEST(PersonDeath, DieFunction) {
 TEST(PersonGrowth, GrowNormally) {
     Person::Person person;
     person.grow();
-    EXPECT_EQ(person.age, 1.0);
+    EXPECT_EQ(person.age, 1);
 }
 
 TEST(PersonGrowth, DeathAge) {

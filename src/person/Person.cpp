@@ -104,7 +104,7 @@ namespace Person {
         this->id = stoi((*dataTableRow)["id"][0]);
 
         this->sex = Person::sexMap[Utils::toLower((*dataTableRow)["sex"][0])];
-        this->age = stod((*dataTableRow)["age"][0]);
+        this->age = stoul((*dataTableRow)["age"][0]);
 
         this->isAlive = Utils::stobool((*dataTableRow)["isAlive"][0]);
 
