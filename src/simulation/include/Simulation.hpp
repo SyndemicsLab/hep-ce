@@ -119,7 +119,7 @@ namespace Simulation {
 
         /// @brief A getter for the Current Timestep variable
         /// @return currentTimestep as a uint32_t
-        uint32_t getCurrentTimestep() { return this->currentTimestep; }
+        int getCurrentTimestep() { return this->currentTimestep; }
     };
 
 } // namespace Simulation

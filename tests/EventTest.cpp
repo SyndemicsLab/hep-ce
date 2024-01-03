@@ -53,7 +53,9 @@ TEST_F(EventTest, AgingLiving) {
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
-    agingEvent->execute(livingPopulation, 1);
+    uint32_t ct = 1;
+    agingEvent->setCurrentTimestep(ct);
+    agingEvent->execute(livingPopulation);
     EXPECT_DOUBLE_EQ(expectedAge, livingPopulation[0]->age);
 }
 
@@ -63,7 +65,9 @@ TEST_F(EventTest, AgingDead) {
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
-    agingEvent->execute(deadPopulation, 1);
+    uint32_t ct = 1;
+    agingEvent->setCurrentTimestep(ct);
+    agingEvent->execute(deadPopulation);
     EXPECT_DOUBLE_EQ(expectedAge, deadPopulation[0]->age);
 }
 
@@ -90,7 +94,9 @@ TEST_F(EventTest, BehaviorChange) {
     EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
     Data::Configuration config;
     Event::BehaviorChanges behavior(simulation->getGenerator(), table, config);
-    behavior.execute(livingPopulation, 1);
+    uint32_t ct = 1;
+    behavior.setCurrentTimestep(ct);
+    behavior.execute(livingPopulation);
 
     EXPECT_EQ(Person::BehaviorClassification::NEVER,
               livingPopulation.at(0)->getBehaviorClassification());
@@ -101,7 +107,9 @@ TEST_F(EventTest, Clearance) {
     Data::Configuration config;
     Event::Clearance clearance(simulation->getGenerator(), table, config);
     livingPopulation[0]->infect(0);
-    clearance.execute(livingPopulation, 1);
+    uint32_t ct = 1;
+    clearance.setCurrentTimestep(ct);
+    clearance.execute(livingPopulation);
     EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
 }
 
@@ -112,7 +120,9 @@ TEST_F(EventTest, DeathByOldAge) {
     Data::Configuration config;
     Event::Death deathEvent(simulation->getGenerator(), table, config);
     livingPopulation[0]->age = 1210;
-    deathEvent.execute(livingPopulation, 1);
+    uint32_t ct = 1;
+    deathEvent.setCurrentTimestep(ct);
+    deathEvent.execute(livingPopulation);
     EXPECT_EQ(expectedPerson.getIsAlive(), livingPopulation[0]->getIsAlive());
 }
 
@@ -138,7 +148,9 @@ TEST_F(EventTest, DiseaseProgression) {
     Event::DiseaseProgression diseaseProgression(simulation->getGenerator(),
                                                  table, config);
     livingPopulation[0]->infect(0);
-    diseaseProgression.execute(livingPopulation, 1);
+    uint32_t ct = 1;
+    diseaseProgression.setCurrentTimestep(ct);
+    diseaseProgression.execute(livingPopulation);
     EXPECT_EQ(Person::LiverState::F1, livingPopulation[0]->getLiverState());
 }
 
@@ -165,7 +177,9 @@ TEST_F(EventTest, Infections) {
 
     Data::Configuration config;
     Event::Infections infections(simulation->getGenerator(), table, config);
-    infections.execute(livingPopulation, 1);
+    uint32_t ct = 1;
+    infections.setCurrentTimestep(ct);
+    infections.execute(livingPopulation);
     EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
 }
 

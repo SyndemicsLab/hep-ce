@@ -22,8 +22,9 @@ using sharedPerson = std::shared_ptr<Person::Person>;
 /// @return
 template <typename T>
 sharedEvent makeEvent(Data::IDataTablePtr table, Data::Configuration &config,
-                      std::shared_ptr<spdlog::logger> logger) {
-    return std::make_shared<T>(table, config, logger);
+                      std::shared_ptr<spdlog::logger> logger,
+                      std::string name = "Event") {
+    return std::make_shared<T>(table, config, logger, name);
 }
 
 /// @brief
@@ -34,8 +35,9 @@ sharedEvent makeEvent(Data::IDataTablePtr table, Data::Configuration &config,
 template <typename T>
 sharedEvent makeEvent(std::mt19937_64 &generator, Data::IDataTablePtr table,
                       Data::Configuration &config,
-                      std::shared_ptr<spdlog::logger> logger) {
-    return std::make_shared<T>(generator, table, config, logger);
+                      std::shared_ptr<spdlog::logger> logger,
+                      std::string name = "ProbEvent") {
+    return std::make_shared<T>(generator, table, config, logger, name);
 }
 
 /// @brief
