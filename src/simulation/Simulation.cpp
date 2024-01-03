@@ -87,7 +87,7 @@ namespace Simulation {
         for (uint32_t timestep = this->currentTimestep;
              timestep < ((int)this->duration); ++timestep) {
             for (std::shared_ptr<Event::Event> event : this->events) {
-                event->setCurrentTimestep(timestep);
+                event->setCurrentTimestep();
                 event->execute(this->population);
             }
             this->logger->info("Simulation completed timestep {}", timestep);
