@@ -84,14 +84,14 @@ namespace Simulation {
 
     std::vector<std::shared_ptr<Person::Person>> Simulation::run() {
         this->logger->info("Simulation Run Started");
-        for (int timestep = this->currentTimestep;
-             timestep < ((int)this->duration); ++timestep) {
+        for (currentTimestep; currentTimestep < ((int)this->duration);
+             ++currentTimestep) {
             for (std::shared_ptr<Event::Event> event : this->events) {
-                event->setCurrentTimestep(timestep);
+                event->setCurrentTimestep(currentTimestep);
                 event->execute(this->population);
             }
-            this->logger->info("Simulation completed timestep {}", timestep);
         }
+        this->logger->info("Simulation completed timestep {}", currentTimestep);
         return this->population;
     }
 } // namespace Simulation

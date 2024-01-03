@@ -18,7 +18,8 @@
 
 namespace Event {
     void Screening::doEvent(std::shared_ptr<Person::Person> person) {
-        double prob = 0.5;
+
+        // one-time screen or periodic screen
         if ((person->isInterventionScreened() &&
              person->getScreeningFrequency() == -1 &&
              person->getTimeOfLastScreening() == -1) ||
@@ -26,16 +27,20 @@ namespace Event {
              person->getScreeningFrequency() != -1 &&
              (this->getCurrentTimestep() - person->getTimeOfLastScreening()) >
                  person->getScreeningFrequency())) {
-            // time one-time screen or periodic screen
-        } else {
-            std::bernoulli_distribution backgroundProbability(prob);
-            this->generatorMutex.lock();
-            int value = backgroundProbability(this->generator);
-            this->generatorMutex.unlock();
-
-            if (value != 1) {
+            std::vector<double> interventionProbability =
+                this->getInterventionScreeningProbability(person);
+            int choice = getDecision(interventionProbability);
+            if (choice == 0) {
+                this->interventionScreen(person);
                 return;
             }
+        }
+
+        // [screen, don't screen]
+        std::vector<double> backgroundProbability =
+            this->getBackgroundScreeningProbability(person);
+        int choice = getDecision(backgroundProbability);
+        if (choice == 0) {
             this->backgroundScreen(person);
         }
     }
@@ -63,22 +68,6 @@ namespace Event {
     }
 
     void Screening::interventionScreen(std::shared_ptr<Person::Person> person) {
-        if ((this->getCurrentTimestep() - person->getTimeOfLastScreening()) ==
-                0 &&
-            this->getCurrentTimestep() > 0) {
-            return;
-        }
-        person->markScreened();
-        std::bernoulli_distribution testAcceptanceProbability(
-            this->acceptTestProbability[person->age]); // need to also add idu
-                                                       // stratification
-        this->generatorMutex.lock();
-        int accepted = testAcceptanceProbability(this->generator);
-        this->generatorMutex.unlock();
-        if (!accepted) {
-            return;
-        }
-
         person->markScreened();
         if (!this->antibodyTest(person) && !this->antibodyTest(person)) {
         }
@@ -86,8 +75,9 @@ namespace Event {
             person->link(this->getCurrentTimestep(),
                          Person::LinkageType::INTERVENTION);
             // what else needs to happen during a link?
+        } else {
+            person->unlink(this->getCurrentTimestep());
         }
-        person->unlink(this->getCurrentTimestep());
     }
 
     bool Screening::antibodyTest(std::shared_ptr<Person::Person> person) {
@@ -125,5 +115,39 @@ namespace Event {
         int value = testProbability(this->generator);
         this->generatorMutex.unlock();
         return value;
+    }
+
+    std::vector<double> Screening::getBackgroundScreeningProbability(
+        std::shared_ptr<Person::Person> person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        selectCriteria["drug_behavior"] =
+            Person::Person::behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+        auto resultTable = table->selectWhere(selectCriteria);
+
+        double prob = std::stod((*resultTable)["background_screening"][0]);
+        std::vector<double> result = {prob, 1 - prob};
+        return result;
+    }
+
+    std::vector<double> Screening::getInterventionScreeningProbability(
+        std::shared_ptr<Person::Person> person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        selectCriteria["drug_behavior"] =
+            Person::Person::behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+        auto resultTable = table->selectWhere(selectCriteria);
+
+        double prob = std::stod((*resultTable)["intervention_screening"][0]);
+        std::vector<double> result = {prob, 1 - prob};
+        return result;
     }
 } // namespace Event

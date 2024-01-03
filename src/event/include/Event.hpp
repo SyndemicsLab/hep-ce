@@ -96,7 +96,7 @@ namespace Event {
         /// @param probs A vector containing the weights of each option.
         /// @return Integer representing the chosen state.
         int getDecision(std::vector<double> probs) {
-            if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.0) {
+            if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.00001) {
                 // error -- sum of probabilities cannot exceed 1
                 return -1;
             }

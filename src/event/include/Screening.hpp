@@ -54,6 +54,12 @@ namespace Event {
         /// Result
         bool rnaTest(std::shared_ptr<Person::Person> person);
 
+        std::vector<double> getBackgroundScreeningProbability(
+            std::shared_ptr<Person::Person> person);
+
+        std::vector<double> getInterventionScreeningProbability(
+            std::shared_ptr<Person::Person> person);
+
     public:
         using ProbEvent::ProbEvent;
         virtual ~Screening() = default;
