@@ -54,7 +54,7 @@ namespace Person {
 
     public:
         /// @brief Person age in months
-        uint32_t age = 0;
+        int age = 0;
 
         static std::map<std::string, HEPCState> hepcStateMap;
         static std::map<std::string, BehaviorClassification>
@@ -100,29 +100,29 @@ namespace Person {
 
         /// @brief Infect the person
         /// @param timestep Current simulation timestep
-        void infect(uint32_t tstep);
+        void infect(int tstep);
 
         /// @brief Clear of HCV
         /// @param timestep Current simulation timestep
-        void clearHCV(uint32_t tstep);
+        void clearHCV(int tstep);
 
         /// @brief Update the Liver State
         /// @param ls Current Liver State
         /// @param timestep Current simulation timestep
-        void updateLiver(const LiverState &ls, uint32_t tstep);
+        void updateLiver(const LiverState &ls, int tstep);
 
         /// @brief Update Opioid Use Behavior Classification
         /// @param bc The intended resultant BehaviorClassification
         /// @param timestep Current simulation timestep
-        void updateBehavior(const BehaviorClassification &bc, uint32_t tstep);
+        void updateBehavior(const BehaviorClassification &bc, int tstep);
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
-        LiverState diagnoseLiver(uint32_t tstep);
+        LiverState diagnoseLiver(int tstep);
 
         /// @brief Dignose somebody with HEPC
         /// @return HEPC state that was diagnosed
-        HEPCState diagnoseHEPC(uint32_t tstep);
+        HEPCState diagnoseHEPC(int tstep);
 
         /// @brief Mark somebody as having been screened this timestep
         void markScreened() { this->screeningDetails.timeOfLastScreening = 0; }
@@ -146,7 +146,7 @@ namespace Person {
 
         /// @brief Reset a Person's Link State to Unlinked
         /// @param timestep Timestep during which the Person is Unlinked
-        void unlink(const uint32_t tstep) {
+        void unlink(const int tstep) {
             if (this->linkStatus.linkState == LinkageState::LINKED) {
                 this->linkStatus.linkState = LinkageState::UNLINKED;
                 this->linkStatus.timeOfLinkChange = tstep;
@@ -156,7 +156,7 @@ namespace Person {
         /// @brief Reset a Person's Link State to Linked
         /// @param timestep Timestep during which the Person is Linked
         /// @param linkType The linkage type the Person recieves
-        void link(uint32_t tstep, LinkageType linkType) {
+        void link(int tstep, LinkageType linkType) {
             this->linkStatus.linkState = LinkageState::LINKED;
             this->linkStatus.timeOfLinkChange = tstep;
             this->linkStatus.linkType = linkType;
@@ -164,14 +164,14 @@ namespace Person {
 
         /// @brief Mark a Person as Identified as Infected
         /// @param timestep Timestep during which Identification Occurs
-        void identifyAsInfected(uint32_t tstep) {
+        void identifyAsInfected(int tstep) {
             this->idStatus.identifiedAsPositiveInfection = true;
             this->idStatus.timeIdentified = tstep;
         }
 
         /// @brief Getter for the Time Since the Last Screening
         /// @return The Time Since the Last Screening
-        uint32_t getTimeOfLastScreening() const {
+        int getTimeOfLastScreening() const {
             return this->screeningDetails.timeOfLastScreening;
         }
 
@@ -218,7 +218,7 @@ namespace Person {
 
         /// @brief Getter for time since active drug use
         /// @return Time since the person left an active drug use state
-        uint32_t getTimeBehaviorChange() {
+        int getTimeBehaviorChange() {
             return this->behaviorDetails.timeLastActive;
         }
 
@@ -246,9 +246,7 @@ namespace Person {
             return this->idStatus.identifiedAsPositiveInfection;
         }
 
-        uint32_t getTimeIdentified() const {
-            return this->idStatus.timeIdentified;
-        }
+        int getTimeIdentified() const { return this->idStatus.timeIdentified; }
 
         /// @brief Getter for Link State
         /// @return Link State
@@ -256,7 +254,7 @@ namespace Person {
 
         /// @brief Getter for Timestep in which linkage changed
         /// @return Time Link Change
-        uint32_t getTimeOfLinkChange() const {
+        int getTimeOfLinkChange() const {
             return this->linkStatus.timeOfLinkChange;
         }
 
@@ -289,7 +287,7 @@ namespace Person {
 
         /// @brief Getter for timestep in which last pregnancy change happened
         /// @return Time pregnancy state last changed
-        uint32_t getTimeOfPregnancyChange() {
+        int getTimeOfPregnancyChange() {
             return this->pregnancyDetails.timeOfPregnancyChange;
         }
 
@@ -316,7 +314,7 @@ namespace Person {
         /// @brief Getter for timestep in which the last liver staging test
         /// happened
         /// @return Timestep of person's last liver staging
-        uint32_t getTimeOfLastStaging() {
+        int getTimeOfLastStaging() {
             return this->stagingDetails.timeOfLastStaging;
         }
 
@@ -326,9 +324,7 @@ namespace Person {
 
         /// @brief Getter for timestep in which MOUD was started
         /// @return Time spent on MOUD
-        uint32_t getTimeStartedMoud() {
-            return this->moudDetails.timeStartedMoud;
-        }
+        int getTimeStartedMoud() { return this->moudDetails.timeStartedMoud; }
 
         Sex getSex() { return this->sex; }
     };

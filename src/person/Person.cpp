@@ -179,7 +179,7 @@ namespace Person {
         }
     }
 
-    void Person::infect(uint32_t tstep) {
+    void Person::infect(int tstep) {
         // cannot be multiply infected
         if (this->infectionStatus.hepcState != HEPCState::NONE) {
             return;
@@ -196,7 +196,7 @@ namespace Person {
         this->infectionStatus.timeLiverStateChanged = tstep;
     }
 
-    void Person::clearHCV(uint32_t tstep) {
+    void Person::clearHCV(int tstep) {
         // cannot clear if the person is not infected
         if (this->infectionStatus.hepcState == HEPCState::NONE) {
             return;
@@ -205,7 +205,7 @@ namespace Person {
         this->infectionStatus.timeHEPCStateChanged = tstep;
     }
 
-    void Person::updateLiver(const LiverState &ls, uint32_t tstep) {
+    void Person::updateLiver(const LiverState &ls, int tstep) {
         // nothing to do -- can only advance liver state
         if (ls <= this->infectionStatus.liverState) {
             return;
@@ -214,8 +214,7 @@ namespace Person {
         this->infectionStatus.timeLiverStateChanged = tstep;
     }
 
-    void Person::updateBehavior(const BehaviorClassification &bc,
-                                uint32_t tstep) {
+    void Person::updateBehavior(const BehaviorClassification &bc, int tstep) {
         // nothing to do -- cannot go back to NEVER
         if (bc == this->behaviorDetails.behaviorClassification ||
             bc == BehaviorClassification::NEVER) {
@@ -230,13 +229,13 @@ namespace Person {
         this->behaviorDetails.behaviorClassification = bc;
     }
 
-    LiverState Person::diagnoseLiver(uint32_t tstep) {
+    LiverState Person::diagnoseLiver(int tstep) {
         // need to add functionality here
         this->infectionStatus.liverState = LiverState::F0;
         return this->infectionStatus.liverState;
     }
 
-    HEPCState Person::diagnoseHEPC(uint32_t tstep) {
+    HEPCState Person::diagnoseHEPC(int tstep) {
         // need to add functionality here
         this->infectionStatus.hepcState = HEPCState::ACUTE;
         return this->infectionStatus.hepcState;

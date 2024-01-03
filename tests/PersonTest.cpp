@@ -90,7 +90,7 @@ TEST(PersonInfect, ResistMultiFibrosisInfect) {
 
 TEST(PersonLink, LinkNormally) {
     Person::Person person;
-    uint32_t tstep = 5;
+    int tstep = 5;
     Person::LinkageType linkType = Person::LinkageType::BACKGROUND;
     person.link(tstep, linkType);
     EXPECT_EQ(person.getLinkState(), Person::LinkageState::LINKED);

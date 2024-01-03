@@ -118,7 +118,7 @@ namespace Person {
     /// @brief Attributes describing Identification
     struct IdentificationStatus {
         bool identifiedAsPositiveInfection = false;
-        uint32_t timeIdentified = 0;
+        int timeIdentified = 0;
     };
 
     /// @brief Attributes describing an Infection
@@ -134,26 +134,26 @@ namespace Person {
     struct BehaviorDetails {
         BehaviorClassification behaviorClassification =
             BehaviorClassification::NEVER;
-        uint32_t timeLastActive = 0;
+        int timeLastActive = 0;
     };
 
     /// @brief Attributes describing Linkage
     struct LinkageDetails {
         LinkageState linkState = LinkageState::NEVER;
-        uint32_t timeOfLinkChange = 0;
+        int timeOfLinkChange = 0;
         LinkageType linkType = LinkageType::BACKGROUND;
     };
 
     /// @brief Attributes describing MOUD status
     struct MOUDDetails {
         MOUD moudState = MOUD::NONE;
-        uint32_t timeStartedMoud = 0;
+        int timeStartedMoud = 0;
     };
 
     /// @brief Attributes describing pregnancy
     struct PregnancyDetails {
         PregnancyState pregnancyState = PregnancyState::NONE;
-        uint32_t timeOfPregnancyChange = 0;
+        int timeOfPregnancyChange = 0;
         int infantCount = 0;
         int miscarriageCount = 0;
     };
@@ -161,12 +161,12 @@ namespace Person {
     /// @brief Person attributes describing clinically assessed liver stage
     struct StagingDetails {
         MeasuredLiverState measuredLiverState = MeasuredLiverState::NONE;
-        uint32_t timeOfLastStaging = 0;
+        int timeOfLastStaging = 0;
     };
 
     struct ScreeningDetails {
         // -1 if never screened, otherwise [0, currentTimestep-1)
-        uint32_t timeOfLastScreening = 0;
+        int timeOfLastScreening = 0;
         int screeningFrequency = -1; // -1 if screened only once and never again
         bool interventionScreening = false;
     };

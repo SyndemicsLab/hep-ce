@@ -27,7 +27,7 @@
 namespace Simulation {
     class Simulation {
     private:
-        uint32_t currentTimestep = 0;
+        int currentTimestep = 0;
         uint64_t seed;
         std::vector<std::shared_ptr<Person::Person>> population = {};
         std::vector<std::shared_ptr<Event::Event>> events = {};
@@ -35,16 +35,16 @@ namespace Simulation {
         static std::mt19937_64 generator;
 
     public:
-        Simulation() : Simulation((uint64_t)0, (uint32_t)0){};
+        Simulation() : Simulation((uint64_t)0, (int)0){};
 
-        Simulation(uint64_t seed) : Simulation(seed, (uint32_t)0){};
+        Simulation(uint64_t seed) : Simulation(seed, (int)0){};
 
-        Simulation(uint32_t duration) : Simulation((uint64_t)0, duration){};
+        Simulation(int duration) : Simulation((uint64_t)0, duration){};
 
-        Simulation(uint64_t seed, uint32_t duration)
+        Simulation(uint64_t seed, int duration)
             : Simulation(seed, duration, NULL) {}
 
-        Simulation(uint64_t seed, uint32_t duration,
+        Simulation(uint64_t seed, int duration,
                    std::shared_ptr<spdlog::logger> logger) {
             this->generator.seed(this->seed);
             this->duration = duration;
@@ -58,7 +58,7 @@ namespace Simulation {
 
         virtual ~Simulation() = default;
 
-        uint32_t duration;
+        int duration;
 
         /// @brief Function used to Create Population Set
         /// @param N Number of People to create in the Population
@@ -118,7 +118,7 @@ namespace Simulation {
         std::mt19937_64 &getGenerator() { return generator; }
 
         /// @brief A getter for the Current Timestep variable
-        /// @return currentTimestep as a uint32_t
+        /// @return currentTimestep as a int
         int getCurrentTimestep() { return this->currentTimestep; }
     };
 

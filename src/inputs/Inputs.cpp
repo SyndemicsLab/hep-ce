@@ -12,8 +12,8 @@ namespace Data {
         return std::nullopt;
     }
 
-    uint32_t Config::getPopulationSize() {
-        return this->get<uint32_t>("simulation.population_size");
+    int Config::getPopulationSize() {
+        return this->get<int>("simulation.population_size");
     }
 
     std::vector<std::string> Config::getEvents() {
@@ -21,13 +21,13 @@ namespace Data {
         return this->parseString2VectorOfStrings(events);
     }
 
-    uint32_t Config::getDuration() {
-        return this->get<uint32_t>("simulation.duration");
+    int Config::getDuration() {
+        return this->get<int>("simulation.duration");
     }
 
-    std::optional<uint32_t> Config::getStartTime() {
-        std::shared_ptr<uint32_t> startTime =
-            this->optional<uint32_t>("simulation.start_time");
+    std::optional<int> Config::getStartTime() {
+        std::shared_ptr<int> startTime =
+            this->optional<int>("simulation.start_time");
         if (startTime) {
             return *startTime;
         }
@@ -98,8 +98,8 @@ namespace Data {
         return std::nullopt;
     }
 
-    uint32_t Config::getFibrosisStagingPeriod() {
-        return this->get<uint32_t>("fibrosis_staging.period");
+    int Config::getFibrosisStagingPeriod() {
+        return this->get<int>("fibrosis_staging.period");
     }
 
     std::optional<std::string> Config::getFibrosisMultitestResultMethod() {
@@ -146,8 +146,8 @@ namespace Data {
         return std::nullopt;
     }
 
-    uint32_t Config::getScreeningPeriod() {
-        return this->get<uint32_t>("screening.period");
+    int Config::getScreeningPeriod() {
+        return this->get<int>("screening.period");
     }
 
     double Config::getScreeningFalsePositiveCost() {
@@ -185,8 +185,8 @@ namespace Data {
         return this->get<double>("linking.voluntary_relinkage_probability");
     }
 
-    uint32_t Config::getRelinkDuration() {
-        return this->get<uint32_t>("linking.relinkage_duration");
+    int Config::getRelinkDuration() {
+        return this->get<int>("linking.relinkage_duration");
     }
 
     // void Config::getTreatments() {

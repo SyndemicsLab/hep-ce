@@ -39,7 +39,7 @@ namespace Event {
         virtual void doEvent(std::shared_ptr<Person::Person> person) = 0;
 
     protected:
-        uint32_t currentTimestep;
+        int currentTimestep;
         Data::Configuration &config;
         Data::IDataTablePtr table;
         std::shared_ptr<spdlog::logger> logger;
@@ -56,7 +56,7 @@ namespace Event {
 
         const std::string EVENT_NAME;
 
-        void setCurrentTimestep(uint32_t timestep = 0) {
+        void setCurrentTimestep(int timestep = 0) {
             this->currentTimestep = timestep;
         }
 

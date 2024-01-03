@@ -15,16 +15,16 @@ namespace Data {
         std::optional<uint64_t> getSeed();
         /// @brief
         /// @return
-        uint32_t getPopulationSize();
+        int getPopulationSize();
         /// @brief
         /// @return
         std::vector<std::string> getEvents();
         /// @brief
         /// @return
-        uint32_t getDuration();
+        int getDuration();
         /// @brief
         /// @return
-        std::optional<uint32_t> getStartTime();
+        std::optional<int> getStartTime();
         // mortality section
         /// @brief
         /// @return
@@ -59,7 +59,7 @@ namespace Data {
         // staging section
         /// @brief
         /// @return
-        uint32_t getFibrosisStagingPeriod();
+        int getFibrosisStagingPeriod();
         /// @brief
         /// @return
         std::optional<std::string> getFibrosisMultitestResultMethod();
@@ -81,7 +81,7 @@ namespace Data {
         // screening section
         /// @brief
         /// @return
-        uint32_t getScreeningPeriod();
+        int getScreeningPeriod();
         /// @brief
         /// @return
         double getScreeningFalsePositiveCost();
@@ -106,7 +106,7 @@ namespace Data {
         double getVoluntaryRelinkProb();
         /// @brief
         /// @return
-        uint32_t getRelinkDuration();
+        int getRelinkDuration();
         // treatment section
         // getTreatments();
         // cost section

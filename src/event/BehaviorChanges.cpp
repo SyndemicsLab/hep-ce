@@ -25,21 +25,21 @@ namespace Event {
         // positioned before transitioning to use so that people do not start
         // treatment the same time they become an opioid abuser.
         // Can only enter MOUD if in an active use state.
-        if (!(bc >= Person::BehaviorClassification::NONINJECTION)) {
-            // 1. Check the person's current MOUD status
-            Person::MOUD moud = person->getMoudState();
-            // 2. Draw probability of changing MOUD state.
-            std::vector<double> probs = {0.50, 0.25, 0.25};
-            // 3. Make a transition decision.
-            Person::MOUD toMoud = (Person::MOUD)this->getDecision(probs);
-            // 4. If the person stays on MOUD, increment their time on MOUD.
-            // Otherwise, set or keep their time on MOUD as 0.
-            if ((moud == Person::MOUD::CURRENT) && (moud == toMoud)) {
-                // increment timeOnMoud
-            } else {
-                // assign time spent on MOUD to 0
-            }
-        }
+        // if (!(bc >= Person::BehaviorClassification::NONINJECTION)) {
+        //     // 1. Check the person's current MOUD status
+        //     Person::MOUD moud = person->getMoudState();
+        //     // 2. Draw probability of changing MOUD state.
+        //     std::vector<double> probs = {0.50, 0.25, 0.25};
+        //     // 3. Make a transition decision.
+        //     Person::MOUD toMoud = (Person::MOUD)this->getDecision(probs);
+        //     // 4. If the person stays on MOUD, increment their time on MOUD.
+        //     // Otherwise, set or keep their time on MOUD as 0.
+        //     if ((moud == Person::MOUD::CURRENT) && (moud == toMoud)) {
+        //         // increment timeOnMoud
+        //     } else {
+        //         // assign time spent on MOUD to 0
+        //     }
+        // }
 
         // Typical Behavior Change
         // 1. Generate the transition probabilities based on the starting state
