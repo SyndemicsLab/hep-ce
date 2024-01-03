@@ -17,6 +17,13 @@
 #include "Treatment.hpp"
 
 namespace Event {
+    Treatment::Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
+                         Data::Configuration &config,
+                         std::shared_ptr<spdlog::logger> logger)
+        : ProbEvent::ProbEvent(generator, table, config, logger) {
+        this->populateCourses();
+    }
+
     void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
         // 1. Determine person's treatment eligibility.
         if (!this->isEligible(person)) {
@@ -91,17 +98,58 @@ namespace Event {
     }
 
     void Treatment::populateCourses() {
+        std::vector<Course> tempCourses = {};
         std::vector<std::string> courseList =
             this->config.getStringVector("treatment.courses");
+        // used for tracking section hierarchy
+        std::vector<std::string> sections = {"treatment"};
+        // error if courseList length != 8
         for (std::string &course : courseList) {
-            std::string subsectionCourses =
-                "treatment_" + course + ".components";
-            std::vector<std::string> componentList =
+            std::vector<std::string> section = {"treatment_" + course};
+            section += sections;
+            std::vector<Regimen> regimens = {};
+            std::string subsectionCourses = section[0] + ".regimens";
+            std::vector<std::string> regimenList =
                 this->config.getStringVector(subsectionCourses);
-            for (std::string &component : componentList) {
-                std::string subsectionComponent = "treatment_" + component;
-                this->config.get<double>(subsectionComponent + ".cost");
+
+            for (std::string &regimen : regimenList) {
+                std::vector<Component> components = {};
+                std::vector<std::string> sect = {"treatment_" + regimen};
+                sect += section;
+                std::string subsectionRegimens = sect[0] + ".components";
+                std::vector<std::string> componentList =
+                    this->config.getStringVector(subsectionRegimens);
+
+                for (std::string &component : componentList) {
+                    std::vector<std::string> sec = {"treatment_" + component};
+                    sec += sect;
+                    Component comp = {component,
+                                      this->locateInput(sect, "cost")};
+                    components.push_back(comp);
+                }
+
+                Regimen reg = {components,
+                               (int)this->locateInput(sect, "duration")};
+                regimens.push_back(reg);
+            }
+
+            Course cour = {regimens, (int)locateInput(section, "duration"), 0.0,
+                           0.0};
+            tempCourses.push_back(cour);
+        }
+        this->courses = tempCourses;
+    }
+
+    double Treatment::locateInput(std::vector<std::string> &configSections,
+                                  const std::string &parameter) {
+        for (auto section : configSections) {
+            std::shared_ptr<double> param =
+                this->config.optional<double>(section + '.' + parameter);
+            if (param) {
+                return *param;
             }
         }
+        // error, value not specified
+        return -1;
     }
 } // namespace Event

@@ -21,6 +21,12 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
+    template <typename T>
+    std::vector<T> &operator+=(std::vector<T> &vector1,
+                               const std::vector<T> &vector2) {
+        vector1.insert(vector1.end(), vector2.begin(), vector2.end());
+        return vector1;
+    }
 
     struct Component {
         std::string name = "";
@@ -55,9 +61,23 @@ namespace Event {
             Person::LiverState::NONE};
         int eligibleTimeSinceLinked = -1;
         int eligibleTimeBehaviorChange = -1;
+        /// @brief Locate the most specific definition of a parameter in the
+        /// treatment config hierarchy.
+        /// @param configSections
+        /// @param parameter
+        /// @return
+        double locateInput(std::vector<std::string> &configSections,
+                           const std::string &parameter);
+
+        std::vector<Course> courses;
 
     public:
-        using ProbEvent::ProbEvent;
+        Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
+                  Data::Configuration &config,
+                  std::shared_ptr<spdlog::logger> logger =
+                      std::make_shared<spdlog::logger>("default"));
+
+        std::vector<Course> getCourses() { return courses; }
         virtual ~Treatment() = default;
     };
 

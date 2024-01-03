@@ -15,21 +15,26 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include <gtest/gtest.h>
-#include <iostream>
-#include <memory>
-#include <vector>
-
 #include "AllEvents.hpp"
 #include "Simulation.hpp"
 #include "Utils.hpp"
 #include "mocks/MockDataTable.hpp"
+#include <boost/filesystem.hpp>
+#include <gtest/gtest.h>
+#include <iostream>
+#include <memory>
+#include <vector>
 
 using ::testing::_;
 using ::testing::Return;
 
 class EventTest : public ::testing::Test {
 protected:
+    // for temp config files
+    std::ofstream outStream;
+    boost::filesystem::path tempFilePath =
+        boost::filesystem::temp_directory_path();
+
     std::vector<std::shared_ptr<Person::Person>> livingPopulation;
     std::vector<std::shared_ptr<Person::Person>> deadPopulation;
     std::shared_ptr<Simulation::Simulation> simulation;
@@ -43,8 +48,16 @@ protected:
             std::make_shared<Person::Person>();
         deadPerson->die();
         deadPopulation.push_back(deadPerson);
+
+        // for temp config files
+        tempFilePath /= boost::filesystem::unique_path("%%%%.conf");
+        outStream.open(tempFilePath);
     }
-    void TearDown() override {}
+    void TearDown() override {
+        if (outStream.is_open()) {
+            outStream.close();
+        }
+    }
 };
 
 TEST_F(EventTest, AgingLiving) {
@@ -187,6 +200,27 @@ TEST_F(EventTest, Linking) {}
 
 TEST_F(EventTest, Screening) {}
 
-TEST_F(EventTest, Treatment) {}
+TEST_F(EventTest, Treatment) {
+    outStream << "[treatment]" << std::endl
+              << "courses = foo" << std::endl
+              << "duration = 7" << std::endl
+              << "cost = 150.00" << std::endl
+              << std::endl
+              << "[treatment_foo]" << std::endl
+              << "regimens = bar" << std::endl
+              << "duration = 3" << std::endl
+              << std::endl
+              << "[treatment_bar]" << std::endl
+              << "components = baz" << std::endl
+              << "cost = 100.00" << std::endl
+              << std::endl
+              << "[treatment_baz]" << std::endl
+              << "name = baz" << std::endl;
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+    Data::Configuration config(tempFilePath.string());
+    Event::Treatment treatment(simulation->getGenerator(), table, config);
+    std::vector<Event::Course> courses = treatment.getCourses();
+    EXPECT_EQ(100.00, courses[0].regimens[0].components[0].cost);
+}
 
 TEST_F(EventTest, VoluntaryRelinking) {}
