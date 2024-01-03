@@ -202,7 +202,7 @@ TEST_F(EventTest, Screening) {}
 
 TEST_F(EventTest, Treatment) {
     outStream << "[treatment]" << std::endl
-              << "courses = foo" << std::endl
+              << "courses = foo, alpha" << std::endl
               << "duration = 7" << std::endl
               << "cost = 150.00" << std::endl
               << std::endl
@@ -211,16 +211,31 @@ TEST_F(EventTest, Treatment) {
               << "duration = 3" << std::endl
               << std::endl
               << "[treatment_bar]" << std::endl
-              << "components = baz" << std::endl
+              << "components = baz, bat" << std::endl
               << "cost = 100.00" << std::endl
               << std::endl
               << "[treatment_baz]" << std::endl
-              << "name = baz" << std::endl;
+              << std::endl
+              << "[treatment_bat]" << std::endl
+              << "cost = 2000.00" << std::endl
+              << std::endl
+              << "[treatment_alpha]" << std::endl
+              << "regimens = beta" << std::endl
+              << "duration = 3" << std::endl
+              << "cost = 250" << std::endl
+              << "[treatment_beta]" << std::endl
+              << "components = gamma" << std::endl
+              << "duration = 5" << std::endl
+              << std::endl
+              << "[treatment_gamma]" << std::endl;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
     Data::Configuration config(tempFilePath.string());
     Event::Treatment treatment(simulation->getGenerator(), table, config);
     std::vector<Event::Course> courses = treatment.getCourses();
     EXPECT_EQ(100.00, courses[0].regimens[0].components[0].cost);
+    EXPECT_EQ(2000.00, courses[0].regimens[0].components[1].cost);
+    EXPECT_EQ(250.00, courses[1].regimens[0].components[0].cost);
+    EXPECT_EQ("gamma", courses[1].regimens[0].components[0].name);
 }
 
 TEST_F(EventTest, VoluntaryRelinking) {}

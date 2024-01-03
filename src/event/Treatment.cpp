@@ -103,7 +103,9 @@ namespace Event {
             this->config.getStringVector("treatment.courses");
         // used for tracking section hierarchy
         std::vector<std::string> sections = {"treatment"};
-        // error if courseList length != 8
+        // error if courseList length != total number of treatment groups
+        // total number of treatment groups = 8 (2024-01-03)
+
         for (std::string &course : courseList) {
             std::vector<std::string> section = {"treatment_" + course};
             section += sections;
@@ -124,7 +126,7 @@ namespace Event {
                     std::vector<std::string> sec = {"treatment_" + component};
                     sec += sect;
                     Component comp = {component,
-                                      this->locateInput(sect, "cost")};
+                                      this->locateInput(sec, "cost")};
                     components.push_back(comp);
                 }
 
