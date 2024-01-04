@@ -53,8 +53,8 @@ namespace Person {
         ScreeningDetails screeningDetails;
 
     public:
-        /// @brief Person age in years
-        double age = 0;
+        /// @brief Person age in months
+        int age = 0;
 
         static std::map<std::string, HEPCState> hepcStateMap;
         static std::map<std::string, BehaviorClassification>
@@ -100,29 +100,29 @@ namespace Person {
 
         /// @brief Infect the person
         /// @param timestep Current simulation timestep
-        void infect(int timestep);
+        void infect(int tstep);
 
         /// @brief Clear of HCV
         /// @param timestep Current simulation timestep
-        void clearHCV(int timestep);
+        void clearHCV(int tstep);
 
         /// @brief Update the Liver State
         /// @param ls Current Liver State
         /// @param timestep Current simulation timestep
-        void updateLiver(const LiverState &ls, int timestep);
+        void updateLiver(const LiverState &ls, int tstep);
 
         /// @brief Update Opioid Use Behavior Classification
         /// @param bc The intended resultant BehaviorClassification
         /// @param timestep Current simulation timestep
-        void updateBehavior(const BehaviorClassification &bc, int timestep);
+        void updateBehavior(const BehaviorClassification &bc, int tstep);
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
-        LiverState diagnoseLiver(int timestep);
+        LiverState diagnoseLiver(int tstep);
 
         /// @brief Dignose somebody with HEPC
         /// @return HEPC state that was diagnosed
-        HEPCState diagnoseHEPC(int timestep);
+        HEPCState diagnoseHEPC(int tstep);
 
         /// @brief Mark somebody as having been screened this timestep
         void markScreened() { this->screeningDetails.timeOfLastScreening = 0; }
@@ -146,27 +146,27 @@ namespace Person {
 
         /// @brief Reset a Person's Link State to Unlinked
         /// @param timestep Timestep during which the Person is Unlinked
-        void unlink(const int timestep) {
+        void unlink(const int tstep) {
             if (this->linkStatus.linkState == LinkageState::LINKED) {
                 this->linkStatus.linkState = LinkageState::UNLINKED;
-                this->linkStatus.timeOfLinkChange = timestep;
+                this->linkStatus.timeOfLinkChange = tstep;
             }
         }
 
         /// @brief Reset a Person's Link State to Linked
         /// @param timestep Timestep during which the Person is Linked
         /// @param linkType The linkage type the Person recieves
-        void link(int timestep, LinkageType linkType) {
+        void link(int tstep, LinkageType linkType) {
             this->linkStatus.linkState = LinkageState::LINKED;
-            this->linkStatus.timeOfLinkChange = timestep;
+            this->linkStatus.timeOfLinkChange = tstep;
             this->linkStatus.linkType = linkType;
         }
 
         /// @brief Mark a Person as Identified as Infected
         /// @param timestep Timestep during which Identification Occurs
-        void identifyAsInfected(int timestep) {
+        void identifyAsInfected(int tstep) {
             this->idStatus.identifiedAsPositiveInfection = true;
-            this->idStatus.timeIdentified = timestep;
+            this->idStatus.timeIdentified = tstep;
         }
 
         /// @brief Getter for the Time Since the Last Screening

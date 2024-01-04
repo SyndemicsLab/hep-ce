@@ -9,7 +9,6 @@ add_executable(hepceTest
   PersonTest.cpp
   SimTest.cpp
   EventTest.cpp
-  InputTest.cpp
 )
 
 target_include_directories(hepceTest INTERFACE
@@ -26,7 +25,6 @@ target_link_libraries(hepceTest
   simulation
   data
   event
-  inputs
   spdlog::spdlog
 )
 

@@ -9,7 +9,6 @@ add_subdirectory(event)
 add_subdirectory(person)
 add_subdirectory(simulation)
 add_subdirectory(utils)
-add_subdirectory(inputs)
 
 # set(MAIN_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
 # target_include_directories(src PUBLIC ${MAIN_INCLUDES})
@@ -20,6 +19,5 @@ target_link_libraries(hepce
   person
   simulation
   utils
-  inputs
   spdlog::spdlog
 )

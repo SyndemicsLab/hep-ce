@@ -43,7 +43,8 @@ int main(int argc, char *argv[]) {
 
             loadTables(tables, inputSet.string());
 
-            Simulation::Simulation sim(0, 0, logger);
+            Simulation::Simulation sim(
+                0, stoul(config.get("simulation.duration")), logger);
 
             // create the person-level event vector
             std::vector<sharedEvent> personEvents;

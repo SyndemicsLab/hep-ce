@@ -50,7 +50,7 @@ TEST(PersonDeath, DieFunction) {
 TEST(PersonGrowth, GrowNormally) {
     Person::Person person;
     person.grow();
-    EXPECT_EQ(person.age, 1.0);
+    EXPECT_EQ(person.age, 1);
 }
 
 TEST(PersonGrowth, DeathAge) {
@@ -90,11 +90,11 @@ TEST(PersonInfect, ResistMultiFibrosisInfect) {
 
 TEST(PersonLink, LinkNormally) {
     Person::Person person;
-    int timestep = 5;
+    int tstep = 5;
     Person::LinkageType linkType = Person::LinkageType::BACKGROUND;
-    person.link(timestep, linkType);
+    person.link(tstep, linkType);
     EXPECT_EQ(person.getLinkState(), Person::LinkageState::LINKED);
-    EXPECT_EQ(person.getTimeOfLinkChange(), timestep);
+    EXPECT_EQ(person.getTimeOfLinkChange(), tstep);
     EXPECT_EQ(person.getLinkageType(), linkType);
 }
 
@@ -111,7 +111,7 @@ TEST(PersonUnlink, UnlinkNormally) {
 TEST(PersonUnlink, UnableToUnlink) {
     Person::Person person;
     person.unlink(10);
-    EXPECT_EQ(person.getTimeOfLinkChange(), -1);
+    EXPECT_EQ(person.getTimeOfLinkChange(), 0);
 }
 
 TEST(PersonBehavior, BehaviorUpdate) {

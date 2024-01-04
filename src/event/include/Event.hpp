@@ -36,10 +36,10 @@ namespace Event {
     /// function definition
     class Event {
     private:
-        int currentTimestep = -1;
         virtual void doEvent(std::shared_ptr<Person::Person> person) = 0;
 
     protected:
+        int currentTimestep;
         Data::Configuration &config;
         Data::IDataTablePtr table;
         std::shared_ptr<spdlog::logger> logger;
@@ -47,9 +47,18 @@ namespace Event {
     public:
         Event(Data::IDataTablePtr table, Data::Configuration &config,
               std::shared_ptr<spdlog::logger> logger =
-                  std::make_shared<spdlog::logger>("default"))
-            : table(table), config(config), logger(logger){};
+                  std::make_shared<spdlog::logger>("default"),
+              std::string name = std::string("Event"))
+            : table(table), config(config), logger(logger), EVENT_NAME(name) {
+            currentTimestep = 0;
+        }
         virtual ~Event() = default;
+
+        const std::string EVENT_NAME;
+
+        void setCurrentTimestep(int timestep = 0) {
+            this->currentTimestep = timestep;
+        }
 
         int getCurrentTimestep() const { return this->currentTimestep; }
 
@@ -60,14 +69,14 @@ namespace Event {
         /// @param  timestep integer containing the current timestep of the
         /// simulation
         /// @return The population vector after the event is executed
-        void execute(std::vector<std::shared_ptr<Person::Person>> &population,
-                     int timestep) {
-            this->currentTimestep = timestep;
+        void execute(std::vector<std::shared_ptr<Person::Person>> &population) {
             std::for_each(std::execution::par, std::begin(population),
                           std::end(population),
                           [this](std::shared_ptr<Person::Person> &p) {
-                              this->doEvent(p);
-                          });
+                              if (p->getIsAlive()) {
+                                  this->doEvent(p);
+                              }
+                                                    });
         }
     };
 
@@ -89,7 +98,7 @@ namespace Event {
         /// @param probs A vector containing the weights of each option.
         /// @return Integer representing the chosen state.
         int getDecision(std::vector<double> probs) {
-            if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.0) {
+            if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.00001) {
                 // error -- sum of probabilities cannot exceed 1
                 return -1;
             }
@@ -111,8 +120,9 @@ namespace Event {
         ProbEvent(std::mt19937_64 &generator, Data::IDataTablePtr table,
                   Data::Configuration &config,
                   std::shared_ptr<spdlog::logger> logger =
-                      std::make_shared<spdlog::logger>("default"))
-            : generator(generator), Event(table, config, logger) {}
+                      std::make_shared<spdlog::logger>("default"),
+                  std::string name = std::string("ProbEvent"))
+            : generator(generator), Event(table, config, logger, name) {}
         virtual ~ProbEvent() = default;
     };
 } // namespace Event

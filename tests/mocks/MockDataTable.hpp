@@ -36,6 +36,7 @@ public:
     MOCK_METHOD(doubleVecOfStr, getData, (), (const, override));
     MOCK_METHOD(IDataTablePtr, getRow, (int), (const, override));
     MOCK_METHOD(vecOfStr, getColumn, (std::string), (const, override));
+    MOCK_METHOD(vecOfStr, getColumnNames, (), (const, override));
     MOCK_METHOD(IDataTablePtr, selectColumns, (vecOfStr), (const, override));
     MOCK_METHOD(IDataTablePtr, selectRows, (vecOfInt), (const, override));
     MOCK_METHOD(IDataTablePtr, selectRowRange, (int, int), (const, override));

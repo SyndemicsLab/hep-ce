@@ -104,7 +104,7 @@ namespace Person {
         this->id = stoi((*dataTableRow)["id"][0]);
 
         this->sex = Person::sexMap[Utils::toLower((*dataTableRow)["sex"][0])];
-        this->age = stod((*dataTableRow)["age"][0]);
+        this->age = stoul((*dataTableRow)["age"][0]);
 
         this->isAlive = Utils::stobool((*dataTableRow)["isAlive"][0]);
 
@@ -141,7 +141,7 @@ namespace Person {
             Person::behaviorClassificationMap[Utils::toLower(
                 (*dataTableRow)["drugBehavior"][0])];
         this->behaviorDetails.timeLastActive =
-            stoi((*dataTableRow)["timeLastActiveDrugUse"][0]);
+            stoul((*dataTableRow)["timeLastActiveDrugUse"][0]);
 
         this->linkStatus.linkState = Person::linkageStateMap[Utils::toLower(
             (*dataTableRow)["linkageState"][0])];
@@ -179,13 +179,13 @@ namespace Person {
         }
     }
 
-    void Person::infect(int timestep) {
+    void Person::infect(int tstep) {
         // cannot be multiply infected
         if (this->infectionStatus.hepcState != HEPCState::NONE) {
             return;
         }
         this->infectionStatus.hepcState = HEPCState::ACUTE;
-        this->infectionStatus.timeHEPCStateChanged = timestep;
+        this->infectionStatus.timeHEPCStateChanged = tstep;
         this->infectionStatus.seropositivity = true;
 
         if (this->infectionStatus.liverState != LiverState::NONE) {
@@ -193,29 +193,28 @@ namespace Person {
         }
         // once infected, immediately enter F0
         this->infectionStatus.liverState = LiverState::F0;
-        this->infectionStatus.timeLiverStateChanged = timestep;
+        this->infectionStatus.timeLiverStateChanged = tstep;
     }
 
-    void Person::clearHCV(int timestep) {
+    void Person::clearHCV(int tstep) {
         // cannot clear if the person is not infected
         if (this->infectionStatus.hepcState == HEPCState::NONE) {
             return;
         }
         this->infectionStatus.hepcState = HEPCState::NONE;
-        this->infectionStatus.timeHEPCStateChanged = timestep;
+        this->infectionStatus.timeHEPCStateChanged = tstep;
     }
 
-    void Person::updateLiver(const LiverState &ls, int timestep) {
+    void Person::updateLiver(const LiverState &ls, int tstep) {
         // nothing to do -- can only advance liver state
         if (ls <= this->infectionStatus.liverState) {
             return;
         }
         this->infectionStatus.liverState = ls;
-        this->infectionStatus.timeLiverStateChanged = timestep;
+        this->infectionStatus.timeLiverStateChanged = tstep;
     }
 
-    void Person::updateBehavior(const BehaviorClassification &bc,
-                                int timestep) {
+    void Person::updateBehavior(const BehaviorClassification &bc, int tstep) {
         // nothing to do -- cannot go back to NEVER
         if (bc == this->behaviorDetails.behaviorClassification ||
             bc == BehaviorClassification::NEVER) {
@@ -224,19 +223,19 @@ namespace Person {
         // count for timeSinceActive if switching from active to non-active use
         if ((bc == BehaviorClassification::FORMER_NONINJECTION) ||
             (bc == BehaviorClassification::FORMER_INJECTION)) {
-            this->behaviorDetails.timeLastActive = timestep;
+            this->behaviorDetails.timeLastActive = tstep;
         }
         // update the behavior classification
         this->behaviorDetails.behaviorClassification = bc;
     }
 
-    LiverState Person::diagnoseLiver(int timestep) {
+    LiverState Person::diagnoseLiver(int tstep) {
         // need to add functionality here
         this->infectionStatus.liverState = LiverState::F0;
         return this->infectionStatus.liverState;
     }
 
-    HEPCState Person::diagnoseHEPC(int timestep) {
+    HEPCState Person::diagnoseHEPC(int tstep) {
         // need to add functionality here
         this->infectionStatus.hepcState = HEPCState::ACUTE;
         return this->infectionStatus.hepcState;

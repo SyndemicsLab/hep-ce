@@ -27,8 +27,8 @@ namespace Event {
             return;
         }
 
-        uint32_t period = this->config.get<uint32_t>("fibrosis_staging.period");
-        if (((uint32_t)timeSinceStaging) < period) {
+        int period = this->config.get<int>("fibrosis_staging.period");
+        if (((int)timeSinceStaging) < period) {
             return;
         }
 
