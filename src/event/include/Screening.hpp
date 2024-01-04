@@ -46,13 +46,15 @@ namespace Event {
         /// @param person The Person undergoing an antibody test
         /// @return Boolean True for a Positive Result, False for a Negative
         /// Result
-        bool antibodyTest(std::shared_ptr<Person::Person> person);
+        bool antibodyTest(std::shared_ptr<Person::Person> person,
+                          std::string configKey);
 
         /// @brief The RNA test to determine if the person is positive for HCV
         /// @param person The Person undergoing an RNA test
         /// @return Boolean True for a Positive Result, False for a Negative
         /// Result
-        bool rnaTest(std::shared_ptr<Person::Person> person);
+        bool rnaTest(std::shared_ptr<Person::Person> person,
+                     std::string configKey);
 
         std::vector<double> getBackgroundScreeningProbability(
             std::shared_ptr<Person::Person> person);

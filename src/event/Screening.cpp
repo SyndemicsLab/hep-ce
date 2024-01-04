@@ -53,12 +53,15 @@ namespace Event {
         }
         person->markScreened();
 
-        if (!this->antibodyTest(person) && !this->antibodyTest(person)) {
+        if (!this->antibodyTest(person,
+                                std::string("screening_background_ab")) &&
+            !this->antibodyTest(person,
+                                std::string("screening_background_ab"))) {
             return; // run two tests and if both are negative do nothing
         }
 
         // if either is positive then...
-        if (this->rnaTest(person)) {
+        if (this->rnaTest(person, std::string("screening_background_rna"))) {
             person->link(this->getCurrentTimestep(),
                          Person::LinkageType::BACKGROUND);
             // what else needs to happen during a link?
@@ -69,9 +72,12 @@ namespace Event {
 
     void Screening::interventionScreen(std::shared_ptr<Person::Person> person) {
         person->markScreened();
-        if (!this->antibodyTest(person) && !this->antibodyTest(person)) {
+        if (!this->antibodyTest(person,
+                                std::string("screening_intervention_ab")) &&
+            !this->antibodyTest(person,
+                                std::string("screening_intervention_ab"))) {
         }
-        if (this->rnaTest(person)) {
+        if (this->rnaTest(person, std::string("screening_intervention_rna"))) {
             person->link(this->getCurrentTimestep(),
                          Person::LinkageType::INTERVENTION);
             // what else needs to happen during a link?
@@ -80,40 +86,44 @@ namespace Event {
         }
     }
 
-    bool Screening::antibodyTest(std::shared_ptr<Person::Person> person) {
+    bool Screening::antibodyTest(std::shared_ptr<Person::Person> person,
+                                 std::string configKey) {
         double probability = 0.5;
         if (person->getSeropositivity()) {
             Person::HEPCState infectionStatus = person->getHEPCState();
             if (infectionStatus == Person::HEPCState::ACUTE ||
                 infectionStatus == Person::HEPCState::NONE) {
-                // probability = acute_sensitivity
+                probability =
+                    1 -
+                    stod(this->config.get(configKey + ".acute_sensitivity"));
             } else {
-                // probability = chronic_sensitivity
+                probability =
+                    1 -
+                    stod(this->config.get(configKey + ".chronic_sensitivity"));
             }
         } else {
-            // probability = 1 - specificity;
+            probability = stod(this->config.get(configKey + ".specificity"));
         }
-        std::bernoulli_distribution testProbability(probability);
-        this->generatorMutex.lock();
-        int value = testProbability(this->generator);
-        this->generatorMutex.unlock();
+        // probability is the chance of false positive or false negative
+        int value = getDecision({probability});
         return value;
     }
 
-    bool Screening::rnaTest(std::shared_ptr<Person::Person> person) {
+    bool Screening::rnaTest(std::shared_ptr<Person::Person> person,
+                            std::string configKey) {
         double probability = 0.5;
         Person::HEPCState infectionStatus = person->getHEPCState();
         if (infectionStatus == Person::HEPCState::ACUTE) {
-            // probability = acute_sensitivity
+            probability =
+                1 - stod(this->config.get(configKey + ".acute_sensitivity"));
         } else if (infectionStatus == Person::HEPCState::CHRONIC) {
-            // probability = chronic_sensitivity
+            probability =
+                1 - stod(this->config.get(configKey + ".chronic_sensitivity"));
         } else {
-            // probability = 1 - specificity;
+            probability = stod(this->config.get(configKey + ".specificity"));
         }
-        std::bernoulli_distribution testProbability(probability);
-        this->generatorMutex.lock();
-        int value = testProbability(this->generator);
-        this->generatorMutex.unlock();
+        // probability is the chance of false positive or false negative
+        int value = getDecision({probability});
         return value;
     }
 

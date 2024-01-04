@@ -73,8 +73,10 @@ namespace Event {
             std::for_each(std::execution::par, std::begin(population),
                           std::end(population),
                           [this](std::shared_ptr<Person::Person> &p) {
-                              this->doEvent(p);
-                          });
+                              if (p->getIsAlive()) {
+                                  this->doEvent(p);
+                              }
+                                                    });
         }
     };
 
