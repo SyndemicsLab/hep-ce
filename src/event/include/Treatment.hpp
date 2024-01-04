@@ -28,13 +28,6 @@ namespace Event {
         return vector1;
     }
 
-    template <typename T>
-    std::vector<T> &operator+=(std::vector<T> &vector1,
-                               const std::vector<T> &vector2) {
-        vector1.insert(vector1.end(), vector2.begin(), vector2.end());
-        return vector1;
-    }
-
     struct Regimen {
         int duration = 0;
         double cost = 0.0;
