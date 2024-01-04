@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
                 0, stoul(config.get("simulation.duration")), logger);
 
             // create the person-level event vector
-            std::vector<sharedEvent> personEvents;
+            std::vector<Event::sharedEvent> personEvents;
             loadEvents(personEvents, tables, sim, config, logger);
             sim.loadEvents(personEvents);
 

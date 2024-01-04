@@ -1,9 +1,9 @@
 #ifndef RUN_HPP_
 #define RUN_HPP_
 
-#include "AllEvents.hpp"
 #include "Configuration.hpp"
 #include "DataTable.hpp"
+#include "EventFactory.hpp"
 #include "Simulation.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/spdlog.h"
@@ -12,33 +12,7 @@
 #include <unordered_map>
 
 /// @brief
-using sharedEvent = std::shared_ptr<Event::Event>;
-
-/// @brief
 using sharedPerson = std::shared_ptr<Person::Person>;
-
-/// @brief
-/// @tparam T
-/// @return
-template <typename T>
-sharedEvent makeEvent(Data::IDataTablePtr table, Data::Configuration &config,
-                      std::shared_ptr<spdlog::logger> logger,
-                      std::string name = "Event") {
-    return std::make_shared<T>(table, config, logger, name);
-}
-
-/// @brief
-/// @tparam T
-/// @param generator
-/// @param table
-/// @return
-template <typename T>
-sharedEvent makeEvent(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                      Data::Configuration &config,
-                      std::shared_ptr<spdlog::logger> logger,
-                      std::string name = "ProbEvent") {
-    return std::make_shared<T>(generator, table, config, logger, name);
-}
 
 /// @brief
 /// @tparam T
@@ -69,7 +43,7 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 /// @param personEvents
 /// @param tables
 /// @param sim
-void loadEvents(std::vector<sharedEvent> &personEvents,
+void loadEvents(std::vector<Event::sharedEvent> &personEvents,
                 std::unordered_map<std::string, Data::IDataTablePtr> &tables,
                 Simulation::Simulation &sim, Data::Configuration &config,
                 std::shared_ptr<spdlog::logger> logger =
@@ -78,7 +52,8 @@ void loadEvents(std::vector<sharedEvent> &personEvents,
 /// @brief
 /// @param personEvents
 /// @param dirpath
-void writeEvents(std::vector<sharedEvent> &personEvents, std::string dirpath);
+void writeEvents(std::vector<Event::sharedEvent> &personEvents,
+                 std::string dirpath);
 
 /// @brief
 /// @param tables
