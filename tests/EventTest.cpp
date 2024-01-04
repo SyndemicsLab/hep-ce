@@ -205,37 +205,69 @@ TEST_F(EventTest, Treatment) {
               << "courses = foo, alpha" << std::endl
               << "duration = 7" << std::endl
               << "cost = 150.00" << std::endl
+              << "withdrawal_probability = 0.08" << std::endl
+              << "tox_probability = 0.01" << std::endl
+              << "tox_cost = 1000.00" << std::endl
+              << "tox_utility = 0.7" << std::endl
+              << "svr_probability = 0.95" << std::endl
+              << "initiation_probability = 0.9" << std::endl
               << std::endl
-              << "[treatment_foo]" << std::endl
-              << "regimens = bar" << std::endl
-              << "duration = 3" << std::endl
+              << "[course_foo]" << std::endl
+              << "regimens = bar, bat" << std::endl
               << std::endl
-              << "[treatment_bar]" << std::endl
-              << "components = baz, bat" << std::endl
+              << "[regimen_bar]" << std::endl
               << "cost = 100.00" << std::endl
+              << "utility = 0.9" << std::endl
               << std::endl
-              << "[treatment_baz]" << std::endl
+              << "[regimen_bat]" << std::endl
+              << "utility = 0.95" << std::endl
               << std::endl
-              << "[treatment_bat]" << std::endl
-              << "cost = 2000.00" << std::endl
-              << std::endl
-              << "[treatment_alpha]" << std::endl
+              << "[course_alpha]" << std::endl
               << "regimens = beta" << std::endl
               << "duration = 3" << std::endl
-              << "cost = 250" << std::endl
-              << "[treatment_beta]" << std::endl
-              << "components = gamma" << std::endl
-              << "duration = 5" << std::endl
+              << "utility = 0.95" << std::endl
+              << "cost = 250.00" << std::endl
               << std::endl
-              << "[treatment_gamma]" << std::endl;
+              << "[regimen_beta]" << std::endl
+              << "duration = 5" << std::endl
+              << "utility = 0.95" << std::endl;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
     Data::Configuration config(tempFilePath.string());
     Event::Treatment treatment(simulation->getGenerator(), table, config);
     std::vector<Event::Course> courses = treatment.getCourses();
-    EXPECT_EQ(100.00, courses[0].regimens[0].components[0].cost);
-    EXPECT_EQ(2000.00, courses[0].regimens[0].components[1].cost);
-    EXPECT_EQ(250.00, courses[1].regimens[0].components[0].cost);
-    EXPECT_EQ("gamma", courses[1].regimens[0].components[0].name);
+    Event::Regimen expectedBar = {7,    100.00,  0.9, 0.08, 0.95,
+                                  0.01, 1000.00, 0.7, 0.9};
+    Event::Regimen expectedBat = {7,    150.00,  0.95, 0.08, 0.95,
+                                  0.01, 1000.00, 0.7,  0.9};
+    EXPECT_EQ(expectedBar.duration, courses[0].regimens[0].duration);
+    EXPECT_EQ(expectedBar.cost, courses[0].regimens[0].cost);
+    EXPECT_EQ(expectedBar.utility, courses[0].regimens[0].utility);
+    EXPECT_EQ(expectedBar.withdrawalProbability,
+              courses[0].regimens[0].withdrawalProbability);
+    EXPECT_EQ(expectedBar.svrProbability,
+              courses[0].regimens[0].svrProbability);
+    EXPECT_EQ(expectedBar.toxicityProbability,
+              courses[0].regimens[0].toxicityProbability);
+    EXPECT_EQ(expectedBar.toxicityCost, courses[0].regimens[0].toxicityCost);
+    EXPECT_EQ(expectedBar.toxicityUtility,
+              courses[0].regimens[0].toxicityUtility);
+    EXPECT_EQ(expectedBar.initiationProbability,
+              courses[0].regimens[0].initiationProbability);
+
+    EXPECT_EQ(expectedBat.duration, courses[0].regimens[1].duration);
+    EXPECT_EQ(expectedBat.cost, courses[0].regimens[1].cost);
+    EXPECT_EQ(expectedBat.utility, courses[0].regimens[1].utility);
+    EXPECT_EQ(expectedBat.withdrawalProbability,
+              courses[0].regimens[1].withdrawalProbability);
+    EXPECT_EQ(expectedBat.svrProbability,
+              courses[0].regimens[1].svrProbability);
+    EXPECT_EQ(expectedBat.toxicityProbability,
+              courses[0].regimens[1].toxicityProbability);
+    EXPECT_EQ(expectedBat.toxicityCost, courses[0].regimens[1].toxicityCost);
+    EXPECT_EQ(expectedBat.toxicityUtility,
+              courses[0].regimens[1].toxicityUtility);
+    EXPECT_EQ(expectedBat.initiationProbability,
+              courses[0].regimens[1].initiationProbability);
 }
 
 TEST_F(EventTest, VoluntaryRelinking) {}

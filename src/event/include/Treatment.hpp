@@ -21,6 +21,13 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
+    static std::vector<std::string>
+    setupTreatmentSections(std::vector<std::string> vector1,
+                           const std::vector<std::string> &vector2) {
+        vector1.insert(vector1.end(), vector2.begin(), vector2.end());
+        return vector1;
+    }
+
     template <typename T>
     std::vector<T> &operator+=(std::vector<T> &vector1,
                                const std::vector<T> &vector2) {
@@ -28,21 +35,20 @@ namespace Event {
         return vector1;
     }
 
-    struct Component {
-        std::string name = "";
-        double cost = 0.0;
-    };
-
     struct Regimen {
-        std::vector<Component> components = {};
         int duration = 0;
+        double cost = 0.0;
+        double utility = 0.0;
+        double withdrawalProbability = 0.0;
+        double svrProbability = 0.0;
+        double toxicityProbability = 0.0;
+        double toxicityCost = 0.0;
+        double toxicityUtility = 0.0;
+        double initiationProbability = 0.0;
     };
 
     struct Course {
         std::vector<Regimen> regimens = {};
-        int duration = 0;
-        double withdrawalProbability = 0.0;
-        double svrProbability = 0.0;
     };
 
     /// @brief Subclass of Event used to Provide Treatment to People
@@ -75,12 +81,11 @@ namespace Event {
         Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
                   Data::Configuration &config,
                   std::shared_ptr<spdlog::logger> logger =
-                      std::make_shared<spdlog::logger>("default"));
+                      std::make_shared<spdlog::logger>("default"),
+                  std::string name = std::string("Treatment"));
 
         std::vector<Course> getCourses() { return courses; }
         virtual ~Treatment() = default;
     };
-
 } // namespace Event
-
 #endif

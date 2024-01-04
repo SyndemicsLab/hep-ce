@@ -19,8 +19,9 @@
 namespace Event {
     Treatment::Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
                          Data::Configuration &config,
-                         std::shared_ptr<spdlog::logger> logger)
-        : ProbEvent::ProbEvent(generator, table, config, logger) {
+                         std::shared_ptr<spdlog::logger> logger,
+                         std::string name)
+        : ProbEvent::ProbEvent(generator, table, config, logger, name) {
         this->populateCourses();
     }
 
@@ -29,15 +30,6 @@ namespace Event {
         if (!this->isEligible(person)) {
             return;
         }
-
-        // accounting for when the person was a false positive -- do these make
-        // it this far?
-
-        // Person::LiverState personLiverState = person->getLiverState();
-        // if (person->getHEPCState() == Person::HEPCState::NONE &&
-        //     personLiverState == Person::LiverState::NONE) {
-        //     return;
-        // }
 
         // 2. Draw the probability that person will initiate treatment.
         // 3. Select the treatment course for a person based on their measured
@@ -101,43 +93,41 @@ namespace Event {
         std::vector<Course> tempCourses = {};
         std::vector<std::string> courseList =
             this->config.getStringVector("treatment.courses");
+        // error if courseList length != total number of treatment groups
+        // total number of treatment groups = 4 (2024-01-03)
+
         // used for tracking section hierarchy
         std::vector<std::string> sections = {"treatment"};
-        // error if courseList length != total number of treatment groups
-        // total number of treatment groups = 8 (2024-01-03)
 
         for (std::string &course : courseList) {
-            std::vector<std::string> section = {"treatment_" + course};
-            section += sections;
+            // local variable for sections relevant to courses
+            std::vector<std::string> courseSections =
+                setupTreatmentSections({"course_" + course}, sections);
+            // setting up regimens for the current course
             std::vector<Regimen> regimens = {};
-            std::string subsectionCourses = section[0] + ".regimens";
             std::vector<std::string> regimenList =
-                this->config.getStringVector(subsectionCourses);
-
+                this->config.getStringVector(courseSections[0] + ".regimens");
             for (std::string &regimen : regimenList) {
-                std::vector<Component> components = {};
-                std::vector<std::string> sect = {"treatment_" + regimen};
-                sect += section;
-                std::string subsectionRegimens = sect[0] + ".components";
-                std::vector<std::string> componentList =
-                    this->config.getStringVector(subsectionRegimens);
-
-                for (std::string &component : componentList) {
-                    std::vector<std::string> sec = {"treatment_" + component};
-                    sec += sect;
-                    Component comp = {component,
-                                      this->locateInput(sec, "cost")};
-                    components.push_back(comp);
-                }
-
-                Regimen reg = {components,
-                               (int)this->locateInput(sect, "duration")};
-                regimens.push_back(reg);
+                std::vector<std::string> regimenSections =
+                    setupTreatmentSections({"regimen_" + regimen},
+                                           courseSections);
+                Regimen currentRegimen = {
+                    (int)this->locateInput(regimenSections, "duration"),
+                    this->locateInput(regimenSections, "cost"),
+                    this->locateInput(regimenSections, "utility"),
+                    this->locateInput(regimenSections,
+                                      "withdrawal_probability"),
+                    this->locateInput(regimenSections, "svr_probability"),
+                    this->locateInput(regimenSections, "tox_probability"),
+                    this->locateInput(regimenSections, "tox_cost"),
+                    this->locateInput(regimenSections, "tox_utility"),
+                    this->locateInput(regimenSections,
+                                      "initiation_probability")};
+                regimens.push_back(currentRegimen);
             }
 
-            Course cour = {regimens, (int)locateInput(section, "duration"), 0.0,
-                           0.0};
-            tempCourses.push_back(cour);
+            Course currentCourse = {regimens};
+            tempCourses.push_back(currentCourse);
         }
         this->courses = tempCourses;
     }
@@ -152,6 +142,7 @@ namespace Event {
             }
         }
         // error, value not specified
+        // throw std::runtime_error
         return -1;
     }
 } // namespace Event
