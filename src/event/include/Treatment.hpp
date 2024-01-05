@@ -37,11 +37,11 @@ namespace Event {
         double toxicityProbability = 0.0;
         double toxicityCost = 0.0;
         double toxicityUtility = 0.0;
-        double initiationProbability = 0.0;
     };
 
     struct Course {
         std::vector<Regimen> regimens = {};
+        double initiationProbability = 0.0;
     };
 
     /// @brief Subclass of Event used to Provide Treatment to People
@@ -54,6 +54,9 @@ namespace Event {
         bool isEligibleFibrosisStage(Person::LiverState liverState) const;
         Course
         getTreatmentCourse(std::shared_ptr<Person::Person> const person) const;
+
+        /// @brief Populate this Treatment event's treatment courses based on
+        /// values in the config tree.
         void populateCourses();
 
         std::vector<Person::LiverState> eligibleLiverStates = {
@@ -62,9 +65,10 @@ namespace Event {
         int eligibleTimeBehaviorChange = -1;
         /// @brief Locate the most specific definition of a parameter in the
         /// treatment config hierarchy.
-        /// @param configSections
-        /// @param parameter
-        /// @return
+        /// @param configSections vector of strings representing config sections
+        /// in reverse order of specificity
+        /// @param parameter the config parameter name to find among sections
+        /// @return The most-specifically-defined value of \code{parameter}
         double locateInput(std::vector<std::string> &configSections,
                            const std::string &parameter);
 
@@ -77,7 +81,9 @@ namespace Event {
                       std::make_shared<spdlog::logger>("default"),
                   std::string name = std::string("Treatment"));
 
-        std::vector<Course> getCourses() { return courses; }
+        /// @brief Getter for treatment courses
+        /// @return vector of treatment Course objects
+        std::vector<Course> getCourses() { return this->courses; }
         virtual ~Treatment() = default;
     };
 } // namespace Event

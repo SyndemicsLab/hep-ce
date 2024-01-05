@@ -46,11 +46,11 @@ namespace Person {
         BehaviorDetails behaviorDetails;
         LinkageDetails linkStatus;
         bool overdose = false;
-        bool incompleteTreatment = false;
         MOUDDetails moudDetails;
         PregnancyDetails pregnancyDetails;
         StagingDetails stagingDetails;
         ScreeningDetails screeningDetails;
+        TreatmentDetails treatmentDetails;
 
     public:
         /// @brief Person age in months
@@ -269,14 +269,37 @@ namespace Person {
         /// @brief
         /// @return
         bool hadIncompleteTreatment() const {
-            return this->incompleteTreatment;
+            return this->treatmentDetails.incompleteTreatment;
+        }
+
+        /// @brief
+        /// @return
+        bool hasInitiatedTreatment() const {
+            return this->treatmentDetails.initiatedTreatment;
+        }
+
+        /// @brief
+        /// @return
+        int getTimeOfTreatmentInitiation() const {
+            return this->treatmentDetails.timeOfTreatmentInitiation;
         }
 
         /// @brief
         /// @param incompleteTreatment
-        /// @return
         void setIncompleteTreatment(bool incompleteTreatment) {
-            this->incompleteTreatment = incompleteTreatment;
+            this->treatmentDetails.incompleteTreatment = incompleteTreatment;
+        }
+
+        /// @brief
+        /// @param incompleteTreatment
+        void setInitiatedTreatment(bool initiatedTreatment) {
+            this->treatmentDetails.initiatedTreatment = initiatedTreatment;
+        }
+
+        /// @brief
+        /// @param tstep
+        void setTimeOfTreatmentInitiation(int tstep) {
+            this->treatmentDetails.timeOfTreatmentInitiation = tstep;
         }
 
         /// @brief Getter for pregnancy status

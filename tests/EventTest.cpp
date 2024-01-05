@@ -235,10 +235,10 @@ TEST_F(EventTest, Treatment) {
     Data::Configuration config(tempFilePath.string());
     Event::Treatment treatment(simulation->getGenerator(), table, config);
     std::vector<Event::Course> courses = treatment.getCourses();
-    Event::Regimen expectedBar = {7,    100.00,  0.9, 0.08, 0.95,
-                                  0.01, 1000.00, 0.7, 0.9};
-    Event::Regimen expectedBat = {7,    150.00,  0.95, 0.08, 0.95,
-                                  0.01, 1000.00, 0.7,  0.9};
+    Event::Regimen expectedBar = {7,    100.00, 0.9,     0.08,
+                                  0.95, 0.01,   1000.00, 0.7};
+    Event::Regimen expectedBat = {7,    150.00, 0.95,    0.08,
+                                  0.95, 0.01,   1000.00, 0.7};
     EXPECT_EQ(expectedBar.duration, courses[0].regimens[0].duration);
     EXPECT_EQ(expectedBar.cost, courses[0].regimens[0].cost);
     EXPECT_EQ(expectedBar.utility, courses[0].regimens[0].utility);
@@ -251,8 +251,6 @@ TEST_F(EventTest, Treatment) {
     EXPECT_EQ(expectedBar.toxicityCost, courses[0].regimens[0].toxicityCost);
     EXPECT_EQ(expectedBar.toxicityUtility,
               courses[0].regimens[0].toxicityUtility);
-    EXPECT_EQ(expectedBar.initiationProbability,
-              courses[0].regimens[0].initiationProbability);
 
     EXPECT_EQ(expectedBat.duration, courses[0].regimens[1].duration);
     EXPECT_EQ(expectedBat.cost, courses[0].regimens[1].cost);
@@ -266,8 +264,6 @@ TEST_F(EventTest, Treatment) {
     EXPECT_EQ(expectedBat.toxicityCost, courses[0].regimens[1].toxicityCost);
     EXPECT_EQ(expectedBat.toxicityUtility,
               courses[0].regimens[1].toxicityUtility);
-    EXPECT_EQ(expectedBat.initiationProbability,
-              courses[0].regimens[1].initiationProbability);
 }
 
 TEST_F(EventTest, VoluntaryRelinking) {}

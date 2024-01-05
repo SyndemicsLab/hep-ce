@@ -31,14 +31,32 @@ namespace Event {
             return;
         }
 
-        // 2. Draw the probability that person will initiate treatment.
-        // 3. Select the treatment course for a person based on their measured
-        // fibrosis stage.
+        // 2. Select the treatment course for a person based on their measured
+        // fibrosis stage, genotype.
+        const Course &course = this->getTreatmentCourse(person);
+        // 3. If the person has not yet initiated treatment, draw the
+        // probability that person will initiate treatment.
+        if (!person->hasInitiatedTreatment()) {
+            int initiation = this->getDecision({course.initiationProbability});
+            // if the randomly-drawn value from getDecision is 0, person does
+            // not initiate treatment
+            if (initiation == 0) {
+                return;
+            }
+            // person initiates treatment -- set treatment initiation values
+            person->setInitiatedTreatment(true);
+            person->setTimeOfTreatmentInitiation(this->getCurrentTimestep());
+        }
         // 4. Check the time since treatment initiation.
+        int timeSinceInitiation =
+            this->getCurrentTimestep() - person->getTimeOfTreatmentInitiation();
         // 5. If time since treatment initiation > 0, draw probability of
         // adverse outcome (TOX), then draw probability of withdrawing from
         // treatment prior to completion. TOX does not lead to withdrawal from
         // care but withdrawal probabilities are stratified by TOX.
+        if (timeSinceInitiation == 0) {
+            return;
+        }
         // 6. Compare the treatment duration to the time since treatment
         // initiation. If equal, draw for cure (SVR) vs no cure (EOT).
     }
@@ -74,17 +92,9 @@ namespace Event {
 
     Course Treatment::getTreatmentCourse(
         std::shared_ptr<Person::Person> const person) const {
-        Person::LiverState personLiverState = person->getLiverState();
+        const Person::LiverState &personLiverState = person->getLiverState();
         if (personLiverState > Person::LiverState::F3) {
-            if (person->hadIncompleteTreatment()) {
-
-            } else {
-            }
         } else {
-            if (person->hadIncompleteTreatment()) {
-
-            } else {
-            }
         }
         return {};
     }
@@ -120,13 +130,13 @@ namespace Event {
                     this->locateInput(regimenSections, "svr_probability"),
                     this->locateInput(regimenSections, "tox_probability"),
                     this->locateInput(regimenSections, "tox_cost"),
-                    this->locateInput(regimenSections, "tox_utility"),
-                    this->locateInput(regimenSections,
-                                      "initiation_probability")};
+                    this->locateInput(regimenSections, "tox_utility")};
                 regimens.push_back(currentRegimen);
             }
 
-            Course currentCourse = {regimens};
+            Course currentCourse = {
+                regimens,
+                this->locateInput(courseSections, "initiation_probability")};
             tempCourses.push_back(currentCourse);
         }
         this->courses = tempCourses;

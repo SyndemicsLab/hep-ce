@@ -171,6 +171,11 @@ namespace Person {
         bool interventionScreening = false;
     };
 
+    struct TreatmentDetails {
+        bool incompleteTreatment = false;
+        bool initiatedTreatment = false;
+        int timeOfTreatmentInitiation = 0;
+    };
 } // namespace Person
 
 #endif
