@@ -43,11 +43,11 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 /// @param personEvents
 /// @param tables
 /// @param sim
-void loadEvents(std::vector<Event::sharedEvent> &personEvents,
-                std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-                Simulation::Simulation &sim, Data::Configuration &config,
-                std::shared_ptr<spdlog::logger> logger =
-                    std::make_shared<spdlog::logger>("default"));
+int loadEvents(std::vector<Event::sharedEvent> &personEvents,
+               std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+               Simulation::Simulation &sim, Data::Configuration &config,
+               std::shared_ptr<spdlog::logger> logger =
+                   std::make_shared<spdlog::logger>("default"));
 
 /// @brief
 /// @param personEvents
@@ -57,17 +57,16 @@ void writeEvents(std::vector<Event::sharedEvent> &personEvents,
 
 /// @brief
 /// @param tables
-void loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-                std::string dirpath);
+int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+               std::string dirpath);
 
 /// @brief
 /// @param population
 /// @param tables
 /// @param sim
-void loadPopulation(
-    std::vector<sharedPerson> &population,
-    std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-    Simulation::Simulation &sim);
+int loadPopulation(std::vector<sharedPerson> &population,
+                   std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+                   Simulation::Simulation &sim);
 
 Data::IDataTablePtr personToDataTable(sharedPerson &person);
 

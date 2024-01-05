@@ -12,57 +12,56 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    std::vector<int> runs((taskEnd + 1) - taskStart);
-    std::iota(std::begin(runs), std::end(runs), taskStart);
+    for (int i = taskStart; i < (taskEnd + 1); ++i) {
+        std::unordered_map<std::string, Data::IDataTablePtr> tables;
 
-    std::for_each(
-        std::execution::par_unseq, std::begin(runs), std::end(runs),
-        [&](int i) {
-            std::unordered_map<std::string, Data::IDataTablePtr> tables;
+        std::filesystem::path inputSet = ((std::filesystem::path)rootInputDir) /
+                                         ("input" + std::to_string(i));
 
-            std::filesystem::path inputSet =
-                ((std::filesystem::path)rootInputDir) /
-                ("input" + std::to_string(i));
+        std::filesystem::path configPath = inputSet / "sim.conf";
 
-            std::filesystem::path configPath = inputSet / "sim.conf";
+        Data::Configuration config(configPath.string());
 
-            Data::Configuration config(configPath.string());
+        std::filesystem::path outputSet =
+            ((std::filesystem::path)rootInputDir) /
+            ("output" + std::to_string(i));
 
-            std::filesystem::path outputSet =
-                ((std::filesystem::path)rootInputDir) /
-                ("output" + std::to_string(i));
+        std::shared_ptr<spdlog::logger> logger;
+        try {
+            logger = spdlog::basic_logger_mt("basic_logger",
+                                             outputSet.string() + "/log.txt");
+            logger->flush_on(spdlog::level::err);
+        } catch (const spdlog::spdlog_ex &ex) {
+            std::cout << "Log init failed: " << ex.what() << std::endl;
+            exit(-1);
+        }
 
-            std::shared_ptr<spdlog::logger> logger;
-            try {
-                logger = spdlog::basic_logger_mt(
-                    "basic_logger", outputSet.string() + "/log.txt");
-            } catch (const spdlog::spdlog_ex &ex) {
-                std::cout << "Log init failed: " << ex.what() << std::endl;
-                exit(-1);
-            }
+        loadTables(tables, inputSet.string());
 
-            loadTables(tables, inputSet.string());
+        Simulation::Simulation sim(0, stoul(config.get("simulation.duration")),
+                                   logger);
 
-            Simulation::Simulation sim(
-                0, stoul(config.get("simulation.duration")), logger);
+        // create the person-level event vector
+        std::vector<Event::sharedEvent> personEvents;
+        // try {
+        int result = loadEvents(personEvents, tables, sim, config, logger);
+        if (result == -1) {
+            return -1;
+        }
+        sim.loadEvents(personEvents);
 
-            // create the person-level event vector
-            std::vector<Event::sharedEvent> personEvents;
-            loadEvents(personEvents, tables, sim, config, logger);
-            sim.loadEvents(personEvents);
+        std::vector<sharedPerson> population;
+        loadPopulation(population, tables, sim);
+        sim.loadPopulation(population);
 
-            std::vector<sharedPerson> population;
-            loadPopulation(population, tables, sim);
-            sim.loadPopulation(population);
+        sim.run();
 
-            sim.run();
+        population = sim.getPopulation();
+        personEvents = sim.getEvents();
 
-            population = sim.getPopulation();
-            personEvents = sim.getEvents();
-
-            writeEvents(personEvents, outputSet.string());
-            writePopulation(population, outputSet.string());
-        });
+        writeEvents(personEvents, outputSet.string());
+        writePopulation(population, outputSet.string());
+    }
 
     return 0;
 }

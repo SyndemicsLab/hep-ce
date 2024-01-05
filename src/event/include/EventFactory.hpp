@@ -91,7 +91,7 @@ namespace Event {
                 return makeEvent<VoluntaryRelinking>(
                     table, config, logger, generator, "VoluntaryRelinking");
             }
-            throw new std::logic_error("No Event named " + eventName);
+            return nullptr;
         }
     };
 } // namespace Event

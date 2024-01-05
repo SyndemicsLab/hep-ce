@@ -26,27 +26,34 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
     return true;
 }
 
-void loadEvents(std::vector<Event::sharedEvent> &personEvents,
-                std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-                Simulation::Simulation &sim, Data::Configuration &config,
-                std::shared_ptr<spdlog::logger> logger) {
+int loadEvents(std::vector<Event::sharedEvent> &personEvents,
+               std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+               Simulation::Simulation &sim, Data::Configuration &config,
+               std::shared_ptr<spdlog::logger> logger) {
     personEvents.clear();
 
     std::vector<std::string> eventList =
         config.getStringVector("simulation.events");
     Event::EventFactory factory;
     for (std::string eventObj : eventList) {
-        personEvents.push_back(factory.create(
-            eventObj, tables[eventObj], config, logger, sim.getGenerator()));
+        Event::sharedEvent ev;
+        ev = factory.create(eventObj, tables[eventObj], config, logger,
+                            sim.getGenerator());
+        if (ev == nullptr) {
+            logger->error("{} Event Failed to be Created!", eventObj);
+            return -1;
+        }
+        personEvents.push_back(ev);
         logger->info("{} Event Created", eventObj);
     }
+    return 0;
 }
 
 void writeEvents(std::vector<Event::sharedEvent> &personEvents,
                  std::string dirpath) {}
 
-void loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-                std::string dirpath) {
+int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+               std::string dirpath) {
 
     // Added blank table for events that do not need tabular data
     Data::IDataTablePtr blank;
@@ -141,12 +148,12 @@ void loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     f = ((std::filesystem::path)dirpath) / "population.csv";
     Data::IDataTablePtr population = std::make_shared<Data::DataTable>(f);
     tables["population"] = population;
+    return 0;
 }
 
-void loadPopulation(
-    std::vector<sharedPerson> &population,
-    std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-    Simulation::Simulation &sim) {
+int loadPopulation(std::vector<sharedPerson> &population,
+                   std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+                   Simulation::Simulation &sim) {
     if (tables.find("population") != tables.end()) {
         for (int rowIdx = 0;
              rowIdx < tables["population"]->getShape().getNRows(); ++rowIdx) {
@@ -155,6 +162,7 @@ void loadPopulation(
                                            (int)sim.getCurrentTimestep()));
         }
     }
+    return 0;
 }
 
 void writePopulation(std::vector<sharedPerson> &population,
