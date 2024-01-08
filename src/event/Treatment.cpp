@@ -46,19 +46,60 @@ namespace Event {
             // person initiates treatment -- set treatment initiation values
             person->setInitiatedTreatment(true);
             person->setTimeOfTreatmentInitiation(this->getCurrentTimestep());
+            // return, as a person's state doesn't change the timestep they
+            // start treatment
+            return;
         }
         // 4. Check the time since treatment initiation.
         int timeSinceInitiation =
             this->getCurrentTimestep() - person->getTimeOfTreatmentInitiation();
-        // 5. If time since treatment initiation > 0, draw probability of
+        // 5. Get the treatment regimen the person is currently experiencing.
+        const std::pair<Regimen, int> &regimenInfo =
+            this->getCurrentRegimen(course, timeSinceInitiation);
+        // 6. If time since treatment initiation > 0, draw probability of
         // adverse outcome (TOX), then draw probability of withdrawing from
         // treatment prior to completion. TOX does not lead to withdrawal from
         // care but withdrawal probabilities are stratified by TOX.
-        if (timeSinceInitiation == 0) {
+        int toxicity =
+            this->getDecision({regimenInfo.first.toxicityProbability});
+        double withdrawalProbability = regimenInfo.first.withdrawalProbability;
+        if (toxicity == 1) {
+            // log toxicity for person
+            // apply toxicity cost and utility
+            // adjust withdrawalProbability
+        }
+        int withdraw = this->getDecision({withdrawalProbability});
+        if (withdraw == 1) {
             return;
         }
-        // 6. Compare the treatment duration to the time since treatment
+        // 7. Compare the treatment duration to the time since treatment
         // initiation. If equal, draw for cure (SVR) vs no cure (EOT).
+        if (timeSinceInitiation == regimenInfo.second) {
+            int treatmentOutcome =
+                this->getDecision({regimenInfo.first.svrProbability});
+            if (treatmentOutcome == 0) {
+                // log EOT without cure
+                // reached EOT without cure
+                person->setIncompleteTreatment(true);
+                return;
+            }
+            // cure
+            // log person cured
+            person->setSeropositivity(false);
+        }
+    }
+
+    std::pair<Regimen, int> Treatment::getCurrentRegimen(const Course &course,
+                                                         int duration) {
+        int totalDuration = 0;
+        for (const Regimen &curr : course.regimens) {
+            totalDuration += curr.duration;
+            if (duration <= totalDuration) {
+                return {curr, totalDuration};
+            }
+        }
+        // error
+        return {Regimen(), 0};
     }
 
     bool

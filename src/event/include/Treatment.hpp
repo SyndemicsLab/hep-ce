@@ -59,6 +59,13 @@ namespace Event {
         /// values in the config tree.
         void populateCourses();
 
+        /// @brief
+        /// @param course
+        /// @param duration
+        /// @return
+        std::pair<Regimen, int> getCurrentRegimen(const Course &course,
+                                                  int duration);
+
         std::vector<Person::LiverState> eligibleLiverStates = {
             Person::LiverState::NONE};
         int eligibleTimeSinceLinked = -1;
