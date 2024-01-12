@@ -142,12 +142,15 @@ namespace Event {
         const Person::LiverState &personLiverState = person->getLiverState();
         if (personLiverState > Person::LiverState::F3) {
             // non-cirrhotic
+            return this->courses[0];
         } else {
             // cirrhotic
             if (personLiverState == Person::LiverState::F4) {
                 // compensated
+                return this->courses[1];
             } else {
                 // decompensated
+                return this->courses[2];
             }
         }
         return {};
@@ -159,6 +162,7 @@ namespace Event {
             this->config.getStringVector("treatment.courses");
         // error if courseList length != total number of treatment groups
         // total number of treatment groups = 4 (2024-01-03)
+        // if (courseList.size() != 4) { return; }
 
         // used for tracking section hierarchy
         std::vector<std::string> sections = {"treatment"};
