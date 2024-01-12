@@ -26,9 +26,12 @@ namespace Event {
     }
 
     void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
-        // 1. Determine person's treatment eligibility.
-        if (!this->isEligible(person)) {
-            return;
+        // 1. Determine person's treatment eligibility. Bypass this if person
+        // has already initiated treatment.
+        if (!person->hasInitiatedTreatment()) {
+            if (!this->isEligible(person)) {
+                return;
+            }
         }
 
         // 2. Select the treatment course for a person based on their measured
@@ -70,6 +73,7 @@ namespace Event {
         }
         int withdraw = this->getDecision({withdrawalProbability});
         if (withdraw == 1) {
+            person->setInitiatedTreatment(false);
             return;
         }
         // 7. Compare the treatment duration to the time since treatment
@@ -85,7 +89,9 @@ namespace Event {
             }
             // cure
             // log person cured
-            person->setSeropositivity(false);
+            // accumulate costs
+            // cured people remove half their hcv cost
+            person->clearHCV(false);
         }
     }
 
@@ -135,7 +141,14 @@ namespace Event {
         std::shared_ptr<Person::Person> const person) const {
         const Person::LiverState &personLiverState = person->getLiverState();
         if (personLiverState > Person::LiverState::F3) {
+            // non-cirrhotic
         } else {
+            // cirrhotic
+            if (personLiverState == Person::LiverState::F4) {
+                // compensated
+            } else {
+                // decompensated
+            }
         }
         return {};
     }

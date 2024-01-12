@@ -201,6 +201,7 @@ TEST_F(EventTest, Linking) {}
 TEST_F(EventTest, Screening) {}
 
 TEST_F(EventTest, Treatment) {
+    // create config
     outStream << "[treatment]" << std::endl
               << "courses = foo, alpha" << std::endl
               << "duration = 7" << std::endl
@@ -233,7 +234,11 @@ TEST_F(EventTest, Treatment) {
               << "utility = 0.95" << std::endl;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
     Data::Configuration config(tempFilePath.string());
+
     Event::Treatment treatment(simulation->getGenerator(), table, config);
+    // testing default value for event name
+    EXPECT_EQ("Treatment", treatment.EVENT_NAME);
+
     std::vector<Event::Course> courses = treatment.getCourses();
     Event::Regimen expectedBar = {7,    100.00, 0.9,     0.08,
                                   0.95, 0.01,   1000.00, 0.7};
