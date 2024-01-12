@@ -17,31 +17,95 @@
 #include "Treatment.hpp"
 
 namespace Event {
+    Treatment::Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
+                         Data::Configuration &config,
+                         std::shared_ptr<spdlog::logger> logger,
+                         std::string name)
+        : ProbEvent::ProbEvent(generator, table, config, logger, name) {
+        this->populateCourses();
+    }
+
     void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
-        // 1. Determine person's treatment eligibility.
-        if (!this->isEligible(person)) {
-            return;
+        // 1. Determine person's treatment eligibility. Bypass this if person
+        // has already initiated treatment.
+        if (!person->hasInitiatedTreatment()) {
+            if (!this->isEligible(person)) {
+                return;
+            }
         }
 
-        // accounting for when the person was a false positive -- do these make
-        // it this far?
-
-        // Person::LiverState personLiverState = person->getLiverState();
-        // if (person->getHEPCState() == Person::HEPCState::NONE &&
-        //     personLiverState == Person::LiverState::NONE) {
-        //     return;
-        // }
-
-        // 2. Draw the probability that person will initiate treatment.
-        // 3. Select the treatment course for a person based on their measured
-        // fibrosis stage.
+        // 2. Select the treatment course for a person based on their measured
+        // fibrosis stage, genotype.
+        const Course &course = this->getTreatmentCourse(person);
+        // 3. If the person has not yet initiated treatment, draw the
+        // probability that person will initiate treatment.
+        if (!person->hasInitiatedTreatment()) {
+            int initiation = this->getDecision({course.initiationProbability});
+            // if the randomly-drawn value from getDecision is 0, person does
+            // not initiate treatment
+            if (initiation == 0) {
+                return;
+            }
+            // person initiates treatment -- set treatment initiation values
+            person->setInitiatedTreatment(true);
+            person->setTimeOfTreatmentInitiation(this->getCurrentTimestep());
+            // return, as a person's state doesn't change the timestep they
+            // start treatment
+            return;
+        }
         // 4. Check the time since treatment initiation.
-        // 5. If time since treatment initiation > 0, draw probability of
+        int timeSinceInitiation =
+            this->getCurrentTimestep() - person->getTimeOfTreatmentInitiation();
+        // 5. Get the treatment regimen the person is currently experiencing.
+        const std::pair<Regimen, int> &regimenInfo =
+            this->getCurrentRegimen(course, timeSinceInitiation);
+        // 6. If time since treatment initiation > 0, draw probability of
         // adverse outcome (TOX), then draw probability of withdrawing from
         // treatment prior to completion. TOX does not lead to withdrawal from
         // care but withdrawal probabilities are stratified by TOX.
-        // 6. Compare the treatment duration to the time since treatment
+        int toxicity =
+            this->getDecision({regimenInfo.first.toxicityProbability});
+        double withdrawalProbability = regimenInfo.first.withdrawalProbability;
+        if (toxicity == 1) {
+            // log toxicity for person
+            // apply toxicity cost and utility
+            // adjust withdrawalProbability
+        }
+        int withdraw = this->getDecision({withdrawalProbability});
+        if (withdraw == 1) {
+            person->setInitiatedTreatment(false);
+            return;
+        }
+        // 7. Compare the treatment duration to the time since treatment
         // initiation. If equal, draw for cure (SVR) vs no cure (EOT).
+        if (timeSinceInitiation == regimenInfo.second) {
+            int treatmentOutcome =
+                this->getDecision({regimenInfo.first.svrProbability});
+            if (treatmentOutcome == 0) {
+                // log EOT without cure
+                // reached EOT without cure
+                person->setIncompleteTreatment(true);
+                return;
+            }
+            // cure
+            // log person cured
+            // accumulate costs
+            // cured people remove half their hcv cost
+            person->clearHCV(false);
+        }
+    }
+
+    std::pair<Regimen, int> Treatment::getCurrentRegimen(const Course &course,
+                                                         int duration) {
+        int totalDuration = 0;
+        for (const Regimen &curr : course.regimens) {
+            totalDuration += curr.duration;
+            if (duration <= totalDuration) {
+                return {curr, totalDuration};
+            }
+        }
+        // error
+        return {Regimen(), 0};
     }
 
     bool
@@ -75,33 +139,78 @@ namespace Event {
 
     Course Treatment::getTreatmentCourse(
         std::shared_ptr<Person::Person> const person) const {
-        Person::LiverState personLiverState = person->getLiverState();
+        const Person::LiverState &personLiverState = person->getLiverState();
         if (personLiverState > Person::LiverState::F3) {
-            if (person->hadIncompleteTreatment()) {
-
-            } else {
-            }
+            // non-cirrhotic
+            return this->courses[0];
         } else {
-            if (person->hadIncompleteTreatment()) {
-
+            // cirrhotic
+            if (personLiverState == Person::LiverState::F4) {
+                // compensated
+                return this->courses[1];
             } else {
+                // decompensated
+                return this->courses[2];
             }
         }
         return {};
     }
 
     void Treatment::populateCourses() {
+        std::vector<Course> tempCourses = {};
         std::vector<std::string> courseList =
             this->config.getStringVector("treatment.courses");
+        // error if courseList length != total number of treatment groups
+        // total number of treatment groups = 4 (2024-01-03)
+        // if (courseList.size() != 4) { return; }
+
+        // used for tracking section hierarchy
+        std::vector<std::string> sections = {"treatment"};
+
         for (std::string &course : courseList) {
-            std::string subsectionCourses =
-                "treatment_" + course + ".components";
-            std::vector<std::string> componentList =
-                this->config.getStringVector(subsectionCourses);
-            for (std::string &component : componentList) {
-                std::string subsectionComponent = "treatment_" + component;
-                this->config.get<double>(subsectionComponent + ".cost");
+            // local variable for sections relevant to courses
+            std::vector<std::string> courseSections =
+                setupTreatmentSections({"course_" + course}, sections);
+            // setting up regimens for the current course
+            std::vector<Regimen> regimens = {};
+            std::vector<std::string> regimenList =
+                this->config.getStringVector(courseSections[0] + ".regimens");
+            for (std::string &regimen : regimenList) {
+                std::vector<std::string> regimenSections =
+                    setupTreatmentSections({"regimen_" + regimen},
+                                           courseSections);
+                Regimen currentRegimen = {
+                    (int)this->locateInput(regimenSections, "duration"),
+                    this->locateInput(regimenSections, "cost"),
+                    this->locateInput(regimenSections, "utility"),
+                    this->locateInput(regimenSections,
+                                      "withdrawal_probability"),
+                    this->locateInput(regimenSections, "svr_probability"),
+                    this->locateInput(regimenSections, "tox_probability"),
+                    this->locateInput(regimenSections, "tox_cost"),
+                    this->locateInput(regimenSections, "tox_utility")};
+                regimens.push_back(currentRegimen);
+            }
+
+            Course currentCourse = {
+                regimens,
+                this->locateInput(courseSections, "initiation_probability")};
+            tempCourses.push_back(currentCourse);
+        }
+        this->courses = tempCourses;
+    }
+
+    double Treatment::locateInput(std::vector<std::string> &configSections,
+                                  const std::string &parameter) {
+        for (auto section : configSections) {
+            std::shared_ptr<double> param =
+                this->config.optional<double>(section + '.' + parameter);
+            if (param) {
+                return *param;
             }
         }
+        // error, value not specified
+        // throw std::runtime_error
+        return -1;
     }
 } // namespace Event

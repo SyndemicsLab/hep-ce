@@ -152,7 +152,7 @@ namespace Person {
 
         this->overdose = Utils::stobool((*dataTableRow)["isOverdosed"][0]);
 
-        this->incompleteTreatment =
+        this->treatmentDetails.incompleteTreatment =
             Utils::stobool((*dataTableRow)["hasIncompleteTreatment"][0]);
 
         this->moudDetails.moudState =

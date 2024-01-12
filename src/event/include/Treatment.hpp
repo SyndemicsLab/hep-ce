@@ -21,22 +21,27 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
-
-    struct Component {
-        std::string name = "";
-        double cost = 0.0;
-    };
+    static std::vector<std::string>
+    setupTreatmentSections(std::vector<std::string> vector1,
+                           const std::vector<std::string> &vector2) {
+        vector1.insert(vector1.end(), vector2.begin(), vector2.end());
+        return vector1;
+    }
 
     struct Regimen {
-        std::vector<Component> components = {};
         int duration = 0;
+        double cost = 0.0;
+        double utility = 0.0;
+        double withdrawalProbability = 0.0;
+        double svrProbability = 0.0;
+        double toxicityProbability = 0.0;
+        double toxicityCost = 0.0;
+        double toxicityUtility = 0.0;
     };
 
     struct Course {
         std::vector<Regimen> regimens = {};
-        int duration = 0;
-        double withdrawalProbability = 0.0;
-        double svrProbability = 0.0;
+        double initiationProbability = 0.0;
     };
 
     /// @brief Subclass of Event used to Provide Treatment to People
@@ -49,18 +54,44 @@ namespace Event {
         bool isEligibleFibrosisStage(Person::LiverState liverState) const;
         Course
         getTreatmentCourse(std::shared_ptr<Person::Person> const person) const;
+
+        /// @brief Populate this Treatment event's treatment courses based on
+        /// values in the config tree.
         void populateCourses();
+
+        /// @brief
+        /// @param course
+        /// @param duration
+        /// @return
+        std::pair<Regimen, int> getCurrentRegimen(const Course &course,
+                                                  int duration);
 
         std::vector<Person::LiverState> eligibleLiverStates = {
             Person::LiverState::NONE};
         int eligibleTimeSinceLinked = -1;
         int eligibleTimeBehaviorChange = -1;
+        /// @brief Locate the most specific definition of a parameter in the
+        /// treatment config hierarchy.
+        /// @param configSections vector of strings representing config sections
+        /// in reverse order of specificity
+        /// @param parameter the config parameter name to find among sections
+        /// @return The most-specifically-defined value of \code{parameter}
+        double locateInput(std::vector<std::string> &configSections,
+                           const std::string &parameter);
+
+        std::vector<Course> courses;
 
     public:
-        using ProbEvent::ProbEvent;
+        Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
+                  Data::Configuration &config,
+                  std::shared_ptr<spdlog::logger> logger =
+                      std::make_shared<spdlog::logger>("default"),
+                  std::string name = std::string("Treatment"));
+
+        /// @brief Getter for treatment courses
+        /// @return vector of treatment Course objects
+        std::vector<Course> getCourses() { return this->courses; }
         virtual ~Treatment() = default;
     };
-
 } // namespace Event
-
 #endif
