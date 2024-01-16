@@ -13,6 +13,8 @@ add_subdirectory(person)
 add_subdirectory(simulation)
 add_subdirectory(utils)
 
+target_include_directories(${PROJECT_NAME} PUBLIC  ${DataManagement_INCLUDE_DIR})
+
 target_link_libraries(${PROJECT_NAME} PUBLIC event)
 target_link_libraries(${PROJECT_NAME} PUBLIC person)
 target_link_libraries(${PROJECT_NAME} PUBLIC simulation)
