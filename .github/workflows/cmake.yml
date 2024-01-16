@@ -30,9 +30,12 @@ jobs:
         unzip *linux-x64.zip -d DataManagement
         ls
 
+    - name: List DataManagement
+      run: ls DataManagement/
+
     - name: Move the Files
       run: |
-        sudo mv DataManagement/usr/local/lib/* /usr/local/lib/ 
+        sudo mv DataManagement/usr/local/lib /usr/local/lib/ 
         sudo mv DataManagement/usr/local/include/ /usr/local/include 
         sudo mv DataManagment/usr/local/lib/libDataManagement.so /usr/local/lib/
 
