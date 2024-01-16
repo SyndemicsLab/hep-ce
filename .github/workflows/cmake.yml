@@ -32,6 +32,9 @@ jobs:
       run: |
         unzip *linux-x64.zip
         ls
+        
+    - name: Move the Files
+      run: |
         sudo mv *linux-x64/usr/local/lib/* /usr/local/lib/
 
     - name: Get GCC-12
