@@ -24,9 +24,6 @@ jobs:
       run: gh release download --repo SyndemicsLab/DataManagement -p "*linux-x64.zip"
       env:
         GITHUB_TOKEN: ${{secrets.OAUTH_TOKEN}}
-
-    - name: Test Asset Download
-      run: ls
     
     - name: Unzip Asset and Move to Correct Location
       run: |
@@ -35,7 +32,12 @@ jobs:
 
     - name: Move the Files
       run: |
-        sudo mv DataManagement/usr/local/lib/* /usr/local/lib/
+        sudo mv DataManagement/usr/local/lib/* /usr/local/lib/ 
+        sudo mv DataManagement/usr/local/include/ /usr/local/include 
+        sudo mv DataManagment/usr/local/lib/libDataManagement.so /usr/local/lib/
+
+    - name: Check the Files Moved
+      run: ls /usr/local/lib
 
     - name: Get GCC-12
       run:  sudo apt update && sudo apt install gcc-12 g++-12
