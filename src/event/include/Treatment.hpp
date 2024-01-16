@@ -86,11 +86,13 @@ namespace Event {
                   Data::Configuration &config,
                   std::shared_ptr<spdlog::logger> logger =
                       std::make_shared<spdlog::logger>("default"),
-                  std::string name = std::string("Treatment"));
+                  std::string name = std::string("Treatment"))
+            : ProbEvent(generator, table, config, logger, name);
 
         /// @brief Getter for treatment courses
         /// @return vector of treatment Course objects
         std::vector<Course> getCourses() { return this->courses; }
+
         virtual ~Treatment() = default;
     };
 } // namespace Event

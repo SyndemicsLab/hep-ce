@@ -1,4 +1,7 @@
+#include "EventFactory.hpp"
 #include "run.hpp"
+#include <iostream>
+#include <string>
 
 /// @brief
 /// @param argc
@@ -38,28 +41,34 @@ int main(int argc, char *argv[]) {
 
         loadTables(tables, inputSet.string());
 
-        Simulation::Simulation sim(0, stoul(config.get("simulation.duration")),
-                                   logger);
+        Simulation::Simulation sim(
+            0, stoul(config.get<std::string>("simulation.duration")), logger);
 
         // create the person-level event vector
         std::vector<Event::sharedEvent> personEvents;
-        // try {
+
+        logger->info("Attempting to Load Events");
         int result = loadEvents(personEvents, tables, sim, config, logger);
         if (result == -1) {
             return -1;
         }
         sim.loadEvents(personEvents);
+        logger->info("Events loaded to Simulation");
 
+        logger->info("Attempting to load Population");
         std::vector<sharedPerson> population;
         loadPopulation(population, tables, sim);
         sim.loadPopulation(population);
+        logger->info("Population Loaded to Simulation");
 
         sim.run();
 
         population = sim.getPopulation();
         personEvents = sim.getEvents();
 
+        logger->info("Writing Events");
         writeEvents(personEvents, outputSet.string());
+        logger->info("Writing Population");
         writePopulation(population, outputSet.string());
     }
 

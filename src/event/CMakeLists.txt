@@ -1,8 +1,16 @@
 cmake_minimum_required(VERSION 3.19)
 
-set (CMAKE_CXX_STANDARD 20)
+project(event)
 
 find_package(spdlog REQUIRED)
+
+find_package(DataManagement REQUIRED)
+
+IF(${DataManagement_FOUND})
+    MESSAGE(STATUS "Event Found DataManagement")
+ELSE (${DataManagement_FOUND})
+    MESSAGE(STATUS "Event Did Not Find DataManagement")
+ENDIF (${DataManagement_FOUND})
 
 add_library(event
     Aging.cpp
@@ -21,11 +29,10 @@ add_library(event
 
 set(EVENT_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
 
-target_include_directories(event PUBLIC ${EVENT_INCLUDES})
+target_include_directories(event PUBLIC ${EVENT_INCLUDES} ${DataManagement_INCLUDE_DIR})
 
-target_link_libraries(event
-    person
-    data
-    utils
-    spdlog::spdlog
-)
+target_link_libraries(${PROJECT_NAME} PUBLIC person)
+target_link_libraries(${PROJECT_NAME} PUBLIC utils)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
+target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement)

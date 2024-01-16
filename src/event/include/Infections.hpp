@@ -39,7 +39,12 @@ namespace Event {
         getInfectProb(std::shared_ptr<Person::Person> person);
 
     public:
-        using ProbEvent::ProbEvent;
+        Infections(std::mt19937_64 &generator, Data::IDataTablePtr table,
+                   Data::Configuration &config,
+                   std::shared_ptr<spdlog::logger> logger =
+                       std::make_shared<spdlog::logger>("default"),
+                   std::string name = std::string("ProbEvent"))
+            : ProbEvent(generator, table, config, logger, name) {}
         virtual ~Infections() = default;
     };
 } // namespace Event
