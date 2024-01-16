@@ -5,6 +5,8 @@ find_package(GTest REQUIRED CONFIG)
 
 find_package(spdlog REQUIRED)
 
+find_package(Boost REQUIRED COMPONENTS filesystem)
+
 find_package(DataManagement REQUIRED)
 
 add_executable(${PROJECT_NAME}
@@ -15,6 +17,7 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME} INTERFACE
   ${CMAKE_CURRENT_SOURCE_DIR}
+  ${Boost_INCLUDE_DIRS}
   "mocks/"
 )
 
@@ -22,6 +25,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gtest)
 target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gtest_main)
 target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gmock)
 target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gmock_main)
+target_link_libraries(${PROJECT_NAME} PUBLIC Boost::filesystem)
 target_link_libraries(${PROJECT_NAME} PUBLIC person)
 target_link_libraries(${PROJECT_NAME} PUBLIC simulation)
 target_link_libraries(${PROJECT_NAME} PUBLIC event)

@@ -6,12 +6,6 @@ find_package(spdlog REQUIRED)
 
 find_package(DataManagement REQUIRED)
 
-IF(${DataManagement_FOUND})
-    MESSAGE(STATUS "Event Found DataManagement")
-ELSE (${DataManagement_FOUND})
-    MESSAGE(STATUS "Event Did Not Find DataManagement")
-ENDIF (${DataManagement_FOUND})
-
 add_library(event
     Aging.cpp
     BehaviorChanges.cpp
