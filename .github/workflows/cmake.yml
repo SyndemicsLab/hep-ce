@@ -31,7 +31,7 @@ jobs:
     - name: Unzip Asset and Move to Correct Location
       run: |
         unzip *linux-x64.zip
-        sudo mv -r *linux-x64/usr/local/lib /usr/local/lib
+        sudo mv *linux-x64/usr/local/lib/* /usr/local/lib/
 
     - name: Get GCC-12
       run:  sudo apt update && sudo apt install gcc-12 g++-12
