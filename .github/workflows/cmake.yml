@@ -37,7 +37,7 @@ jobs:
       run: |
         sudo mv DataManagement/usr/local/lib /usr/local/lib/ 
         sudo mv DataManagement/usr/local/include/ /usr/local/include 
-        sudo mv DataManagment/usr/local/lib/libDataManagement.so /usr/local/lib/
+        sudo mv DataManagement/usr/local/lib/libDataManagement.so /usr/local/lib/
 
     - name: Check the Files Moved
       run: ls /usr/local/lib
