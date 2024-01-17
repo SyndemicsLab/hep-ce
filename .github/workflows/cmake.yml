@@ -35,8 +35,8 @@ jobs:
 
     - name: Move the Files
       run: |
-        sudo cp -a DataManagement/usr/local/lib/ /usr/local/lib/ 
-        sudo cp -a DataManagement/usr/local/include/ /usr/local/include/ 
+        sudo cp -r DataManagement/usr/local/lib/. /usr/local/lib/ 
+        sudo cp -r DataManagement/usr/local/include/. /usr/local/include/ 
 
     - name: Check the Files Moved
       run: ls /usr/local/lib
