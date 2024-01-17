@@ -21,14 +21,16 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Fetch DataManagement Release Asset
-      run: gh release download --repo SyndemicsLab/DataManagement --archive=zip
+      run: |
+        gh release download --repo SyndemicsLab/DataManagement --archive=zip
+        ls
       env:
         GITHUB_TOKEN: ${{secrets.OAUTH_TOKEN}}
     
     - name: Unzip Asset and Move to Correct Location
       run: |
         unzip *.zip -d DataManagement
-        cd DataManagement
+        cd DataManagement/DataManagement-1.0.0/
 
     - name: Move the Files
       run: |
