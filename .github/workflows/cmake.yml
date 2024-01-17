@@ -30,13 +30,9 @@ jobs:
       run: |
         unzip *.zip -d DataManagement
     
-    - name: Change Directory
+    - name: Change Directory and Install
       run: |
         cd DataManagement/DataManagement-1.0.0/
-        ls
-
-    - name: Move the Files
-      run: |
         chmod +x ./install.sh
         sudo ./install.sh
       shell: bash
