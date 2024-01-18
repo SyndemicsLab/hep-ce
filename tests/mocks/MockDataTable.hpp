@@ -3,7 +3,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include <DataManagement/DataTable.hpp>
+#include <DataTable.hpp>
 
 class MockDataTable : public Data::IDataTable {
 public:

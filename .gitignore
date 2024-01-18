@@ -16,3 +16,4 @@ docs/
 .vscode/
 build/*
 !build/.gitkeep
+lib/*

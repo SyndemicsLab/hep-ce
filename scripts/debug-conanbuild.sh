@@ -34,7 +34,7 @@ conan install . --build=missing --settings=build_type=Debug
 	echo "\`conan\` generator failed. Terminating."
 	exit 1
     fi
-    cmake .. -DCMAKE_TOOLCHAIN_FILE=Debug/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON
+    cmake .. -DCMAKE_PREFIX_PATH=/home/matt/Repos/DataManagement/_install/lib/cmake/DataManagement -DCMAKE_TOOLCHAIN_FILE=Debug/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DBUILD_SHARED_LIBS=YES
     # use another subshell to build the model, using as many processors as
     # possible
     (

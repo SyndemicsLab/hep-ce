@@ -7,18 +7,14 @@ find_package(spdlog REQUIRED)
 
 find_package(Boost REQUIRED COMPONENTS filesystem)
 
-find_package(DataManagement REQUIRED)
+find_package(DataManagement 1 REQUIRED
+HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
+)
 
 add_executable(${PROJECT_NAME}
   PersonTest.cpp
   SimTest.cpp
   EventTest.cpp
-)
-
-target_include_directories(${PROJECT_NAME} INTERFACE
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${Boost_INCLUDE_DIRS}
-  "mocks/"
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gtest)
@@ -30,6 +26,12 @@ target_link_libraries(${PROJECT_NAME} PUBLIC person)
 target_link_libraries(${PROJECT_NAME} PUBLIC simulation)
 target_link_libraries(${PROJECT_NAME} PUBLIC event)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement)
+target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${Boost_INCLUDE_DIRS}
+  "mocks/"
+)
 
 # gtest_discover_tests(test)

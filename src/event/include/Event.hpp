@@ -21,7 +21,7 @@
 
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagement.hpp>
+#include <DataManagement.hpp>
 #include <algorithm>
 #include <execution>
 #include <mutex>

@@ -4,7 +4,9 @@ project(event)
 
 find_package(spdlog REQUIRED)
 
-find_package(DataManagement REQUIRED)
+find_package(DataManagement 1 REQUIRED
+HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
+)
 
 add_library(event
     Aging.cpp
@@ -21,12 +23,11 @@ add_library(event
     VoluntaryRelinking.cpp
 )
 
-set(EVENT_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
-
-target_include_directories(event PUBLIC ${EVENT_INCLUDES} ${DataManagement_INCLUDE_DIR})
-
 target_link_libraries(${PROJECT_NAME} PUBLIC person)
 target_link_libraries(${PROJECT_NAME} PUBLIC utils)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement)
+target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
+
+set(EVENT_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
+target_include_directories(event PUBLIC ${EVENT_INCLUDES})
