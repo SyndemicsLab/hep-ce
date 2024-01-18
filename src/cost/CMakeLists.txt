@@ -12,7 +12,7 @@ add_library(cost
 
 set(COST_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
 
-# target_include_directories(cost PUBLIC ${EVENT_INCLUDES} ${DataManagement_INCLUDE_DIR})
+target_include_directories(cost PUBLIC ${COST_INCLUDES} ${DataManagement_INCLUDE_DIR})
 
 # target_link_libraries(${PROJECT_NAME} PUBLIC person)
 target_link_libraries(${PROJECT_NAME} PUBLIC utils)

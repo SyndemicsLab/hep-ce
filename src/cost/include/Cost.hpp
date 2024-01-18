@@ -9,6 +9,11 @@ namespace Cost {
 
     class CostTracker {
     public:
+        /// @brief Default constructor for CostTracker
+        CostTracker() : CostTracker(1) {}
+        /// @brief
+        /// @param duration
+        CostTracker(int duration);
         /// @brief Get a vector of total costs per timestep
         /// @return Vector of total costs per timestep
         std::vector<double> getTotals();
