@@ -27,10 +27,10 @@ jobs:
     
     - name: Unzip Asset and Move to Correct Location
       run: |
-        unzip dminstall.zip
+        unzip dminstall.zip 
     
     - name: Copy dminstall lib
-      run: cp -r dminstall/ ${{github.workspace}}/lib/
+      run: cp -r dminstall/_install/ ${{github.workspace}}/lib/
 
     - name: Get GCC-12
       run:  sudo apt update && sudo apt install gcc-12 g++-12
