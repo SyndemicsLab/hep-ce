@@ -15,6 +15,7 @@ add_subdirectory(event)
 add_subdirectory(person)
 add_subdirectory(simulation)
 add_subdirectory(utils)
+add_subdirectory(cost)
 
 include(CMakePrintHelpers)
 cmake_print_variables(DataManagement_INCLUDE_DIR)
