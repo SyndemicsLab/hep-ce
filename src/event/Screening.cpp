@@ -15,6 +15,7 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Screening.hpp"
+#include <string>
 
 namespace Event {
     void Screening::doEvent(std::shared_ptr<Person::Person> person) {
@@ -93,16 +94,15 @@ namespace Event {
             Person::HEPCState infectionStatus = person->getHEPCState();
             if (infectionStatus == Person::HEPCState::ACUTE ||
                 infectionStatus == Person::HEPCState::NONE) {
-                probability =
-                    1 -
-                    stod(this->config.get(configKey + ".acute_sensitivity"));
+                probability = 1 - stod(this->config.get<std::string>(
+                                      configKey + ".acute_sensitivity"));
             } else {
-                probability =
-                    1 -
-                    stod(this->config.get(configKey + ".chronic_sensitivity"));
+                probability = 1 - stod(this->config.get<std::string>(
+                                      configKey + ".chronic_sensitivity"));
             }
         } else {
-            probability = stod(this->config.get(configKey + ".specificity"));
+            probability =
+                stod(this->config.get<std::string>(configKey + ".specificity"));
         }
         // probability is the chance of false positive or false negative
         int value = getDecision({probability});
@@ -114,13 +114,14 @@ namespace Event {
         double probability = 0.5;
         Person::HEPCState infectionStatus = person->getHEPCState();
         if (infectionStatus == Person::HEPCState::ACUTE) {
-            probability =
-                1 - stod(this->config.get(configKey + ".acute_sensitivity"));
+            probability = 1 - stod(this->config.get<std::string>(
+                                  configKey + ".acute_sensitivity"));
         } else if (infectionStatus == Person::HEPCState::CHRONIC) {
-            probability =
-                1 - stod(this->config.get(configKey + ".chronic_sensitivity"));
+            probability = 1 - stod(this->config.get<std::string>(
+                                  configKey + ".chronic_sensitivity"));
         } else {
-            probability = stod(this->config.get(configKey + ".specificity"));
+            probability =
+                stod(this->config.get<std::string>(configKey + ".specificity"));
         }
         // probability is the chance of false positive or false negative
         int value = getDecision({probability});

@@ -80,7 +80,7 @@ namespace Event {
             // either means the name provided is incorrect or there is no second
             // test
             std::shared_ptr<std::string> testTwo =
-                this->config.optional("fibrosis_staging.test_two");
+                this->config.optional<std::string>("fibrosis_staging.test_two");
             if (testTwo) {
                 // log an error
             }
@@ -92,7 +92,7 @@ namespace Event {
                                     std::string configLookupKey) {
 
         std::shared_ptr<std::string> stageTest =
-            this->config.optional(configLookupKey);
+            this->config.optional<std::string>(configLookupKey);
         if (stageTest) {
             std::vector<std::string> testColumn = table->getColumn(*stageTest);
             std::vector<double> probs;

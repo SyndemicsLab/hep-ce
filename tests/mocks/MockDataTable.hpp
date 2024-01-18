@@ -1,9 +1,9 @@
 #ifndef TESTS_MOCKDATATABLE_HPP_
 #define TESTS_MOCKDATATABLE_HPP_
 
-#include "DataTable.hpp"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include <DataTable.hpp>
 
 class MockDataTable : public Data::IDataTable {
 public:

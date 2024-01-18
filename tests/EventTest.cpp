@@ -20,6 +20,7 @@
 #include "Utils.hpp"
 #include "mocks/MockDataTable.hpp"
 #include <boost/filesystem.hpp>
+#include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <memory>

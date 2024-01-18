@@ -19,11 +19,9 @@
 #ifndef EVENT_EVENT_HPP_
 #define EVENT_EVENT_HPP_
 
-#include "Configuration.hpp"
-#include "DataTable.hpp"
 #include "Person.hpp"
-#include "SQLite3.hpp"
 #include "spdlog/spdlog.h"
+#include <DataManagement.hpp>
 #include <algorithm>
 #include <execution>
 #include <mutex>
@@ -76,7 +74,7 @@ namespace Event {
                               if (p->getIsAlive()) {
                                   this->doEvent(p);
                               }
-                                                    });
+                          });
         }
     };
 

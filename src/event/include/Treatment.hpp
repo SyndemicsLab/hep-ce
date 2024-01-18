@@ -91,6 +91,7 @@ namespace Event {
         /// @brief Getter for treatment courses
         /// @return vector of treatment Course objects
         std::vector<Course> getCourses() { return this->courses; }
+
         virtual ~Treatment() = default;
     };
 } // namespace Event

@@ -53,7 +53,12 @@ namespace Event {
                                            std::string configLookupKey);
 
     public:
-        using ProbEvent::ProbEvent;
+        FibrosisStaging(std::mt19937_64 &generator, Data::IDataTablePtr table,
+                        Data::Configuration &config,
+                        std::shared_ptr<spdlog::logger> logger =
+                            std::make_shared<spdlog::logger>("default"),
+                        std::string name = std::string("ProbEvent"))
+            : ProbEvent(generator, table, config, logger, name) {}
         virtual ~FibrosisStaging() = default;
     };
 } // namespace Event

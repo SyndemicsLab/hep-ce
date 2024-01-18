@@ -1,4 +1,5 @@
 #include "run.hpp"
+#include <iostream>
 
 bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
                int &taskEnd) {
@@ -26,56 +27,42 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
     return true;
 }
 
-void loadEvents(std::vector<sharedEvent> &personEvents,
-                std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-                Simulation::Simulation &sim, Data::Configuration &config,
-                std::shared_ptr<spdlog::logger> logger) {
-    sharedEvent aging =
-        makeEvent<Event::Aging>(tables["blank"], config, logger, "Aging");
-    sharedEvent behavior = makeEvent<Event::BehaviorChanges>(
-        sim.getGenerator(), tables["behaviorTransitions"], config, logger,
-        "BehaviorChanges");
-    sharedEvent clearance = makeEvent<Event::Clearance>(
-        sim.getGenerator(), tables["blank"], config, logger, "Clearance");
-    sharedEvent disease = makeEvent<Event::DiseaseProgression>(
-        sim.getGenerator(), tables["diseaseProgression"], config, logger,
-        "DiseaseProgression");
-    sharedEvent infection = makeEvent<Event::Infections>(
-        sim.getGenerator(), tables["incidence"], config, logger, "Infections");
-    sharedEvent screen = makeEvent<Event::Screening>(
-        sim.getGenerator(), tables["screenTestLink"], config, logger,
-        "Screening");
-    sharedEvent linking =
-        makeEvent<Event::Linking>(sim.getGenerator(), tables["screenTestLink"],
-                                  config, logger, "Linking");
-    sharedEvent voluntaryRelink = makeEvent<Event::VoluntaryRelinking>(
-        sim.getGenerator(), tables["blank"], config, logger,
-        "VoluntaryRelinking");
-    sharedEvent fibrosisStaging = makeEvent<Event::FibrosisStaging>(
-        sim.getGenerator(), tables["fibrosis"], config, logger,
-        "FibrosisStaging");
-    sharedEvent treatment = makeEvent<Event::Treatment>(
-        sim.getGenerator(), tables["blank"], config, logger, "Treatment");
-    sharedEvent overdose = makeEvent<Event::Overdose>(
-        sim.getGenerator(), tables["overdose"], config, logger, "Overdose");
-    sharedEvent death = makeEvent<Event::Death>(
-        sim.getGenerator(), tables["death"], config, logger, "Death");
-
+int loadEvents(std::vector<Event::sharedEvent> &personEvents,
+               std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+               Simulation::Simulation &sim, Data::Configuration &config,
+               std::shared_ptr<spdlog::logger> logger) {
     personEvents.clear();
-    personEvents.insert(personEvents.end(),
-                        {aging, behavior, clearance, disease, infection, screen,
-                         linking, voluntaryRelink, fibrosisStaging, treatment,
-                         overdose, death});
+
+    std::vector<std::string> eventList =
+        config.getStringVector("simulation.events");
+    Event::EventFactory factory;
+    for (std::string eventObj : eventList) {
+        Event::sharedEvent ev;
+        ev = factory.create(eventObj, tables[eventObj], config, logger,
+                            sim.getGenerator());
+        if (ev == nullptr) {
+            logger->error("{} Event Failed to be Created!", eventObj);
+            return -1;
+        }
+        personEvents.push_back(ev);
+        logger->info("{} Event Created", eventObj);
+    }
+    return 0;
 }
 
-void writeEvents(std::vector<sharedEvent> &personEvents, std::string dirpath) {}
+void writeEvents(std::vector<Event::sharedEvent> &personEvents,
+                 std::string dirpath) {}
 
-void loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-                std::string dirpath) {
+int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+               std::string dirpath) {
 
     // Added blank table for events that do not need tabular data
     Data::IDataTablePtr blank;
     tables["blank"] = blank;
+    tables["Aging"] = blank;
+    tables["Clearance"] = blank;
+    tables["VoluntaryRelinking"] = blank;
+    tables["Treatment"] = blank;
 
     // Costs and Utilities
 
@@ -111,28 +98,30 @@ void loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     f = ((std::filesystem::path)dirpath) / "behavior_transitions.csv";
     Data::IDataTablePtr behaviorTransitions =
         std::make_shared<Data::DataTable>(f);
-    tables["behaviorTransitions"] = behaviorTransitions;
+    tables["BehaviorChanges"] = behaviorTransitions;
 
     f = ((std::filesystem::path)dirpath) / "disease_progression.csv";
     Data::IDataTablePtr diseaseProgression =
         std::make_shared<Data::DataTable>(f);
-    tables["diseaseProgression"] = diseaseProgression;
+    tables["DiseaseProgression"] = diseaseProgression;
 
     f = ((std::filesystem::path)dirpath) / "fibrosis.csv";
     Data::IDataTablePtr fibrosis = std::make_shared<Data::DataTable>(f);
-    tables["fibrosis"] = fibrosis;
+    tables["FibrosisStaging"] = fibrosis;
 
     f = ((std::filesystem::path)dirpath) / "incidence.csv";
     Data::IDataTablePtr incidence = std::make_shared<Data::DataTable>(f);
-    tables["incidence"] = incidence;
+    tables["Infections"] = incidence;
 
     f = ((std::filesystem::path)dirpath) / "screening_and_linkage.csv";
     Data::IDataTablePtr screen = std::make_shared<Data::DataTable>(f);
-    tables["screenTestLink"] = screen;
+    tables["Screening"] = screen;
+
+    tables["Linking"] = screen;
 
     f = ((std::filesystem::path)dirpath) / "all_types_overdose.csv";
     Data::IDataTablePtr overdoses = std::make_shared<Data::DataTable>(f);
-    tables["overdoses"] = overdoses;
+    tables["Overdose"] = overdoses;
 
     f = ((std::filesystem::path)dirpath) / "background_mortality.csv";
     Data::IDataTablePtr backgroundMortality =
@@ -153,19 +142,19 @@ void loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     death = death->innerJoin(fatalOverdoses, "gender", "gender");
     death = death->innerJoin(fibrosisDeaths, "gender", "gender");
 
-    tables["death"] = death;
+    tables["Death"] = death;
 
     // People
 
     f = ((std::filesystem::path)dirpath) / "population.csv";
     Data::IDataTablePtr population = std::make_shared<Data::DataTable>(f);
     tables["population"] = population;
+    return 0;
 }
 
-void loadPopulation(
-    std::vector<sharedPerson> &population,
-    std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-    Simulation::Simulation &sim) {
+int loadPopulation(std::vector<sharedPerson> &population,
+                   std::unordered_map<std::string, Data::IDataTablePtr> &tables,
+                   Simulation::Simulation &sim) {
     if (tables.find("population") != tables.end()) {
         for (int rowIdx = 0;
              rowIdx < tables["population"]->getShape().getNRows(); ++rowIdx) {
@@ -174,6 +163,7 @@ void loadPopulation(
                                            (int)sim.getCurrentTimestep()));
         }
     }
+    return 0;
 }
 
 void writePopulation(std::vector<sharedPerson> &population,

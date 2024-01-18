@@ -19,12 +19,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    
-    - uses: webfactory/ssh-agent@v0.8.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - run: git submodule update --init --recursive --remote
+    - name: Fetch DataManagement Release Asset
+      run: gh release download --repo SyndemicsLab/DataManagement -p "dminstall.zip"
+      env:
+        GITHUB_TOKEN: ${{secrets.OAUTH_TOKEN}}
+    
+    - name: Unzip Asset and Move to Correct Location
+      run: |
+        unzip dminstall.zip 
+    
+    - name: Copy dminstall lib
+      run: cp -r dminstall/ ${{github.workspace}}/lib/
+
+    - name: List out dminstall
+      working-directory: ${{github.workspace}}/lib
+      run: ls
 
     - name: Get GCC-12
       run:  sudo apt update && sudo apt install gcc-12 g++-12

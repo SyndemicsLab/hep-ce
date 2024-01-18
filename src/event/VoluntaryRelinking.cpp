@@ -16,11 +16,12 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "VoluntaryRelinking.hpp"
+#include <string>
 
 namespace Event {
     void VoluntaryRelinking::doEvent(std::shared_ptr<Person::Person> person) {
-        double relinkProbability =
-            stod(config.get("linking.voluntary_relinkage_probability"));
+        double relinkProbability = stod(
+            config.get<std::string>("linking.voluntary_relinkage_probability"));
 
         int relink = this->getDecision({relinkProbability});
 

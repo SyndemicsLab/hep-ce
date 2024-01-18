@@ -63,7 +63,12 @@ namespace Event {
             std::shared_ptr<Person::Person> person);
 
     public:
-        using ProbEvent::ProbEvent;
+        Screening(std::mt19937_64 &generator, Data::IDataTablePtr table,
+                  Data::Configuration &config,
+                  std::shared_ptr<spdlog::logger> logger =
+                      std::make_shared<spdlog::logger>("default"),
+                  std::string name = std::string("Screening"))
+            : ProbEvent(generator, table, config, logger, name) {}
         virtual ~Screening() = default;
     };
 
