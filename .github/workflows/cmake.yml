@@ -33,7 +33,7 @@ jobs:
       run: cp -r dminstall/ ${{github.workspace}}/lib/
 
     - name: List out dminstall
-      working-directory: ${{github.workspace}}/lib/dminstall
+      working-directory: ${{github.workspace}}/lib
       run: ls
 
     - name: Get GCC-12

@@ -16,4 +16,4 @@ docs/
 .vscode/
 build/*
 !build/.gitkeep
-lib/*
+lib/dminstall/
