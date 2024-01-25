@@ -34,13 +34,20 @@ namespace Event {
         std::vector<double>
         getTransitions(std::shared_ptr<Person::Person> person);
 
+        /// @brief Add cost based on person's behavior state upon "experiencing"
+        /// this event
+        /// @param person Person accruing cost
+        void insertBehaviorCost(std::shared_ptr<Person::Person> person);
+
     public:
         BehaviorChanges(std::mt19937_64 &generator, Data::IDataTablePtr table,
                         Data::Configuration &config,
                         std::shared_ptr<spdlog::logger> logger =
                             std::make_shared<spdlog::logger>("default"),
-                        std::string name = std::string("ProbEvent"))
-            : ProbEvent(generator, table, config, logger, name) {}
+                        std::string name = std::string("BehaviorChanges"))
+            : ProbEvent(generator, table, config, logger, name) {
+            this->costCategory = Cost::CostCategory::BEHAVIOR;
+        }
         virtual ~BehaviorChanges() = default;
     };
 } // namespace Event

@@ -1,5 +1,6 @@
 #include "Cost.hpp"
 #include <gtest/gtest.h>
+#include <iostream>
 #include <numeric>
 
 TEST(CostTest, AddCost) {
@@ -25,12 +26,22 @@ TEST(CostTest, AddCost) {
 TEST(CostTest, GetCostsAndTotals) {
     int ELEMENT_COUNT = 10;
     Cost::CostTracker ct(ELEMENT_COUNT);
-    std::vector<std::vector<Cost::Cost>> expectedCosts = {};
+    // populate costtracker
     for (int i = 0; i < ELEMENT_COUNT; ++i) {
         Cost::Cost toAdd = {Cost::CostCategory::BEHAVIOR, "test", (double)i};
         ct.addCost(toAdd, i);
-        expectedCosts.push_back({toAdd});
     }
+
+    // populate expected cost object
+    std::vector<std::vector<Cost::Cost>> expectedCosts = {};
+    Cost::CostCategory expectedCategory = Cost::CostCategory::BEHAVIOR;
+    std::string expectedName = "test";
+    for (int i = 0; i < ELEMENT_COUNT; ++i) {
+        expectedCosts.push_back(
+            {(Cost::Cost){expectedCategory, expectedName, (double)i}});
+    }
+
+    // compare generated to expected
     const std::vector<std::vector<Cost::Cost>> &addedCosts = ct.getCosts();
     for (int i = 0; i < ELEMENT_COUNT; ++i) {
         EXPECT_EQ(expectedCosts[i][0].category, addedCosts[i][0].category);
@@ -41,4 +52,44 @@ TEST(CostTest, GetCostsAndTotals) {
     std::vector<double> expectedTotals(ELEMENT_COUNT);
     std::iota(expectedTotals.begin(), expectedTotals.end(), 0);
     EXPECT_EQ(expectedTotals, ct.getTotals());
+
+    std::vector<double> expectedDiscountedTotals(ELEMENT_COUNT);
+    double denominator = 1;
+    double discountRate = 0.03;
+    for (int i = 0; i < ELEMENT_COUNT; ++i) {
+        expectedDiscountedTotals[i] =
+            expectedTotals[i] / std::pow(1 + discountRate / 12, i + 1);
+    }
+    EXPECT_EQ(expectedDiscountedTotals, ct.getDiscountedTotals(discountRate));
+}
+
+TEST(CostTest, AddCostTimestepOutOfBounds) {
+    Cost::CostTracker ct;
+    Cost::Cost toAdd;
+    // second argument is out-of-bounds
+    ct.addCost(toAdd, 1);
+    EXPECT_EQ(0, ct.getCosts()[0].size());
+}
+
+TEST(CostTest, GetCostsByCategory) {
+    int ELEMENT_COUNT = 10;
+    Cost::CostTracker ct(ELEMENT_COUNT);
+    std::string name = "test";
+
+    // populate all categories
+    for (int i = 0; i < (int)Cost::CostCategory::COUNT; ++i) {
+        // iterate over time horizon
+        for (int timestep = 0; timestep < ELEMENT_COUNT; ++timestep) {
+            Cost::Cost cost = {(Cost::CostCategory)i, name, (double)timestep};
+            ct.addCost(cost, timestep);
+        }
+    }
+
+    for (auto pair : ct.getCostsByCategory()) {
+        for (int i = 0; i < pair.second.size(); ++i) {
+            for (int j = 0; j < pair.second[i].size(); ++j) {
+                EXPECT_EQ(i, pair.second[i][j].cost);
+            }
+        }
+    }
 }

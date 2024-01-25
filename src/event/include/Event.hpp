@@ -19,6 +19,7 @@
 #ifndef EVENT_EVENT_HPP_
 #define EVENT_EVENT_HPP_
 
+#include "Cost.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement.hpp>
@@ -41,6 +42,7 @@ namespace Event {
         Data::Configuration &config;
         Data::IDataTablePtr table;
         std::shared_ptr<spdlog::logger> logger;
+        Cost::CostCategory costCategory = Cost::CostCategory::MISC;
 
     public:
         Event(Data::IDataTablePtr table, Data::Configuration &config,

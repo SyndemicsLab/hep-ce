@@ -21,6 +21,9 @@ namespace Event {
         // Determine person's current behavior classification
         Person::BehaviorClassification bc = person->getBehaviorClassification();
 
+        // Insert person's behavior cost
+        // this->insertBehaviorCost(person);
+
         // MOUD
         // positioned before transitioning to use so that people do not start
         // treatment the same time they become an opioid abuser.
@@ -78,5 +81,24 @@ namespace Event {
             result.push_back(std::stod(res[0]));
         }
         return result;
+    }
+
+    void BehaviorChanges::insertBehaviorCost(
+        std::shared_ptr<Person::Person> person) {
+
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        selectCriteria["drug_behavior"] =
+            Person::Person::behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+
+        // should reduce to a single value
+        auto resultTable = table->selectWhere(selectCriteria);
+
+        // Cost::Cost behaviorCost = {this->costCategory, "Drug Behavior",
+        //                            *resultTable[0]};
+        // person->addCost()
     }
 } // namespace Event

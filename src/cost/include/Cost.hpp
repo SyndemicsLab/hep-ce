@@ -19,7 +19,9 @@
 #ifndef COST_COST_HPP_
 #define COST_COST_HPP_
 
+#include <cmath>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace Cost {
@@ -29,7 +31,9 @@ namespace Cost {
         SCREENING = 2,
         LINKING = 3,
         STAGING = 4,
-        HCV = 5
+        HCV = 5,
+        TREATMENT = 6,
+        COUNT = 7
     };
 
     struct Cost {
@@ -48,11 +52,20 @@ namespace Cost {
         /// @brief Get a vector of total costs per timestep
         /// @return Vector of total costs per timestep
         std::vector<double> getTotals() const;
+        /// @brief Get a vector of discounted total costs per timestep
+        /// @param discountRate The discount rate
+        /// @return Vector of total discounted costs per timestep
+        std::vector<double> getDiscountedTotals(double discountRate) const;
         /// @brief Get the vector of costs as-is
-        /// @return Vector of vectors of \code{Cost} objects, each element of
-        /// the top-level vector representing the timestep during which the cost
-        /// was accrued
+        /// @return Vector of vectors of \code{Cost} objects, each element
+        /// of the top-level vector representing the timestep during which
+        /// the cost was accrued
         std::vector<std::vector<Cost>> getCosts() const { return this->costs; }
+        /// @brief
+        /// @param
+        /// @return
+        std::unordered_map<CostCategory, std::vector<std::vector<Cost>>>
+        getCostsByCategory() const;
         /// @brief Add a cost to the tracker
         /// @param cost The \code{Cost} item to be added
         /// @param timestep The timestep during which this cost is added
