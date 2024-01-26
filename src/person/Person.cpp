@@ -240,4 +240,35 @@ namespace Person {
         this->infectionStatus.hepcState = HEPCState::ACUTE;
         return this->infectionStatus.hepcState;
     }
+
+    void Person::setUtility(UtilityCategory category, double value) {
+        if ((value > 1) || (value < 0)) {
+            // log error
+            return;
+        }
+        switch (category) {
+        case UtilityCategory::BACKGROUND:
+            this->utility.background = value;
+            break;
+        case UtilityCategory::BEHAVIOR:
+            this->utility.behavior = value;
+            break;
+        case UtilityCategory::TREATMENT:
+            this->utility.treatment = value;
+            break;
+        case UtilityCategory::HCV:
+            this->utility.hcv = value;
+            break;
+        }
+    }
+
+    std::pair<double, double> Person::getUtilities() const {
+        using std::min;
+        const auto &util = this->utility;
+        std::pair<double, double> utilities = {
+            min(min(util.background, util.behavior),
+                min(util.treatment, util.hcv)),
+            util.background * util.behavior * util.treatment * util.hcv};
+        return utilities;
+    }
 } // namespace Person

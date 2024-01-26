@@ -150,3 +150,22 @@ TEST(PersonLiver, InvalidTransition) {
     person.updateLiver(Person::LiverState::F3, 0);
     EXPECT_EQ(person.getLiverState(), Person::LiverState::F4);
 }
+
+TEST(PersonUtility, SetUtility) {
+    Person::Person person;
+    person.setUtility(Person::UtilityCategory::BACKGROUND, 0.75);
+    person.setUtility(Person::UtilityCategory::BEHAVIOR, 0.5);
+    Person::Utility utility = person.getUtility();
+    EXPECT_EQ(0.75, utility.background);
+    EXPECT_EQ(0.5, utility.behavior);
+}
+
+TEST(PersonUtility, GetUtilities) {
+    Person::Person person;
+    person.setUtility(Person::UtilityCategory::BACKGROUND, 0.75);
+    person.setUtility(Person::UtilityCategory::BEHAVIOR, 0.5);
+    person.setUtility(Person::UtilityCategory::TREATMENT, 0.9);
+    person.setUtility(Person::UtilityCategory::HCV, 0.2);
+    std::pair<double, double> expectedUtilities = {0.2, 0.0675};
+    EXPECT_EQ(expectedUtilities, person.getUtilities());
+}

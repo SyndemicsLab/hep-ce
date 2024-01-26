@@ -18,17 +18,15 @@
 #ifndef PERSON_PERSON_HPP_
 #define PERSON_PERSON_HPP_
 
+#include "Containers.hpp"
+#include "Utils.hpp"
+#include "spdlog/spdlog.h"
+#include <DataManagement.hpp>
+#include <algorithm>
 #include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "Containers.hpp"
-// #include "DataTable.hpp"
-#include "Utils.hpp"
-#include <DataManagement.hpp>
-
-#include "spdlog/spdlog.h"
 
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
@@ -52,6 +50,7 @@ namespace Person {
         StagingDetails stagingDetails;
         ScreeningDetails screeningDetails;
         TreatmentDetails treatmentDetails;
+        Utility utility;
 
     public:
         /// @brief Person age in months
@@ -325,6 +324,8 @@ namespace Person {
             return this->pregnancyDetails.miscarriageCount;
         }
 
+        /// @brief Set Person's measured liver state
+        /// @param state
         void setMeasuredLiverState(MeasuredLiverState state) {
             this->stagingDetails.measuredLiverState = state;
         }
@@ -338,19 +339,36 @@ namespace Person {
         /// @brief Getter for timestep in which the last liver staging test
         /// happened
         /// @return Timestep of person's last liver staging
-        int getTimeOfLastStaging() {
+        int getTimeOfLastStaging() const {
             return this->stagingDetails.timeOfLastStaging;
         }
 
         /// @brief Getter for MOUD State
         /// @return MOUD State
-        MOUD getMoudState() { return this->moudDetails.moudState; }
+        MOUD getMoudState() const { return this->moudDetails.moudState; }
 
         /// @brief Getter for timestep in which MOUD was started
         /// @return Time spent on MOUD
-        int getTimeStartedMoud() { return this->moudDetails.timeStartedMoud; }
+        int getTimeStartedMoud() const {
+            return this->moudDetails.timeStartedMoud;
+        }
 
-        Sex getSex() { return this->sex; }
+        /// @brief Getter for the person's sex
+        /// @return Person's sex
+        Sex getSex() const { return this->sex; }
+
+        /// @brief Set a value for a person's utility
+        /// @param category The category of the utility to be updated
+        /// @param value The value of the utility to be updated, bounded by 0, 1
+        void setUtility(UtilityCategory category, double value);
+
+        /// @brief Getter for the person's stratified utilities
+        /// @return Person's stratified utilities
+        Utility getUtility() const { return this->utility; }
+
+        /// @brief Getter for the person's minimal and multiplicative utilities
+        /// @return Minimal utility and multiplicative utility
+        std::pair<double, double> getUtilities() const;
     };
 } // namespace Person
 #endif

@@ -25,6 +25,7 @@
 #include <vector>
 
 namespace Cost {
+    /// @brief Categories for classifying cost items
     enum class CostCategory {
         MISC = 0,
         BEHAVIOR = 1,
@@ -36,6 +37,7 @@ namespace Cost {
         COUNT = 7
     };
 
+    /// @brief Object to hold individual charges/costs
     struct Cost {
         CostCategory category = CostCategory::MISC;
         std::string name = "";

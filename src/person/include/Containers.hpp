@@ -164,6 +164,7 @@ namespace Person {
         int timeOfLastStaging = 0;
     };
 
+    /// @brief Attributes describing screening status
     struct ScreeningDetails {
         // -1 if never screened, otherwise [0, currentTimestep-1)
         int timeOfLastScreening = 0;
@@ -171,10 +172,27 @@ namespace Person {
         bool interventionScreening = false;
     };
 
+    /// @brief Attributes describing treatment state
     struct TreatmentDetails {
         bool incompleteTreatment = false;
         bool initiatedTreatment = false;
         int timeOfTreatmentInitiation = 0;
+    };
+
+    /// @brief Categories for utility values
+    enum class UtilityCategory {
+        BACKGROUND = 0,
+        BEHAVIOR = 1,
+        TREATMENT = 2,
+        HCV = 3
+    };
+
+    /// @brief Attributes describing a person's quality of life
+    struct Utility {
+        double background = 1;
+        double behavior = 1;
+        double treatment = 1;
+        double hcv = 1;
     };
 } // namespace Person
 
