@@ -25,7 +25,7 @@ TEST(CostTest, AddCost) {
 
 TEST(CostTest, GetCostsAndTotals) {
     int ELEMENT_COUNT = 10;
-    Cost::CostTracker ct(ELEMENT_COUNT);
+    Cost::CostTracker ct;
     // populate costtracker
     for (int i = 0; i < ELEMENT_COUNT; ++i) {
         Cost::Cost toAdd = {Cost::CostCategory::BEHAVIOR, "test", (double)i};
@@ -33,28 +33,29 @@ TEST(CostTest, GetCostsAndTotals) {
     }
 
     // populate expected cost object
-    std::vector<std::vector<Cost::Cost>> expectedCosts = {};
+    std::unordered_map<int, std::vector<Cost::Cost>> expectedCosts = {};
     Cost::CostCategory expectedCategory = Cost::CostCategory::BEHAVIOR;
     std::string expectedName = "test";
     for (int i = 0; i < ELEMENT_COUNT; ++i) {
-        expectedCosts.push_back(
+        expectedCosts[i].push_back(
             {(Cost::Cost){expectedCategory, expectedName, (double)i}});
     }
 
     // compare generated to expected
-    const std::vector<std::vector<Cost::Cost>> &addedCosts = ct.getCosts();
+    std::unordered_map<int, std::vector<Cost::Cost>> addedCosts = ct.getCosts();
     for (int i = 0; i < ELEMENT_COUNT; ++i) {
         EXPECT_EQ(expectedCosts[i][0].category, addedCosts[i][0].category);
         EXPECT_EQ(expectedCosts[i][0].name, addedCosts[i][0].name);
         EXPECT_EQ(expectedCosts[i][0].cost, addedCosts[i][0].cost);
     }
 
-    std::vector<double> expectedTotals(ELEMENT_COUNT);
-    std::iota(expectedTotals.begin(), expectedTotals.end(), 0);
+    std::unordered_map<int, double> expectedTotals;
+    for (int i = 0; i < ELEMENT_COUNT; ++i) {
+        expectedTotals[i] = (double)i;
+    }
     EXPECT_EQ(expectedTotals, ct.getTotals());
 
-    std::vector<double> expectedDiscountedTotals(ELEMENT_COUNT);
-    double denominator = 1;
+    std::unordered_map<int, double> expectedDiscountedTotals;
     double discountRate = 0.03;
     for (int i = 0; i < ELEMENT_COUNT; ++i) {
         expectedDiscountedTotals[i] =
@@ -63,17 +64,9 @@ TEST(CostTest, GetCostsAndTotals) {
     EXPECT_EQ(expectedDiscountedTotals, ct.getDiscountedTotals(discountRate));
 }
 
-TEST(CostTest, AddCostTimestepOutOfBounds) {
-    Cost::CostTracker ct;
-    Cost::Cost toAdd;
-    // second argument is out-of-bounds
-    ct.addCost(toAdd, 1);
-    EXPECT_EQ(0, ct.getCosts()[0].size());
-}
-
 TEST(CostTest, GetCostsByCategory) {
     int ELEMENT_COUNT = 10;
-    Cost::CostTracker ct(ELEMENT_COUNT);
+    Cost::CostTracker ct;
     std::string name = "test";
 
     // populate all categories

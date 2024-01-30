@@ -2,6 +2,7 @@
 
 namespace Person {
     int count = 0;
+
     std::map<std::string, HEPCState> Person::hepcStateMap = {
         {"none", HEPCState::NONE},
         {"acute", HEPCState::ACUTE},
@@ -54,7 +55,7 @@ namespace Person {
         {HEPCState::NONE, "none"},
         {HEPCState::ACUTE, "acute"},
         {HEPCState::CHRONIC, "chronic"}};
-    ;
+
     std::map<BehaviorClassification, std::string>
         Person::behaviorClassificationEnumToStringMap = {
             {BehaviorClassification::NEVER, "never"},
@@ -63,9 +64,11 @@ namespace Person {
             {BehaviorClassification::FORMER_INJECTION, "former_injection"},
             {BehaviorClassification::NONINJECTION, "noninjection"},
             {BehaviorClassification::INJECTION, "injection"}};
+
     std::map<LinkageType, std::string> Person::linkageTypeEnumToStringMap = {
         {LinkageType::BACKGROUND, "background"},
         {LinkageType::INTERVENTION, "intervention"}};
+
     std::map<LinkageState, std::string> Person::linkageStateEnumToStringMap = {
         {LinkageState::NEVER, "never"},
         {LinkageState::LINKED, "linked"},
@@ -77,6 +80,7 @@ namespace Person {
         {LiverState::F3, "f3"},         {LiverState::F4, "f4"},
         {LiverState::DECOMP, "decomp"}, {LiverState::EHCC, "ehcc"},
         {LiverState::LHCC, "lhcc"}};
+
     std::map<MeasuredLiverState, std::string>
         Person::measuredLiverStateEnumToStringMap = {
             {MeasuredLiverState::NONE, "none"},
@@ -84,8 +88,10 @@ namespace Person {
             {MeasuredLiverState::F23, "f23"},
             {MeasuredLiverState::F4, "f4"},
             {MeasuredLiverState::DECOMP, "decomp"}};
+
     std::map<MOUD, std::string> Person::moudEnumToStringMap = {
         {MOUD::NONE, "none"}, {MOUD::CURRENT, "current"}, {MOUD::POST, "post"}};
+
     std::map<Sex, std::string> Person::sexEnumToStringMap = {
         {Sex::MALE, "male"}, {Sex::FEMALE, "female"}};
 
@@ -95,8 +101,9 @@ namespace Person {
             {PregnancyState::PREGNANT, "pregnant"},
             {PregnancyState::POSTPARTUM, "postpartum"}};
 
-    Person::Person(Data::IDataTablePtr dataTableRow, int simCycle) {
+    Person::Person(Data::IDataTablePtr dataTableRow) {
         count++;
+
         if (dataTableRow->empty() || dataTableRow->ncols() < 29) {
             return;
         }
@@ -270,5 +277,9 @@ namespace Person {
                 min(util.treatment, util.hcv)),
             util.background * util.behavior * util.treatment * util.hcv};
         return utilities;
+    }
+
+    void Person::addCost(Cost::Cost cost, int timestep) {
+        this->costs.addCost(cost, timestep);
     }
 } // namespace Person

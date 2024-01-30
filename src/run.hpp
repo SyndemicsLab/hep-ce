@@ -25,9 +25,8 @@ template <typename T> sharedPerson makePerson() {
 /// @brief
 /// @tparam T
 /// @return
-template <typename T>
-sharedPerson makePerson(Data::IDataTablePtr rowData, int simCycle) {
-    return std::make_shared<T>(rowData, simCycle);
+template <typename T> sharedPerson makePerson(Data::IDataTablePtr rowData) {
+    return std::make_shared<T>(rowData);
 }
 
 /// @brief

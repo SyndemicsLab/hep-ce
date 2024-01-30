@@ -158,9 +158,8 @@ int loadPopulation(std::vector<sharedPerson> &population,
     if (tables.find("population") != tables.end()) {
         for (int rowIdx = 0;
              rowIdx < tables["population"]->getShape().getNRows(); ++rowIdx) {
-            population.push_back(
-                makePerson<Person::Person>(tables["population"]->getRow(rowIdx),
-                                           (int)sim.getCurrentTimestep()));
+            population.push_back(makePerson<Person::Person>(
+                tables["population"]->getRow(rowIdx)));
         }
     }
     return 0;

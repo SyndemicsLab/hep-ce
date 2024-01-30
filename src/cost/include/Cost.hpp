@@ -46,35 +46,38 @@ namespace Cost {
 
     class CostTracker {
     public:
-        /// @brief Default constructor for CostTracker
-        CostTracker() : CostTracker(1) {}
-        /// @brief Constructor for CostTracker
-        /// @param duration
-        CostTracker(int duration);
         /// @brief Get a vector of total costs per timestep
         /// @return Vector of total costs per timestep
-        std::vector<double> getTotals() const;
+        std::unordered_map<int, double> getTotals() const;
+
         /// @brief Get a vector of discounted total costs per timestep
         /// @param discountRate The discount rate
         /// @return Vector of total discounted costs per timestep
-        std::vector<double> getDiscountedTotals(double discountRate) const;
+        std::unordered_map<int, double>
+        getDiscountedTotals(double discountRate) const;
+
         /// @brief Get the vector of costs as-is
         /// @return Vector of vectors of \code{Cost} objects, each element
         /// of the top-level vector representing the timestep during which
         /// the cost was accrued
-        std::vector<std::vector<Cost>> getCosts() const { return this->costs; }
+        std::unordered_map<int, std::vector<Cost>> getCosts() const {
+            return this->costs;
+        }
+
         /// @brief
         /// @param
         /// @return
-        std::unordered_map<CostCategory, std::vector<std::vector<Cost>>>
+        std::unordered_map<CostCategory,
+                           std::unordered_map<int, std::vector<Cost>>>
         getCostsByCategory() const;
+
         /// @brief Add a cost to the tracker
         /// @param cost The \code{Cost} item to be added
         /// @param timestep The timestep during which this cost is added
         void addCost(Cost cost, int timestep);
 
     private:
-        std::vector<std::vector<Cost>> costs;
+        std::unordered_map<int, std::vector<Cost>> costs;
     };
 } // namespace Cost
 #endif

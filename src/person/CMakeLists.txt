@@ -11,6 +11,7 @@ HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 add_library(person Person.cpp)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC utils)
+target_link_libraries(${PROJECT_NAME} PUBLIC cost)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)

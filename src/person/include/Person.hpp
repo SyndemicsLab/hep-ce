@@ -19,6 +19,7 @@
 #define PERSON_PERSON_HPP_
 
 #include "Containers.hpp"
+#include "Cost.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement.hpp>
@@ -51,6 +52,7 @@ namespace Person {
         ScreeningDetails screeningDetails;
         TreatmentDetails treatmentDetails;
         Utility utility;
+        Cost::CostTracker costs;
 
     public:
         /// @brief Person age in months
@@ -87,7 +89,10 @@ namespace Person {
         /// @brief Default constructor for Person
         Person() { count++; }
 
-        Person(Data::IDataTablePtr dataTableRow, int simCycle);
+        /// @brief Constructor for creating a person with pre-defined
+        /// characteristics
+        /// @param dataTableRow A single row from a DataTable object
+        Person(Data::IDataTablePtr dataTableRow);
 
         /// @brief Default destructor for Person
         virtual ~Person() { count--; }
@@ -272,32 +277,36 @@ namespace Person {
             return this->treatmentDetails.incompleteTreatment;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for whether Person has initiated treatment
+        /// @return Boolean true if Person has initiated treatment, false
+        /// otherwise
         bool hasInitiatedTreatment() const {
             return this->treatmentDetails.initiatedTreatment;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for the number of timesteps Person has been in
+        /// treatment
+        /// @return Integer number of timesteps spent in treatment
         int getTimeOfTreatmentInitiation() const {
             return this->treatmentDetails.timeOfTreatmentInitiation;
         }
 
-        /// @brief
-        /// @param incompleteTreatment
+        /// @brief Setter for Person's incomplete treatment state
+        /// @param incompleteTreatment Boolean value for incomplete treatment
+        /// state to be set
         void setIncompleteTreatment(bool incompleteTreatment) {
             this->treatmentDetails.incompleteTreatment = incompleteTreatment;
         }
 
-        /// @brief
-        /// @param incompleteTreatment
+        /// @brief Setter for Person's treatment initiation state
+        /// @param incompleteTreatment Boolean value for initiated treatment
+        /// state to be set
         void setInitiatedTreatment(bool initiatedTreatment) {
             this->treatmentDetails.initiatedTreatment = initiatedTreatment;
         }
 
-        /// @brief
-        /// @param tstep
+        /// @brief Setter for treatment initiation timestep
+        /// @param tstep The timestep during which treatment is initiated
         void setTimeOfTreatmentInitiation(int tstep) {
             this->treatmentDetails.timeOfTreatmentInitiation = tstep;
         }
@@ -369,6 +378,15 @@ namespace Person {
         /// @brief Getter for the person's minimal and multiplicative utilities
         /// @return Minimal utility and multiplicative utility
         std::pair<double, double> getUtilities() const;
+
+        /// @brief Add a cost to the person's CostTracker object
+        /// @param cost The cost to be added
+        /// @param timestep The timestep during which the cost was accrued
+        void addCost(Cost::Cost cost, int timestep);
+
+        /// @brief Getter for the Person's costs
+        /// @return Cost::CostTracker containing this person's costs
+        Cost::CostTracker getCosts() const { return this->costs; }
     };
 } // namespace Person
 #endif
