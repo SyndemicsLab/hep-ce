@@ -61,10 +61,10 @@ TEST(CostTest, GetCostsAndTotals) {
         expectedDiscountedTotals[i] =
             expectedTotals[i] / std::pow(1 + discountRate / 12, i + 1);
     }
-    EXPECT_EQ(expectedDiscountedTotals, ct.getDiscountedTotals(discountRate));
+    EXPECT_EQ(expectedDiscountedTotals, ct.getTotals(discountRate));
 }
 
-TEST(CostTest, GetCostsByCategory) {
+TEST(CostTest, GetTotalsByCategory) {
     int ELEMENT_COUNT = 10;
     Cost::CostTracker ct;
     std::string name = "test";
@@ -78,11 +78,29 @@ TEST(CostTest, GetCostsByCategory) {
         }
     }
 
-    for (auto pair : ct.getCostsByCategory()) {
-        for (int i = 0; i < pair.second.size(); ++i) {
-            for (int j = 0; j < pair.second[i].size(); ++j) {
-                EXPECT_EQ(i, pair.second[i][j].cost);
-            }
+    std::vector<double> expectedTotals(ELEMENT_COUNT);
+    std::iota(expectedTotals.begin(), expectedTotals.end(), 0);
+    std::unordered_map<Cost::CostCategory, std::vector<double>>
+        totalsByCategory = ct.getTotalsByCategory();
+    for (int i = 0; i < (int)Cost::CostCategory::COUNT; ++i) {
+        for (int timestep = 0; timestep < ELEMENT_COUNT; ++timestep) {
+            EXPECT_EQ(expectedTotals[timestep],
+                      totalsByCategory[(Cost::CostCategory)i][timestep]);
+        }
+    }
+
+    std::vector<double> expectedDiscountedTotals(ELEMENT_COUNT);
+    double discountRate = 0.03;
+    totalsByCategory = ct.getTotalsByCategory(discountRate);
+
+    for (int i = 0; i < ELEMENT_COUNT; ++i) {
+        expectedDiscountedTotals[i] =
+            expectedTotals[i] / std::pow(1 + discountRate / 12, i + 1);
+    }
+    for (int i = 0; i < (int)Cost::CostCategory::COUNT; ++i) {
+        for (int timestep = 0; timestep < ELEMENT_COUNT; ++timestep) {
+            EXPECT_EQ(expectedDiscountedTotals[timestep],
+                      totalsByCategory[(Cost::CostCategory)i][timestep]);
         }
     }
 }

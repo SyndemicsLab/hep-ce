@@ -53,8 +53,7 @@ namespace Cost {
         /// @brief Get a vector of discounted total costs per timestep
         /// @param discountRate The discount rate
         /// @return Vector of total discounted costs per timestep
-        std::unordered_map<int, double>
-        getDiscountedTotals(double discountRate) const;
+        std::unordered_map<int, double> getTotals(double discountRate) const;
 
         /// @brief Get the vector of costs as-is
         /// @return Vector of vectors of \code{Cost} objects, each element
@@ -64,12 +63,16 @@ namespace Cost {
             return this->costs;
         }
 
-        /// @brief
-        /// @param
-        /// @return
-        std::unordered_map<CostCategory,
-                           std::unordered_map<int, std::vector<Cost>>>
-        getCostsByCategory() const;
+        /// @brief Get category-stratified costs over the time horizon
+        /// @return Category-stratified costs
+        std::unordered_map<CostCategory, std::vector<double>>
+        getTotalsByCategory() const;
+
+        /// @brief Get discounted category-stratified costs over the time
+        /// horizon
+        /// @return Discounted, category-stratified costs
+        std::unordered_map<CostCategory, std::vector<double>>
+        getTotalsByCategory(double discountRate) const;
 
         /// @brief Add a cost to the tracker
         /// @param cost The \code{Cost} item to be added
