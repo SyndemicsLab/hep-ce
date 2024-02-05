@@ -27,6 +27,7 @@
 #include <execution>
 #include <mutex>
 #include <random>
+#include <stdexcept>
 #include <vector>
 
 /// @brief Namespace containing the Events that occur during the simulation
@@ -99,8 +100,10 @@ namespace Event {
         /// @return Integer representing the chosen state.
         int getDecision(std::vector<double> probs) {
             if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.00001) {
-                // error -- sum of probabilities cannot exceed 1
-                return -1;
+                // perhaps there's a way to give more specific information about
+                // where in inputs there's an error.
+                throw std::runtime_error(
+                    "Error: Sum of probabilities exceeds 1!");
             }
             std::uniform_real_distribution<double> uniform(0.0, 1.0);
             this->generatorMutex.lock();
