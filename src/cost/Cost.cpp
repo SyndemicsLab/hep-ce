@@ -75,7 +75,7 @@ namespace Cost {
 
     void CostTracker::addCost(Cost cost, int timestep) {
         if (timestep < 0) {
-            // log error
+            // error
             return;
         }
         this->costs[timestep].push_back(cost);

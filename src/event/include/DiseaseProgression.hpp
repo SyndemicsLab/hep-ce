@@ -36,6 +36,8 @@ namespace Event {
         std::map<Person::LiverState, double>
         getProbabilityMap(Data::IDataTablePtr subTable) const;
 
+        void addLiverDiseaseCost(std::shared_ptr<Person::Person> person);
+
     public:
         DiseaseProgression(std::mt19937_64 &generator,
                            Data::IDataTablePtr table,

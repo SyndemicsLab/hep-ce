@@ -184,7 +184,7 @@ namespace Person {
         BACKGROUND = 0,
         BEHAVIOR = 1,
         TREATMENT = 2,
-        HCV = 3
+        LIVER = 3
     };
 
     /// @brief Attributes describing a person's quality of life
@@ -192,7 +192,7 @@ namespace Person {
         double background = 1;
         double behavior = 1;
         double treatment = 1;
-        double hcv = 1;
+        double liver = 1;
     };
 } // namespace Person
 

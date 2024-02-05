@@ -28,21 +28,30 @@ namespace Event {
         // positioned before transitioning to use so that people do not start
         // treatment the same time they become an opioid abuser.
         // Can only enter MOUD if in an active use state.
-        // if (!(bc >= Person::BehaviorClassification::NONINJECTION)) {
-        //     // 1. Check the person's current MOUD status
-        //     Person::MOUD moud = person->getMoudState();
-        //     // 2. Draw probability of changing MOUD state.
-        //     std::vector<double> probs = {0.50, 0.25, 0.25};
-        //     // 3. Make a transition decision.
-        //     Person::MOUD toMoud = (Person::MOUD)this->getDecision(probs);
-        //     // 4. If the person stays on MOUD, increment their time on MOUD.
-        //     // Otherwise, set or keep their time on MOUD as 0.
-        //     if ((moud == Person::MOUD::CURRENT) && (moud == toMoud)) {
-        //         // increment timeOnMoud
-        //     } else {
-        //         // assign time spent on MOUD to 0
-        //     }
-        // }
+        if (!(bc >= Person::BehaviorClassification::NONINJECTION)) {
+            // 1. Check the person's current MOUD status
+            Person::MOUD moud = person->getMoudState();
+            // 2. Draw probability of changing MOUD state.
+            // TODO: MAKE THIS A REAL TRANSITION RATE
+            std::vector<double> probs = {0.50, 0.25, 0.25};
+            // 3. Make a transition decision.
+            Person::MOUD toMoud = (Person::MOUD)this->getDecision(probs);
+            if (toMoud == Person::MOUD::CURRENT) {
+                if (moud != toMoud) {
+                    // new treatment start
+                    person->setMoudState(toMoud);
+                    person->setTimeStartedMoud(this->getCurrentTimestep());
+                }
+                // person continuing treatment
+                // add treatment cost
+            } else {
+                // person discontinuing treatment
+                // or going from post-treatment to no treatment
+                person->setMoudState(toMoud);
+                // figure out if we want to update timestartedmoud to an
+                // impossible value, e.g. -1
+            }
+        }
 
         // Typical Behavior Change
         // 1. Generate the transition probabilities based on the starting state
@@ -88,8 +97,11 @@ namespace Event {
 
         std::unordered_map<std::string, std::string> selectCriteria;
 
+        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
+        selectCriteria["moud"] =
+            Person::Person::moudEnumToStringMap[person->getMoudState()];
         selectCriteria["drug_behavior"] =
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
@@ -97,8 +109,11 @@ namespace Event {
         // should reduce to a single value
         auto resultTable = table->selectWhere(selectCriteria);
 
-        // Cost::Cost behaviorCost = {this->costCategory, "Drug Behavior",
-        //                            *resultTable[0]};
-        // person->addCost()
+        auto res = (*resultTable)["cost"];
+        double cost = std::stod(res[0]);
+
+        Cost::Cost behaviorCost = {this->costCategory, "Drug Behavior", cost};
+
+        person->addCost(behaviorCost, this->getCurrentTimestep());
     }
 } // namespace Event

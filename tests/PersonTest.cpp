@@ -165,7 +165,7 @@ TEST(PersonUtility, GetUtilities) {
     person.setUtility(Person::UtilityCategory::BACKGROUND, 0.75);
     person.setUtility(Person::UtilityCategory::BEHAVIOR, 0.5);
     person.setUtility(Person::UtilityCategory::TREATMENT, 0.9);
-    person.setUtility(Person::UtilityCategory::HCV, 0.2);
+    person.setUtility(Person::UtilityCategory::LIVER, 0.2);
     std::pair<double, double> expectedUtilities = {0.2, 0.0675};
     EXPECT_EQ(expectedUtilities, person.getUtilities());
 }

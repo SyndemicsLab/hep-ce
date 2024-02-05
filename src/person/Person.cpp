@@ -263,8 +263,8 @@ namespace Person {
         case UtilityCategory::TREATMENT:
             this->utility.treatment = value;
             break;
-        case UtilityCategory::HCV:
-            this->utility.hcv = value;
+        case UtilityCategory::LIVER:
+            this->utility.liver = value;
             break;
         }
     }
@@ -274,8 +274,8 @@ namespace Person {
         const auto &util = this->utility;
         std::pair<double, double> utilities = {
             min(min(util.background, util.behavior),
-                min(util.treatment, util.hcv)),
-            util.background * util.behavior * util.treatment * util.hcv};
+                min(util.treatment, util.liver)),
+            util.background * util.behavior * util.treatment * util.liver};
         return utilities;
     }
 

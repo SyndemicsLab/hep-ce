@@ -19,6 +19,9 @@
 
 namespace Event {
     void DiseaseProgression::doEvent(std::shared_ptr<Person::Person> person) {
+        // insert Person's liver-related disease cost
+        // this->addLiverDiseaseCost(person);
+
         // can only progress in fibrosis state if actively infected with HCV
         // for people in F3 or later, there is still a chance of HCC progression
         if (person->getHEPCState() == Person::HEPCState::NONE) {
@@ -72,5 +75,23 @@ namespace Event {
                 stod(probColumn[i]);
         }
         return probMap;
+    }
+
+    void DiseaseProgression::addLiverDiseaseCost(
+        std::shared_ptr<Person::Person> person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+        selectCriteria["hcv_status"] =
+            Person::Person::hepcStateEnumToStringMap[person->getHEPCState()];
+        selectCriteria["initial_state"] =
+            Person::Person::liverStateEnumToStringMap[person->getLiverState()];
+
+        auto resultTable = table->selectWhere(selectCriteria);
+        auto res = (*resultTable)["cost"];
+        double cost = std::stod(res[0]);
+
+        Cost::Cost liverDiseaseCost = {this->costCategory, "Liver Disease Care",
+                                       cost};
+
+        person->addCost(liverDiseaseCost, this->getCurrentTimestep());
     }
 } // namespace Event

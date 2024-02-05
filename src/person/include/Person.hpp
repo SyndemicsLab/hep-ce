@@ -356,10 +356,20 @@ namespace Person {
         /// @return MOUD State
         MOUD getMoudState() const { return this->moudDetails.moudState; }
 
+        /// @brief Setter for MOUD State
+        /// @param moud Person's new MOUD state
+        void setMoudState(MOUD moud) { this->moudDetails.moudState = moud; }
+
         /// @brief Getter for timestep in which MOUD was started
         /// @return Time spent on MOUD
         int getTimeStartedMoud() const {
             return this->moudDetails.timeStartedMoud;
+        }
+
+        /// @brief Setter for timestep in which MOUD was started
+        /// @param timestep Timestep during which MOUD started
+        void setTimeStartedMoud(int timestep) {
+            this->moudDetails.timeStartedMoud = timestep;
         }
 
         /// @brief Getter for the person's sex
