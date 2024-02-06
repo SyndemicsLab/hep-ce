@@ -100,10 +100,10 @@ namespace Event {
         /// @return Integer representing the chosen state.
         int getDecision(std::vector<double> probs) {
             if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.00001) {
-                // perhaps there's a way to give more specific information about
-                // where in inputs there's an error.
-                throw std::runtime_error(
-                    "Error: Sum of probabilities exceeds 1!");
+                const std::string message =
+                    '[' + this->EVENT_NAME + "] " +
+                    "Error: Sum of probabilities exceeds 1!";
+                throw std::runtime_error(message);
             }
             std::uniform_real_distribution<double> uniform(0.0, 1.0);
             this->generatorMutex.lock();
