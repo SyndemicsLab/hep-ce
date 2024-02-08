@@ -19,7 +19,7 @@ The `HEP-CE` model you see here is a rewrite of [an earlier version](https://git
 - Simplify input file structure
 
 ### Changes to Control Flow
-This recapitulation of `HEP-CE` iterates across timesteps and events rather than over person lives, as past versions did. Each timestep (month), the simulated population is subjected to discrete "events".
+This recapitulation of `HEP-CE` iterates across timesteps and events rather than over person lives, as past versions did. Each timestep (month), the simulated population is subjected to discrete "events". Measurables are stored at the individual Person level.
 
 At the top level, the model is broken down into three categories of events:
 
@@ -95,7 +95,16 @@ debug-conanbuild.bat
 ## Roadmap
 
 - [x] Rewrite Approval [2023-08-14]
-- [x] Person-Level Events
+- [ ] Person-Level Events
+  - [ ] Overdose
+  - [ ] Death
 - [ ] Clinical Events
+  - [ ] Screening
+  - [ ] Linking
+  - [ ] VoluntaryRelinking
+  - [ ] FibrosisStaging
+  - [ ] Treatment
 - [ ] Calculation Events
+  - [ ] Transmission
+  - [ ] Utility
 - [x] Functional `main()` [2024-01-03]
