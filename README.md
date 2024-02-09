@@ -1,13 +1,80 @@
-# HEP-CE Simulation
+<p align="center">
+<a href="https://www.syndemicslab.org/hep-ce"><img src="https://github.com/SyndemicsLab/.github/blob/main/profile/images/HEPCE.png" alt="HEP-CE Logo" height="200" /></a>
+</p>
 
-**Hep**atitis C **C**ost **E**ffectiveness (`HEP-CE`) is a health economics Markov Chain Monte Carlo micro-simulation model focused on studying the syndemic of opioid use disorder (OUD) and the hepatitis C virus (HCV).
+The `HEP-CE` (**Hep**atitis C **C**ost **E**ffectiveness) model is a Monte-Carlo health state-transition model which simulates the spread and treatment of Hepatitis C Virus (HCV) in the United States.
+The model uses values and information derived from a variety of sources, including clinical data and relevant literature.
+HEP-CE is used to model the efficacy and cost-effectiveness of treatments, policies, and interventions aimed at controlling the HCV epidemic on a population-wide basis.
 
-## Building the Simulation
+## Table of Contents
+- [What's New](#whats-new)
+- [Build Instructions](#build-instructions)
+- [Roadmap](#roadmap)
+
+## What's New
+The `HEP-CE` model you see here is a rewrite of [an earlier version](https://github.com/SyndemicsLab/hep-ce) of the model. This new, improved version attempts to improve upon key pain points in the previous incarnation, namely:
+
+- Converting to a Discrete Event Simulation structure
+- Improving readability
+- Simplify input file structure
+
+### Changes to Control Flow
+This recapitulation of `HEP-CE` iterates across timesteps and events rather than over person lives, as past versions did. Each timestep (month), the simulated population is subjected to discrete "events". Measurables are stored at the individual Person level.
+
+At the top level, the model is broken down into three categories of events:
+
+- Person-Level Events
+- Clinical Events
+- Calculation Events
+
+These categories are further broken into discrete events:
+
+- Person-Level Events:
+  - Aging
+  - Drug Behavior Changes
+  - Acute HCV Clearance
+  - Liver Disease Progression
+  - Infections
+  - Overdose
+  - Death
+- Clinical Events:
+  - HCV Screening
+  - Linking to Care
+  - Voluntary Relinking to Care
+  - Fibrosis Staging
+  - Treatment
+- Calculation Events:
+  - Transmission (PreVenT)
+
+### Input Structure
+This version of the model aims to simplify input file structure.
+Currently, the intended input folder structure is
+```ini
+# simple ini config
+sim.conf
+# tabular inputs
+init_cohort.csv
+antibody_testing.csv
+background_costs.csv
+background_mortality.csv
+background_utilities.csv
+behavior_costs.csv
+behavior_transitions.csv
+behavior_utilities.csv
+fibrosis.csv
+liver_disease_costs.csv
+liver_disease_utilities.csv
+incidence.csv
+screening_and_linking.csv
+smr.csv
+```
+
+## Build Instructions
 
 ### Dependencies
 
-- [DataManagement](https://github.com/SyndemicsLab/DataManagement)
 - [conan2](https://conan.io)
+- [DataManagement](https://github.com/SyndemicsLab/DataManagement)
 - [GoogleTest/`gtest`](https://github.com/google/googletest) (optional)
 
 ### Unix-based Systems
@@ -25,44 +92,19 @@ cd scripts
 debug-conanbuild.bat
 ```
 
-## Model Flow
+## Roadmap
 
-This recapitulation of `HEP-CE` iterates across timesteps and events rather than over person lives, as past versions did. Each timestep (month), the simulated population is subjected to discrete "events".
-
-At the top level, the model is broken down into three categories of events:
-
-1. Person-Level Events
-2. Clinical Events
-3. Calculation Events
-
-Each person simulated in the model cohort iterates through these event categories in this order.
-Each of these categories themself contains discrete events, explained in detail below.
-
-### Person-Level Events
-
-Person-level events are events external to the healthcare setting that can impact the likelihood or severity of an HCV infection, such as injection drug use, age, or, if already infected, HCV progression.
-
-- [X] Aging
-- [X] Overdose
-- [X] Death & Fatal Overdose
-- [X] Opioid Drug Use Behavior & MOUD
-- [X] HCV Infection
-- [X] HCV/Liver Progression (if already infected)
-- [X] HCV Clearance
-
-### Clinical Events
-
-Clinical events are those within the healthcare setting, namely screening (testing), linkage, and treatment.
-
-- [X] Intervention Screening
-- [X] Background Screening
-- [ ] HCC Screening
-- [X] Linkage
-- [X] Relinkage
-- [ ] Treatment
-
-### Calculation Events
-
-- [ ] Cost
-- [ ] "Time Spent In" Updates
-- [ ] Transmission (Infection Rate Change)
+- [x] Rewrite Approval [2023-08-14]
+- [ ] Person-Level Events
+  - [ ] Overdose
+  - [ ] Death
+- [ ] Clinical Events
+  - [ ] Screening
+  - [ ] Linking
+  - [ ] VoluntaryRelinking
+  - [ ] FibrosisStaging
+  - [ ] Treatment
+- [ ] Calculation Events
+  - [ ] Transmission
+  - [ ] Utility
+- [x] Functional `main()` [2024-01-03]

@@ -22,7 +22,7 @@ namespace Event {
         // clearance.
 
         // if person isn't infected, nothing to do
-        if (person->getHEPCState() == Person::HEPCState::NONE) {
+        if (person->getHEPCState() != Person::HEPCState::ACUTE) {
             return;
         }
         // 1. Get the probability of acute clearance
