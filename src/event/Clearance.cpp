@@ -27,6 +27,8 @@ namespace Event {
         if (clearance) {
             this->clearanceProb = *clearance;
         } else {
+            // it's basically universally accepted that 25% of acute hcv
+            // infections clear in the 6-month acute infection period
             this->clearanceProb = Utils::probabilityToRate(0.25) / 6.0;
         }
     }

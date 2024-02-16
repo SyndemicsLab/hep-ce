@@ -13,11 +13,12 @@ add_library(event
     BehaviorChanges.cpp
     Clearance.cpp
     Death.cpp
-    DiseaseProgression.cpp
+    FibrosisProgression.cpp
     FibrosisStaging.cpp
     Infections.cpp
-    Overdose.cpp
     Linking.cpp
+    MOUD.cpp
+    Overdose.cpp
     Screening.cpp
     Treatment.cpp
     VoluntaryRelinking.cpp

@@ -51,6 +51,7 @@ namespace Person {
         StagingDetails stagingDetails;
         ScreeningDetails screeningDetails;
         TreatmentDetails treatmentDetails;
+        HCCStatus hccStatus;
         Utility utility;
         Cost::CostTracker costs;
 
@@ -64,8 +65,10 @@ namespace Person {
         static std::map<std::string, LinkageType> linkageTypeMap;
         static std::map<std::string, LinkageState> linkageStateMap;
 
-        static std::map<std::string, LiverState> liverStateMap;
-        static std::map<std::string, MeasuredLiverState> measuredLiverStateMap;
+        static std::map<std::string, FibrosisState> fibrosisStateMap;
+        static std::map<std::string, MeasuredFibrosisState>
+            measuredFibrosisStateMap;
+        static std::map<std::string, HCCState> hccStateMap;
         static std::map<std::string, MOUD> moudMap;
         static std::map<std::string, Sex> sexMap;
 
@@ -77,9 +80,10 @@ namespace Person {
         static std::map<LinkageType, std::string> linkageTypeEnumToStringMap;
         static std::map<LinkageState, std::string> linkageStateEnumToStringMap;
 
-        static std::map<LiverState, std::string> liverStateEnumToStringMap;
-        static std::map<MeasuredLiverState, std::string>
-            measuredLiverStateEnumToStringMap;
+        static std::map<FibrosisState, std::string>
+            fibrosisStateEnumToStringMap;
+        static std::map<MeasuredFibrosisState, std::string>
+            measuredFibrosisStateEnumToStringMap;
         static std::map<MOUD, std::string> moudEnumToStringMap;
         static std::map<Sex, std::string> sexEnumToStringMap;
 
@@ -114,7 +118,7 @@ namespace Person {
         /// @brief Update the Liver State
         /// @param ls Current Liver State
         /// @param timestep Current simulation timestep
-        void updateLiver(const LiverState &ls, int tstep);
+        void updateFibrosis(const FibrosisState &ls, int tstep);
 
         /// @brief Update Opioid Use Behavior Classification
         /// @param bc The intended resultant BehaviorClassification
@@ -123,7 +127,7 @@ namespace Person {
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
-        LiverState diagnoseLiver(int tstep);
+        FibrosisState diagnoseFibrosis(int tstep);
 
         /// @brief Dignose somebody with HEPC
         /// @return HEPC state that was diagnosed
@@ -199,10 +203,10 @@ namespace Person {
         /// @return Boolean representing overdose or not
         bool getOverdose() { return this->overdose; }
 
-        /// @brief Getter for the Liver State
-        /// @return The Current Liver State
-        LiverState getLiverState() const {
-            return this->infectionStatus.liverState;
+        /// @brief Getter for the Fibrosis State
+        /// @return The Current Fibrosis State
+        FibrosisState getFibrosisState() const {
+            return this->infectionStatus.fibrosisState;
         }
 
         /// @brief Getter for the HCV State
@@ -233,10 +237,10 @@ namespace Person {
             return this->infectionStatus.timeHEPCStateChanged;
         }
 
-        /// @brief Getter for Time since Liver State Change
-        /// @return Time Since Liver State Change
-        int getTimeLiverStateChanged() const {
-            return this->infectionStatus.timeLiverStateChanged;
+        /// @brief Getter for Time since Fibrosis State Change
+        /// @return Time Since Fibrosis State Change
+        int getTimeFibrosisStateChanged() const {
+            return this->infectionStatus.timeFibrosisStateChanged;
         }
 
         /// @brief Getter for Seropositivity
@@ -333,21 +337,21 @@ namespace Person {
             return this->pregnancyDetails.miscarriageCount;
         }
 
-        /// @brief Set Person's measured liver state
+        /// @brief Set Person's measured fibrosis state
         /// @param state
-        void setMeasuredLiverState(MeasuredLiverState state) {
-            this->stagingDetails.measuredLiverState = state;
+        void setMeasuredFibrosisState(MeasuredFibrosisState state) {
+            this->stagingDetails.measuredFibrosisState = state;
         }
 
-        /// @brief Getter for measured liver state
-        /// @return Measured Liver State
-        MeasuredLiverState getMeasuredLiverState() {
-            return this->stagingDetails.measuredLiverState;
+        /// @brief Getter for measured fibrosis state
+        /// @return Measured Fibrosis State
+        MeasuredFibrosisState getMeasuredFibrosisState() {
+            return this->stagingDetails.measuredFibrosisState;
         }
 
-        /// @brief Getter for timestep in which the last liver staging test
+        /// @brief Getter for timestep in which the last fibrosis staging test
         /// happened
-        /// @return Timestep of person's last liver staging
+        /// @return Timestep of person's last fibrosis staging
         int getTimeOfLastStaging() const {
             return this->stagingDetails.timeOfLastStaging;
         }

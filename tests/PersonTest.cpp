@@ -67,8 +67,8 @@ TEST(PersonInfect, InfectNormally) {
     EXPECT_EQ(person.getTimeHEPCStateChanged(), 0);
     EXPECT_TRUE(person.getSeropositivity());
 
-    EXPECT_EQ(person.getLiverState(), Person::LiverState::F0);
-    EXPECT_EQ(person.getTimeLiverStateChanged(), 0);
+    EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::F0);
+    EXPECT_EQ(person.getTimeFibrosisStateChanged(), 0);
 }
 
 TEST(PersonInfect, ResistMultiHCVInfect) {
@@ -82,10 +82,10 @@ TEST(PersonInfect, ResistMultiHCVInfect) {
 
 TEST(PersonInfect, ResistMultiFibrosisInfect) {
     Person::Person person;
-    person.diagnoseLiver(5);
+    person.diagnoseFibrosis(5);
     person.infect(0);
     EXPECT_EQ(person.getHEPCState(), Person::HEPCState::ACUTE);
-    EXPECT_EQ(person.getLiverState(), Person::LiverState::F0);
+    EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::F0);
 }
 
 TEST(PersonLink, LinkNormally) {
@@ -134,21 +134,21 @@ TEST(PersonBehavior, InvalidTransition) {
               Person::BehaviorClassification::NONINJECTION);
 }
 
-TEST(PersonLiver, LiverUpdate) {
+TEST(PersonLiver, FibrosisUpdate) {
     Person::Person person;
     // people start in the NONE state
-    EXPECT_EQ(person.getLiverState(), Person::LiverState::NONE);
+    EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::NONE);
     // change to a higher disease state
-    person.updateLiver(Person::LiverState::F4, 0);
-    EXPECT_EQ(person.getLiverState(), Person::LiverState::F4);
+    person.updateFibrosis(Person::FibrosisState::F4, 0);
+    EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::F4);
 }
 
 TEST(PersonLiver, InvalidTransition) {
     Person::Person person;
-    person.updateLiver(Person::LiverState::F4, 0);
+    person.updateFibrosis(Person::FibrosisState::F4, 0);
     // cannot transition to a lower disease state
-    person.updateLiver(Person::LiverState::F3, 0);
-    EXPECT_EQ(person.getLiverState(), Person::LiverState::F4);
+    person.updateFibrosis(Person::FibrosisState::F3, 0);
+    EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::F4);
 }
 
 TEST(PersonUtility, SetUtility) {

@@ -40,6 +40,11 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
                int &taskEnd);
 
 /// @brief
+/// @param config
+/// @return
+bool configChecks(Data::Configuration &config);
+
+/// @brief
 /// @param personEvents
 /// @param tables
 /// @param sim

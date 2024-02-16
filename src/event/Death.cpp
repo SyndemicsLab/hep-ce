@@ -73,8 +73,8 @@ namespace Event {
         selectCriteria["drug_behavior"] =
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
-        selectCriteria["fibrosis_state"] =
-            Person::Person::liverStateEnumToStringMap[person->getLiverState()];
+        selectCriteria["fibrosis_state"] = Person::Person::
+            fibrosisStateEnumToStringMap[person->getFibrosisState()];
 
         auto resultTable = table->selectWhere(selectCriteria);
 
@@ -82,7 +82,7 @@ namespace Event {
 
         smr = stod((*resultTable)["SMR"][0]);
 
-        if (person->getLiverState() > Person::LiverState::F3) {
+        if (person->getFibrosisState() > Person::FibrosisState::F3) {
             fibrosisDeathProb =
                 stod((*resultTable)["fib_death_probability"][0]);
         }

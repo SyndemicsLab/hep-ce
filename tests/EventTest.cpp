@@ -140,7 +140,7 @@ TEST_F(EventTest, DeathByOldAge) {
     EXPECT_EQ(expectedPerson.getIsAlive(), livingPopulation[0]->getIsAlive());
 }
 
-TEST_F(EventTest, DiseaseProgression) {
+TEST_F(EventTest, FibrosisProgression) {
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
 
     std::map<std::string, std::vector<std::string>> retData;
@@ -159,13 +159,14 @@ TEST_F(EventTest, DiseaseProgression) {
     EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
 
     Data::Configuration config;
-    Event::DiseaseProgression diseaseProgression(simulation->getGenerator(),
-                                                 table, config);
+    Event::FibrosisProgression fibrosisProgression(simulation->getGenerator(),
+                                                   table, config);
     livingPopulation[0]->infect(0);
     int ct = 1;
-    diseaseProgression.setCurrentTimestep(ct);
-    diseaseProgression.execute(livingPopulation);
-    EXPECT_EQ(Person::LiverState::F1, livingPopulation[0]->getLiverState());
+    fibrosisProgression.setCurrentTimestep(ct);
+    fibrosisProgression.execute(livingPopulation);
+    EXPECT_EQ(Person::FibrosisState::F1,
+              livingPopulation[0]->getFibrosisState());
 }
 
 TEST_F(EventTest, Fibrosis) {}

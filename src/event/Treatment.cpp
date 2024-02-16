@@ -110,12 +110,12 @@ namespace Event {
 
     bool
     Treatment::isEligible(std::shared_ptr<Person::Person> const person) const {
-        Person::LiverState liverState = person->getLiverState();
+        Person::FibrosisState fibrosisState = person->getFibrosisState();
         int timeSinceLinked = person->getTimeOfLinkChange();
         Person::BehaviorClassification behavior =
             person->getBehaviorClassification();
         int timeBehaviorChange = person->getTimeBehaviorChange();
-        if (!isEligibleFibrosisStage(liverState) ||
+        if (!isEligibleFibrosisStage(fibrosisState) ||
             ((this->getCurrentTimestep() - timeSinceLinked) >
              eligibleTimeSinceLinked) ||
             (behavior == Person::BehaviorClassification::INJECTION) ||
@@ -127,10 +127,11 @@ namespace Event {
         }
     }
 
-    bool
-    Treatment::isEligibleFibrosisStage(Person::LiverState liverState) const {
-        for (Person::LiverState eligibleState : this->eligibleLiverStates) {
-            if (liverState < eligibleState) {
+    bool Treatment::isEligibleFibrosisStage(
+        Person::FibrosisState fibrosisState) const {
+        for (Person::FibrosisState eligibleState :
+             this->eligibleFibrosisStates) {
+            if (fibrosisState < eligibleState) {
                 return true;
             }
         }
@@ -139,13 +140,14 @@ namespace Event {
 
     Course Treatment::getTreatmentCourse(
         std::shared_ptr<Person::Person> const person) const {
-        const Person::LiverState &personLiverState = person->getLiverState();
-        if (personLiverState > Person::LiverState::F3) {
+        const Person::FibrosisState &personFibrosisState =
+            person->getFibrosisState();
+        if (personFibrosisState > Person::FibrosisState::F3) {
             // non-cirrhotic
             return this->courses[0];
         } else {
             // cirrhotic
-            if (personLiverState == Person::LiverState::F4) {
+            if (personFibrosisState == Person::FibrosisState::F4) {
                 // compensated
                 return this->courses[1];
             } else {

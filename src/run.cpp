@@ -27,6 +27,8 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
     return true;
 }
 
+bool configChecks(Data::Configuration &config);
+
 int loadEvents(std::vector<Event::sharedEvent> &personEvents,
                std::unordered_map<std::string, Data::IDataTablePtr> &tables,
                Simulation::Simulation &sim, Data::Configuration &config,
@@ -195,9 +197,9 @@ Data::IDataTablePtr personToDataTable(sharedPerson &person) {
                                             "hepcState",
                                             "timeHEPCStateChanged",
                                             "seropositivity",
-                                            "liverState",
-                                            "timeLiverStateChanged",
-                                            "measuredLiverState",
+                                            "fibrosisState",
+                                            "timeFibrosisStateChanged",
+                                            "measuredFibrosisState",
                                             "timeOfLastStaging",
                                             "drugBehavior",
                                             "timeLastActiveDrugUse",
@@ -230,12 +232,13 @@ Data::IDataTablePtr personToDataTable(sharedPerson &person) {
     data["timeHEPCStateChanged"] = {
         std::to_string(person->getTimeHEPCStateChanged())};
     data["seropositivity"] = {boolToString(person->getSeropositivity())};
-    data["liverState"] = {
-        person->liverStateEnumToStringMap[person->getLiverState()]};
-    data["timeLiverStateChanged"] = {
-        std::to_string(person->getTimeLiverStateChanged())};
-    data["measuredLiverState"] = {person->measuredLiverStateEnumToStringMap
-                                      [person->getMeasuredLiverState()]};
+    data["fibrosisState"] = {
+        person->fibrosisStateEnumToStringMap[person->getFibrosisState()]};
+    data["timeFibrosisStateChanged"] = {
+        std::to_string(person->getTimeFibrosisStateChanged())};
+    data["measuredFibrosisState"] = {
+        person->measuredFibrosisStateEnumToStringMap
+            [person->getMeasuredFibrosisState()]};
     data["timeOfLastStaging"] = {
         std::to_string(person->getTimeOfLastStaging())};
     data["drugBehavior"] = {person->behaviorClassificationEnumToStringMap
