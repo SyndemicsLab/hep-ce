@@ -139,23 +139,25 @@ namespace Event {
     }
 
     Course Treatment::getTreatmentCourse(
-        std::shared_ptr<Person::Person> const person) const {
+        const std::shared_ptr<Person::Person> person) const {
         const Person::FibrosisState &personFibrosisState =
             person->getFibrosisState();
-        if (personFibrosisState > Person::FibrosisState::F3) {
-            // non-cirrhotic
-            return this->courses[0];
-        } else {
+        // check person's infection genotype
+        // if gt3, start at index 3 instead of 0
+        int idx = person->getGenotype() ? 3 : 0;
+
+        if (personFibrosisState > Person::FibrosisState::F4) {
             // cirrhotic
             if (personFibrosisState == Person::FibrosisState::F4) {
                 // compensated
-                return this->courses[1];
+                idx += 1;
             } else {
                 // decompensated
-                return this->courses[2];
+                idx += 2;
             }
         }
-        return {};
+
+        return this->courses[idx];
     }
 
     void Treatment::populateCourses() {
@@ -163,8 +165,11 @@ namespace Event {
         std::vector<std::string> courseList =
             this->config.getStringVector("treatment.courses");
         // error if courseList length != total number of treatment groups
-        // total number of treatment groups = 4 (2024-01-03)
-        // if (courseList.size() != 4) { return; }
+        // total number of treatment groups = 6 (2024-02-20)
+        if (courseList.size() != 6) {
+            // log error
+            return;
+        }
 
         // used for tracking section hierarchy
         std::vector<std::string> sections = {"treatment"};

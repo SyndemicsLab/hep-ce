@@ -63,7 +63,19 @@ protected:
 
 TEST_F(EventTest, AgingLiving) {
     int expectedAge = 1;
-    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
+
+    // make the table for background costs
+    std::vector<std::string> tableHeaders = {"age_years", "gender",
+                                             "drug_behavior", "cost"};
+    std::map<std::string, std::vector<std::string>> tableData;
+    tableData["age_years"] = {"0"};
+    tableData["gender"] = {"male"};
+    tableData["drug_behavior"] = {"never"};
+    tableData["cost"] = {"100.00"};
+    Data::DataTableShape tableShape(1, 4);
+    Data::IDataTablePtr table =
+        std::make_shared<Data::DataTable>(tableData, tableShape, tableHeaders);
+
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
@@ -71,6 +83,8 @@ TEST_F(EventTest, AgingLiving) {
     agingEvent->setCurrentTimestep(ct);
     agingEvent->execute(livingPopulation);
     EXPECT_DOUBLE_EQ(expectedAge, livingPopulation[0]->age);
+    auto costs = livingPopulation[0]->getCosts().getTotals();
+    std::cout << costs[1] << std::endl;
 }
 
 TEST_F(EventTest, AgingDead) {
@@ -205,7 +219,7 @@ TEST_F(EventTest, Screening) {}
 TEST_F(EventTest, Treatment) {
     // create config
     outStream << "[treatment]" << std::endl
-              << "courses = foo, alpha" << std::endl
+              << "courses = foo, alpha, foo, alpha, foo, alpha" << std::endl
               << "duration = 7" << std::endl
               << "cost = 150.00" << std::endl
               << "withdrawal_probability = 0.08" << std::endl
@@ -238,7 +252,7 @@ TEST_F(EventTest, Treatment) {
     Data::Configuration config(tempFilePath.string());
 
     Event::Treatment treatment(simulation->getGenerator(), table, config);
-    // testing default value for event name
+    // checking default value for event name
     EXPECT_EQ("Treatment", treatment.EVENT_NAME);
 
     std::vector<Event::Course> courses = treatment.getCourses();

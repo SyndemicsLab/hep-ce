@@ -136,6 +136,7 @@ namespace Person {
     struct InfectionStatus {
         HEPCState hepcState = HEPCState::NONE;
         FibrosisState fibrosisState = FibrosisState::NONE;
+        bool isGenotypeThree = false;
         bool seropositivity = false;
         int timeHEPCStateChanged = 0;
         int timeFibrosisStateChanged = 0;

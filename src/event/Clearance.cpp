@@ -25,6 +25,8 @@ namespace Event {
         auto clearance =
             this->config.optional<double>("infection.clearance_prob");
         if (clearance) {
+            // if the user provides a clearance probability, use that value
+            // instead
             this->clearanceProb = *clearance;
         } else {
             // it's basically universally accepted that 25% of acute hcv

@@ -37,7 +37,7 @@ namespace Event {
                 Data::Configuration &config,
                 std::shared_ptr<spdlog::logger> logger =
                     std::make_shared<spdlog::logger>("default"),
-                std::string name = std::string("ProbEvent"))
+                std::string name = std::string("Linking"))
             : ProbEvent(generator, table, config, logger, name) {}
         virtual ~Linking() = default;
     };

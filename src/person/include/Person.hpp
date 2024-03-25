@@ -349,8 +349,21 @@ namespace Person {
             return this->stagingDetails.measuredFibrosisState;
         }
 
-        /// @brief Getter for timestep in which the last fibrosis staging test
-        /// happened
+        /// @brief Setter for whether Person is genotype three
+        /// @param genotype True if infection is genotype three, false
+        /// otherwise
+        void setGenotype(bool genotype) {
+            this->infectionStatus.isGenotypeThree = genotype;
+        }
+
+        /// @brief Getter for whether Person is genotype three
+        /// @return True if genotype three, false otherwise
+        bool getGenotype() const {
+            return this->infectionStatus.isGenotypeThree;
+        }
+
+        /// @brief Getter for timestep in which the last fibrosis
+        /// staging test happened
         /// @return Timestep of person's last fibrosis staging
         int getTimeOfLastStaging() const {
             return this->stagingDetails.timeOfLastStaging;
@@ -382,14 +395,16 @@ namespace Person {
 
         /// @brief Set a value for a person's utility
         /// @param category The category of the utility to be updated
-        /// @param value The value of the utility to be updated, bounded by 0, 1
+        /// @param value The value of the utility to be updated, bounded by
+        /// 0, 1
         void setUtility(UtilityCategory category, double value);
 
         /// @brief Getter for the person's stratified utilities
         /// @return Person's stratified utilities
         Utility getUtility() const { return this->utility; }
 
-        /// @brief Getter for the person's minimal and multiplicative utilities
+        /// @brief Getter for the person's minimal and multiplicative
+        /// utilities
         /// @return Minimal utility and multiplicative utility
         std::pair<double, double> getUtilities() const;
 

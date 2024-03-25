@@ -32,9 +32,10 @@ namespace Cost {
         SCREENING = 2,
         LINKING = 3,
         STAGING = 4,
-        HCV = 5,
+        LIVER = 5,
         TREATMENT = 6,
-        COUNT = 7
+        BACKGROUND = 7,
+        COUNT = 8
     };
 
     /// @brief Object to hold individual charges/costs

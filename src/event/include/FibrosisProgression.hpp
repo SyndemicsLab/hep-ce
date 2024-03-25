@@ -40,12 +40,12 @@ namespace Event {
         void addLiverDiseaseCost(std::shared_ptr<Person::Person> person);
 
     public:
-        FibrosisProgression(std::mt19937_64 &generator,
-                            Data::IDataTablePtr table,
-                            Data::Configuration &config,
-                            std::shared_ptr<spdlog::logger> logger =
-                                std::make_shared<spdlog::logger>("default"),
-                            std::string name = std::string("ProbEvent"))
+        FibrosisProgression(
+            std::mt19937_64 &generator, Data::IDataTablePtr table,
+            Data::Configuration &config,
+            std::shared_ptr<spdlog::logger> logger =
+                std::make_shared<spdlog::logger>("default"),
+            std::string name = std::string("FibrosisProgression"))
             : ProbEvent(generator, table, config, logger, name) {}
         virtual ~FibrosisProgression() = default;
     };

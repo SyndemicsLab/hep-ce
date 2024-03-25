@@ -27,9 +27,16 @@ namespace Event {
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
+        /// @brief Adds person's background cost
+        /// @param person The person to whom cost will be added
+        void addBackgroundCost(std::shared_ptr<Person::Person> person);
 
     public:
-        using Event::Event;
+        Aging(Data::IDataTablePtr table, Data::Configuration &config,
+              std::shared_ptr<spdlog::logger> logger =
+                  std::make_shared<spdlog::logger>("default"),
+              std::string name = std::string("Aging"))
+            : Event(table, config, logger, name) {}
         virtual ~Aging() = default;
     };
 } // namespace Event

@@ -53,7 +53,7 @@ namespace Event {
         bool isEligible(std::shared_ptr<Person::Person> const person) const;
         bool isEligibleFibrosisStage(Person::FibrosisState fibrosisState) const;
         Course
-        getTreatmentCourse(std::shared_ptr<Person::Person> const person) const;
+        getTreatmentCourse(const std::shared_ptr<Person::Person> person) const;
 
         /// @brief Populate this Treatment event's treatment courses based on
         /// values in the config tree.
