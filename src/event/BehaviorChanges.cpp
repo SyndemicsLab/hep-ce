@@ -22,7 +22,7 @@ namespace Event {
         Person::BehaviorClassification bc = person->getBehaviorClassification();
 
         // Insert person's behavior cost
-        // this->insertBehaviorCost(person);
+        this->insertBehaviorCost(person);
 
         // Typical Behavior Change
         // 1. Generate the transition probabilities based on the starting state
@@ -42,11 +42,12 @@ namespace Event {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         // intentional truncation
-        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
+        // selectCriteria["age_years"] = std::to_string((int)(person->age
+        // / 12.0));
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
-        selectCriteria["moud"] =
-            Person::Person::moudEnumToStringMap[person->getMoudState()];
+        // selectCriteria["moud"] =
+        //     Person::Person::moudEnumToStringMap[person->getMoudState()];
         selectCriteria["drug_behavior"] =
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
@@ -71,8 +72,8 @@ namespace Event {
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
-        selectCriteria["moud"] =
-            Person::Person::moudEnumToStringMap[person->getMoudState()];
+        // selectCriteria["moud"] =
+        //     Person::Person::moudEnumToStringMap[person->getMoudState()];
         selectCriteria["drug_behavior"] =
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];

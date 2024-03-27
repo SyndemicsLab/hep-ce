@@ -63,6 +63,7 @@ protected:
 
 TEST_F(EventTest, AgingLiving) {
     int expectedAge = 1;
+    double expectedCost = 100.00;
 
     // make the table for background costs
     std::vector<std::string> tableHeaders = {"age_years", "gender",
@@ -83,8 +84,9 @@ TEST_F(EventTest, AgingLiving) {
     agingEvent->setCurrentTimestep(ct);
     agingEvent->execute(livingPopulation);
     EXPECT_DOUBLE_EQ(expectedAge, livingPopulation[0]->age);
-    auto costs = livingPopulation[0]->getCosts().getTotals();
-    std::cout << costs[1] << std::endl;
+    auto costs = livingPopulation.at(0)->getCosts().getTotals();
+    // costs track starting from timestep 0, so check index 1
+    EXPECT_DOUBLE_EQ(expectedCost, costs[1]);
 }
 
 TEST_F(EventTest, AgingDead) {
@@ -100,26 +102,49 @@ TEST_F(EventTest, AgingDead) {
 }
 
 TEST_F(EventTest, BehaviorChange) {
-
+    double expectedCost = 100.00;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
 
-    std::map<std::string, std::vector<std::string>> retData;
-    retData["never"] = {"1.0"};
-    retData["former_noninjection"] = {"0.0"};
-    retData["former_injection"] = {"0.0"};
-    retData["noninjection"] = {"0.0"};
-    retData["injection"] = {"0.0"};
+    std::map<std::string, std::vector<std::string>> transitionData;
+    transitionData["age_years"] = {"0"};
+    transitionData["gender"] = {"male"};
+    transitionData["drug_behavior"] = {"never"};
+    transitionData["never"] = {"1.0"};
+    transitionData["former_noninjection"] = {"0.0"};
+    transitionData["former_injection"] = {"0.0"};
+    transitionData["noninjection"] = {"0.0"};
+    transitionData["injection"] = {"0.0"};
 
-    std::vector<std::string> retHeader = {"never", "former_noninjection",
-                                          "former_injection", "noninjection",
-                                          "injection"};
+    std::vector<std::string> transitionHeader = {
+        "age_years",           "gender",
+        "drug_behavior",       "never",
+        "former_noninjection", "former_injection",
+        "noninjection",        "injection"};
 
-    Data::DataTableShape retShape(1, 5);
+    Data::DataTableShape transitionShape(1, 8);
 
-    std::shared_ptr<Data::IDataTable> retVal =
-        std::make_shared<Data::DataTable>(retData, retShape, retHeader);
+    std::shared_ptr<Data::IDataTable> transitionVal =
+        std::make_shared<Data::DataTable>(transitionData, transitionShape,
+                                          transitionHeader);
 
-    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
+    std::map<std::string, std::vector<std::string>> costData;
+    costData["gender"] = {"male"};
+    costData["drug_behavior"] = {"never"};
+    costData["cost"] = {"100.00"};
+
+    std::vector<std::string> costHeader = {"gender", "drug_behavior", "cost"};
+
+    Data::DataTableShape costShape(1, 3);
+
+    std::shared_ptr<Data::IDataTable> costVal =
+        std::make_shared<Data::DataTable>(costData, costShape, costHeader);
+
+    std::vector<std::string> joinCols = {"gender", "drug_behavior"};
+
+    std::shared_ptr<Data::IDataTable> bcVal =
+        transitionVal->innerJoin(costVal, joinCols, joinCols);
+
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(bcVal));
     Data::Configuration config;
     Event::BehaviorChanges behavior(simulation->getGenerator(), table, config);
     int ct = 1;
@@ -128,6 +153,8 @@ TEST_F(EventTest, BehaviorChange) {
 
     EXPECT_EQ(Person::BehaviorClassification::NEVER,
               livingPopulation.at(0)->getBehaviorClassification());
+    auto costs = livingPopulation.at(0)->getCosts().getTotals();
+    EXPECT_DOUBLE_EQ(expectedCost, costs[1]);
 }
 
 TEST_F(EventTest, Clearance) {

@@ -20,8 +20,8 @@ namespace Event {
     void Aging::doEvent(std::shared_ptr<Person::Person> person) {
         if (person->getIsAlive()) {
             person->age++;
+            this->addBackgroundCost(person);
         }
-        this->addBackgroundCost(person);
     }
 
     void Aging::addBackgroundCost(std::shared_ptr<Person::Person> person) {
