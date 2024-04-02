@@ -19,7 +19,6 @@
 
 namespace Event {
     void Screening::doEvent(std::shared_ptr<Person::Person> person) {
-
         // one-time screen or periodic screen
         if ((person->isInterventionScreened() &&
              person->getScreeningFrequency() == -1 &&
@@ -160,5 +159,34 @@ namespace Event {
         double prob = std::stod((*resultTable)["intervention_screening"][0]);
         std::vector<double> result = {prob, 1 - prob};
         return result;
+    }
+
+    void Screening::insertScreeningCost(std::shared_ptr<Person::Person> person,
+                                        ScreeningType type) {
+        double screeningCost;
+        std::string screeningName;
+        switch (type) {
+        case ScreeningType::BACKGROUND_AB:
+            screeningCost = config.get<double>("screening_background_ab.cost");
+            screeningName = "Background Antibody Screening";
+            break;
+        case ScreeningType::BACKGROUND_RNA:
+            screeningCost = config.get<double>("screening_background_rna.cost");
+            screeningName = "Background RNA Screening";
+            break;
+        case ScreeningType::INTERVENTION_AB:
+            screeningCost =
+                config.get<double>("screening_intervention_ab.cost");
+            screeningName = "Intervention Antibody Screening";
+            break;
+        case ScreeningType::INTERVENTION_RNA:
+            screeningCost =
+                config.get<double>("screening_intervention_rna.cost");
+            screeningName = "Intervention RNA Screening";
+            break;
+        }
+
+        Cost::Cost cost = {this->costCategory, screeningName, screeningCost};
+        person->addCost(cost, this->getCurrentTimestep());
     }
 } // namespace Event

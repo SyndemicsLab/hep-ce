@@ -46,7 +46,9 @@ namespace Event {
             std::shared_ptr<spdlog::logger> logger =
                 std::make_shared<spdlog::logger>("default"),
             std::string name = std::string("FibrosisProgression"))
-            : ProbEvent(generator, table, config, logger, name) {}
+            : ProbEvent(generator, table, config, logger, name) {
+            this->costCategory = Cost::CostCategory::LIVER;
+        }
         virtual ~FibrosisProgression() = default;
     };
 } // namespace Event
