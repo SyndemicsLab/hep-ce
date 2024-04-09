@@ -246,7 +246,12 @@ TEST_F(EventTest, FibrosisProgression) {
     EXPECT_DOUBLE_EQ(100.00, costs[1]);
 }
 
-TEST_F(EventTest, FibrosisStaging) {}
+TEST_F(EventTest, FibrosisStagingSingleTest) {
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+    outStream << "[fibrosis_staging]" << std::endl
+              << "period = 12" << std::endl
+              << "test_one = fib4" << std::endl;
+}
 
 TEST_F(EventTest, Infections) {
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
@@ -280,7 +285,8 @@ TEST_F(EventTest, Linking) {}
 TEST_F(EventTest, Screening) {
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
     outStream << "[screening]" << std::endl
-              << "intervention_type = periodic" << std::endl;
+              << "intervention_type = periodic" << std::endl
+              << "period = 12" << std::endl;
     Data::Configuration config(tempFilePath.string());
     Event::Screening(simulation->getGenerator(), table, config);
 }

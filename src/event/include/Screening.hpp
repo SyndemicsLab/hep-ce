@@ -56,6 +56,7 @@ namespace Event {
         std::vector<double> interventionProbability;
         std::vector<double> acceptTestProbability;
         InterventionType interventionType;
+        int interventionPeriod;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
@@ -106,6 +107,9 @@ namespace Event {
             this->costCategory = Cost::CostCategory::SCREENING;
             this->interventionType = interventionMap[config.get<std::string>(
                 "screening.intervention_type")];
+            if (this->interventionType == InterventionType::PERIODIC) {
+                this->interventionPeriod = config.get<int>("screening.period");
+            }
         }
         virtual ~Screening() = default;
     };

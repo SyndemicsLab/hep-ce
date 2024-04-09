@@ -25,6 +25,8 @@ namespace Event {
     /// @brief Subclass of Event used to Link People to Treatment
     class Linking : public ProbEvent {
     private:
+        double interventionCost = 0;
+
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
@@ -32,16 +34,22 @@ namespace Event {
         getTransitions(std::shared_ptr<Person::Person> person,
                        std::string columnKey);
 
+        /// @brief
+        /// @param person
+        void addLinkingCost(std::shared_ptr<Person::Person> person);
+
     public:
         Linking(std::mt19937_64 &generator, Data::IDataTablePtr table,
                 Data::Configuration &config,
                 std::shared_ptr<spdlog::logger> logger =
                     std::make_shared<spdlog::logger>("default"),
                 std::string name = std::string("Linking"))
-            : ProbEvent(generator, table, config, logger, name) {}
+            : ProbEvent(generator, table, config, logger, name) {
+            this->costCategory = Cost::CostCategory::LINKING;
+            this->interventionCost =
+                config.get<double>("linking.intervention_cost");
+        }
         virtual ~Linking() = default;
     };
-
 } // namespace Event
-
 #endif

@@ -50,6 +50,7 @@ namespace Event {
 
         // 5. Assign this value as the person's measured state.
         person->setMeasuredFibrosisState(stateOne);
+        this->addStagingCost(person);
 
         // 6. Get a vector of the probabilities of each of the possible fibrosis
         // outcomes (test two) provided there is a second test.
@@ -76,6 +77,7 @@ namespace Event {
             }
             // 8. Assign this state to the person.
             person->setMeasuredFibrosisState(measured);
+            this->addStagingCost(person, true);
         } else {
             // either means the name provided is incorrect or there is no second
             // test
@@ -103,5 +105,14 @@ namespace Event {
         } else {
             return {};
         }
+    }
+
+    void FibrosisStaging::addStagingCost(std::shared_ptr<Person::Person> person,
+                                         const bool testTwo) {
+        double cost = testTwo ? this->testOneCost : this->testTwoCost;
+        std::string costName = "Fibrosis Staging Cost (Test" +
+                               ((std::string)(testTwo ? "1" : "2")) + ")";
+        Cost::Cost fibrosisStagingCost = {this->costCategory, costName, cost};
+        person->addCost(fibrosisStagingCost, this->getCurrentTimestep());
     }
 } // namespace Event
