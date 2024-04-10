@@ -81,7 +81,7 @@ namespace Event {
         // should reduce to a single value
         auto resultTable = table->selectWhere(selectCriteria);
 
-        if (!table->checkColumnExists("cost")) {
+        if (!resultTable->checkColumnExists("cost")) {
             // log error
             return;
         }
