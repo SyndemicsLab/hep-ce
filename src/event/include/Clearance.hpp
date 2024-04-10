@@ -24,7 +24,6 @@ namespace Event {
     /// @brief Subclass of Event used to Clear HCV Infections
     class Clearance : public ProbEvent {
     private:
-        // probabilityToRate doesn't include time, hence division by 6.0
         double clearanceProb;
 
         /// @brief Implementation of Virtual Function doEvent

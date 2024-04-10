@@ -23,12 +23,7 @@ namespace Event {
         switch (this->interventionType) {
         case InterventionType::ONETIME:
             if (this->getCurrentTimestep() == 1) {
-                std::vector<double> interventionProbability =
-                    this->getInterventionScreeningProbability(person);
-                int choice = getDecision(interventionProbability);
-                if (choice == 0) {
-                    this->interventionScreen(person);
-                }
+                this->interventionDecision(person);
             }
             break;
         case InterventionType::PERIODIC:
@@ -38,12 +33,7 @@ namespace Event {
                 int timeSinceLastScreening = this->getCurrentTimestep() -
                                              person->getTimeOfLastScreening();
                 if (timeSinceLastScreening > this->interventionPeriod) {
-                    std::vector<double> interventionProbability =
-                        this->getInterventionScreeningProbability(person);
-                    int choice = getDecision(interventionProbability);
-                    if (choice == 0) {
-                        this->interventionScreen(person);
-                    }
+                    this->interventionDecision(person);
                 }
             }
             break;
@@ -58,6 +48,16 @@ namespace Event {
         int choice = getDecision(backgroundProbability);
         if (choice == 0) {
             this->backgroundScreen(person);
+        }
+    }
+
+    void
+    Screening::interventionDecision(std::shared_ptr<Person::Person> person) {
+        std::vector<double> interventionProbability =
+            this->getInterventionScreeningProbability(person);
+        int choice = getDecision(interventionProbability);
+        if (choice == 0) {
+            this->interventionScreen(person);
         }
     }
 

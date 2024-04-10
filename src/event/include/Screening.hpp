@@ -91,6 +91,8 @@ namespace Event {
         std::vector<double> getInterventionScreeningProbability(
             std::shared_ptr<Person::Person> person);
 
+        void interventionDecision(std::shared_ptr<Person::Person> person);
+
         /// @brief Insert cost for screening of type \code{type}
         /// @param person The person who is accruing cost
         /// @param type The screening type, used to discern the cost to add

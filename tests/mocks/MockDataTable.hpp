@@ -28,12 +28,15 @@ public:
     using vecOfInt = std::vector<int>;
     using doubleVecOfStr = std::vector<std::vector<std::string>>;
     using unorderedMapStrToStr = std::unordered_map<std::string, std::string>;
+    using mapStrToVecOfStr = std::map<std::string, std::vector<std::string>>;
 
     MOCK_METHOD(void, toCSV, (const std::string &), (const, override));
     MOCK_METHOD(bool, fromCSV, (const std::string &, bool, char), (override));
     MOCK_METHOD(bool, fromSQL, (const std::string &, const std::string &),
                 (override));
     MOCK_METHOD(doubleVecOfStr, getData, (), (const, override));
+    MOCK_METHOD(bool, checkColumnExists, (std::string), (const, override));
+    MOCK_METHOD(mapStrToVecOfStr, getDataAsMap, (), (const, override));
     MOCK_METHOD(IDataTablePtr, getRow, (int), (const, override));
     MOCK_METHOD(vecOfStr, getColumn, (std::string), (const, override));
     MOCK_METHOD(vecOfStr, getColumnNames, (), (const, override));

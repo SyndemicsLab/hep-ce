@@ -23,6 +23,12 @@ TEST(CostTest, AddCost) {
     EXPECT_EQ(test.cost, 100.00);
 }
 
+TEST(CostTest, DefaultConstructorGetTotals) {
+    Cost::CostTracker ct;
+    std::unordered_map<int, double> expected = {};
+    EXPECT_EQ(expected, ct.getTotals());
+}
+
 TEST(CostTest, GetCostsAndTotals) {
     int ELEMENT_COUNT = 10;
     Cost::CostTracker ct;

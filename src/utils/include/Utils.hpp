@@ -17,7 +17,6 @@
 #ifndef UTILS_UTILS_HPP_
 #define UTILS_UTILS_HPP_
 
-#include <algorithm>
 #include <cmath>
 #include <sstream>
 #include <stdexcept>

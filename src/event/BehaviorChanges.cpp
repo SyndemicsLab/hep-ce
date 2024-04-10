@@ -81,6 +81,11 @@ namespace Event {
         // should reduce to a single value
         auto resultTable = table->selectWhere(selectCriteria);
 
+        if (!table->checkColumnExists("cost")) {
+            // log error
+            return;
+        }
+
         auto res = (*resultTable)["cost"];
         double cost = std::stod(res[0]);
 

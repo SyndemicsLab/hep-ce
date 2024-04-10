@@ -19,6 +19,7 @@
 #ifndef COST_COST_HPP_
 #define COST_COST_HPP_
 
+#include "spdlog/spdlog.h"
 #include <cmath>
 #include <string>
 #include <unordered_map>
@@ -47,6 +48,9 @@ namespace Cost {
 
     class CostTracker {
     public:
+        CostTracker(std::shared_ptr<spdlog::logger> logger =
+                        std::make_shared<spdlog::logger>("default")) {}
+
         /// @brief Get a vector of total costs per timestep
         /// @return Vector of total costs per timestep
         std::unordered_map<int, double> getTotals() const;
@@ -81,7 +85,7 @@ namespace Cost {
         void addCost(Cost cost, int timestep);
 
     private:
-        std::unordered_map<int, std::vector<Cost>> costs;
+        std::unordered_map<int, std::vector<Cost>> costs = {};
     };
 } // namespace Cost
 #endif
