@@ -13,11 +13,12 @@ add_library(event
     BehaviorChanges.cpp
     Clearance.cpp
     Death.cpp
-    DiseaseProgression.cpp
+    FibrosisProgression.cpp
     FibrosisStaging.cpp
     Infections.cpp
-    Overdose.cpp
     Linking.cpp
+    MOUD.cpp
+    Overdose.cpp
     Screening.cpp
     Treatment.cpp
     VoluntaryRelinking.cpp
@@ -25,6 +26,7 @@ add_library(event
 
 target_link_libraries(${PROJECT_NAME} PUBLIC person)
 target_link_libraries(${PROJECT_NAME} PUBLIC utils)
+target_link_libraries(${PROJECT_NAME} PUBLIC cost)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)

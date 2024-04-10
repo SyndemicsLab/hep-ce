@@ -24,8 +24,7 @@ namespace Event {
     /// @brief Subclass of Event used to Clear HCV Infections
     class Clearance : public ProbEvent {
     private:
-        // probabilityToRate doesn't include time, hence division by 6.0
-        double clearanceProb = Utils::probabilityToRate(0.25) / 6.0;
+        double clearanceProb;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
@@ -40,8 +39,7 @@ namespace Event {
                   Data::Configuration &config,
                   std::shared_ptr<spdlog::logger> logger =
                       std::make_shared<spdlog::logger>("default"),
-                  std::string name = std::string("ProbEvent"))
-            : ProbEvent(generator, table, config, logger, name) {}
+                  std::string name = std::string("Clearance"));
         virtual ~Clearance() = default;
     };
 } // namespace Event

@@ -19,6 +19,7 @@
 #ifndef EVENT_EVENT_HPP_
 #define EVENT_EVENT_HPP_
 
+#include "Cost.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement.hpp>
@@ -26,6 +27,7 @@
 #include <execution>
 #include <mutex>
 #include <random>
+#include <stdexcept>
 #include <vector>
 
 /// @brief Namespace containing the Events that occur during the simulation
@@ -41,6 +43,7 @@ namespace Event {
         Data::Configuration &config;
         Data::IDataTablePtr table;
         std::shared_ptr<spdlog::logger> logger;
+        Cost::CostCategory costCategory = Cost::CostCategory::MISC;
 
     public:
         Event(Data::IDataTablePtr table, Data::Configuration &config,
@@ -97,8 +100,10 @@ namespace Event {
         /// @return Integer representing the chosen state.
         int getDecision(std::vector<double> probs) {
             if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.00001) {
-                // error -- sum of probabilities cannot exceed 1
-                return -1;
+                const std::string message =
+                    '[' + this->EVENT_NAME + "] " +
+                    "Error: Sum of probabilities exceeds 1!";
+                throw std::runtime_error(message);
             }
             std::uniform_real_distribution<double> uniform(0.0, 1.0);
             this->generatorMutex.lock();

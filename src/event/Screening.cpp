@@ -19,22 +19,27 @@
 
 namespace Event {
     void Screening::doEvent(std::shared_ptr<Person::Person> person) {
-
         // one-time screen or periodic screen
-        if ((person->isInterventionScreened() &&
-             person->getScreeningFrequency() == -1 &&
-             person->getTimeOfLastScreening() == -1) ||
-            (person->isInterventionScreened() &&
-             person->getScreeningFrequency() != -1 &&
-             (this->getCurrentTimestep() - person->getTimeOfLastScreening()) >
-                 person->getScreeningFrequency())) {
-            std::vector<double> interventionProbability =
-                this->getInterventionScreeningProbability(person);
-            int choice = getDecision(interventionProbability);
-            if (choice == 0) {
-                this->interventionScreen(person);
-                return;
+        switch (this->interventionType) {
+        case InterventionType::ONETIME:
+            if (this->getCurrentTimestep() == 1) {
+                this->interventionDecision(person);
             }
+            break;
+        case InterventionType::PERIODIC:
+            // using braces to prevent strange scope for newly-declared
+            // variables
+            {
+                int timeSinceLastScreening = this->getCurrentTimestep() -
+                                             person->getTimeOfLastScreening();
+                if (timeSinceLastScreening > this->interventionPeriod) {
+                    this->interventionDecision(person);
+                }
+            }
+            break;
+        default:
+            // error
+            return;
         }
 
         // [screen, don't screen]
@@ -46,23 +51,41 @@ namespace Event {
         }
     }
 
+    void
+    Screening::interventionDecision(std::shared_ptr<Person::Person> person) {
+        std::vector<double> interventionProbability =
+            this->getInterventionScreeningProbability(person);
+        int choice = getDecision(interventionProbability);
+        if (choice == 0) {
+            this->interventionScreen(person);
+        }
+    }
+
     void Screening::backgroundScreen(std::shared_ptr<Person::Person> person) {
-        if ((this->getCurrentTimestep() - person->getTimeOfLastScreening()) ==
-                0 &&
+        if (!(this->getCurrentTimestep() - person->getTimeOfLastScreening()) &&
             this->getCurrentTimestep() > 0) {
             return;
         }
         person->markScreened();
 
-        if (!this->antibodyTest(person,
-                                std::string("screening_background_ab")) &&
-            !this->antibodyTest(person,
-                                std::string("screening_background_ab"))) {
+        std::string testPrefix = "screening_background_";
+        bool firstTest = this->antibodyTest(person, testPrefix + "ab");
+        this->insertScreeningCost(person, ScreeningType::BACKGROUND_AB);
+
+        // if first test is negative, perform a second test
+        bool secondTest = false;
+        if (!firstTest) {
+            secondTest = this->antibodyTest(person, testPrefix + "ab");
+            this->insertScreeningCost(person, ScreeningType::BACKGROUND_AB);
+        }
+
+        if (!firstTest && !secondTest) {
             return; // run two tests and if both are negative do nothing
         }
 
         // if either is positive then...
-        if (this->rnaTest(person, std::string("screening_background_rna"))) {
+        this->insertScreeningCost(person, ScreeningType::BACKGROUND_RNA);
+        if (this->rnaTest(person, testPrefix + "rna")) {
             person->link(this->getCurrentTimestep(),
                          Person::LinkageType::BACKGROUND);
             // what else needs to happen during a link?
@@ -73,12 +96,19 @@ namespace Event {
 
     void Screening::interventionScreen(std::shared_ptr<Person::Person> person) {
         person->markScreened();
-        if (!this->antibodyTest(person,
-                                std::string("screening_intervention_ab")) &&
-            !this->antibodyTest(person,
-                                std::string("screening_intervention_ab"))) {
+
+        std::string testPrefix = "screening_intervention_";
+        bool firstTest = this->antibodyTest(person, testPrefix + "ab");
+        this->insertScreeningCost(person, ScreeningType::INTERVENTION_AB);
+
+        // if first test is negative, perform a second test
+        bool secondTest = false;
+        if (!firstTest) {
+            secondTest = this->antibodyTest(person, testPrefix + "ab");
         }
-        if (this->rnaTest(person, std::string("screening_intervention_rna"))) {
+
+        this->insertScreeningCost(person, ScreeningType::INTERVENTION_RNA);
+        if (this->rnaTest(person, testPrefix + "rna")) {
             person->link(this->getCurrentTimestep(),
                          Person::LinkageType::INTERVENTION);
             // what else needs to happen during a link?
@@ -160,5 +190,34 @@ namespace Event {
         double prob = std::stod((*resultTable)["intervention_screening"][0]);
         std::vector<double> result = {prob, 1 - prob};
         return result;
+    }
+
+    void Screening::insertScreeningCost(std::shared_ptr<Person::Person> person,
+                                        ScreeningType type) {
+        double screeningCost;
+        std::string screeningName;
+        switch (type) {
+        case ScreeningType::BACKGROUND_AB:
+            screeningCost = config.get<double>("screening_background_ab.cost");
+            screeningName = "Background Antibody Screening";
+            break;
+        case ScreeningType::BACKGROUND_RNA:
+            screeningCost = config.get<double>("screening_background_rna.cost");
+            screeningName = "Background RNA Screening";
+            break;
+        case ScreeningType::INTERVENTION_AB:
+            screeningCost =
+                config.get<double>("screening_intervention_ab.cost");
+            screeningName = "Intervention Antibody Screening";
+            break;
+        case ScreeningType::INTERVENTION_RNA:
+            screeningCost =
+                config.get<double>("screening_intervention_rna.cost");
+            screeningName = "Intervention RNA Screening";
+            break;
+        }
+
+        Cost::Cost cost = {this->costCategory, screeningName, screeningCost};
+        person->addCost(cost, this->getCurrentTimestep());
     }
 } // namespace Event

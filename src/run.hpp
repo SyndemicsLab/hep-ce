@@ -25,9 +25,8 @@ template <typename T> sharedPerson makePerson() {
 /// @brief
 /// @tparam T
 /// @return
-template <typename T>
-sharedPerson makePerson(Data::IDataTablePtr rowData, int simCycle) {
-    return std::make_shared<T>(rowData, simCycle);
+template <typename T> sharedPerson makePerson(Data::IDataTablePtr rowData) {
+    return std::make_shared<T>(rowData);
 }
 
 /// @brief
@@ -39,6 +38,11 @@ sharedPerson makePerson(Data::IDataTablePtr rowData, int simCycle) {
 /// @return
 bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
                int &taskEnd);
+
+/// @brief
+/// @param config
+/// @return
+bool configChecks(Data::Configuration &config);
 
 /// @brief
 /// @param personEvents

@@ -21,25 +21,8 @@ namespace Event {
         // Determine person's current behavior classification
         Person::BehaviorClassification bc = person->getBehaviorClassification();
 
-        // MOUD
-        // positioned before transitioning to use so that people do not start
-        // treatment the same time they become an opioid abuser.
-        // Can only enter MOUD if in an active use state.
-        // if (!(bc >= Person::BehaviorClassification::NONINJECTION)) {
-        //     // 1. Check the person's current MOUD status
-        //     Person::MOUD moud = person->getMoudState();
-        //     // 2. Draw probability of changing MOUD state.
-        //     std::vector<double> probs = {0.50, 0.25, 0.25};
-        //     // 3. Make a transition decision.
-        //     Person::MOUD toMoud = (Person::MOUD)this->getDecision(probs);
-        //     // 4. If the person stays on MOUD, increment their time on MOUD.
-        //     // Otherwise, set or keep their time on MOUD as 0.
-        //     if ((moud == Person::MOUD::CURRENT) && (moud == toMoud)) {
-        //         // increment timeOnMoud
-        //     } else {
-        //         // assign time spent on MOUD to 0
-        //     }
-        // }
+        // Insert person's behavior cost
+        this->insertBehaviorCost(person);
 
         // Typical Behavior Change
         // 1. Generate the transition probabilities based on the starting state
@@ -59,11 +42,12 @@ namespace Event {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         // intentional truncation
-        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
+        // selectCriteria["age_years"] = std::to_string((int)(person->age
+        // / 12.0));
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
-        selectCriteria["moud"] =
-            Person::Person::moudEnumToStringMap[person->getMoudState()];
+        // selectCriteria["moud"] =
+        //     Person::Person::moudEnumToStringMap[person->getMoudState()];
         selectCriteria["drug_behavior"] =
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
@@ -78,5 +62,35 @@ namespace Event {
             result.push_back(std::stod(res[0]));
         }
         return result;
+    }
+
+    void BehaviorChanges::insertBehaviorCost(
+        std::shared_ptr<Person::Person> person) {
+
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        // selectCriteria["moud"] =
+        //     Person::Person::moudEnumToStringMap[person->getMoudState()];
+        selectCriteria["drug_behavior"] =
+            Person::Person::behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+
+        // should reduce to a single value
+        auto resultTable = table->selectWhere(selectCriteria);
+
+        if (!resultTable->checkColumnExists("cost")) {
+            // log error
+            return;
+        }
+
+        auto res = (*resultTable)["cost"];
+        double cost = std::stod(res[0]);
+
+        Cost::Cost behaviorCost = {this->costCategory, "Drug Behavior", cost};
+
+        person->addCost(behaviorCost, this->getCurrentTimestep());
     }
 } // namespace Event

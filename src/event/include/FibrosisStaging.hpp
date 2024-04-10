@@ -27,6 +27,8 @@ namespace Event {
     /// @brief Subclass of Event used to Progress Fibrosis Stages
     class FibrosisStaging : public ProbEvent {
     private:
+        double testOneCost = 0;
+        double testTwoCost = 0;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
@@ -52,13 +54,24 @@ namespace Event {
         std::vector<double> getTransitions(Data::IDataTablePtr table,
                                            std::string configLookupKey);
 
+        void addStagingCost(std::shared_ptr<Person::Person> person,
+                            const bool testTwo = false);
+
     public:
         FibrosisStaging(std::mt19937_64 &generator, Data::IDataTablePtr table,
                         Data::Configuration &config,
                         std::shared_ptr<spdlog::logger> logger =
                             std::make_shared<spdlog::logger>("default"),
-                        std::string name = std::string("ProbEvent"))
-            : ProbEvent(generator, table, config, logger, name) {}
+                        std::string name = std::string("FibrosisStaging"))
+            : ProbEvent(generator, table, config, logger, name) {
+            this->costCategory = Cost::CostCategory::STAGING;
+            testOneCost = config.get<double>("fibrosis_staging.test_one_cost");
+            std::shared_ptr<double> testTwo =
+                config.optional<double>("fibrosis_staging.test_two_cost");
+            if (testTwo) {
+                testTwoCost = *testTwo;
+            }
+        }
         virtual ~FibrosisStaging() = default;
     };
 } // namespace Event

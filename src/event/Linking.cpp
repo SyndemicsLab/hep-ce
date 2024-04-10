@@ -36,6 +36,7 @@ namespace Event {
             probs = getTransitions(person, "background_linking");
         } else {
             // add intervention cost
+            this->addLinkingCost(person);
             // link probability
             probs = getTransitions(person, "intervention_linking");
         }
@@ -87,4 +88,10 @@ namespace Event {
         return result;
     }
 
+    void Linking::addLinkingCost(std::shared_ptr<Person::Person> person) {
+        Cost::Cost linkingCost = {this->costCategory,
+                                  "Intervention Linking Cost",
+                                  this->interventionCost};
+        person->addCost(linkingCost, this->getCurrentTimestep());
+    }
 } // namespace Event

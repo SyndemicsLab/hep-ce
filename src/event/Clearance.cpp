@@ -17,6 +17,24 @@
 #include "Clearance.hpp"
 
 namespace Event {
+    Clearance::Clearance(std::mt19937_64 &generator, Data::IDataTablePtr table,
+                         Data::Configuration &config,
+                         std::shared_ptr<spdlog::logger> logger,
+                         std::string name)
+        : ProbEvent(generator, table, config, logger, name) {
+        auto clearance =
+            this->config.optional<double>("infection.clearance_prob");
+        if (clearance) {
+            // if the user provides a clearance probability, use that value
+            // instead
+            this->clearanceProb = *clearance;
+        } else {
+            // it's basically universally accepted that 25% of acute hcv
+            // infections clear in the 6-month acute infection period
+            this->clearanceProb = Utils::probabilityToRate(0.25) / 6.0;
+        }
+    }
+
     void Clearance::doEvent(std::shared_ptr<Person::Person> person) {
         // people infected with hcv have some probability of spontaneous
         // clearance.

@@ -18,9 +18,36 @@
 #define EVENT_SCREENING_HPP_
 
 #include "Event.hpp"
+#include <iostream>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace Event {
+    /// @brief The type of screening that a person is currently undergoing
+    enum class ScreeningType {
+        // background antibody screening test
+        BACKGROUND_AB = 0,
+        // background RNA screening test
+        BACKGROUND_RNA = 1,
+        // intervention antibody screening test
+        INTERVENTION_AB = 2,
+        // intervention RNA screening test
+        INTERVENTION_RNA = 3
+    };
+
+    /// @brief The type/cadence of intervention screening used
+    enum class InterventionType {
+        // no intervention screening
+        NULLSCREEN = 0,
+        // intervention screen once, during the first time step
+        ONETIME = 1,
+        // intervention screen periodically
+        PERIODIC = 2
+    };
+
+    static std::unordered_map<std::string, InterventionType> interventionMap = {
+        {"null", InterventionType::NULLSCREEN},
+        {"one-time", InterventionType::ONETIME},
+        {"periodic", InterventionType::PERIODIC}};
 
     /// @brief Subclass of Event used to Screen People for Diseases
     class Screening : public ProbEvent {
@@ -28,6 +55,8 @@ namespace Event {
         std::vector<double> backgroundProbability;
         std::vector<double> interventionProbability;
         std::vector<double> acceptTestProbability;
+        InterventionType interventionType;
+        int interventionPeriod;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
@@ -62,16 +91,30 @@ namespace Event {
         std::vector<double> getInterventionScreeningProbability(
             std::shared_ptr<Person::Person> person);
 
+        void interventionDecision(std::shared_ptr<Person::Person> person);
+
+        /// @brief Insert cost for screening of type \code{type}
+        /// @param person The person who is accruing cost
+        /// @param type The screening type, used to discern the cost to add
+        void insertScreeningCost(std::shared_ptr<Person::Person> person,
+                                 ScreeningType type);
+
     public:
         Screening(std::mt19937_64 &generator, Data::IDataTablePtr table,
                   Data::Configuration &config,
                   std::shared_ptr<spdlog::logger> logger =
                       std::make_shared<spdlog::logger>("default"),
                   std::string name = std::string("Screening"))
-            : ProbEvent(generator, table, config, logger, name) {}
+            : ProbEvent(generator, table, config, logger, name) {
+            this->costCategory = Cost::CostCategory::SCREENING;
+            this->interventionType = interventionMap[config.get<std::string>(
+                "screening.intervention_type")];
+            if (this->interventionType == InterventionType::PERIODIC) {
+                this->interventionPeriod = config.get<int>("screening.period");
+            }
+        }
         virtual ~Screening() = default;
     };
-
 } // namespace Event
 
 #endif

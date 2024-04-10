@@ -18,17 +18,16 @@
 #ifndef PERSON_PERSON_HPP_
 #define PERSON_PERSON_HPP_
 
+#include "Containers.hpp"
+#include "Cost.hpp"
+#include "Utils.hpp"
+#include "spdlog/spdlog.h"
+#include <DataManagement.hpp>
+#include <algorithm>
 #include <cstdint>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "Containers.hpp"
-// #include "DataTable.hpp"
-#include "Utils.hpp"
-#include <DataManagement.hpp>
-
-#include "spdlog/spdlog.h"
 
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace Person {
@@ -52,6 +51,9 @@ namespace Person {
         StagingDetails stagingDetails;
         ScreeningDetails screeningDetails;
         TreatmentDetails treatmentDetails;
+        HCCStatus hccStatus;
+        Utility utility;
+        Cost::CostTracker costs;
 
     public:
         /// @brief Person age in months
@@ -63,8 +65,10 @@ namespace Person {
         static std::map<std::string, LinkageType> linkageTypeMap;
         static std::map<std::string, LinkageState> linkageStateMap;
 
-        static std::map<std::string, LiverState> liverStateMap;
-        static std::map<std::string, MeasuredLiverState> measuredLiverStateMap;
+        static std::map<std::string, FibrosisState> fibrosisStateMap;
+        static std::map<std::string, MeasuredFibrosisState>
+            measuredFibrosisStateMap;
+        static std::map<std::string, HCCState> hccStateMap;
         static std::map<std::string, MOUD> moudMap;
         static std::map<std::string, Sex> sexMap;
 
@@ -76,9 +80,10 @@ namespace Person {
         static std::map<LinkageType, std::string> linkageTypeEnumToStringMap;
         static std::map<LinkageState, std::string> linkageStateEnumToStringMap;
 
-        static std::map<LiverState, std::string> liverStateEnumToStringMap;
-        static std::map<MeasuredLiverState, std::string>
-            measuredLiverStateEnumToStringMap;
+        static std::map<FibrosisState, std::string>
+            fibrosisStateEnumToStringMap;
+        static std::map<MeasuredFibrosisState, std::string>
+            measuredFibrosisStateEnumToStringMap;
         static std::map<MOUD, std::string> moudEnumToStringMap;
         static std::map<Sex, std::string> sexEnumToStringMap;
 
@@ -88,7 +93,10 @@ namespace Person {
         /// @brief Default constructor for Person
         Person() { count++; }
 
-        Person(Data::IDataTablePtr dataTableRow, int simCycle);
+        /// @brief Constructor for creating a person with pre-defined
+        /// characteristics
+        /// @param dataTableRow A single row from a DataTable object
+        Person(Data::IDataTablePtr dataTableRow);
 
         /// @brief Default destructor for Person
         virtual ~Person() { count--; }
@@ -110,7 +118,7 @@ namespace Person {
         /// @brief Update the Liver State
         /// @param ls Current Liver State
         /// @param timestep Current simulation timestep
-        void updateLiver(const LiverState &ls, int tstep);
+        void updateFibrosis(const FibrosisState &ls, int tstep);
 
         /// @brief Update Opioid Use Behavior Classification
         /// @param bc The intended resultant BehaviorClassification
@@ -119,7 +127,7 @@ namespace Person {
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
-        LiverState diagnoseLiver(int tstep);
+        FibrosisState diagnoseFibrosis(int tstep);
 
         /// @brief Dignose somebody with HEPC
         /// @return HEPC state that was diagnosed
@@ -195,10 +203,10 @@ namespace Person {
         /// @return Boolean representing overdose or not
         bool getOverdose() { return this->overdose; }
 
-        /// @brief Getter for the Liver State
-        /// @return The Current Liver State
-        LiverState getLiverState() const {
-            return this->infectionStatus.liverState;
+        /// @brief Getter for the Fibrosis State
+        /// @return The Current Fibrosis State
+        FibrosisState getFibrosisState() const {
+            return this->infectionStatus.fibrosisState;
         }
 
         /// @brief Getter for the HCV State
@@ -229,10 +237,10 @@ namespace Person {
             return this->infectionStatus.timeHEPCStateChanged;
         }
 
-        /// @brief Getter for Time since Liver State Change
-        /// @return Time Since Liver State Change
-        int getTimeLiverStateChanged() const {
-            return this->infectionStatus.timeLiverStateChanged;
+        /// @brief Getter for Time since Fibrosis State Change
+        /// @return Time Since Fibrosis State Change
+        int getTimeFibrosisStateChanged() const {
+            return this->infectionStatus.timeFibrosisStateChanged;
         }
 
         /// @brief Getter for Seropositivity
@@ -273,32 +281,36 @@ namespace Person {
             return this->treatmentDetails.incompleteTreatment;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for whether Person has initiated treatment
+        /// @return Boolean true if Person has initiated treatment, false
+        /// otherwise
         bool hasInitiatedTreatment() const {
             return this->treatmentDetails.initiatedTreatment;
         }
 
-        /// @brief
-        /// @return
+        /// @brief Getter for the number of timesteps Person has been in
+        /// treatment
+        /// @return Integer number of timesteps spent in treatment
         int getTimeOfTreatmentInitiation() const {
             return this->treatmentDetails.timeOfTreatmentInitiation;
         }
 
-        /// @brief
-        /// @param incompleteTreatment
+        /// @brief Setter for Person's incomplete treatment state
+        /// @param incompleteTreatment Boolean value for incomplete treatment
+        /// state to be set
         void setIncompleteTreatment(bool incompleteTreatment) {
             this->treatmentDetails.incompleteTreatment = incompleteTreatment;
         }
 
-        /// @brief
-        /// @param incompleteTreatment
+        /// @brief Setter for Person's treatment initiation state
+        /// @param incompleteTreatment Boolean value for initiated treatment
+        /// state to be set
         void setInitiatedTreatment(bool initiatedTreatment) {
             this->treatmentDetails.initiatedTreatment = initiatedTreatment;
         }
 
-        /// @brief
-        /// @param tstep
+        /// @brief Setter for treatment initiation timestep
+        /// @param tstep The timestep during which treatment is initiated
         void setTimeOfTreatmentInitiation(int tstep) {
             this->treatmentDetails.timeOfTreatmentInitiation = tstep;
         }
@@ -325,32 +337,85 @@ namespace Person {
             return this->pregnancyDetails.miscarriageCount;
         }
 
-        void setMeasuredLiverState(MeasuredLiverState state) {
-            this->stagingDetails.measuredLiverState = state;
+        /// @brief Set Person's measured fibrosis state
+        /// @param state
+        void setMeasuredFibrosisState(MeasuredFibrosisState state) {
+            this->stagingDetails.measuredFibrosisState = state;
         }
 
-        /// @brief Getter for measured liver state
-        /// @return Measured Liver State
-        MeasuredLiverState getMeasuredLiverState() {
-            return this->stagingDetails.measuredLiverState;
+        /// @brief Getter for measured fibrosis state
+        /// @return Measured Fibrosis State
+        MeasuredFibrosisState getMeasuredFibrosisState() {
+            return this->stagingDetails.measuredFibrosisState;
         }
 
-        /// @brief Getter for timestep in which the last liver staging test
-        /// happened
-        /// @return Timestep of person's last liver staging
-        int getTimeOfLastStaging() {
+        /// @brief Setter for whether Person is genotype three
+        /// @param genotype True if infection is genotype three, false
+        /// otherwise
+        void setGenotype(bool genotype) {
+            this->infectionStatus.isGenotypeThree = genotype;
+        }
+
+        /// @brief Getter for whether Person is genotype three
+        /// @return True if genotype three, false otherwise
+        bool getGenotype() const {
+            return this->infectionStatus.isGenotypeThree;
+        }
+
+        /// @brief Getter for timestep in which the last fibrosis
+        /// staging test happened
+        /// @return Timestep of person's last fibrosis staging
+        int getTimeOfLastStaging() const {
             return this->stagingDetails.timeOfLastStaging;
         }
 
         /// @brief Getter for MOUD State
         /// @return MOUD State
-        MOUD getMoudState() { return this->moudDetails.moudState; }
+        MOUD getMoudState() const { return this->moudDetails.moudState; }
+
+        /// @brief Setter for MOUD State
+        /// @param moud Person's new MOUD state
+        void setMoudState(MOUD moud) { this->moudDetails.moudState = moud; }
 
         /// @brief Getter for timestep in which MOUD was started
         /// @return Time spent on MOUD
-        int getTimeStartedMoud() { return this->moudDetails.timeStartedMoud; }
+        int getTimeStartedMoud() const {
+            return this->moudDetails.timeStartedMoud;
+        }
 
-        Sex getSex() { return this->sex; }
+        /// @brief Setter for timestep in which MOUD was started
+        /// @param timestep Timestep during which MOUD started
+        void setTimeStartedMoud(int timestep) {
+            this->moudDetails.timeStartedMoud = timestep;
+        }
+
+        /// @brief Getter for the person's sex
+        /// @return Person's sex
+        Sex getSex() const { return this->sex; }
+
+        /// @brief Set a value for a person's utility
+        /// @param category The category of the utility to be updated
+        /// @param value The value of the utility to be updated, bounded by
+        /// 0, 1
+        void setUtility(UtilityCategory category, double value);
+
+        /// @brief Getter for the person's stratified utilities
+        /// @return Person's stratified utilities
+        Utility getUtility() const { return this->utility; }
+
+        /// @brief Getter for the person's minimal and multiplicative
+        /// utilities
+        /// @return Minimal utility and multiplicative utility
+        std::pair<double, double> getUtilities() const;
+
+        /// @brief Add a cost to the person's CostTracker object
+        /// @param cost The cost to be added
+        /// @param timestep The timestep during which the cost was accrued
+        void addCost(Cost::Cost cost, int timestep);
+
+        /// @brief Getter for the Person's costs
+        /// @return Cost::CostTracker containing this person's costs
+        Cost::CostTracker getCosts() const { return this->costs; }
     };
 } // namespace Person
 #endif

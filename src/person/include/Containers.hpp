@@ -45,12 +45,12 @@ namespace Person {
         UNLINKED = 2
     };
 
-    /// @brief Classification of Liver Disease Stage
+    /// @brief Classification of Liver Fibrosis Stage
     /// @details HCV infection causes liver fibrosis and cirrhosis and increases
     /// the risk of development of hepatocellular carcinoma (HCC).
     /// These states strictly increase, with the possibility of progressing to
     /// HCC being possible at any time from stage F3 and higher.
-    enum class LiverState {
+    enum class FibrosisState {
         /// No adverse liver effects
         NONE = 0,
         /// No scarring
@@ -65,15 +65,26 @@ namespace Person {
         /// Cirrhosis or advanced scarring
         F4 = 5,
         /// Symptomatic cirrhosis; overt complications
-        DECOMP = 6,
+        DECOMP = 6
+    };
+
+    /// @brief Classification of hepatocellular carcinoma (HCC) state
+    /// @details Advanced liver fibrosis and cirrhosis significantly increase
+    /// risk of development of HCC, a major complication associated with HCV
+    /// infection that has significant mortality and morbidity rates.
+    /// <a
+    /// href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5863002/">Reference</a>
+    enum class HCCState {
+        /// No hepatocellular carcinoma
+        NONE = 0,
         /// Early-stage hepatocellular carcinoma
-        EHCC = 7,
+        EARLY = 1,
         /// Late-stage hepatocellular carcinoma
-        LHCC = 8
+        LATE = 2
     };
 
     /// @brief Clinically staged liver fibrosis stage
-    enum class MeasuredLiverState {
+    enum class MeasuredFibrosisState {
         /// Person has never been screened before
         NONE = 0,
         /// Person is measured to be either F0 or F1
@@ -124,10 +135,16 @@ namespace Person {
     /// @brief Attributes describing an Infection
     struct InfectionStatus {
         HEPCState hepcState = HEPCState::NONE;
-        LiverState liverState = LiverState::NONE;
+        FibrosisState fibrosisState = FibrosisState::NONE;
+        bool isGenotypeThree = false;
         bool seropositivity = false;
         int timeHEPCStateChanged = 0;
-        int timeLiverStateChanged = 0;
+        int timeFibrosisStateChanged = 0;
+    };
+
+    /// @brief Attributes characterizing HCC
+    struct HCCStatus {
+        HCCState hccState = HCCState::NONE;
     };
 
     /// @brief Attributes describing drug use behavior
@@ -160,10 +177,12 @@ namespace Person {
 
     /// @brief Person attributes describing clinically assessed liver stage
     struct StagingDetails {
-        MeasuredLiverState measuredLiverState = MeasuredLiverState::NONE;
+        MeasuredFibrosisState measuredFibrosisState =
+            MeasuredFibrosisState::NONE;
         int timeOfLastStaging = 0;
     };
 
+    /// @brief Attributes describing screening status
     struct ScreeningDetails {
         // -1 if never screened, otherwise [0, currentTimestep-1)
         int timeOfLastScreening = 0;
@@ -171,10 +190,27 @@ namespace Person {
         bool interventionScreening = false;
     };
 
+    /// @brief Attributes describing treatment state
     struct TreatmentDetails {
         bool incompleteTreatment = false;
         bool initiatedTreatment = false;
         int timeOfTreatmentInitiation = 0;
+    };
+
+    /// @brief Categories for utility values
+    enum class UtilityCategory {
+        BACKGROUND = 0,
+        BEHAVIOR = 1,
+        TREATMENT = 2,
+        LIVER = 3
+    };
+
+    /// @brief Attributes describing a person's quality of life
+    struct Utility {
+        double background = 1;
+        double behavior = 1;
+        double treatment = 1;
+        double liver = 1;
     };
 } // namespace Person
 

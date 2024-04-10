@@ -8,45 +8,49 @@
 //===----------------------------------------------------------------------===//
 ///
 /// \file
-/// This file contains the implementation of the DiseaseProgression Event
+/// This file contains the implementation of the FibrosisProgression Event
 /// Subclass.
 ///
 /// Created Date: Tuesday, August 15th 2023, 8:50:56 am
 /// Contact: Benjamin.Linas@bmc.org
 ///
 //===----------------------------------------------------------------------===//
-#include "DiseaseProgression.hpp"
+#include "FibrosisProgression.hpp"
 
 namespace Event {
-    void DiseaseProgression::doEvent(std::shared_ptr<Person::Person> person) {
+    void FibrosisProgression::doEvent(std::shared_ptr<Person::Person> person) {
         // can only progress in fibrosis state if actively infected with HCV
         // for people in F3 or later, there is still a chance of HCC progression
         if (person->getHEPCState() == Person::HEPCState::NONE) {
-            if (person->getLiverState() < Person::LiverState::F3) {
+            if (person->getFibrosisState() < Person::FibrosisState::F3) {
                 return;
             }
         }
         // 1. Get current disease status
-        Person::LiverState ls = person->getLiverState();
+        Person::FibrosisState fs = person->getFibrosisState();
         // 2. Get the transition probabilities from that state
         std::vector<double> probs = getTransitions(person);
         // currently using placeholders to test compiling
         // std::vector<double> probs = {0.2, 0.2, 0.2, 0.2, 0.2};
         // 3. Randomly draw the state to transition to
-        Person::LiverState toLS = (Person::LiverState)this->getDecision(probs);
+        Person::FibrosisState toFS =
+            (Person::FibrosisState)this->getDecision(probs);
         // 4. Transition to the new state
-        person->updateLiver(toLS, this->getCurrentTimestep());
+        person->updateFibrosis(toFS, this->getCurrentTimestep());
+
+        // insert Person's liver-related disease cost
+        this->addLiverDiseaseCost(person);
     }
 
-    std::vector<double>
-    DiseaseProgression::getTransitions(std::shared_ptr<Person::Person> person) {
+    std::vector<double> FibrosisProgression::getTransitions(
+        std::shared_ptr<Person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         // intentional truncation
-        selectCriteria["initial_state"] =
-            Person::Person::liverStateEnumToStringMap[person->getLiverState()];
+        selectCriteria["initial_state"] = Person::Person::
+            fibrosisStateEnumToStringMap[person->getFibrosisState()];
         auto resultTable = table->selectWhere(selectCriteria);
-        std::map<Person::LiverState, double> probMap =
+        std::map<Person::FibrosisState, double> probMap =
             getProbabilityMap(resultTable);
 
         std::vector<double> result = {};
@@ -55,10 +59,10 @@ namespace Event {
         }
         return result;
     }
-    std::map<Person::LiverState, double>
-    DiseaseProgression::getProbabilityMap(Data::IDataTablePtr subTable) const {
-        std::map<Person::LiverState, double> probMap;
-        for (auto kv : Person::Person::liverStateEnumToStringMap) {
+    std::map<Person::FibrosisState, double>
+    FibrosisProgression::getProbabilityMap(Data::IDataTablePtr subTable) const {
+        std::map<Person::FibrosisState, double> probMap;
+        for (auto kv : Person::Person::fibrosisStateEnumToStringMap) {
             probMap[kv.first] = 0.0;
         }
 
@@ -68,9 +72,27 @@ namespace Event {
             subTable->getColumn("probability");
 
         for (int i = 0; i < newStateColumn.size(); ++i) {
-            probMap[Person::Person::liverStateMap[newStateColumn[i]]] =
+            probMap[Person::Person::fibrosisStateMap[newStateColumn[i]]] =
                 stod(probColumn[i]);
         }
         return probMap;
+    }
+
+    void FibrosisProgression::addLiverDiseaseCost(
+        std::shared_ptr<Person::Person> person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+        selectCriteria["hcv_status"] =
+            Person::Person::hepcStateEnumToStringMap[person->getHEPCState()];
+        selectCriteria["initial_state"] = Person::Person::
+            fibrosisStateEnumToStringMap[person->getFibrosisState()];
+
+        auto resultTable = table->selectWhere(selectCriteria);
+        auto res = (*resultTable)["cost"];
+        double cost = std::stod(res[0]);
+
+        Cost::Cost liverDiseaseCost = {this->costCategory, "Liver Disease Care",
+                                       cost};
+
+        person->addCost(liverDiseaseCost, this->getCurrentTimestep());
     }
 } // namespace Event

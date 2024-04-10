@@ -2,6 +2,7 @@
 
 namespace Person {
     int count = 0;
+
     std::map<std::string, HEPCState> Person::hepcStateMap = {
         {"none", HEPCState::NONE},
         {"acute", HEPCState::ACUTE},
@@ -25,19 +26,24 @@ namespace Person {
         {"linked", LinkageState::LINKED},
         {"unlinked", LinkageState::UNLINKED}};
 
-    std::map<std::string, LiverState> Person::liverStateMap = {
-        {"none", LiverState::NONE},     {"f0", LiverState::F0},
-        {"f1", LiverState::F1},         {"f2", LiverState::F2},
-        {"f3", LiverState::F3},         {"f4", LiverState::F4},
-        {"decomp", LiverState::DECOMP}, {"ehcc", LiverState::EHCC},
-        {"lhcc", LiverState::LHCC}};
+    std::map<std::string, FibrosisState> Person::fibrosisStateMap = {
+        {"none", FibrosisState::NONE},    {"f0", FibrosisState::F0},
+        {"f1", FibrosisState::F1},        {"f2", FibrosisState::F2},
+        {"f3", FibrosisState::F3},        {"f4", FibrosisState::F4},
+        {"decomp", FibrosisState::DECOMP}};
 
-    std::map<std::string, MeasuredLiverState> Person::measuredLiverStateMap = {
-        {"none", MeasuredLiverState::NONE},
-        {"f01", MeasuredLiverState::F01},
-        {"f23", MeasuredLiverState::F23},
-        {"f4", MeasuredLiverState::F4},
-        {"decomp", MeasuredLiverState::DECOMP}};
+    std::map<std::string, MeasuredFibrosisState>
+        Person::measuredFibrosisStateMap = {
+            {"none", MeasuredFibrosisState::NONE},
+            {"f01", MeasuredFibrosisState::F01},
+            {"f23", MeasuredFibrosisState::F23},
+            {"f4", MeasuredFibrosisState::F4},
+            {"decomp", MeasuredFibrosisState::DECOMP}};
+
+    std::map<std::string, HCCState> Person::hccStateMap = {
+        {"none", HCCState::NONE},
+        {"early", HCCState::EARLY},
+        {"late", HCCState::LATE}};
 
     std::map<std::string, MOUD> Person::moudMap = {
         {"none", MOUD::NONE}, {"current", MOUD::CURRENT}, {"post", MOUD::POST}};
@@ -54,7 +60,7 @@ namespace Person {
         {HEPCState::NONE, "none"},
         {HEPCState::ACUTE, "acute"},
         {HEPCState::CHRONIC, "chronic"}};
-    ;
+
     std::map<BehaviorClassification, std::string>
         Person::behaviorClassificationEnumToStringMap = {
             {BehaviorClassification::NEVER, "never"},
@@ -63,29 +69,33 @@ namespace Person {
             {BehaviorClassification::FORMER_INJECTION, "former_injection"},
             {BehaviorClassification::NONINJECTION, "noninjection"},
             {BehaviorClassification::INJECTION, "injection"}};
+
     std::map<LinkageType, std::string> Person::linkageTypeEnumToStringMap = {
         {LinkageType::BACKGROUND, "background"},
         {LinkageType::INTERVENTION, "intervention"}};
+
     std::map<LinkageState, std::string> Person::linkageStateEnumToStringMap = {
         {LinkageState::NEVER, "never"},
         {LinkageState::LINKED, "linked"},
         {LinkageState::UNLINKED, "unlinked"}};
 
-    std::map<LiverState, std::string> Person::liverStateEnumToStringMap = {
-        {LiverState::NONE, "none"},     {LiverState::F0, "f0"},
-        {LiverState::F1, "f1"},         {LiverState::F2, "f2"},
-        {LiverState::F3, "f3"},         {LiverState::F4, "f4"},
-        {LiverState::DECOMP, "decomp"}, {LiverState::EHCC, "ehcc"},
-        {LiverState::LHCC, "lhcc"}};
-    std::map<MeasuredLiverState, std::string>
-        Person::measuredLiverStateEnumToStringMap = {
-            {MeasuredLiverState::NONE, "none"},
-            {MeasuredLiverState::F01, "f01"},
-            {MeasuredLiverState::F23, "f23"},
-            {MeasuredLiverState::F4, "f4"},
-            {MeasuredLiverState::DECOMP, "decomp"}};
+    std::map<FibrosisState, std::string> Person::fibrosisStateEnumToStringMap =
+        {{FibrosisState::NONE, "none"},    {FibrosisState::F0, "f0"},
+         {FibrosisState::F1, "f1"},        {FibrosisState::F2, "f2"},
+         {FibrosisState::F3, "f3"},        {FibrosisState::F4, "f4"},
+         {FibrosisState::DECOMP, "decomp"}};
+
+    std::map<MeasuredFibrosisState, std::string>
+        Person::measuredFibrosisStateEnumToStringMap = {
+            {MeasuredFibrosisState::NONE, "none"},
+            {MeasuredFibrosisState::F01, "f01"},
+            {MeasuredFibrosisState::F23, "f23"},
+            {MeasuredFibrosisState::F4, "f4"},
+            {MeasuredFibrosisState::DECOMP, "decomp"}};
+
     std::map<MOUD, std::string> Person::moudEnumToStringMap = {
         {MOUD::NONE, "none"}, {MOUD::CURRENT, "current"}, {MOUD::POST, "post"}};
+
     std::map<Sex, std::string> Person::sexEnumToStringMap = {
         {Sex::MALE, "male"}, {Sex::FEMALE, "female"}};
 
@@ -95,8 +105,9 @@ namespace Person {
             {PregnancyState::PREGNANT, "pregnant"},
             {PregnancyState::POSTPARTUM, "postpartum"}};
 
-    Person::Person(Data::IDataTablePtr dataTableRow, int simCycle) {
+    Person::Person(Data::IDataTablePtr dataTableRow) {
         count++;
+
         if (dataTableRow->empty() || dataTableRow->ncols() < 29) {
             return;
         }
@@ -126,14 +137,15 @@ namespace Person {
             stoi((*dataTableRow)["timeHEPCStateChanged"][0]);
         this->infectionStatus.seropositivity =
             Utils::stobool((*dataTableRow)["seropositivity"][0]);
-        this->infectionStatus.liverState = Person::liverStateMap[Utils::toLower(
-            (*dataTableRow)["liverState"][0])];
-        this->infectionStatus.timeLiverStateChanged =
-            stoi((*dataTableRow)["timeLiverStateChanged"][0]);
+        this->infectionStatus.fibrosisState =
+            Person::fibrosisStateMap[Utils::toLower(
+                (*dataTableRow)["fibrosisState"][0])];
+        this->infectionStatus.timeFibrosisStateChanged =
+            stoi((*dataTableRow)["timeFibrosisStateChanged"][0]);
 
-        this->stagingDetails.measuredLiverState =
-            Person::measuredLiverStateMap[Utils::toLower(
-                (*dataTableRow)["measuredLiverState"][0])];
+        this->stagingDetails.measuredFibrosisState =
+            Person::measuredFibrosisStateMap[Utils::toLower(
+                (*dataTableRow)["measuredFibrosisState"][0])];
         this->stagingDetails.timeOfLastStaging =
             stoi((*dataTableRow)["timeOfLastStaging"][0]);
 
@@ -188,12 +200,12 @@ namespace Person {
         this->infectionStatus.timeHEPCStateChanged = tstep;
         this->infectionStatus.seropositivity = true;
 
-        if (this->infectionStatus.liverState != LiverState::NONE) {
+        if (this->infectionStatus.fibrosisState != FibrosisState::NONE) {
             return;
         }
         // once infected, immediately enter F0
-        this->infectionStatus.liverState = LiverState::F0;
-        this->infectionStatus.timeLiverStateChanged = tstep;
+        this->infectionStatus.fibrosisState = FibrosisState::F0;
+        this->infectionStatus.timeFibrosisStateChanged = tstep;
     }
 
     void Person::clearHCV(int tstep) {
@@ -205,13 +217,13 @@ namespace Person {
         this->infectionStatus.timeHEPCStateChanged = tstep;
     }
 
-    void Person::updateLiver(const LiverState &ls, int tstep) {
-        // nothing to do -- can only advance liver state
-        if (ls <= this->infectionStatus.liverState) {
+    void Person::updateFibrosis(const FibrosisState &ls, int tstep) {
+        // nothing to do -- can only advance fibrosis state
+        if (ls <= this->infectionStatus.fibrosisState) {
             return;
         }
-        this->infectionStatus.liverState = ls;
-        this->infectionStatus.timeLiverStateChanged = tstep;
+        this->infectionStatus.fibrosisState = ls;
+        this->infectionStatus.timeFibrosisStateChanged = tstep;
     }
 
     void Person::updateBehavior(const BehaviorClassification &bc, int tstep) {
@@ -229,15 +241,50 @@ namespace Person {
         this->behaviorDetails.behaviorClassification = bc;
     }
 
-    LiverState Person::diagnoseLiver(int tstep) {
+    FibrosisState Person::diagnoseFibrosis(int tstep) {
         // need to add functionality here
-        this->infectionStatus.liverState = LiverState::F0;
-        return this->infectionStatus.liverState;
+        this->infectionStatus.fibrosisState = FibrosisState::F0;
+        return this->infectionStatus.fibrosisState;
     }
 
     HEPCState Person::diagnoseHEPC(int tstep) {
         // need to add functionality here
         this->infectionStatus.hepcState = HEPCState::ACUTE;
         return this->infectionStatus.hepcState;
+    }
+
+    void Person::setUtility(UtilityCategory category, double value) {
+        if ((value > 1) || (value < 0)) {
+            // log error
+            return;
+        }
+        switch (category) {
+        case UtilityCategory::BACKGROUND:
+            this->utility.background = value;
+            break;
+        case UtilityCategory::BEHAVIOR:
+            this->utility.behavior = value;
+            break;
+        case UtilityCategory::TREATMENT:
+            this->utility.treatment = value;
+            break;
+        case UtilityCategory::LIVER:
+            this->utility.liver = value;
+            break;
+        }
+    }
+
+    std::pair<double, double> Person::getUtilities() const {
+        using std::min;
+        const auto &util = this->utility;
+        std::pair<double, double> utilities = {
+            min(min(util.background, util.behavior),
+                min(util.treatment, util.liver)),
+            util.background * util.behavior * util.treatment * util.liver};
+        return utilities;
+    }
+
+    void Person::addCost(Cost::Cost cost, int timestep) {
+        this->costs.addCost(cost, timestep);
     }
 } // namespace Person

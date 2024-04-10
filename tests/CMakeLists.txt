@@ -15,6 +15,7 @@ add_executable(${PROJECT_NAME}
   PersonTest.cpp
   SimTest.cpp
   EventTest.cpp
+  CostTest.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gtest)
@@ -25,6 +26,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Boost::filesystem)
 target_link_libraries(${PROJECT_NAME} PUBLIC person)
 target_link_libraries(${PROJECT_NAME} PUBLIC simulation)
 target_link_libraries(${PROJECT_NAME} PUBLIC event)
+target_link_libraries(${PROJECT_NAME} PUBLIC cost)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
 

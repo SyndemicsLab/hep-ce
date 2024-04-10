@@ -59,9 +59,9 @@ namespace Event {
                 return makeEvent<Death>(table, config, logger, generator,
                                         "Death");
             }
-            if (eventName == "DiseaseProgression") {
-                return makeEvent<DiseaseProgression>(
-                    table, config, logger, generator, "DiseaseProgression");
+            if (eventName == "FibrosisProgression") {
+                return makeEvent<FibrosisProgression>(
+                    table, config, logger, generator, "FibrosisProgression");
             }
             if (eventName == "FibrosisStaging") {
                 return makeEvent<FibrosisStaging>(table, config, logger,

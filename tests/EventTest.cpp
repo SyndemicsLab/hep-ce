@@ -63,7 +63,20 @@ protected:
 
 TEST_F(EventTest, AgingLiving) {
     int expectedAge = 1;
-    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
+    double expectedCost = 100.00;
+
+    // make the table for background costs
+    std::vector<std::string> tableHeaders = {"age_years", "gender",
+                                             "drug_behavior", "cost"};
+    std::map<std::string, std::vector<std::string>> tableData;
+    tableData["age_years"] = {"0"};
+    tableData["gender"] = {"male"};
+    tableData["drug_behavior"] = {"never"};
+    tableData["cost"] = {"100.00"};
+    Data::DataTableShape tableShape(1, 4);
+    Data::IDataTablePtr table =
+        std::make_shared<Data::DataTable>(tableData, tableShape, tableHeaders);
+
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
@@ -71,11 +84,27 @@ TEST_F(EventTest, AgingLiving) {
     agingEvent->setCurrentTimestep(ct);
     agingEvent->execute(livingPopulation);
     EXPECT_DOUBLE_EQ(expectedAge, livingPopulation[0]->age);
+    auto costs = livingPopulation.at(0)->getCosts().getTotals();
+    // costs track starting from timestep 0, so check index 1
+    EXPECT_DOUBLE_EQ(expectedCost, costs[1]);
 }
 
 TEST_F(EventTest, AgingDead) {
     int expectedAge = 0;
-    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
+    double expectedCost = 0;
+
+    // make the table for background costs
+    std::vector<std::string> tableHeaders = {"age_years", "gender",
+                                             "drug_behavior", "cost"};
+    std::map<std::string, std::vector<std::string>> tableData;
+    tableData["age_years"] = {"0"};
+    tableData["gender"] = {"male"};
+    tableData["drug_behavior"] = {"never"};
+    tableData["cost"] = {"100.00"};
+    Data::DataTableShape tableShape(1, 4);
+    Data::IDataTablePtr table =
+        std::make_shared<Data::DataTable>(tableData, tableShape, tableHeaders);
+
     Data::Configuration config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
@@ -83,29 +112,55 @@ TEST_F(EventTest, AgingDead) {
     agingEvent->setCurrentTimestep(ct);
     agingEvent->execute(deadPopulation);
     EXPECT_DOUBLE_EQ(expectedAge, deadPopulation[0]->age);
+    // background costs are not accrued when dead
+    auto costs = deadPopulation.at(0)->getCosts().getTotals();
+    EXPECT_DOUBLE_EQ(expectedCost, costs[1]);
 }
 
 TEST_F(EventTest, BehaviorChange) {
-
+    double expectedCost = 100.00;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
 
-    std::map<std::string, std::vector<std::string>> retData;
-    retData["never"] = {"1.0"};
-    retData["former_noninjection"] = {"0.0"};
-    retData["former_injection"] = {"0.0"};
-    retData["noninjection"] = {"0.0"};
-    retData["injection"] = {"0.0"};
+    std::map<std::string, std::vector<std::string>> transitionData;
+    transitionData["age_years"] = {"0"};
+    transitionData["gender"] = {"male"};
+    transitionData["drug_behavior"] = {"never"};
+    transitionData["never"] = {"1.0"};
+    transitionData["former_noninjection"] = {"0.0"};
+    transitionData["former_injection"] = {"0.0"};
+    transitionData["noninjection"] = {"0.0"};
+    transitionData["injection"] = {"0.0"};
 
-    std::vector<std::string> retHeader = {"never", "former_noninjection",
-                                          "former_injection", "noninjection",
-                                          "injection"};
+    std::vector<std::string> transitionHeader = {
+        "age_years",           "gender",
+        "drug_behavior",       "never",
+        "former_noninjection", "former_injection",
+        "noninjection",        "injection"};
 
-    Data::DataTableShape retShape(1, 5);
+    Data::DataTableShape transitionShape(1, 8);
 
-    std::shared_ptr<Data::IDataTable> retVal =
-        std::make_shared<Data::DataTable>(retData, retShape, retHeader);
+    std::shared_ptr<Data::IDataTable> transitionVal =
+        std::make_shared<Data::DataTable>(transitionData, transitionShape,
+                                          transitionHeader);
 
-    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
+    std::map<std::string, std::vector<std::string>> costData;
+    costData["gender"] = {"male"};
+    costData["drug_behavior"] = {"never"};
+    costData["cost"] = {"100.00"};
+
+    std::vector<std::string> costHeader = {"gender", "drug_behavior", "cost"};
+
+    Data::DataTableShape costShape(1, 3);
+
+    std::shared_ptr<Data::IDataTable> costVal =
+        std::make_shared<Data::DataTable>(costData, costShape, costHeader);
+
+    std::vector<std::string> joinCols = {"gender", "drug_behavior"};
+
+    std::shared_ptr<Data::IDataTable> bcVal =
+        transitionVal->innerJoin(costVal, joinCols, joinCols);
+
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(bcVal));
     Data::Configuration config;
     Event::BehaviorChanges behavior(simulation->getGenerator(), table, config);
     int ct = 1;
@@ -114,6 +169,8 @@ TEST_F(EventTest, BehaviorChange) {
 
     EXPECT_EQ(Person::BehaviorClassification::NEVER,
               livingPopulation.at(0)->getBehaviorClassification());
+    auto costs = livingPopulation.at(0)->getCosts().getTotals();
+    EXPECT_DOUBLE_EQ(expectedCost, costs[1]);
 }
 
 TEST_F(EventTest, Clearance) {
@@ -140,7 +197,7 @@ TEST_F(EventTest, DeathByOldAge) {
     EXPECT_EQ(expectedPerson.getIsAlive(), livingPopulation[0]->getIsAlive());
 }
 
-TEST_F(EventTest, DiseaseProgression) {
+TEST_F(EventTest, FibrosisProgression) {
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
 
     std::map<std::string, std::vector<std::string>> retData;
@@ -156,19 +213,45 @@ TEST_F(EventTest, DiseaseProgression) {
     std::shared_ptr<Data::IDataTable> retVal =
         std::make_shared<Data::DataTable>(retData, retShape, retHeader);
 
-    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
+    std::map<std::string, std::vector<std::string>> costData;
+    costData["hcv_status"] = {"none"};
+    costData["initial_state"] = {"f0"};
+    costData["cost"] = {"100.00"};
+
+    std::vector<std::string> costHeader = {"hcv_status", "initial_state",
+                                           "cost"};
+
+    Data::DataTableShape costShape(1, 3);
+
+    std::shared_ptr<Data::IDataTable> costVal =
+        std::make_shared<Data::DataTable>(costData, costShape, costHeader);
+
+    std::string joinCol = "initial_state";
+
+    std::shared_ptr<Data::IDataTable> fpVal =
+        retVal->innerJoin(costVal, joinCol, joinCol);
+
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(fpVal));
 
     Data::Configuration config;
-    Event::DiseaseProgression diseaseProgression(simulation->getGenerator(),
-                                                 table, config);
+    Event::FibrosisProgression fibrosisProgression(simulation->getGenerator(),
+                                                   table, config);
     livingPopulation[0]->infect(0);
     int ct = 1;
-    diseaseProgression.setCurrentTimestep(ct);
-    diseaseProgression.execute(livingPopulation);
-    EXPECT_EQ(Person::LiverState::F1, livingPopulation[0]->getLiverState());
+    fibrosisProgression.setCurrentTimestep(ct);
+    fibrosisProgression.execute(livingPopulation);
+    EXPECT_EQ(Person::FibrosisState::F1,
+              livingPopulation[0]->getFibrosisState());
+    auto costs = livingPopulation.at(0)->getCosts().getTotals();
+    EXPECT_DOUBLE_EQ(100.00, costs[1]);
 }
 
-TEST_F(EventTest, Fibrosis) {}
+TEST_F(EventTest, FibrosisStagingSingleTest) {
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+    outStream << "[fibrosis_staging]" << std::endl
+              << "period = 12" << std::endl
+              << "test_one = fib4" << std::endl;
+}
 
 TEST_F(EventTest, Infections) {
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
@@ -199,12 +282,19 @@ TEST_F(EventTest, Infections) {
 
 TEST_F(EventTest, Linking) {}
 
-TEST_F(EventTest, Screening) {}
+TEST_F(EventTest, Screening) {
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+    outStream << "[screening]" << std::endl
+              << "intervention_type = periodic" << std::endl
+              << "period = 12" << std::endl;
+    Data::Configuration config(tempFilePath.string());
+    Event::Screening(simulation->getGenerator(), table, config);
+}
 
 TEST_F(EventTest, Treatment) {
     // create config
     outStream << "[treatment]" << std::endl
-              << "courses = foo, alpha" << std::endl
+              << "courses = foo, alpha, foo, alpha, foo, alpha" << std::endl
               << "duration = 7" << std::endl
               << "cost = 150.00" << std::endl
               << "withdrawal_probability = 0.08" << std::endl
@@ -237,9 +327,10 @@ TEST_F(EventTest, Treatment) {
     Data::Configuration config(tempFilePath.string());
 
     Event::Treatment treatment(simulation->getGenerator(), table, config);
-    // testing default value for event name
+    // checking default value for event name
     EXPECT_EQ("Treatment", treatment.EVENT_NAME);
 
+    // checking treatment course values assigned from parsing sim.conf
     std::vector<Event::Course> courses = treatment.getCourses();
     Event::Regimen expectedBar = {7,    100.00, 0.9,     0.08,
                                   0.95, 0.01,   1000.00, 0.7};
