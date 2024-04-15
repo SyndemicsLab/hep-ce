@@ -175,13 +175,34 @@ TEST_F(EventTest, BehaviorChange) {
 
 TEST_F(EventTest, Clearance) {
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
-    Data::Configuration config;
+    // making clearance probability 100% for testing
+    outStream << "[infection]" << std::endl
+              << "clearance_prob = 1.0" << std::endl;
+    Data::Configuration config(tempFilePath.string());
     Event::Clearance clearance(simulation->getGenerator(), table, config);
     livingPopulation[0]->infect(0);
+    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+    // current timestep
     int ct = 1;
     clearance.setCurrentTimestep(ct);
     clearance.execute(livingPopulation);
-    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+    // checking clears of HCV
+    EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
+    // checking that the clearance is correctly counted
+    EXPECT_EQ(1, livingPopulation[0]->getClearances());
+}
+
+TEST_F(EventTest, ClearanceNoInfection) {
+    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
+    Data::Configuration config;
+    Event::Clearance clearance(simulation->getGenerator(), table, config);
+    EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
+    // current timestep
+    int ct = 1;
+    clearance.setCurrentTimestep(ct);
+    clearance.execute(livingPopulation);
+    // checking that there is no clearance in the count
+    EXPECT_EQ(0, livingPopulation[0]->getClearances());
 }
 
 TEST_F(EventTest, DeathByOldAge) {

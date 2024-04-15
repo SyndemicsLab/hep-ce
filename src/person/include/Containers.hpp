@@ -140,6 +140,8 @@ namespace Person {
         bool seropositivity = false;
         int timeHEPCStateChanged = 0;
         int timeFibrosisStateChanged = 0;
+        int numInfections = 0;
+        int numClearances = 0;
     };
 
     /// @brief Attributes characterizing HCC

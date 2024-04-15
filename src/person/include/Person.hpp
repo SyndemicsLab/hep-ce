@@ -133,6 +133,12 @@ namespace Person {
         /// @return HEPC state that was diagnosed
         HEPCState diagnoseHEPC(int tstep);
 
+        /// @brief Add an acute clearance to the running count
+        void addClearance() { this->infectionStatus.numClearances++; };
+
+        /// @brief Get the running total of clearances for Person
+        int getClearances() { return this->infectionStatus.numClearances; };
+
         /// @brief Mark somebody as having been screened this timestep
         void markScreened() { this->screeningDetails.timeOfLastScreening = 0; }
 

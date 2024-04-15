@@ -8,7 +8,7 @@ find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 )
 
-add_library(person Person.cpp)
+add_library(person Person.cpp Maps.cpp)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC utils)
 target_link_libraries(${PROJECT_NAME} PUBLIC cost)
