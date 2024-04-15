@@ -353,17 +353,26 @@ namespace Person {
         int getNumEOT() { return this->treatmentDetails.numEOT; }
 
         /// @brief Add to SVR/cure count
-        void addSVR() { this->treatmentDetails.numEOT++; }
+        void addSVR() { this->treatmentDetails.numSVR++; }
 
         /// @brief Get number of times Person achieved SVR
-        int getNumSVR() { return this->treatmentDetails.numEOT; }
+        /// @return The number of times Person reached treatment end
+        int getNumSVR() { return this->treatmentDetails.numSVR; }
 
         /// @brief Add to adverse treatment effect coutn
         void addTox() { this->treatmentDetails.numTox++; }
 
         /// @brief Get number of times Person experienced adverse treatment
         /// effects
+        /// @return number of adverse treatment effects experienced
         int getNumTox() { return this->treatmentDetails.numTox; }
+
+        /// @brief Add treatment withdrawal to Person
+        void addWithdrawal() { this->treatmentDetails.numWithdrawals++; }
+
+        /// @brief Get the number of treatment withdrawals experienced by Person
+        /// @return Number of treatment withdrawals
+        int getWithdrawals() { return this->treatmentDetails.numWithdrawals; }
 
         /// @brief Getter for pregnancy status
         /// @return Pregnancy State

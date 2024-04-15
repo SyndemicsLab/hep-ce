@@ -204,6 +204,7 @@ namespace Person {
         int numEOT = 0;
         int numSVR = 0;
         int numTox = 0;
+        int numWithdrawals = 0;
     };
 
     /// @brief Categories for utility values
