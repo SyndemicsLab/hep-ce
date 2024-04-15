@@ -277,6 +277,7 @@ namespace Person {
     std::pair<double, double> Person::getUtilities() const {
         using std::min;
         const auto &util = this->utility;
+        // utilities presented as {min, mult}
         std::pair<double, double> utilities = {
             min(min(util.background, util.behavior),
                 min(util.treatment, util.liver)),

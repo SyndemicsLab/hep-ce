@@ -22,6 +22,7 @@ namespace Event {
                          std::shared_ptr<spdlog::logger> logger,
                          std::string name)
         : ProbEvent::ProbEvent(generator, table, config, logger, name) {
+        this->costCategory = Cost::CostCategory::TREATMENT;
         this->populateCourses();
     }
 
@@ -63,12 +64,13 @@ namespace Event {
         // adverse outcome (TOX), then draw probability of withdrawing from
         // treatment prior to completion. TOX does not lead to withdrawal from
         // care but withdrawal probabilities are stratified by TOX.
+        double withdrawalProbability = regimenInfo.first.withdrawalProbability;
         int toxicity =
             this->getDecision({regimenInfo.first.toxicityProbability});
-        double withdrawalProbability = regimenInfo.first.withdrawalProbability;
         if (toxicity == 1) {
             // log toxicity for person
             // apply toxicity cost and utility
+            this->addTreatmentCost(person, regimenInfo.first.toxicityCost);
             // adjust withdrawalProbability
         }
         int withdraw = this->getDecision({withdrawalProbability});
@@ -90,6 +92,7 @@ namespace Event {
             // cure
             // log person cured
             // accumulate costs
+            this->addTreatmentCost(person, regimenInfo.first.cost);
             // cured people remove half their hcv cost
             person->clearHCV(false);
         }
@@ -219,5 +222,11 @@ namespace Event {
         // error, value not specified
         // throw std::runtime_error
         return -1;
+    }
+
+    void Treatment::addTreatmentCost(std::shared_ptr<Person::Person> person,
+                                     double cost) {
+        Cost::Cost treatmentCost = {this->costCategory, "Treatment Cost", cost};
+        person->addCost(treatmentCost, this->getCurrentTimestep());
     }
 } // namespace Event

@@ -136,6 +136,18 @@ namespace Person {
         /// @brief Mark somebody as having been screened this timestep
         void markScreened() { this->screeningDetails.timeOfLastScreening = 0; }
 
+        /// @brief
+        void addAbScreen() { this->screeningDetails.abCount++; }
+
+        /// @brief
+        void addRnaScreen() { this->screeningDetails.rnaCount++; }
+
+        /// @brief
+        int getAbCount() { return this->screeningDetails.rnaCount; }
+
+        /// @brief
+        int getRnaCount() { return this->screeningDetails.rnaCount; }
+
         /// @brief Set the frequency in which to screen this person
         /// @param screeningFrequency Frequency in which to screen this person
         void setScreeningFrequency(int screeningFrequency) {
@@ -169,6 +181,7 @@ namespace Person {
             this->linkStatus.linkState = LinkageState::LINKED;
             this->linkStatus.timeOfLinkChange = tstep;
             this->linkStatus.linkType = linkType;
+            this->linkStatus.linkCount++;
         }
 
         /// @brief Mark a Person as Identified as Infected
@@ -267,6 +280,10 @@ namespace Person {
             return this->linkStatus.timeOfLinkChange;
         }
 
+        /// @brief Getter for link count
+        /// @return Number of times Person has linked to care
+        int getLinkCount() const { return this->linkStatus.linkCount; }
+
         /// @brief Getter for Linkage Type
         /// @return Linkage Type
         LinkageType getLinkageType() const { return this->linkStatus.linkType; }
@@ -314,6 +331,33 @@ namespace Person {
         void setTimeOfTreatmentInitiation(int tstep) {
             this->treatmentDetails.timeOfTreatmentInitiation = tstep;
         }
+
+        /// @brief Add to the tracked count of treatment initiations for Person
+        void incrementTreatCount() { this->treatmentDetails.treatmentCount++; }
+
+        /// @brief Get the tracked count of treatment initiations for Person
+        int getTreatmentCount() const {
+            return this->treatmentDetails.treatmentCount;
+        }
+
+        /// @brief Add to end of treatment (EOT) count
+        void addEOT() { this->treatmentDetails.numEOT++; }
+
+        /// @brief Get number of treatments completed
+        int getNumEOT() { return this->treatmentDetails.numEOT; }
+
+        /// @brief Add to SVR/cure count
+        void addSVR() { this->treatmentDetails.numEOT++; }
+
+        /// @brief Get number of times Person achieved SVR
+        int getNumSVR() { return this->treatmentDetails.numEOT; }
+
+        /// @brief Add to adverse treatment effect coutn
+        void addTox() { this->treatmentDetails.numTox++; }
+
+        /// @brief Get number of times Person experienced adverse treatment
+        /// effects
+        int getNumTox() { return this->treatmentDetails.numTox; }
 
         /// @brief Getter for pregnancy status
         /// @return Pregnancy State

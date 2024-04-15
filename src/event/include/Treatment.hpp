@@ -47,6 +47,8 @@ namespace Event {
     /// @brief Subclass of Event used to Provide Treatment to People
     class Treatment : public ProbEvent {
     private:
+        std::vector<Course> courses;
+
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
@@ -79,7 +81,8 @@ namespace Event {
         double locateInput(std::vector<std::string> &configSections,
                            const std::string &parameter);
 
-        std::vector<Course> courses;
+        void addTreatmentCost(std::shared_ptr<Person::Person> person,
+                              double cost);
 
     public:
         Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,

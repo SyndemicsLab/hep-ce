@@ -159,6 +159,7 @@ namespace Person {
         LinkageState linkState = LinkageState::NEVER;
         int timeOfLinkChange = 0;
         LinkageType linkType = LinkageType::BACKGROUND;
+        int linkCount = 0;
     };
 
     /// @brief Attributes describing MOUD status
@@ -188,6 +189,8 @@ namespace Person {
         int timeOfLastScreening = 0;
         int screeningFrequency = -1; // -1 if screened only once and never again
         bool interventionScreening = false;
+        int abCount = 0;
+        int rnaCount = 0;
     };
 
     /// @brief Attributes describing treatment state
@@ -195,6 +198,10 @@ namespace Person {
         bool incompleteTreatment = false;
         bool initiatedTreatment = false;
         int timeOfTreatmentInitiation = 0;
+        int treatmentCount = 0;
+        int numEOT = 0;
+        int numSVR = 0;
+        int numTox = 0;
     };
 
     /// @brief Categories for utility values
@@ -207,10 +214,10 @@ namespace Person {
 
     /// @brief Attributes describing a person's quality of life
     struct Utility {
-        double background = 1;
-        double behavior = 1;
-        double treatment = 1;
-        double liver = 1;
+        double background = 1.0;
+        double behavior = 1.0;
+        double treatment = 1.0;
+        double liver = 1.0;
     };
 } // namespace Person
 
