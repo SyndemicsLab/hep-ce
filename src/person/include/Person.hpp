@@ -159,6 +159,21 @@ namespace Person {
         /// @brief
         int getRnaCount() { return this->screeningDetails.rnaCount; }
 
+        /// @brief Set the frequency in which to screen this person
+        /// @param screeningFrequency Frequency in which to screen this person
+        void setScreeningFrequency(int screeningFrequency) {
+            this->screeningDetails.screeningFrequency = screeningFrequency;
+        }
+
+        /// @brief
+        void addRnaScreen() { this->screeningDetails.rnaCount++; }
+
+        /// @brief
+        int getAbCount() { return this->screeningDetails.rnaCount; }
+
+        /// @brief
+        int getRnaCount() { return this->screeningDetails.rnaCount; }
+
         /// @brief Getter for whether Person experienced fibtest two this cycle
         /// @return value of hadFibTestTwo
         bool hadFibTestTwo() { return this->stagingDetails.hadFibTestTwo; }
