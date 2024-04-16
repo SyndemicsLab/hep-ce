@@ -133,6 +133,10 @@ namespace Person {
         /// @return HEPC state that was diagnosed
         HEPCState diagnoseHEPC(int tstep);
 
+        /// @brief Getter for the number of HCV infections experienced by Person
+        /// @return Number of HCV infections experienced by Person
+        int getNumInfections() { return this->infectionStatus.numInfections; }
+
         /// @brief Add an acute clearance to the running count
         void addClearance() { this->infectionStatus.numClearances++; };
 

@@ -27,6 +27,10 @@ namespace Event {
     }
 
     void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
+        if (!person->getIsAlive()) {
+            return;
+        }
+
         // 1. Determine person's treatment eligibility. Bypass this if person
         // has already initiated treatment.
         if (!person->hasInitiatedTreatment()) {
@@ -50,6 +54,8 @@ namespace Event {
             // person initiates treatment -- set treatment initiation values
             person->setInitiatedTreatment(true);
             person->setTimeOfTreatmentInitiation(this->getCurrentTimestep());
+            // add to treatment initiation count
+            person->incrementTreatCount();
             // return, as a person's state doesn't change the timestep they
             // start treatment
             return;
@@ -71,11 +77,15 @@ namespace Event {
             // log toxicity for person
             // apply toxicity cost and utility
             this->addTreatmentCost(person, regimenInfo.first.toxicityCost);
+            // add to toxicity count for person
+            person->addTox();
             // adjust withdrawalProbability
         }
         int withdraw = this->getDecision({withdrawalProbability});
         if (withdraw == 1) {
             person->setInitiatedTreatment(false);
+            // add to withdrawal count for person
+            person->addWithdrawal();
             return;
         }
         // 7. Compare the treatment duration to the time since treatment
@@ -83,6 +93,8 @@ namespace Event {
         if (timeSinceInitiation == regimenInfo.second) {
             int treatmentOutcome =
                 this->getDecision({regimenInfo.first.svrProbability});
+            // add EOT for person
+            person->addEOT();
             if (treatmentOutcome == 0) {
                 // log EOT without cure
                 // reached EOT without cure
@@ -90,6 +102,8 @@ namespace Event {
                 return;
             }
             // cure
+            // add SVR count to person
+            person->addSVR();
             // log person cured
             // accumulate costs
             this->addTreatmentCost(person, regimenInfo.first.cost);

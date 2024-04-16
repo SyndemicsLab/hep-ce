@@ -185,6 +185,7 @@ TEST_F(EventTest, Clearance) {
     // current timestep
     int ct = 1;
     clearance.setCurrentTimestep(ct);
+    EXPECT_EQ(0, livingPopulation[0]->getClearances());
     clearance.execute(livingPopulation);
     // checking clears of HCV
     EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
@@ -281,7 +282,7 @@ TEST_F(EventTest, Infections) {
     retData["age_years"] = {"0"};
     retData["gender"] = {"male"};
     retData["drug_behavior"] = {"never"};
-    retData["incidence"] = {"0"};
+    retData["incidence"] = {"1.0"};
 
     std::vector<std::string> retHeader = {"age_years", "gender",
                                           "drug_behavior", "incidence"};
@@ -295,21 +296,73 @@ TEST_F(EventTest, Infections) {
 
     Data::Configuration config;
     Event::Infections infections(simulation->getGenerator(), table, config);
+    // current timestep
     int ct = 1;
     infections.setCurrentTimestep(ct);
+    EXPECT_EQ(0, livingPopulation[0]->getNumInfections());
     infections.execute(livingPopulation);
-    EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
+    // check that person is now infected
+    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+    // check that the infection counts correctly
+    EXPECT_EQ(1, livingPopulation[0]->getNumInfections());
 }
 
 TEST_F(EventTest, Linking) {}
 
 TEST_F(EventTest, Screening) {
-    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
     outStream << "[screening]" << std::endl
               << "intervention_type = periodic" << std::endl
-              << "period = 12" << std::endl;
+              << "period = 12" << std::endl
+              << "seropositivity_multiplier = 1.0" << std::endl
+              << "[screening_background_ab]" << std::endl
+              << "cost = 50.00" << std::endl
+              << "acute_sensitivity = 1.0" << std::endl
+              << "chronic_sensitivity = 1.0" << std::endl
+              << "specificity = 1.0" << std::endl
+              << "[screening_background_rna]" << std::endl
+              << "cost = 25.00" << std::endl
+              << "acute_sensitivity = 1.0" << std::endl
+              << "chronic_sensitivity = 1.0" << std::endl
+              << "specificity = 1.0" << std::endl
+              << "[screening_intervention_ab]" << std::endl
+              << "cost = 1000.00" << std::endl
+              << "acute_sensitivity = 1.0" << std::endl
+              << "chronic_sensitivity = 1.0" << std::endl
+              << "specificity = 1.0" << std::endl
+              << "[screening_intervention_rna]" << std::endl
+              << "cost = 100.00" << std::endl
+              << "acute_sensitivity = 1.0" << std::endl
+              << "chronic_sensitivity = 1.0" << std::endl
+              << "specificity = 1.0" << std::endl;
+
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+    std::map<std::string, std::vector<std::string>> screeningData;
+    screeningData["age_years"] = {"0"};
+    screeningData["gender"] = {"male"};
+    screeningData["drug_behavior"] = {"never"};
+    screeningData["background_screen_probability"] = {"1.0"};
+    screeningData["background_link_probability"] = {"1.0"};
+    screeningData["intervention_screen_probability"] = {"1.0"};
+    screeningData["intervention_link_probability"] = {"1.0"};
+    std::vector<std::string> screeningHeader = {
+        "age_years",
+        "gender",
+        "drug_behavior",
+        "background_screen_probability",
+        "background_link_probability"
+        "intervention_screen_probability",
+        "intervention_link_probability"};
+    Data::DataTableShape screeningShape(1, 7);
+    std::shared_ptr<Data::IDataTable> screeningVal =
+        std::make_shared<Data::DataTable>(screeningData, screeningShape,
+                                          screeningHeader);
+
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(screeningVal));
     Data::Configuration config(tempFilePath.string());
-    Event::Screening(simulation->getGenerator(), table, config);
+    Event::Screening screening(simulation->getGenerator(), table, config);
+    int ct = 1;
+    livingPopulation[0]->infect(ct);
+    screening.execute(livingPopulation);
 }
 
 TEST_F(EventTest, Treatment) {

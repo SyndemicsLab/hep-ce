@@ -19,26 +19,27 @@
 
 namespace Event {
     void FibrosisProgression::doEvent(std::shared_ptr<Person::Person> person) {
-        // can only progress in fibrosis state if actively infected with HCV
-        // for people in F3 or later, there is still a chance of HCC progression
-        if (person->getHEPCState() == Person::HEPCState::NONE) {
-            if (person->getFibrosisState() < Person::FibrosisState::F3) {
-                return;
-            }
+        if (!person->getIsAlive()) {
+            return;
         }
-        // 1. Get current disease status
+
+        // can only progress in fibrosis state if actively infected with HCV
+        if (person->getHEPCState() == Person::HEPCState::NONE) {
+            return;
+        }
+        // 1. Get current fibrosis status
         Person::FibrosisState fs = person->getFibrosisState();
         // 2. Get the transition probabilities from that state
         std::vector<double> probs = getTransitions(person);
-        // currently using placeholders to test compiling
-        // std::vector<double> probs = {0.2, 0.2, 0.2, 0.2, 0.2};
         // 3. Randomly draw the state to transition to
         Person::FibrosisState toFS =
             (Person::FibrosisState)this->getDecision(probs);
         // 4. Transition to the new state
         person->updateFibrosis(toFS, this->getCurrentTimestep());
 
-        // insert Person's liver-related disease cost
+        // insert Person's liver-related disease cost (taking the highest
+        // fibrosis state)
+        // TODO: make the ability to add this only if identified a toggle-able
         this->addLiverDiseaseCost(person);
     }
 

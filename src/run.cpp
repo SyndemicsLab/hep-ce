@@ -1,4 +1,5 @@
 #include "run.hpp"
+#include <chrono>
 #include <iostream>
 
 bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,

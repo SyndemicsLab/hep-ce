@@ -21,14 +21,16 @@ int main(int argc, char *argv[]) {
         std::filesystem::path inputSet = ((std::filesystem::path)rootInputDir) /
                                          ("input" + std::to_string(i));
 
+        // load non-tabular inputs
         std::filesystem::path configPath = inputSet / "sim.conf";
-
         Data::Configuration config(configPath.string());
 
+        // define output path
         std::filesystem::path outputSet =
             ((std::filesystem::path)rootInputDir) /
             ("output" + std::to_string(i));
 
+        // initialize logger
         std::shared_ptr<spdlog::logger> logger;
         try {
             logger = spdlog::basic_logger_mt("basic_logger",
@@ -39,10 +41,15 @@ int main(int argc, char *argv[]) {
             exit(-1);
         }
 
+        // check whether a simulation seed has been provided
+        // std::shared_ptr<int> simSeed = config.get_optional("simulation.seed",
+        // );
+
+        // load tabular inputs
         loadTables(tables, inputSet.string());
 
         Simulation::Simulation sim(
-            0, stoul(config.get<std::string>("simulation.duration")), logger);
+            0, stoi(config.get<std::string>("simulation.duration")), logger);
 
         // create the person-level event vector
         std::vector<Event::sharedEvent> personEvents;

@@ -20,6 +20,10 @@
 
 namespace Event {
     void VoluntaryRelinking::doEvent(std::shared_ptr<Person::Person> person) {
+        if (!person->getIsAlive()) {
+            return;
+        }
+
         double relinkProbability = stod(
             config.get<std::string>("linking.voluntary_relinkage_probability"));
 

@@ -18,6 +18,10 @@
 
 namespace Event {
     void Infections::doEvent(std::shared_ptr<Person::Person> person) {
+        if (!person->getIsAlive()) {
+            return;
+        }
+
         // if person is already infected we can't infect them more
         if (person->getHEPCState() != Person::HEPCState::NONE) {
             return;

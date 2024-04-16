@@ -81,5 +81,4 @@ void writePopulation(std::vector<sharedPerson> &population,
 inline std::string const boolToString(bool b) {
     return b ? std::string("true") : std::string("false");
 }
-
 #endif

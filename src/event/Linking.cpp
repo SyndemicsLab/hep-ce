@@ -19,6 +19,10 @@
 
 namespace Event {
     void Linking::doEvent(std::shared_ptr<Person::Person> person) {
+        if (!person->getIsAlive()) {
+            return;
+        }
+
         Person::HEPCState state = person->getHEPCState();
         if (state == Person::HEPCState::NONE) {
             // add false positive cost
@@ -33,12 +37,12 @@ namespace Event {
         std::vector<double> probs;
         if (person->getLinkageType() == Person::LinkageType::BACKGROUND) {
             // link probability
-            probs = getTransitions(person, "background_linking");
+            probs = getTransitions(person, "background_link_probability");
         } else {
             // add intervention cost
             this->addLinkingCost(person);
             // link probability
-            probs = getTransitions(person, "intervention_linking");
+            probs = getTransitions(person, "intervention_link_probability");
         }
 
         if (person->getLinkState() == Person::LinkageState::UNLINKED) {

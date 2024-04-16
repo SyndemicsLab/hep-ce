@@ -19,6 +19,10 @@
 
 namespace Event {
     void Screening::doEvent(std::shared_ptr<Person::Person> person) {
+        if (!person->getIsAlive()) {
+            return;
+        }
+
         // one-time screen or periodic screen
         switch (this->interventionType) {
         case InterventionType::ONETIME:
@@ -136,6 +140,7 @@ namespace Event {
         }
         // probability is the chance of false positive or false negative
         int value = getDecision({probability});
+        person->addAbScreen();
         return value;
     }
 
@@ -155,6 +160,7 @@ namespace Event {
         }
         // probability is the chance of false positive or false negative
         int value = getDecision({probability});
+        person->addRnaScreen();
         return value;
     }
 
@@ -170,7 +176,8 @@ namespace Event {
                 [person->getBehaviorClassification()];
         auto resultTable = table->selectWhere(selectCriteria);
 
-        double prob = std::stod((*resultTable)["background_screening"][0]);
+        double prob =
+            std::stod((*resultTable)["background_screen_probability"][0]);
         std::vector<double> result = {prob, 1 - prob};
         return result;
     }
@@ -187,7 +194,8 @@ namespace Event {
                 [person->getBehaviorClassification()];
         auto resultTable = table->selectWhere(selectCriteria);
 
-        double prob = std::stod((*resultTable)["intervention_screening"][0]);
+        double prob =
+            std::stod((*resultTable)["intervention_screen_probability"][0]);
         std::vector<double> result = {prob, 1 - prob};
         return result;
     }

@@ -97,6 +97,7 @@ namespace Person {
         this->infectionStatus.hepcState = HEPCState::ACUTE;
         this->infectionStatus.timeHEPCStateChanged = tstep;
         this->infectionStatus.seropositivity = true;
+        this->infectionStatus.numInfections++;
 
         if (this->infectionStatus.fibrosisState != FibrosisState::NONE) {
             return;
