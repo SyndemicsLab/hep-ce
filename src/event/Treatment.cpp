@@ -27,6 +27,10 @@ namespace Event {
     }
 
     void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
+        if (!person->getIsAlive()) {
+            return;
+        }
+
         // 1. Determine person's treatment eligibility. Bypass this if person
         // has already initiated treatment.
         if (!person->hasInitiatedTreatment()) {
