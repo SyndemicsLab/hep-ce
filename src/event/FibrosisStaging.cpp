@@ -31,7 +31,11 @@ namespace Event {
             return;
         }
 
-        int period = this->config.get<int>("fibrosis_staging.period");
+        int period =
+            std::get<int>(this->config.get("fibrosis_staging.period", (int)-1));
+        if (period <= 0) {
+            // log error
+        }
         if (((int)timeSinceStaging) < period) {
             return;
         }
@@ -66,8 +70,8 @@ namespace Event {
                 (Person::MeasuredFibrosisState)this->getDecision(probs);
 
             // determine whether to use latest test value or greatest
-            std::string method = this->config.get<std::string>(
-                "fibrosis_staging.multitest_result_method");
+            std::string method = std::get<std::string>(this->config.get(
+                "fibrosis_staging.multitest_result_method", ""));
 
             Person::MeasuredFibrosisState measured;
             if (method == "latest") {
@@ -85,8 +89,8 @@ namespace Event {
         } else {
             // either means the name provided is incorrect or there is no second
             // test
-            std::shared_ptr<std::string> testTwo =
-                this->config.optional<std::string>("fibrosis_staging.test_two");
+            std::shared_ptr<Data::ReturnType> testTwo =
+                this->config.get_optional("fibrosis_staging.test_two", "");
             if (testTwo) {
                 // log an error
             }
@@ -97,10 +101,11 @@ namespace Event {
     FibrosisStaging::getTransitions(Data::IDataTablePtr table,
                                     std::string configLookupKey) {
 
-        std::shared_ptr<std::string> stageTest =
-            this->config.optional<std::string>(configLookupKey);
+        std::shared_ptr<Data::ReturnType> stageTest =
+            this->config.get_optional(configLookupKey, "");
         if (stageTest) {
-            std::vector<std::string> testColumn = table->getColumn(*stageTest);
+            std::vector<std::string> testColumn =
+                table->getColumn(std::get<std::string>(*stageTest));
             std::vector<double> probs;
             for (std::string c : testColumn) {
                 probs.push_back(stod(c));

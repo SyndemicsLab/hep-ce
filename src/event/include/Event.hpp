@@ -40,13 +40,13 @@ namespace Event {
 
     protected:
         int currentTimestep;
-        Data::Configuration &config;
+        Data::Config &config;
         Data::IDataTablePtr table;
         std::shared_ptr<spdlog::logger> logger;
         Cost::CostCategory costCategory = Cost::CostCategory::MISC;
 
     public:
-        Event(Data::IDataTablePtr table, Data::Configuration &config,
+        Event(Data::IDataTablePtr table, Data::Config &config,
               std::shared_ptr<spdlog::logger> logger =
                   std::make_shared<spdlog::logger>("default"),
               std::string name = std::string("Event"))
@@ -121,7 +121,7 @@ namespace Event {
 
     public:
         ProbEvent(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                  Data::Configuration &config,
+                  Data::Config &config,
                   std::shared_ptr<spdlog::logger> logger =
                       std::make_shared<spdlog::logger>("default"),
                   std::string name = std::string("ProbEvent"))

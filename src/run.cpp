@@ -28,11 +28,24 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
     return true;
 }
 
-bool configChecks(Data::Configuration &config);
+bool configChecks(Data::Config &config);
+
+uint64_t getSimSeed() {
+    using std::chrono;
+
+    int seed = config.get_optional("simulation.seed", (int)-1);
+
+    if (seed == -1) {
+        milliseconds ms =
+            duration_cast<milliseconds>(steady_clock::now().time_since_epoch());
+        return (uint64_t)ms.count();
+    }
+    return (uint64_t)seed;
+}
 
 int loadEvents(std::vector<Event::sharedEvent> &personEvents,
                std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-               Simulation::Simulation &sim, Data::Configuration &config,
+               Simulation::Simulation &sim, Data::Config &config,
                std::shared_ptr<spdlog::logger> logger) {
     personEvents.clear();
 
@@ -190,60 +203,62 @@ Data::IDataTablePtr personToDataTable(sharedPerson &person) {
                                             "sex",
                                             "age",
                                             "isAlive",
-                                            "timeOfLastScreening",
-                                            "screeningFrequency",
-                                            "hasInterventionScreening",
-                                            "timeIdentified",
-                                            "identifiedAsPositive",
-                                            "hepcState",
-                                            "timeHEPCStateChanged",
-                                            "seropositivity",
+                                            "identifiedAsPositiveInfection",
+                                            "timeInfectionIdentified",
+                                            "HEPCState",
                                             "fibrosisState",
+                                            "isGenotypeThree",
+                                            "seropositivity",
+                                            "timeHEPCStateChanged",
                                             "timeFibrosisStateChanged",
-                                            "measuredFibrosisState",
-                                            "timeOfLastStaging",
-                                            "drugBehavior",
+                                            "numInfections",
+                                            "numClearances",
+                                            "drugBehaviorClassification",
                                             "timeLastActiveDrugUse",
                                             "linkageState",
                                             "timeOfLinkChange",
                                             "linkageType",
-                                            "isOverdosed",
+                                            "linkCount",
+                                            "measuredFibrosisState",
+                                            "timeOfLastStaging",
+                                            "timeOfLastScreening",
+                                            "abCount",
+                                            "rnaCount",
                                             "hasIncompleteTreatment",
-                                            "MOUDState",
-                                            "timeStartedMOUD",
-                                            "pregnancyState",
-                                            "timeOfPregnancyChange",
-                                            "infantCount",
-                                            "miscarriageCount"};
+                                            "initiatedTreatment",
+                                            "timeOfTreatmentInitiation",
+                                            "treatmentCount",
+                                            "numEOT",
+                                            "numSVR",
+                                            "numTox",
+                                            "numWithdrawals",
+                                            "backgroundUtility",
+                                            "behaviorUtility",
+                                            "treatmentUtility",
+                                            "liverUtility"};
     data["id"] = {std::to_string(person->getID())};
     data["sex"] = {person->sexEnumToStringMap[person->getSex()]};
     data["age"] = {std::to_string(person->age)};
     data["isAlive"] = {boolToString(person->getIsAlive())};
-    data["timeOfLastScreening"] = {
-        std::to_string(person->getTimeOfLastScreening())};
-    data["screeningFrequency"] = {
-        std::to_string(person->getScreeningFrequency())};
-    data["hasInterventionScreening"] = {
-        boolToString(person->isInterventionScreened())};
-    data["timeIdentified"] = {std::to_string(person->getTimeIdentified())};
-    data["identifiedAsPositive"] = {
+    data["identifiedAsPositiveInfection"] = {
         boolToString(person->isIdentifiedAsInfected())};
-    data["hepcState"] = {
+    data["timeInfectionIdentified"] = {
+        std::to_string(person->getTimeIdentified())};
+    data["HEPCState"] = {
         person->hepcStateEnumToStringMap[person->getHEPCState()]};
-    data["timeHEPCStateChanged"] = {
-        std::to_string(person->getTimeHEPCStateChanged())};
-    data["seropositivity"] = {boolToString(person->getSeropositivity())};
     data["fibrosisState"] = {
         person->fibrosisStateEnumToStringMap[person->getFibrosisState()]};
+    data["isGenotypeThree"] = {person->boolToString(person->getGenotype())};
+    data["seropositivity"] = {boolToString(person->getSeropositivity())};
+    data["timeHEPCStateChanged"] = {
+        std::to_string(person->getTimeHEPCStateChanged())};
     data["timeFibrosisStateChanged"] = {
         std::to_string(person->getTimeFibrosisStateChanged())};
-    data["measuredFibrosisState"] = {
-        person->measuredFibrosisStateEnumToStringMap
-            [person->getMeasuredFibrosisState()]};
-    data["timeOfLastStaging"] = {
-        std::to_string(person->getTimeOfLastStaging())};
-    data["drugBehavior"] = {person->behaviorClassificationEnumToStringMap
-                                [person->getBehaviorClassification()]};
+    data["numInfections"] = {std::to_string(person->getNumInfections())};
+    data["numClearances"] = {std::to_string(person->getClearances())};
+    data["drugBehaviorClassification"] = {
+        person->behaviorClassificationEnumToStringMap
+            [person->getBehaviorClassification()]};
     data["timeLastActiveDrugUse"] = {
         std::to_string(person->getTimeBehaviorChange())};
     data["linkageState"] = {
@@ -251,18 +266,34 @@ Data::IDataTablePtr personToDataTable(sharedPerson &person) {
     data["timeOfLinkChange"] = {std::to_string(person->getTimeOfLinkChange())};
     data["linkageType"] = {
         person->linkageTypeEnumToStringMap[person->getLinkageType()]};
-    data["isOverdosed"] = {boolToString(person->getOverdose())};
+    data["linkCount"] = {std::to_string(person->getLinkCount())};
+    data["measuredFibrosisState"] = {
+        person->measuredFibrosisStateEnumToStringMap
+            [person->getMeasuredFibrosisState()]};
+    data["timeOfLastStaging"] = {
+        std::to_string(person->getTimeOfLastStaging())};
+    data["timeOfLastScreening"] = {
+        std::to_string(person->getTimeOfLastScreening())};
+    data["abCount"] = {std::to_string(person->getAbCount())};
+    data["rnaCount"] = {std::to_string(person->getRnaCount())};
     data["hasIncompleteTreatment"] = {
         boolToString(person->hadIncompleteTreatment())};
-    data["MOUDState"] = {person->moudEnumToStringMap[person->getMoudState()]};
-    data["timeStartedMOUD"] = {std::to_string(person->getTimeStartedMoud())};
-    data["pregnancyState"] = {
-        person->pregnancyStateEnumToStringMap[person->getPregnancyState()]};
-    data["timeOfPregnancyChange"] = {
-        std::to_string(person->getTimeOfPregnancyChange())};
-    data["infantCount"] = {std::to_string(person->getInfantCount())};
-    data["miscarriageCount"] = {std::to_string(person->getMiscarriageCount())};
-    Data::DataTableShape newShape(1, 29);
+    data["initiatedTreatment"] = {
+        boolToString(person->hasInitiatedTreatment())};
+    data["timeOfTreatmentInitiation"] = {
+        std::to_string(person->getTimeOfTreatmentInitiation())};
+    data["treatmentCount"] = {std::to_string(person->getTreatmentCount())};
+    data["numEOT"] = {std::to_string(person->getNumEOT())};
+    data["numSVR"] = {std::to_string(person->getNumSVR())};
+    data["numTox"] = {std::to_string(person->getNumTox())};
+    data["numWithdrawals"] = {std::to_string(person->getWithdrawals())};
+    auto utility = person->getUtility();
+    data["backgroundUtility"] = {std::to_string(utility.background)};
+    data["behaviorUtility"] = {std::to_string(utility.behavior)};
+    data["treatmentUtility"] = {std::to_string(utility.treatment)};
+    data["liverUtility"] = {std::to_string(utility.liver)};
+
+    Data::DataTableShape newShape(1, 37);
     Data::IDataTablePtr newDT =
         std::make_shared<Data::DataTable>(data, newShape, headerOrder);
     return newDT;

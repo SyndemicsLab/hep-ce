@@ -45,8 +45,7 @@ namespace Event {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         // intentional truncation
-        // selectCriteria["age_years"] = std::to_string((int)(person->age
-        // / 12.0));
+        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
         // selectCriteria["moud"] =

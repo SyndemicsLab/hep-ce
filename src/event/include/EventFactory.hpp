@@ -16,10 +16,10 @@ namespace Event {
     /// @param table
     /// @return
     template <typename T>
-    sharedEvent
-    makeEvent(Data::IDataTablePtr table, Data::Configuration &config,
-              std::shared_ptr<spdlog::logger> logger,
-              std::mt19937_64 &generator, std::string name = "ProbEvent") {
+    sharedEvent makeEvent(Data::IDataTablePtr table, Data::Config &config,
+                          std::shared_ptr<spdlog::logger> logger,
+                          std::mt19937_64 &generator,
+                          std::string name = "ProbEvent") {
         return std::make_shared<T>(generator, table, config, logger, name);
     }
 
@@ -29,8 +29,7 @@ namespace Event {
     /// @param table
     /// @return
     template <typename T>
-    sharedEvent makeEvent(Data::IDataTablePtr table,
-                          Data::Configuration &config,
+    sharedEvent makeEvent(Data::IDataTablePtr table, Data::Config &config,
                           std::shared_ptr<spdlog::logger> logger,
                           std::string name = "Event") {
         return std::make_shared<T>(table, config, logger, name);
@@ -39,8 +38,7 @@ namespace Event {
     class EventFactory {
     public:
         sharedEvent create(std::string const eventName,
-                           Data::IDataTablePtr table,
-                           Data::Configuration &config,
+                           Data::IDataTablePtr table, Data::Config &config,
                            std::shared_ptr<spdlog::logger> logger,
                            std::mt19937_64 &generator) {
             if (eventName == "Aging") {

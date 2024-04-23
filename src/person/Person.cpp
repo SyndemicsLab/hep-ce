@@ -6,79 +6,76 @@ namespace Person {
     Person::Person(Data::IDataTablePtr dataTableRow) {
         count++;
 
-        if (dataTableRow->empty() || dataTableRow->ncols() < 29) {
+        if (dataTableRow->empty() || dataTableRow->ncols() < 37) {
             return;
         }
 
         this->id = stoi((*dataTableRow)["id"][0]);
-
         this->sex = Person::sexMap[Utils::toLower((*dataTableRow)["sex"][0])];
         this->age = stoul((*dataTableRow)["age"][0]);
-
         this->isAlive = Utils::stobool((*dataTableRow)["isAlive"][0]);
-
-        this->screeningDetails.timeOfLastScreening =
-            stoi((*dataTableRow)["timeOfLastScreening"][0]);
-        this->screeningDetails.screeningFrequency =
-            stoi((*dataTableRow)["screeningFrequency"][0]);
-        this->screeningDetails.interventionScreening =
-            Utils::stobool((*dataTableRow)["hasInterventionScreening"][0]);
-
-        this->idStatus.timeIdentified =
-            stoi((*dataTableRow)["timeIdentified"][0]);
         this->idStatus.identifiedAsPositiveInfection =
-            Utils::stobool((*dataTableRow)["identifiedAsPositive"][0]);
-
+            Utils::stobool((*dataTableRow)["identifiedAsPositiveInfection"][0]);
+        this->idStatus.timeIdentified =
+            stoi((*dataTableRow)["timeInfectionIdentified"][0]);
         this->infectionStatus.hepcState = Person::hepcStateMap[Utils::toLower(
-            (*dataTableRow)["hepcState"][0])];
-        this->infectionStatus.timeHEPCStateChanged =
-            stoi((*dataTableRow)["timeHEPCStateChanged"][0]);
-        this->infectionStatus.seropositivity =
-            Utils::stobool((*dataTableRow)["seropositivity"][0]);
+            (*dataTableRow)["HEPCState"][0])];
         this->infectionStatus.fibrosisState =
             Person::fibrosisStateMap[Utils::toLower(
                 (*dataTableRow)["fibrosisState"][0])];
+        this->infectionStatus.isGenotypeThree =
+            Utils::stobool((*dataTableRow)["isGenotypeThree"][0]);
+        this->infectionStatus.seropositivity =
+            Utils::stobool((*dataTableRow)["seropositivity"][0]);
+        this->infectionStatus.timeHEPCStateChanged =
+            stoi((*dataTableRow)["timeHEPCStateChanged"][0]);
         this->infectionStatus.timeFibrosisStateChanged =
             stoi((*dataTableRow)["timeFibrosisStateChanged"][0]);
-
-        this->stagingDetails.measuredFibrosisState =
-            Person::measuredFibrosisStateMap[Utils::toLower(
-                (*dataTableRow)["measuredFibrosisState"][0])];
-        this->stagingDetails.timeOfLastStaging =
-            stoi((*dataTableRow)["timeOfLastStaging"][0]);
-
+        this->infectionStatus.numInfections =
+            stoi((*dataTableRow)["numInfections"][0]);
+        this->infectionStatus.numClearances =
+            stoi((*dataTableRow)["numClearances"][0]);
         this->behaviorDetails.behaviorClassification =
             Person::behaviorClassificationMap[Utils::toLower(
-                (*dataTableRow)["drugBehavior"][0])];
+                (*dataTableRow)["drugBehaviorClassification"][0])];
         this->behaviorDetails.timeLastActive =
             stoul((*dataTableRow)["timeLastActiveDrugUse"][0]);
-
         this->linkStatus.linkState = Person::linkageStateMap[Utils::toLower(
             (*dataTableRow)["linkageState"][0])];
         this->linkStatus.timeOfLinkChange =
             stoi((*dataTableRow)["timeOfLinkChange"][0]);
         this->linkStatus.linkType = Person::linkageTypeMap[Utils::toLower(
             (*dataTableRow)["linkageType"][0])];
-
-        this->overdose = Utils::stobool((*dataTableRow)["isOverdosed"][0]);
-
+        this->linkStatus.linkCount = stoi((*dataTableRow)["linkCount"][0]);
+        this->stagingDetails.measuredFibrosisState =
+            Person::measuredFibrosisStateMap[Utils::toLower(
+                (*dataTableRow)["measuredFibrosisState"][0])];
+        this->stagingDetails.timeOfLastStaging =
+            stoi((*dataTableRow)["timeOfLastStaging"][0]);
+        this->screeningDetails.timeOfLastScreening =
+            stoi((*dataTableRow)["timeOfLastScreening"][0]);
+        this->screeningDetails.abCount = stoi((*dataTableRow)["abCount"][0]);
+        this->screeningDetails.rnaCount = stoi((*dataTableRow)["rnaCount"][0]);
         this->treatmentDetails.incompleteTreatment =
             Utils::stobool((*dataTableRow)["hasIncompleteTreatment"][0]);
-
-        this->moudDetails.moudState =
-            Person::moudMap[Utils::toLower((*dataTableRow)["MOUDState"][0])];
-        this->moudDetails.timeStartedMoud =
-            stoi((*dataTableRow)["timeStartedMOUD"][0]);
-
-        this->pregnancyDetails.pregnancyState =
-            Person::pregnancyStateMap[Utils::toLower(
-                (*dataTableRow)["pregnancyState"][0])];
-        this->pregnancyDetails.timeOfPregnancyChange =
-            stoi((*dataTableRow)["timeOfPregnancyChange"][0]);
-        this->pregnancyDetails.infantCount =
-            stoi((*dataTableRow)["infantCount"][0]);
-        this->pregnancyDetails.miscarriageCount =
-            stoi((*dataTableRow)["miscarriageCount"][0]);
+        this->treatmentDetails.initiatedTreatment =
+            Utils::stobool((*dataTableRow)["initiatedTreatment"][0]);
+        this->treatmentDetails.timeOfTreatmentInitiation =
+            std::stoi((*dataTableRow)["timeOfTreatmentInitiation"][0]);
+        this->treatmentDetails.treatmentCount =
+            std::stoi((*dataTableRow)["treatmentCount"][0]);
+        this->treatmentDetails.numEOT = std::stoi((*dataTableRow)["numEOT"][0]);
+        this->treatmentDetails.numSVR = std::stoi((*dataTableRow)["numSVR"][0]);
+        this->treatmentDetails.numTox = std::stoi((*dataTableRow)["numTox"][0]);
+        this->treatmentDetails.numWithdrawals =
+            std::stoi((*dataTableRow)["numWithdrawals"][0]);
+        this->utility.background =
+            std::stod((*dataTableRow)["backgroundUtility"][0]);
+        this->utility.behavior =
+            std::stod((*dataTableRow)["behaviorUtility"][0]);
+        this->utility.treatment =
+            std::stod((*dataTableRow)["treatmentUtility"][0]);
+        this->utility.liver = std::stod((*dataTableRow)["liverUtility"][0]);
     }
 
     void Person::die() { this->isAlive = false; }

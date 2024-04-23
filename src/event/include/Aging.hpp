@@ -32,7 +32,7 @@ namespace Event {
         void addBackgroundCost(std::shared_ptr<Person::Person> person);
 
     public:
-        Aging(Data::IDataTablePtr table, Data::Configuration &config,
+        Aging(Data::IDataTablePtr table, Data::Config &config,
               std::shared_ptr<spdlog::logger> logger =
                   std::make_shared<spdlog::logger>("default"),
               std::string name = std::string("Aging"))

@@ -40,14 +40,14 @@ namespace Event {
 
     public:
         Linking(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                Data::Configuration &config,
+                Data::Config &config,
                 std::shared_ptr<spdlog::logger> logger =
                     std::make_shared<spdlog::logger>("default"),
                 std::string name = std::string("Linking"))
             : ProbEvent(generator, table, config, logger, name) {
             this->costCategory = Cost::CostCategory::LINKING;
             this->interventionCost =
-                config.get<double>("linking.intervention_cost");
+                config.get("linking.intervention_cost", 0.0);
         }
         virtual ~Linking() = default;
     };

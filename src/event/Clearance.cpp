@@ -18,16 +18,16 @@
 
 namespace Event {
     Clearance::Clearance(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                         Data::Configuration &config,
+                         Data::Config &config,
                          std::shared_ptr<spdlog::logger> logger,
                          std::string name)
         : ProbEvent(generator, table, config, logger, name) {
-        auto clearance =
-            this->config.optional<double>("infection.clearance_prob");
+        std::shared_ptr<Data::ReturnType> clearance =
+            this->config.get_optional("infection.clearance_prob", (double)-1.0);
         if (clearance) {
             // if the user provides a clearance probability, use that value
             // instead
-            this->clearanceProb = *clearance;
+            this->clearanceProb = std::get<double>(*clearance);
         } else {
             // it's basically universally accepted that 25% of acute hcv
             // infections clear in the 6-month acute infection period

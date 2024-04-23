@@ -18,7 +18,7 @@
 
 namespace Event {
     Treatment::Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                         Data::Configuration &config,
+                         Data::Config &config,
                          std::shared_ptr<spdlog::logger> logger,
                          std::string name)
         : ProbEvent::ProbEvent(generator, table, config, logger, name) {
@@ -227,10 +227,10 @@ namespace Event {
     double Treatment::locateInput(std::vector<std::string> &configSections,
                                   const std::string &parameter) {
         for (auto section : configSections) {
-            std::shared_ptr<double> param =
-                this->config.optional<double>(section + '.' + parameter);
+            std::shared_ptr<Data::ReturnType> param =
+                this->config.get_optional(section + '.' + parameter, -1.0);
             if (param) {
-                return *param;
+                return std::get<double>(*param);
             }
         }
         // error, value not specified

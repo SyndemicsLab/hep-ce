@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
 
         // load non-tabular inputs
         std::filesystem::path configPath = inputSet / "sim.conf";
-        Data::Configuration config(configPath.string());
+        Data::Config config(configPath.string());
 
         // define output path
         std::filesystem::path outputSet =
@@ -41,24 +41,23 @@ int main(int argc, char *argv[]) {
             exit(-1);
         }
 
-        // check whether a simulation seed has been provided
-        // std::shared_ptr<int> simSeed = config.get_optional("simulation.seed",
-        // );
-
         // load tabular inputs
         loadTables(tables, inputSet.string());
 
         Simulation::Simulation sim(
-            0, stoi(config.get<std::string>("simulation.duration")), logger);
+            getSimSeed(), stoi(config.get("simulation.duration", 0)), logger);
 
         // create the person-level event vector
         std::vector<Event::sharedEvent> personEvents;
 
         logger->info("Attempting to Load Events");
         int result = loadEvents(personEvents, tables, sim, config, logger);
+
+        // check if events loaded correctly, exit if failed
         if (result == -1) {
             return -1;
         }
+
         sim.loadEvents(personEvents);
         logger->info("Events loaded to Simulation");
 

@@ -41,7 +41,7 @@ namespace Event {
 
     public:
         Death(std::mt19937_64 &generator, Data::IDataTablePtr table,
-              Data::Configuration &config,
+              Data::Config &config,
               std::shared_ptr<spdlog::logger> logger =
                   std::make_shared<spdlog::logger>("default"),
               std::string name = std::string("Death"))

@@ -189,8 +189,6 @@ namespace Person {
     struct ScreeningDetails {
         // -1 if never screened, otherwise [0, currentTimestep-1)
         int timeOfLastScreening = 0;
-        int screeningFrequency = -1; // -1 if screened only once and never again
-        bool interventionScreening = false;
         int abCount = 0;
         int rnaCount = 0;
     };

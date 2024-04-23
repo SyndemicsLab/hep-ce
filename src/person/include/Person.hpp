@@ -158,17 +158,6 @@ namespace Person {
         /// @brief
         int getRnaCount() { return this->screeningDetails.rnaCount; }
 
-        /// @brief Set the frequency in which to screen this person
-        /// @param screeningFrequency Frequency in which to screen this person
-        void setScreeningFrequency(int screeningFrequency) {
-            this->screeningDetails.screeningFrequency = screeningFrequency;
-        }
-
-        /// @brief Add intervention screening to this person
-        void addInterventionScreening() {
-            this->screeningDetails.interventionScreening = true;
-        }
-
         /// @brief Set the Seropositivity value
         /// @param seropositivity Seropositivity status to set
         void setSeropositivity(bool seropositivity) {
@@ -205,18 +194,6 @@ namespace Person {
         /// @return The Time Since the Last Screening
         int getTimeOfLastScreening() const {
             return this->screeningDetails.timeOfLastScreening;
-        }
-
-        /// @brief Getter for the Screening Frequency
-        /// @return The Screening Frequency
-        int getScreeningFrequency() const {
-            return this->screeningDetails.screeningFrequency;
-        }
-
-        /// @brief Getter for the if the Person was Screened via Interventions
-        /// @return Intervention Screening Status
-        bool isInterventionScreened() const {
-            return this->screeningDetails.interventionScreening;
         }
 
         /// @brief Flips the person's overdose state

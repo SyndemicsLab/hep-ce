@@ -24,8 +24,8 @@ namespace Event {
             return;
         }
 
-        double relinkProbability = stod(
-            config.get<std::string>("linking.voluntary_relinkage_probability"));
+        double relinkProbability =
+            config.get("linking.voluntary_relinkage_probability", 0.0);
 
         int relink = this->getDecision({relinkProbability});
 

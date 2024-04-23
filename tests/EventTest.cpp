@@ -77,7 +77,7 @@ TEST_F(EventTest, AgingLiving) {
     Data::IDataTablePtr table =
         std::make_shared<Data::DataTable>(tableData, tableShape, tableHeaders);
 
-    Data::Configuration config;
+    Data::Config config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
     int ct = 1;
@@ -105,7 +105,7 @@ TEST_F(EventTest, AgingDead) {
     Data::IDataTablePtr table =
         std::make_shared<Data::DataTable>(tableData, tableShape, tableHeaders);
 
-    Data::Configuration config;
+    Data::Config config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
     int ct = 1;
@@ -161,7 +161,7 @@ TEST_F(EventTest, BehaviorChange) {
         transitionVal->innerJoin(costVal, joinCols, joinCols);
 
     EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(bcVal));
-    Data::Configuration config;
+    Data::Config config;
     Event::BehaviorChanges behavior(simulation->getGenerator(), table, config);
     int ct = 1;
     behavior.setCurrentTimestep(ct);
@@ -178,7 +178,7 @@ TEST_F(EventTest, Clearance) {
     // making clearance probability 100% for testing
     outStream << "[infection]" << std::endl
               << "clearance_prob = 1.0" << std::endl;
-    Data::Configuration config(tempFilePath.string());
+    Data::Config config(tempFilePath.string());
     Event::Clearance clearance(simulation->getGenerator(), table, config);
     livingPopulation[0]->infect(0);
     EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
@@ -195,7 +195,7 @@ TEST_F(EventTest, Clearance) {
 
 TEST_F(EventTest, ClearanceNoInfection) {
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
-    Data::Configuration config;
+    Data::Config config;
     Event::Clearance clearance(simulation->getGenerator(), table, config);
     EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
     // current timestep
@@ -210,7 +210,7 @@ TEST_F(EventTest, DeathByOldAge) {
     Person::Person expectedPerson;
     expectedPerson.die();
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
-    Data::Configuration config;
+    Data::Config config;
     Event::Death deathEvent(simulation->getGenerator(), table, config);
     livingPopulation[0]->age = 1210;
     int ct = 1;
@@ -255,7 +255,7 @@ TEST_F(EventTest, FibrosisProgression) {
 
     EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(fpVal));
 
-    Data::Configuration config;
+    Data::Config config;
     Event::FibrosisProgression fibrosisProgression(simulation->getGenerator(),
                                                    table, config);
     livingPopulation[0]->infect(0);
@@ -294,7 +294,7 @@ TEST_F(EventTest, Infections) {
 
     EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
 
-    Data::Configuration config;
+    Data::Config config;
     Event::Infections infections(simulation->getGenerator(), table, config);
     // current timestep
     int ct = 1;
@@ -358,7 +358,7 @@ TEST_F(EventTest, Screening) {
                                           screeningHeader);
 
     EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(screeningVal));
-    Data::Configuration config(tempFilePath.string());
+    Data::Config config(tempFilePath.string());
     Event::Screening screening(simulation->getGenerator(), table, config);
     int ct = 1;
     livingPopulation[0]->infect(ct);
@@ -398,7 +398,7 @@ TEST_F(EventTest, Treatment) {
               << "duration = 5" << std::endl
               << "utility = 0.95" << std::endl;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
-    Data::Configuration config(tempFilePath.string());
+    Data::Config config(tempFilePath.string());
 
     Event::Treatment treatment(simulation->getGenerator(), table, config);
     // checking default value for event name

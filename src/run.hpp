@@ -42,7 +42,12 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 /// @brief
 /// @param config
 /// @return
-bool configChecks(Data::Configuration &config);
+bool configChecks(Data::Config &config);
+
+/// @brief Provide the pRNG seed passed to the simulation object
+/// @return User-defined seed, if provided. Otherwise, a seed based on the
+/// current millisecond.
+uint64_t getSimSeed();
 
 /// @brief
 /// @param personEvents
@@ -50,7 +55,7 @@ bool configChecks(Data::Configuration &config);
 /// @param sim
 int loadEvents(std::vector<Event::sharedEvent> &personEvents,
                std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-               Simulation::Simulation &sim, Data::Configuration &config,
+               Simulation::Simulation &sim, Data::Config &config,
                std::shared_ptr<spdlog::logger> logger =
                    std::make_shared<spdlog::logger>("default"));
 
