@@ -30,11 +30,12 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 
 bool configChecks(Data::Config &config);
 
-uint64_t getSimSeed() {
-    using std::chrono;
+uint64_t getSimSeed(Data::Config &config) {
+    using namespace std::chrono;
 
-    int seed = config.get_optional("simulation.seed", (int)-1);
-
+    std::shared_ptr<Data::ReturnType> temp =
+        config.get_optional("simulation.seed", (int)-1);
+    int seed = std::get<int>(*temp);
     if (seed == -1) {
         milliseconds ms =
             duration_cast<milliseconds>(steady_clock::now().time_since_epoch());
@@ -248,7 +249,7 @@ Data::IDataTablePtr personToDataTable(sharedPerson &person) {
         person->hepcStateEnumToStringMap[person->getHEPCState()]};
     data["fibrosisState"] = {
         person->fibrosisStateEnumToStringMap[person->getFibrosisState()]};
-    data["isGenotypeThree"] = {person->boolToString(person->getGenotype())};
+    data["isGenotypeThree"] = {boolToString(person->getGenotype())};
     data["seropositivity"] = {boolToString(person->getSeropositivity())};
     data["timeHEPCStateChanged"] = {
         std::to_string(person->getTimeHEPCStateChanged())};

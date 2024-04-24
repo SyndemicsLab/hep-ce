@@ -47,7 +47,7 @@ bool configChecks(Data::Config &config);
 /// @brief Provide the pRNG seed passed to the simulation object
 /// @return User-defined seed, if provided. Otherwise, a seed based on the
 /// current millisecond.
-uint64_t getSimSeed();
+uint64_t getSimSeed(Data::Config &config);
 
 /// @brief
 /// @param personEvents

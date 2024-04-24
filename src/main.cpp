@@ -45,7 +45,8 @@ int main(int argc, char *argv[]) {
         loadTables(tables, inputSet.string());
 
         Simulation::Simulation sim(
-            getSimSeed(), stoi(config.get("simulation.duration", 0)), logger);
+            getSimSeed(config),
+            std::get<int>(config.get("simulation.duration", 0)), logger);
 
         // create the person-level event vector
         std::vector<Event::sharedEvent> personEvents;

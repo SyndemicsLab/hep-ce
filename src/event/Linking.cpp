@@ -47,8 +47,8 @@ namespace Event {
 
         if (person->getLinkState() == Person::LinkageState::UNLINKED) {
             // scale by relink multiplier
-            double relinkScalar =
-                this->config.get<double>("linking.relink_multiplier");
+            double relinkScalar = std::get<double>(
+                this->config.get("linking.relink_multiplier", 1.0));
             probs[1] = probs[1] * relinkScalar;
             probs[0] = 1 - probs[1];
         }

@@ -107,11 +107,11 @@ namespace Event {
                   std::string name = std::string("Screening"))
             : ProbEvent(generator, table, config, logger, name) {
             this->costCategory = Cost::CostCategory::SCREENING;
-            this->interventionType =
-                interventionMap[config.get("screening.intervention_type", "")];
+            this->interventionType = interventionMap[std::get<std::string>(
+                config.get("screening.intervention_type", ""))];
             if (this->interventionType == InterventionType::PERIODIC) {
                 this->interventionPeriod =
-                    config.get("screening.period", (int)-1);
+                    std::get<int>(config.get("screening.period", (int)-1));
                 if (interventionPeriod <= 0) {
                     // log error
                 }

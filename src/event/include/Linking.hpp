@@ -46,8 +46,8 @@ namespace Event {
                 std::string name = std::string("Linking"))
             : ProbEvent(generator, table, config, logger, name) {
             this->costCategory = Cost::CostCategory::LINKING;
-            this->interventionCost =
-                config.get("linking.intervention_cost", 0.0);
+            this->interventionCost = std::get<double>(
+                this->config.get("linking.intervention_cost", 0.0));
         }
         virtual ~Linking() = default;
     };

@@ -128,14 +128,15 @@ namespace Event {
             Person::HEPCState infectionStatus = person->getHEPCState();
             if (infectionStatus == Person::HEPCState::ACUTE ||
                 infectionStatus == Person::HEPCState::NONE) {
-                probability =
-                    1 - this->config.get(configKey + ".acute_sensitivity", 0.0);
+                probability = 1 - std::get<double>(this->config.get(
+                                      configKey + ".acute_sensitivity", 0.0));
             } else {
-                probability = 1 - this->config.get(
-                                      configKey + ".chronic_sensitivity", 0.0);
+                probability = 1 - std::get<double>(this->config.get(
+                                      configKey + ".chronic_sensitivity", 0.0));
             }
         } else {
-            probability = this->config.get(configKey + ".specificity", 0.0);
+            probability = std::get<double>(
+                this->config.get(configKey + ".specificity", 0.0));
         }
         // probability is the chance of false positive or false negative
         int value = getDecision({probability});
@@ -148,13 +149,14 @@ namespace Event {
         double probability = 0.5;
         Person::HEPCState infectionStatus = person->getHEPCState();
         if (infectionStatus == Person::HEPCState::ACUTE) {
-            probability =
-                1 - this->config.get(configKey + ".acute_sensitivity", 0.0);
+            probability = 1 - std::get<double>(this->config.get(
+                                  configKey + ".acute_sensitivity", 0.0));
         } else if (infectionStatus == Person::HEPCState::CHRONIC) {
-            probability =
-                1 - this->config.get(configKey + ".chronic_sensitivity", 0.0);
+            probability = 1 - std::get<double>(this->config.get(
+                                  configKey + ".chronic_sensitivity", 0.0));
         } else {
-            probability = this->config.get(configKey + ".specificity", 0.0);
+            probability = std::get<double>(
+                this->config.get(configKey + ".specificity", 0.0));
         }
         // probability is the chance of false positive or false negative
         int value = getDecision({probability});
@@ -204,19 +206,23 @@ namespace Event {
         std::string screeningName;
         switch (type) {
         case ScreeningType::BACKGROUND_AB:
-            screeningCost = config.get("screening_background_ab.cost", 0.0);
+            screeningCost = std::get<double>(
+                this->config.get("screening_background_ab.cost", 0.0));
             screeningName = "Background Antibody Screening";
             break;
         case ScreeningType::BACKGROUND_RNA:
-            screeningCost = config.get("screening_background_rna.cost", 0.0);
+            screeningCost = std::get<double>(
+                this->config.get("screening_background_rna.cost", 0.0));
             screeningName = "Background RNA Screening";
             break;
         case ScreeningType::INTERVENTION_AB:
-            screeningCost = config.get("screening_intervention_ab.cost", 0.0);
+            screeningCost = std::get<double>(
+                this->config.get("screening_intervention_ab.cost", 0.0));
             screeningName = "Intervention Antibody Screening";
             break;
         case ScreeningType::INTERVENTION_RNA:
-            screeningCost = config.get("screening_intervention_rna.cost", 0.0);
+            screeningCost = std::get<double>(
+                this->config.get("screening_intervention_rna.cost", 0.0));
             screeningName = "Intervention RNA Screening";
             break;
         }
