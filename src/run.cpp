@@ -86,59 +86,45 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     std::filesystem::path f =
         ((std::filesystem::path)dirpath) / "background_costs.csv";
     Data::IDataTablePtr backgroundCost = std::make_shared<Data::DataTable>(f);
-    tables["backgroundCost"] = backgroundCost;
 
     f = ((std::filesystem::path)dirpath) / "behavior_costs.csv";
     Data::IDataTablePtr behaviorCosts = std::make_shared<Data::DataTable>(f);
-    tables["behaviorCost"] = behaviorCosts;
 
     f = ((std::filesystem::path)dirpath) / "hcv_costs.csv";
     Data::IDataTablePtr hcv_cost = std::make_shared<Data::DataTable>(f);
-    tables["hcvCost"] = hcv_cost;
 
     f = ((std::filesystem::path)dirpath) / "background_utilities.csv";
     Data::IDataTablePtr backgroundUtilities =
         std::make_shared<Data::DataTable>(f);
-    tables["backgroundUtilities"] = backgroundUtilities;
 
     f = ((std::filesystem::path)dirpath) / "behavior_utilities.csv";
     Data::IDataTablePtr behaviorUtilities =
         std::make_shared<Data::DataTable>(f);
-    tables["behaviorUtilities"] = behaviorUtilities;
 
     f = ((std::filesystem::path)dirpath) / "hcv_utilities.csv";
     Data::IDataTablePtr hcv_utilities = std::make_shared<Data::DataTable>(f);
-    tables["hcvUtilities"] = hcv_utilities;
 
     // Events
 
     f = ((std::filesystem::path)dirpath) / "behavior_transitions.csv";
     Data::IDataTablePtr behaviorTransitions =
         std::make_shared<Data::DataTable>(f);
-    tables["BehaviorChanges"] = behaviorTransitions;
 
     f = ((std::filesystem::path)dirpath) / "disease_progression.csv";
     Data::IDataTablePtr diseaseProgression =
         std::make_shared<Data::DataTable>(f);
-    tables["DiseaseProgression"] = diseaseProgression;
 
     f = ((std::filesystem::path)dirpath) / "fibrosis.csv";
     Data::IDataTablePtr fibrosis = std::make_shared<Data::DataTable>(f);
-    tables["FibrosisStaging"] = fibrosis;
 
     f = ((std::filesystem::path)dirpath) / "incidence.csv";
     Data::IDataTablePtr incidence = std::make_shared<Data::DataTable>(f);
-    tables["Infections"] = incidence;
 
     f = ((std::filesystem::path)dirpath) / "screening_and_linkage.csv";
     Data::IDataTablePtr screen = std::make_shared<Data::DataTable>(f);
-    tables["Screening"] = screen;
-
-    tables["Linking"] = screen;
 
     f = ((std::filesystem::path)dirpath) / "all_types_overdose.csv";
     Data::IDataTablePtr overdoses = std::make_shared<Data::DataTable>(f);
-    tables["Overdose"] = overdoses;
 
     f = ((std::filesystem::path)dirpath) / "background_mortality.csv";
     Data::IDataTablePtr backgroundMortality =
@@ -159,12 +145,24 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     death = death->innerJoin(fatalOverdoses, "gender", "gender");
     death = death->innerJoin(fibrosisDeaths, "gender", "gender");
 
-    tables["Death"] = death;
-
     // People
-
     f = ((std::filesystem::path)dirpath) / "population.csv";
     Data::IDataTablePtr population = std::make_shared<Data::DataTable>(f);
+
+    tables["backgroundCost"] = backgroundCost;
+    tables["behaviorCost"] = behaviorCosts;
+    tables["hcvCost"] = hcv_cost;
+    tables["backgroundUtilities"] = backgroundUtilities;
+    tables["behaviorUtilities"] = behaviorUtilities;
+    tables["hcvUtilities"] = hcv_utilities;
+    tables["BehaviorChanges"] = behaviorTransitions;
+    tables["DiseaseProgression"] = diseaseProgression;
+    tables["FibrosisStaging"] = fibrosis;
+    tables["Infections"] = incidence;
+    tables["Screening"] = screen;
+    tables["Linking"] = screen;
+    tables["Overdose"] = overdoses;
+    tables["Death"] = death;
     tables["population"] = population;
     return 0;
 }
