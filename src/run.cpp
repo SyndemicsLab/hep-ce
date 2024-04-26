@@ -76,46 +76,49 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     // Added blank table for events that do not need tabular data
     Data::IDataTablePtr blank;
     tables["blank"] = blank;
-    tables["Aging"] = blank;
     tables["Clearance"] = blank;
     tables["VoluntaryRelinking"] = blank;
     tables["Treatment"] = blank;
 
     // Costs and Utilities
-
     std::filesystem::path f =
-        ((std::filesystem::path)dirpath) / "background_costs.csv";
+        ((std::filesystem::path)dirpath) / "antibody_testing.csv";
+    Data::IDataTablePtr antibody = std::make_shared<Data::DataTable>(f);
+
+    f = ((std::filesystem::path)dirpath) / "background_costs.csv";
     Data::IDataTablePtr backgroundCost = std::make_shared<Data::DataTable>(f);
+
+    f = ((std::filesystem::path)dirpath) / "background_mortality.csv";
+    Data::IDataTablePtr backgroundMortality =
+        std::make_shared<Data::DataTable>(f);
+
+    f = ((std::filesystem::path)dirpath) / "background_utilities.csv";
+    Data::IDataTablePtr backgroundUtilities =
+        std::make_shared<Data::DataTable>(f);
 
     f = ((std::filesystem::path)dirpath) / "behavior_costs.csv";
     Data::IDataTablePtr behaviorCosts = std::make_shared<Data::DataTable>(f);
 
-    f = ((std::filesystem::path)dirpath) / "hcv_costs.csv";
-    Data::IDataTablePtr hcv_cost = std::make_shared<Data::DataTable>(f);
-
-    f = ((std::filesystem::path)dirpath) / "background_utilities.csv";
-    Data::IDataTablePtr backgroundUtilities =
+    f = ((std::filesystem::path)dirpath) / "behavior_transitions.csv";
+    Data::IDataTablePtr behaviorTransitions =
         std::make_shared<Data::DataTable>(f);
 
     f = ((std::filesystem::path)dirpath) / "behavior_utilities.csv";
     Data::IDataTablePtr behaviorUtilities =
         std::make_shared<Data::DataTable>(f);
 
-    f = ((std::filesystem::path)dirpath) / "hcv_utilities.csv";
-    Data::IDataTablePtr hcv_utilities = std::make_shared<Data::DataTable>(f);
-
-    // Events
-
-    f = ((std::filesystem::path)dirpath) / "behavior_transitions.csv";
-    Data::IDataTablePtr behaviorTransitions =
-        std::make_shared<Data::DataTable>(f);
-
-    f = ((std::filesystem::path)dirpath) / "disease_progression.csv";
-    Data::IDataTablePtr diseaseProgression =
+    f = ((std::filesystem::path)dirpath) / "fibrosis_progression.csv";
+    Data::IDataTablePtr fibrosisProgression =
         std::make_shared<Data::DataTable>(f);
 
     f = ((std::filesystem::path)dirpath) / "fibrosis.csv";
     Data::IDataTablePtr fibrosis = std::make_shared<Data::DataTable>(f);
+
+    f = ((std::filesystem::path)dirpath) / "hcv_costs.csv";
+    Data::IDataTablePtr hcvCost = std::make_shared<Data::DataTable>(f);
+
+    f = ((std::filesystem::path)dirpath) / "hcv_utilities.csv";
+    Data::IDataTablePtr hcvUtilities = std::make_shared<Data::DataTable>(f);
 
     f = ((std::filesystem::path)dirpath) / "incidence.csv";
     Data::IDataTablePtr incidence = std::make_shared<Data::DataTable>(f);
@@ -123,45 +126,53 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     f = ((std::filesystem::path)dirpath) / "screening_and_linkage.csv";
     Data::IDataTablePtr screen = std::make_shared<Data::DataTable>(f);
 
-    f = ((std::filesystem::path)dirpath) / "all_types_overdose.csv";
-    Data::IDataTablePtr overdoses = std::make_shared<Data::DataTable>(f);
-
-    f = ((std::filesystem::path)dirpath) / "background_mortality.csv";
-    Data::IDataTablePtr backgroundMortality =
-        std::make_shared<Data::DataTable>(f);
+    // f = ((std::filesystem::path)dirpath) / "all_types_overdose.csv";
+    // Data::IDataTablePtr overdoses = std::make_shared<Data::DataTable>(f);
 
     f = ((std::filesystem::path)dirpath) / "SMR.csv";
     Data::IDataTablePtr smr = std::make_shared<Data::DataTable>(f);
 
-    f = ((std::filesystem::path)dirpath) / "fatal_overdose.csv";
-    Data::IDataTablePtr fatalOverdoses = std::make_shared<Data::DataTable>(f);
+    // f = ((std::filesystem::path)dirpath) / "fatal_overdose.csv";
+    // Data::IDataTablePtr fatalOverdoses =
+    // std::make_shared<Data::DataTable>(f);
 
-    f = ((std::filesystem::path)dirpath) / "fibrosis_deaths.csv";
-    Data::IDataTablePtr fibrosisDeaths = std::make_shared<Data::DataTable>(f);
+    // f = ((std::filesystem::path)dirpath) / "fibrosis_deaths.csv";
+    // Data::IDataTablePtr fibrosisDeaths =
+    // std::make_shared<Data::DataTable>(f);
 
     Data::IDataTablePtr death =
         backgroundMortality->innerJoin(smr, "gender", "gender");
 
-    death = death->innerJoin(fatalOverdoses, "gender", "gender");
-    death = death->innerJoin(fibrosisDeaths, "gender", "gender");
+    // death = death->innerJoin(fatalOverdoses, "gender", "gender");
+    // death = death->innerJoin(fibrosisDeaths, "gender", "gender");
 
-    // People
-    f = ((std::filesystem::path)dirpath) / "population.csv";
+    Data::IDataTablePtr behavior;
+    std::vector<std::string> joinCols = {"gender", "drug_behavior"};
+    behavior =
+        behaviorTransitions->innerJoin(behaviorCosts, joinCols, joinCols);
+    behavior = behavior->innerJoin(behaviorUtilities, joinCols, joinCols);
+
+    fibrosisProgression = fibrosisProgression->innerJoin(
+        hcvCost, "metavir_stage", "metavir_stage");
+    fibrosisProgression = fibrosisProgression->innerJoin(
+        hcvUtilities, "metavir_stage", "metavir_stage");
+
+    // people
+    f = ((std::filesystem::path)dirpath) / "init_cohort.csv";
     Data::IDataTablePtr population = std::make_shared<Data::DataTable>(f);
 
-    tables["backgroundCost"] = backgroundCost;
-    tables["behaviorCost"] = behaviorCosts;
-    tables["hcvCost"] = hcv_cost;
-    tables["backgroundUtilities"] = backgroundUtilities;
-    tables["behaviorUtilities"] = behaviorUtilities;
-    tables["hcvUtilities"] = hcv_utilities;
-    tables["BehaviorChanges"] = behaviorTransitions;
-    tables["DiseaseProgression"] = diseaseProgression;
+    // resultant event tables
+    joinCols = {"age_years", "gender", "drug_behavior"};
+    tables["Aging"] =
+        backgroundCost->innerJoin(backgroundUtilities, joinCols, joinCols);
+    tables["BehaviorChanges"] = behavior;
+    tables["FibrosisProgression"] = fibrosisProgression;
     tables["FibrosisStaging"] = fibrosis;
     tables["Infections"] = incidence;
-    tables["Screening"] = screen;
+    joinCols = {"age_years", "drug_behavior"};
+    tables["Screening"] = antibody->innerJoin(screen, joinCols, joinCols);
     tables["Linking"] = screen;
-    tables["Overdose"] = overdoses;
+    // tables["Overdose"] = overdoses;
     tables["Death"] = death;
     tables["population"] = population;
     return 0;

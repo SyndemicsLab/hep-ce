@@ -207,10 +207,13 @@ TEST_F(EventTest, ClearanceNoInfection) {
 }
 
 TEST_F(EventTest, DeathByOldAge) {
+    outStream << "[mortality]" << std::endl
+              << "f4 = 0" << std::endl
+              << "decomp = 0" << std::endl;
     Person::Person expectedPerson;
     expectedPerson.die();
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
-    Data::Config config;
+    Data::Config config(tempFilePath.string());
     Event::Death deathEvent(simulation->getGenerator(), table, config);
     livingPopulation[0]->age = 1210;
     int ct = 1;

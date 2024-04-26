@@ -25,6 +25,9 @@ namespace Event {
     /// @brief Subclass of Event used to End the Aging Process of Individuals
     class Death : public ProbEvent {
     private:
+        double f4Mort = 0;
+        double decompMort = 0;
+
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
@@ -35,7 +38,7 @@ namespace Event {
 
         void
         getMortalityProbabilities(std::shared_ptr<Person::Person> const person,
-                                  double &fatalOverdoseProb,
+                                  // double &fatalOverdoseProb,
                                   double &backgroundMortProb, double &smr,
                                   double &fibrosisDeathProb);
 
@@ -45,7 +48,11 @@ namespace Event {
               std::shared_ptr<spdlog::logger> logger =
                   std::make_shared<spdlog::logger>("default"),
               std::string name = std::string("Death"))
-            : ProbEvent(generator, table, config, logger, name) {}
+            : ProbEvent(generator, table, config, logger, name) {
+            f4Mort = std::get<double>(this->config.get("mortality.f4", 0.0));
+            decompMort =
+                std::get<double>(this->config.get("mortality.decomp", 0.0));
+        }
         virtual ~Death() = default;
     };
 } // namespace Event

@@ -17,3 +17,4 @@ docs/
 build/*
 !build/.gitkeep
 lib/dminstall/
+functionality-testing

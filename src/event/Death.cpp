@@ -24,6 +24,7 @@ namespace Event {
 
         if (person->age >= 1200) {
             this->die(person);
+            return;
         }
 
         // "Calculate background mortality rate based on age, gender, and IDU"
@@ -31,33 +32,32 @@ namespace Event {
 
         // Fatal Overdose
         // 1. Check if the person overdosed this timestep. If no, return.
-        if (!person->getOverdose()) {
-            return;
-        }
+        // if (!person->getOverdose()) {
+        //     return;
+        // }
 
         double backgroundMortProb = 0.0;
         double smr = 0.0;
-        double fatalOverdoseProb = 0.0;
+        // double fatalOverdoseProb = 0.0;
         double fibrosisDeathProb = 0.0;
 
         // 2. Get fatal OD probability.
         this->getMortalityProbabilities(person, backgroundMortProb, smr,
-                                        fatalOverdoseProb, fibrosisDeathProb);
+                                        // fatalOverdoseProb,
+                                        fibrosisDeathProb);
         // 3. Decide whether the person dies. If not, unset their overdose
         // property.
 
-        double totalProb =
-            (backgroundMortProb * smr) + fatalOverdoseProb + fibrosisDeathProb;
+        double totalProb = (backgroundMortProb * smr) // + fatalOverdoseProb
+                           + fibrosisDeathProb;
 
         std::vector<double> probVec = {(backgroundMortProb * smr),
-                                       fatalOverdoseProb, fibrosisDeathProb,
-                                       1 - totalProb};
+                                       // fatalOverdoseProb,
+                                       fibrosisDeathProb, 1 - totalProb};
 
         int retIdx = this->getDecision(probVec);
-        if (retIdx != 3) {
+        if (retIdx != 2) {
             this->die(person);
-        } else {
-            person->toggleOverdose();
         }
     }
 
@@ -66,9 +66,11 @@ namespace Event {
         person->die();
     }
 
-    void Death::getMortalityProbabilities(
-        std::shared_ptr<Person::Person> const person, double &fatalOverdoseProb,
-        double &backgroundMortProb, double &smr, double &fibrosisDeathProb) {
+    void
+    Death::getMortalityProbabilities(std::shared_ptr<Person::Person> const
+                                         person, // double &fatalOverdoseProb,
+                                     double &backgroundMortProb, double &smr,
+                                     double &fibrosisDeathProb) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age_years"] = std::to_string((int)person->age);
@@ -77,27 +79,29 @@ namespace Event {
         selectCriteria["drug_behavior"] =
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
-        selectCriteria["fibrosis_state"] = Person::Person::
-            fibrosisStateEnumToStringMap[person->getFibrosisState()];
 
         auto resultTable = table->selectWhere(selectCriteria);
 
-        backgroundMortProb = stod((*resultTable)["background_mortality"][0]);
+        backgroundMortProb =
+            std::stod((*resultTable)["background_mortality"][0]);
 
-        smr = stod((*resultTable)["SMR"][0]);
+        smr = std::stod((*resultTable)["SMR"][0]);
 
-        if (person->getFibrosisState() > Person::FibrosisState::F3) {
-            fibrosisDeathProb =
-                stod((*resultTable)["fib_death_probability"][0]);
+        switch (person->getFibrosisState()) {
+        case Person::FibrosisState::F4:
+            fibrosisDeathProb = this->f4Mort;
+            break;
+        case Person::FibrosisState::DECOMP:
+            fibrosisDeathProb = this->decompMort;
+            break;
+        default:
+            fibrosisDeathProb = 0;
         }
 
-        if (person->getOverdose()) {
-            // we need to figure out how we're gonna make this time based
-            fatalOverdoseProb =
-                stod((*resultTable)["fatal_overdose_cycle52"][0]);
-        }
-
-        // size_t last_index = str.find_last_not_of("0123456789");
-        // string result = str.substr(last_index + 1);
+        // if (person->getOverdose()) {
+        //     // we need to figure out how we're gonna make this time based
+        //     fatalOverdoseProb =
+        //         stod((*resultTable)["fatal_overdose_cycle52"][0]);
+        // }
     }
 } // namespace Event
