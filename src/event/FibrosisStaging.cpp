@@ -100,7 +100,6 @@ namespace Event {
     std::vector<double>
     FibrosisStaging::getTransitions(Data::IDataTablePtr table,
                                     std::string configLookupKey) {
-
         std::shared_ptr<Data::ReturnType> stageTest =
             this->config.get_optional(configLookupKey, "");
         if (stageTest) {

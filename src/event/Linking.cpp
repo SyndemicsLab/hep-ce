@@ -79,6 +79,10 @@ namespace Event {
                 [person->getBehaviorClassification()];
 
         auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->nrows() == 0) {
+            // error
+            return {};
+        }
 
         std::vector<std::string> col = resultTable->getColumn(columnKey);
 

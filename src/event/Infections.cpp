@@ -18,10 +18,6 @@
 
 namespace Event {
     void Infections::doEvent(std::shared_ptr<Person::Person> person) {
-        if (!person->getIsAlive()) {
-            return;
-        }
-
         // if person is already infected we can't infect them more
         if (person->getHEPCState() != Person::HEPCState::NONE) {
             return;
@@ -48,7 +44,10 @@ namespace Event {
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
         auto resultTable = table->selectWhere(selectCriteria);
-
+        if (resultTable->nrows() == 0) {
+            // error
+            return {};
+        }
         double probInfected = std::stod((*resultTable)["incidence"][0]);
         std::vector<double> result = {probInfected, 1 - probInfected};
         return result;

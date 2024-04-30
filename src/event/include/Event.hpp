@@ -75,6 +75,11 @@ namespace Event {
                           std::end(population),
                           [this](std::shared_ptr<Person::Person> &p) {
                               if (p->getIsAlive()) {
+                                  std::cout << "[Person " << p->getID()
+                                            << "] Timestep "
+                                            << this->getCurrentTimestep()
+                                            << ": " << this->EVENT_NAME
+                                            << std::endl;
                                   this->doEvent(p);
                               }
                           });

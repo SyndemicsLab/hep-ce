@@ -81,11 +81,15 @@ namespace Event {
                 [person->getBehaviorClassification()];
 
         auto resultTable = table->selectWhere(selectCriteria);
-
-        backgroundMortProb =
-            std::stod((*resultTable)["background_mortality"][0]);
-
-        smr = std::stod((*resultTable)["SMR"][0]);
+        if (resultTable->nrows() == 0) {
+            // error
+            backgroundMortProb = 0;
+            smr = 0;
+        } else {
+            backgroundMortProb =
+                std::stod((*resultTable)["background_mortality"][0]);
+            smr = std::stod((*resultTable)["SMR"][0]);
+        }
 
         switch (person->getFibrosisState()) {
         case Person::FibrosisState::F4:

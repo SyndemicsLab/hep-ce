@@ -35,7 +35,12 @@ uint64_t getSimSeed(Data::Config &config) {
 
     std::shared_ptr<Data::ReturnType> temp =
         config.get_optional("simulation.seed", (int)-1);
-    int seed = std::get<int>(*temp);
+    int seed;
+    if (temp) {
+        seed = std::get<int>(*temp);
+    } else {
+        seed = -1;
+    }
     if (seed == -1) {
         milliseconds ms =
             duration_cast<milliseconds>(steady_clock::now().time_since_epoch());
