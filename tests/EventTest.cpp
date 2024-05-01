@@ -223,27 +223,15 @@ TEST_F(EventTest, DeathByOldAge) {
 }
 
 TEST_F(EventTest, FibrosisProgression) {
+    outStream << "[fibrosis]" << std::endl << "f01 = 1.0" << std::endl;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
 
-    std::map<std::string, std::vector<std::string>> retData;
-    retData["initial_state"] = {"f0", "f0"};
-    retData["new_state"] = {"f0", "f1"};
-    retData["probability"] = {"0.0", "1.0"};
-
-    std::vector<std::string> retHeader = {"initial_state", "new_state",
-                                          "probability"};
-
-    Data::DataTableShape retShape(2, 3);
-
-    std::shared_ptr<Data::IDataTable> retVal =
-        std::make_shared<Data::DataTable>(retData, retShape, retHeader);
-
     std::map<std::string, std::vector<std::string>> costData;
-    costData["hcv_status"] = {"none"};
-    costData["initial_state"] = {"f0"};
-    costData["cost"] = {"100.00"};
+    costData["hcv_status"] = {"none", "acute"};
+    costData["metavir_stage"] = {"f0", "f1"};
+    costData["cost"] = {"100.00", "100.00"};
 
-    std::vector<std::string> costHeader = {"hcv_status", "initial_state",
+    std::vector<std::string> costHeader = {"hcv_status", "metavir_stage",
                                            "cost"};
 
     Data::DataTableShape costShape(1, 3);
@@ -251,14 +239,9 @@ TEST_F(EventTest, FibrosisProgression) {
     std::shared_ptr<Data::IDataTable> costVal =
         std::make_shared<Data::DataTable>(costData, costShape, costHeader);
 
-    std::string joinCol = "initial_state";
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(costVal));
 
-    std::shared_ptr<Data::IDataTable> fpVal =
-        retVal->innerJoin(costVal, joinCol, joinCol);
-
-    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(fpVal));
-
-    Data::Config config;
+    Data::Config config(tempFilePath.string());
     Event::FibrosisProgression fibrosisProgression(simulation->getGenerator(),
                                                    table, config);
     livingPopulation[0]->infect(0);
