@@ -293,6 +293,44 @@ TEST_F(EventTest, Infections) {
     EXPECT_EQ(1, livingPopulation[0]->getNumInfections());
 }
 
+TEST_F(EventTest, Chronic) {
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+
+    std::map<std::string, std::vector<std::string>> retData;
+    retData["age_years"] = {"0"};
+    retData["gender"] = {"male"};
+    retData["drug_behavior"] = {"never"};
+    retData["incidence"] = {"1.0"};
+
+    std::vector<std::string> retHeader = {"age_years", "gender",
+                                          "drug_behavior", "incidence"};
+
+    Data::DataTableShape retShape(1, 4);
+
+    std::shared_ptr<Data::IDataTable> retVal =
+        std::make_shared<Data::DataTable>(retData, retShape, retHeader);
+
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
+
+    Data::Config config;
+    Event::Infections infections(simulation->getGenerator(), table, config);
+    // current timestep
+    int ct = 1;
+    infections.setCurrentTimestep(ct);
+    EXPECT_EQ(0, livingPopulation[0]->getNumInfections());
+    infections.execute(livingPopulation);
+    // check that person is now infected
+    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+
+    ct = 7;
+    infections.setCurrentTimestep(ct);
+    infections.execute(livingPopulation);
+    EXPECT_EQ(Person::HEPCState::CHRONIC, livingPopulation[0]->getHEPCState());
+
+    // check that the infection counts correctly
+    EXPECT_EQ(1, livingPopulation[0]->getNumInfections());
+}
+
 TEST_F(EventTest, Linking) {}
 
 TEST_F(EventTest, Screening) {

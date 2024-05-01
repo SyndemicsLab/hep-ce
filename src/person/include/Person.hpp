@@ -215,6 +215,12 @@ namespace Person {
             return this->infectionStatus.hepcState;
         }
 
+        /// @brief Set HEPC State -- used to change to chronic infection
+        /// @param New HEPC State
+        void setHEPCState(HEPCState hcvs) {
+            this->infectionStatus.hepcState = hcvs;
+        }
+
         /// @brief Getter for Alive Status
         /// @return Alive Status
         bool getIsAlive() const { return this->isAlive; }
