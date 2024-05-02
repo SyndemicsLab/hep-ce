@@ -37,6 +37,14 @@ namespace Event {
             if (!this->isEligible(person)) {
                 return;
             }
+            if (person->getTreatmentCount() > 0) {
+                double rt_prob = std::get<double>(
+                    this->config.get("treatment.retreatment_probability", 1.0));
+                int retreat = this->getDecision({rt_prob});
+                if (retreat == 0) {
+                    return;
+                }
+            }
         }
 
         // 2. Select the treatment course for a person based on their measured
