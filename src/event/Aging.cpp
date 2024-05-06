@@ -45,4 +45,25 @@ namespace Event {
 
         person->addCost(backgroundCost, this->getCurrentTimestep());
     }
+
+    void Aging::setBackgroundUtility(std::shared_ptr<Person::Person> person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        selectCriteria["drug_behavior"] =
+            Person::Person::behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+
+        auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty()) {
+            // error
+            return;
+        }
+        auto res = (*resultTable)["utility"];
+        double utility = std::stod(res[0]);
+
+        person->setUtility(Person::UtilityCategory::BACKGROUND, utility);
+    }
 } // namespace Event
