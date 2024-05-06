@@ -18,10 +18,8 @@
 
 namespace Event {
     void Aging::doEvent(std::shared_ptr<Person::Person> person) {
-        if (person->getIsAlive()) {
-            person->age++;
-            this->addBackgroundCost(person);
-        }
+        person->age++;
+        this->addBackgroundCost(person);
     }
 
     void Aging::addBackgroundCost(std::shared_ptr<Person::Person> person) {
@@ -35,6 +33,10 @@ namespace Event {
                 [person->getBehaviorClassification()];
 
         auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty()) {
+            // error
+            return;
+        }
         auto res = (*resultTable)["cost"];
         double cost = std::stod(res[0]);
 

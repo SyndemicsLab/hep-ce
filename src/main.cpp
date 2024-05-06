@@ -76,7 +76,8 @@ int main(int argc, char *argv[]) {
         logger->info("Writing Events");
         writeEvents(personEvents, outputSet.string());
         logger->info("Writing Population");
-        writePopulation(population, outputSet.string());
+        DataWriter::writePopulation(population, outputSet.string());
+        DataWriter::writeGeneralStats(population, outputSet.string(), config);
     }
 
     return 0;

@@ -1,6 +1,7 @@
 #ifndef RUN_HPP_
 #define RUN_HPP_
 
+#include "DataWriter.hpp"
 #include "EventFactory.hpp"
 #include "Simulation.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
@@ -77,13 +78,4 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
 int loadPopulation(std::vector<sharedPerson> &population,
                    std::unordered_map<std::string, Data::IDataTablePtr> &tables,
                    Simulation::Simulation &sim);
-
-Data::IDataTablePtr personToDataTable(sharedPerson &person);
-
-void writePopulation(std::vector<sharedPerson> &population,
-                     std::string dirpath);
-
-inline std::string const boolToString(bool b) {
-    return b ? std::string("true") : std::string("false");
-}
 #endif

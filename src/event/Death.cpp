@@ -18,10 +18,6 @@
 
 namespace Event {
     void Death::doEvent(std::shared_ptr<Person::Person> person) {
-        if (!person->getIsAlive()) {
-            return;
-        }
-
         if (person->age >= 1200) {
             this->die(person);
             return;
@@ -81,7 +77,7 @@ namespace Event {
                 [person->getBehaviorClassification()];
 
         auto resultTable = table->selectWhere(selectCriteria);
-        if (resultTable->nrows() == 0) {
+        if (resultTable->empty()) {
             // error
             backgroundMortProb = 0;
             smr = 0;

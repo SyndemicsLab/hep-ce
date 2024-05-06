@@ -19,10 +19,6 @@
 
 namespace Event {
     void Linking::doEvent(std::shared_ptr<Person::Person> person) {
-        if (!person->getIsAlive()) {
-            return;
-        }
-
         Person::HEPCState state = person->getHEPCState();
         if (state == Person::HEPCState::NONE) {
             // add false positive cost
@@ -79,7 +75,7 @@ namespace Event {
                 [person->getBehaviorClassification()];
 
         auto resultTable = table->selectWhere(selectCriteria);
-        if (resultTable->nrows() == 0) {
+        if (resultTable->empty()) {
             // error
             return {};
         }

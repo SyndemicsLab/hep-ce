@@ -19,10 +19,6 @@
 
 namespace Event {
     void Screening::doEvent(std::shared_ptr<Person::Person> person) {
-        if (!person->getIsAlive()) {
-            return;
-        }
-
         // one-time screen or periodic screen
         switch (this->interventionType) {
         case InterventionType::ONETIME:
@@ -175,6 +171,10 @@ namespace Event {
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
         auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty()) {
+            // error
+            return {};
+        }
 
         double prob =
             std::stod((*resultTable)["background_screen_probability"][0]);
@@ -193,6 +193,10 @@ namespace Event {
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
         auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty()) {
+            // error
+            return {};
+        }
 
         double prob =
             std::stod((*resultTable)["intervention_screen_probability"][0]);

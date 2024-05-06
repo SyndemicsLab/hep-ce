@@ -60,6 +60,9 @@ namespace Event {
         case Person::FibrosisState::F4:
             temp = this->config.get("fibrosis.f4d", 0.0);
             break;
+        case Person::FibrosisState::DECOMP:
+            temp = (Data::ReturnType)0.0;
+            break;
         }
 
         // to work with getDecision, return the complement to the transition
@@ -74,10 +77,15 @@ namespace Event {
             Person::Person::hepcStateEnumToStringMap[person->getHEPCState()];
         selectCriteria["metavir_stage"] = Person::Person::
             fibrosisStateEnumToStringMap[person->getFibrosisState()];
-
         auto resultTable = table->selectWhere(selectCriteria);
-        auto res = (*resultTable)["cost"];
-        double cost = std::stod(res[0]);
+        double cost;
+        if (resultTable->empty()) {
+            // yell
+            cost = 0;
+        } else {
+            auto res = (*resultTable)["cost"];
+            cost = std::stod(res[0]);
+        }
 
         Cost::Cost liverDiseaseCost = {this->costCategory, "Liver Disease Care",
                                        cost};

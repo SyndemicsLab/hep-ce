@@ -18,9 +18,6 @@
 
 namespace Event {
     void BehaviorChanges::doEvent(std::shared_ptr<Person::Person> person) {
-        if (!person->getIsAlive()) {
-            return;
-        }
         // Determine person's current behavior classification
         Person::BehaviorClassification bc = person->getBehaviorClassification();
 
@@ -83,7 +80,7 @@ namespace Event {
         // should reduce to a single value
         auto resultTable = table->selectWhere(selectCriteria);
 
-        if (!resultTable->checkColumnExists("cost")) {
+        if (resultTable->empty()) {
             // log error
             return;
         }

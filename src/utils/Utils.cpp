@@ -18,7 +18,6 @@
 #include <algorithm>
 
 namespace Utils {
-
     double probabilityToRate(double probability) {
         if (probability < 0 || probability >= 1) {
             throw std::domain_error("Out of probability value range");

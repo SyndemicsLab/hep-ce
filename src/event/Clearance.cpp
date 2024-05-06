@@ -36,10 +36,6 @@ namespace Event {
     }
 
     void Clearance::doEvent(std::shared_ptr<Person::Person> person) {
-        if (!person->getIsAlive()) {
-            return;
-        }
-
         // people infected with hcv have some probability of spontaneous
         // clearance.
 
