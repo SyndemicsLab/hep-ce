@@ -157,12 +157,15 @@ namespace Event {
         Person::BehaviorClassification behavior =
             person->getBehaviorClassification();
         int timeBehaviorChange = person->getTimeBehaviorChange();
+        Person::PregnancyState pregnancyState = person->getPregnancyState();
         if (!isEligibleFibrosisStage(fibrosisState) ||
             ((this->getCurrentTimestep() - timeSinceLinked) >
              eligibleTimeSinceLinked) ||
             (behavior == Person::BehaviorClassification::INJECTION) ||
             (behavior == Person::BehaviorClassification::FORMER_INJECTION &&
-             timeBehaviorChange < eligibleTimeBehaviorChange)) {
+             timeBehaviorChange < eligibleTimeBehaviorChange) ||
+            (pregnancyState == Person::PregnancyState::PREGNANT ||
+             pregnancyState == Person::PregnancyState::POSTPARTUM)) {
             return false;
         } else {
             return true;

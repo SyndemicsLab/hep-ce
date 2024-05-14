@@ -16,7 +16,18 @@ namespace Event {
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
         /// @brief Returns the probability of pregnancy
-        std::vector<double> getPregnancyProb();
+        std::vector<double>
+        getPregnancyProb(std::shared_ptr<Person::Person> person);
+
+        std::vector<double>
+        Pregnancy::getLiveBirthProb(std::shared_ptr<Person::Person> person);
+
+        /// @brief
+        /// @return
+        std::vector<double>
+        getMiscarriageProb(std::shared_ptr<Person::Person> person);
+
+        void checkMiscarriage(std::shared_ptr<Person::Person> person);
 
     public:
         Pregnancy(std::mt19937_64 &generator, Data::IDataTablePtr table,

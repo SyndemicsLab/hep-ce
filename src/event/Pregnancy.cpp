@@ -35,23 +35,37 @@ namespace Event {
     void Pregnancy::doEvent(std::shared_ptr<Person::Person> person) {
         // If a person is dead, male, younger than 15, older than 45, or been in
         // postpartum for less than 3 months then skip
+
+        int timeSincePregnancyChange =
+            this->currentTime - person->getTimeOfPregnancyChange();
         if (!person->getIsAlive() || person->getSex() == Person::Sex::MALE ||
             person->age < 15 || person->age > 45 ||
             (person->getPregnancyState() ==
                  Person::PregnancyState::POSTPARTUM &&
-             person->getTimeOfPregnancyChange() < 3)) {
+             timeSincePregnancyChange < 3)) {
             return;
         }
 
-        // people infected with hcv have some probability of spontaneous
-        // pregnancy.
+        if (person->getPregnancyState() == Person::PregnancyState::PREGNANCY) {
+            if (person->timeSincePregnancyChange() >= 9) {
+                // have child
+                checkMiscarriage(person);
 
-        // if person isn't infected or is chronic, nothing to do
-        if (person->getHEPCState() != Person::HEPCState::ACUTE) {
+            } else {
+                // Another month of pregnancy
+                checkMiscarriage(person);
+                return;
+            }
+        }
+
+        // 1. Get the probability of pregnancy
+        std::vector<double> prob = this->getPregnancyProb(person);
+        // if you are not pregnant (i.e. getDecision returns > 0)
+        if (this->getDecision(prob)) {
             return;
         }
-        // 1. Get the probability of acute pregnancy
-        std::vector<double> prob = this->getPregnancyProb();
+        person->setPregnancyState(Person::PregnancyState::PREGNANT);
+
         // 2. Decide whether the person clears
         int doesNotClear = this->getDecision(prob);
         // if you do not clear, return immediately
@@ -61,7 +75,62 @@ namespace Event {
         person->clearHCV(this->getCurrentTimestep());
     }
 
-    std::vector<double> Pregnancy::getPregnancyProb() {
-        return {this->pregnancyProb};
+    void Pregnancy::checkMiscarriage(std::shared_ptr<Person::Person> person) {
+        std::vector<double> prob = this->getMiscarriageProb(person);
+        // if a miscarriage (getDecision == 0)
+        if (!this->getDecision(prob)) {
+            person->setPregnancyState(Person::PregnancyState::POSTPARTUM);
+            person->setMiscarriageCount(1);
+            person->setTimeOfPregnancyChange(this->currentTime);
+        }
+    }
+
+    std::vector<double>
+    Pregnancy::getPregnancyProb(std::shared_ptr<Person::Person> person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["age"] = std::to_string((int)(person->age / 12.0));
+        auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty() == 0) {
+            // error
+            return {};
+        }
+        double probPregnancy =
+            std::stod((*resultTable)["pregnancy_probability"][0]);
+        std::vector<double> result = {probPregnancy, 1 - probPregnancy};
+        return result;
+    }
+
+    std::vector<double>
+    Pregnancy::getLiveBirthProb(std::shared_ptr<Person::Person> person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["age"] = std::to_string((int)(person->age / 12.0));
+        auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty() == 0) {
+            // error
+            return {};
+        }
+        double probLiveBirth =
+            std::stod((*resultTable)["live_birth_probability"][0]);
+        std::vector<double> result = {probLiveBirth, 1 - probLiveBirth};
+        return result;
+    }
+
+    std::vector<double>
+    Pregnancy::getMiscarriageProb(std::shared_ptr<Person::Person> person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["age"] = std::to_string((int)(person->age / 12.0));
+        selectCriteria["gestation"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty() == 0) {
+            // error
+            return {};
+        }
+        double probMiscarriage = std::stod((*resultTable)["probability"][0]);
+        std::vector<double> result = {probMiscarriage, 1 - probMiscarriage};
+        return result;
     }
 } // namespace Event

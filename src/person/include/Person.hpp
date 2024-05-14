@@ -420,6 +420,30 @@ namespace Person {
             return this->pregnancyDetails.miscarriageCount;
         }
 
+        /// @brief Setter for Pregnancy State
+        /// @param state Person's pregnancy State
+        void setPregnancyState(PregnancyState state) {
+            this->pregnancyDetails.pregnancyState = state;
+        }
+
+        /// @brief Set Pregnancy State Time Change
+        /// @param time Time of Pregnancy Change
+        void setTimeOfPregnancyChange(int time) {
+            this->pregnancyDetails.timeOfPregnancyChange = time;
+        }
+
+        /// @brief Add infants to the count
+        /// @param infants Number infants to add
+        void setInfantCount(int infants) {
+            this->pregnancyDetails.infantCount += infants;
+        }
+
+        /// @brief Add miscarriages to the count
+        /// @param miscarriages Number of miscarriages to add
+        void setMiscarriageCount(int miscarriages) {
+            this->pregnancyDetails.miscarriageCount += miscarriages;
+        }
+
         /// @brief Set Person's measured fibrosis state
         /// @param state
         void setMeasuredFibrosisState(MeasuredFibrosisState state) {
