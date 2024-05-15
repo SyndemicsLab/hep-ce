@@ -31,6 +31,8 @@ namespace Event {
         // has already initiated treatment.
         if (!person->hasInitiatedTreatment()) {
             if (!this->isEligible(person)) {
+                // check if person is lost to follow-up due to ineligibility
+                this->checkLossToFollowUp(person);
                 return;
             }
             if (person->getTreatmentCount() > 0) {
@@ -43,10 +45,18 @@ namespace Event {
             }
         }
 
-        // 2. Select the treatment course for a person based on their measured
+        // 2. Check loss to follow-up, should be due to second fib test.
+        if (person->exposedToLTFU() && !person->hadFibTestTwo()) {
+            // only pull once after condition is met
+            person->setExposedToLTFU(false);
+            this->checkLossToFollowUp(person);
+            return;
+        }
+
+        // 3. Select the treatment course for a person based on their measured
         // fibrosis stage, genotype.
         const Course &course = this->getTreatmentCourse(person);
-        // 3. If the person has not yet initiated treatment, draw the
+        // 4. If the person has not yet initiated treatment, draw the
         // probability that person will initiate treatment.
         if (!person->hasInitiatedTreatment()) {
             int initiation = this->getDecision({course.initiationProbability});
@@ -64,13 +74,18 @@ namespace Event {
             // start treatment
             return;
         }
-        // 4. Check the time since treatment initiation.
+        // 5. Check the time since treatment initiation.
         int timeSinceInitiation =
             this->getCurrentTimestep() - person->getTimeOfTreatmentInitiation();
-        // 5. Get the treatment regimen the person is currently experiencing.
+        // 6. Get the treatment regimen the person is currently experiencing.
         const std::pair<Regimen, int> &regimenInfo =
             this->getCurrentRegimen(course, timeSinceInitiation);
-        // 6. If time since treatment initiation > 0, draw probability of
+        // accumulate costs
+        this->addTreatmentCost(person, regimenInfo.first.cost);
+        // set treatment utility
+        person->setUtility(Person::UtilityCategory::TREATMENT,
+                           regimenInfo.first.utility);
+        // 7. If time since treatment initiation > 0, draw probability of
         // adverse outcome (TOX), then draw probability of withdrawing from
         // treatment prior to completion. TOX does not lead to withdrawal from
         // care but withdrawal probabilities are stratified by TOX.
@@ -90,15 +105,19 @@ namespace Event {
             person->setInitiatedTreatment(false);
             // add to withdrawal count for person
             person->addWithdrawal();
+            // reset utility
+            person->setUtility(Person::UtilityCategory::TREATMENT, 1.0);
             return;
         }
-        // 7. Compare the treatment duration to the time since treatment
+        // 8. Compare the treatment duration to the time since treatment
         // initiation. If equal, draw for cure (SVR) vs no cure (EOT).
         if (timeSinceInitiation == regimenInfo.second) {
             int treatmentOutcome =
                 this->getDecision({regimenInfo.first.svrProbability});
             // add EOT for person
             person->addEOT();
+            // reset utility
+            person->setUtility(Person::UtilityCategory::TREATMENT, 1.0);
             if (treatmentOutcome == 0) {
                 // log EOT without cure
                 // reached EOT without cure
@@ -109,8 +128,6 @@ namespace Event {
             // add SVR count to person
             person->addSVR();
             // log person cured
-            // accumulate costs
-            this->addTreatmentCost(person, regimenInfo.first.cost);
             // cured people remove half their hcv cost
             person->clearHCV(false);
         }
@@ -246,5 +263,16 @@ namespace Event {
                                      double cost) {
         Cost::Cost treatmentCost = {this->costCategory, "Treatment Cost", cost};
         person->addCost(treatmentCost, this->getCurrentTimestep());
+    }
+
+    void
+    Treatment::checkLossToFollowUp(std::shared_ptr<Person::Person> person) {
+        double ltfuProb =
+            std::get<double>(this->config.get("treatment.ltfu_prob", 0.0));
+        int ltfu = this->getDecision({ltfuProb});
+        if (ltfu == 0) {
+            // unlink
+            person->unlink(this->getCurrentTimestep());
+        }
     }
 } // namespace Event

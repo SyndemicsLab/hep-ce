@@ -182,6 +182,7 @@ namespace Person {
     struct StagingDetails {
         MeasuredFibrosisState measuredFibrosisState =
             MeasuredFibrosisState::NONE;
+        bool hadFibTestTwo = false;
         int timeOfLastStaging = 0;
     };
 
@@ -197,6 +198,7 @@ namespace Person {
     struct TreatmentDetails {
         bool incompleteTreatment = false;
         bool initiatedTreatment = false;
+        bool exposedToLTFU = true;
         int timeOfTreatmentInitiation = 0;
         int treatmentCount = 0;
         int numEOT = 0;

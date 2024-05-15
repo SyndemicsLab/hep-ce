@@ -158,6 +158,16 @@ namespace Person {
         /// @brief
         int getRnaCount() { return this->screeningDetails.rnaCount; }
 
+        /// @brief Getter for whether Person experienced fibtest two this cycle
+        /// @return value of hadFibTestTwo
+        bool hadFibTestTwo() { return this->stagingDetails.hadFibTestTwo; }
+
+        /// @brief Set whether the person experienced fibtest two this cycle
+        /// @param state New value of hadFibTestTwo
+        void setHadFibTestTwo(bool state) {
+            this->stagingDetails.hadFibTestTwo = state;
+        }
+
         /// @brief Set the Seropositivity value
         /// @param seropositivity Seropositivity status to set
         void setSeropositivity(bool seropositivity) {
@@ -331,6 +341,17 @@ namespace Person {
         /// @brief Get the tracked count of treatment initiations for Person
         int getTreatmentCount() const {
             return this->treatmentDetails.treatmentCount;
+        }
+
+        /// @brief Access whether Person can be exposed to loss to follow-up
+        bool exposedToLTFU() const {
+            return this->treatmentDetails.exposedToLTFU;
+        }
+
+        /// @brief Set whether Person is to be exposed to loss to follow-up
+        /// @param state New value for exposedToLTFU
+        void setExposedToLTFU(bool state) {
+            this->treatmentDetails.exposedToLTFU = state;
         }
 
         /// @brief Add to end of treatment (EOT) count

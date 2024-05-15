@@ -110,6 +110,7 @@ namespace DataWriter {
         data["measuredFibrosisState"] = {
             person->measuredFibrosisStateEnumToStringMap
                 [person->getMeasuredFibrosisState()]};
+        data["hadFibTestTwo"] = {Utils::boolToString(person->hadFibTestTwo())};
         data["timeOfLastStaging"] = {
             std::to_string(person->getTimeOfLastStaging())};
         data["timeOfLastScreening"] = {
@@ -120,6 +121,7 @@ namespace DataWriter {
             Utils::boolToString(person->hadIncompleteTreatment())};
         data["initiatedTreatment"] = {
             Utils::boolToString(person->hasInitiatedTreatment())};
+        data["exposedToLTFU"] = {Utils::boolToString(person->exposedToLTFU())};
         data["timeOfTreatmentInitiation"] = {
             std::to_string(person->getTimeOfTreatmentInitiation())};
         data["treatmentCount"] = {std::to_string(person->getTreatmentCount())};

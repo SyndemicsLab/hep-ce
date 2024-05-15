@@ -81,8 +81,16 @@ namespace Event {
         double locateInput(std::vector<std::string> &configSections,
                            const std::string &parameter);
 
+        /// @brief Add the cost associated with a month of treatment
+        /// @param Person the person who accrues the cost
+        /// @param cost the cost associated with Person's treatment
         void addTreatmentCost(std::shared_ptr<Person::Person> person,
                               double cost);
+
+        /// @brief If Person is exposed to loss to follow-up, checks if they
+        /// unlink from care
+        /// @param Person the Person who may unlink due to loss to follow-up
+        void checkLossToFollowUp(std::shared_ptr<Person::Person> person);
 
     public:
         Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,

@@ -50,6 +50,8 @@ namespace Person {
         this->stagingDetails.measuredFibrosisState =
             Person::measuredFibrosisStateMap[Utils::toLower(
                 (*dataTableRow)["measuredFibrosisState"][0])];
+        this->stagingDetails.hadFibTestTwo =
+            Utils::stobool((*dataTableRow)["hadFibTestTwo"][0]);
         this->stagingDetails.timeOfLastStaging =
             stoi((*dataTableRow)["timeOfLastStaging"][0]);
         this->screeningDetails.timeOfLastScreening =
@@ -62,6 +64,8 @@ namespace Person {
             Utils::stobool((*dataTableRow)["initiatedTreatment"][0]);
         this->treatmentDetails.timeOfTreatmentInitiation =
             std::stoi((*dataTableRow)["timeOfTreatmentInitiation"][0]);
+        this->treatmentDetails.exposedToLTFU =
+            Utils::stobool((*dataTableRow)["exposedToLTFU"][0]);
         this->treatmentDetails.treatmentCount =
             std::stoi((*dataTableRow)["treatmentCount"][0]);
         this->treatmentDetails.numEOT = std::stoi((*dataTableRow)["numEOT"][0]);
