@@ -3,83 +3,307 @@
 namespace Person {
     int count = 0;
 
+    std::vector<std::string> attributes = {"id",
+                                           "sex",
+                                           "age",
+                                           "isAlive",
+                                           "identifiedAsPositiveInfection",
+                                           "timeInfectionIdentified",
+                                           "HEPCState",
+                                           "fibrosisState",
+                                           "isGenotypeThree",
+                                           "seropositivity",
+                                           "timeHEPCStateChanged",
+                                           "timeFibrosisStateChanged",
+                                           "numInfections",
+                                           "numClearances",
+                                           "drugBehaviorClassification",
+                                           "timeLastActiveDrugUse",
+                                           "linkageState",
+                                           "timeOfLinkChange",
+                                           "linkageType",
+                                           "linkCount",
+                                           "measuredFibrosisState",
+                                           "hadFibTestTwo",
+                                           "timeOfLastStaging",
+                                           "timeOfLastScreening",
+                                           "abCount",
+                                           "rnaCount",
+                                           "hasIncompleteTreatment",
+                                           "initiatedTreatment",
+                                           "timeOfTreatmentInitiation",
+                                           "exposedToLTFU",
+                                           "treatmentCount",
+                                           "numEOT",
+                                           "numSVR",
+                                           "numTox",
+                                           "numWithdrawals",
+                                           "backgroundUtility",
+                                           "behaviorUtility",
+                                           "treatmentUtility",
+                                           "liverUtility"};
+
+    enum class PersonAttribute {
+        ID = 0,
+        SEX = 1,
+        AGE = 2,
+        ISALIVE = 3,
+        IDENTIFIEDASPOSITIVEINFECTION = 4,
+        TIMEINFECTIONIDENTIFIED = 5,
+        HEPCSTATE = 6,
+        FIBROSISSTATE = 7,
+        ISGENOTYPETHREE = 8,
+        SEROPOSITIVITY = 9,
+        TIMEHEPCSTATECHANGED = 10,
+        TIMEFIBROSISSTATECHANGED = 11,
+        NUMINFECTIONS = 12,
+        NUMCLEARANCES = 13,
+        DRUGBEHAVIORCLASSIFICATION = 14,
+        TIMELASTACTIVEDRUGUSE = 15,
+        LINKAGESTATE = 16,
+        TIMEOFLINKCHANGE = 17,
+        LINKAGETYPE = 18,
+        LINKCOUNT = 19,
+        MEASUREDFIBROSISSTATE = 20,
+        HADFIBTESTTWO = 21,
+        TIMEOFLASTSTAGING = 22,
+        TIMEOFLASTSCREENING = 23,
+        ABCOUNT = 24,
+        RNACOUNT = 25,
+        HASINCOMPLETETREATMENT = 26,
+        INITIATEDTREATMENT = 27,
+        TIMEOFTREATMENTINITIATION = 28,
+        EXPOSEDTOLTFU = 29,
+        TREATMENTCOUNT = 30,
+        NUMEOT = 31,
+        NUMSVR = 32,
+        NUMTOX = 33,
+        NUMWITHDRAWALS = 34,
+        BACKGROUNDUTILITY = 35,
+        BEHAVIORUTILITY = 36,
+        TREATMENTUTILITY = 37,
+        LIVERUTILITY = 38
+    };
+
+    std::map<std::string, PersonAttribute> attributeMap = {
+        {"id", PersonAttribute::ID},
+        {"sex", PersonAttribute::SEX},
+        {"age", PersonAttribute::AGE},
+        {"isAlive", PersonAttribute::ISALIVE},
+        {"identifiedAsPositiveInfection",
+         PersonAttribute::IDENTIFIEDASPOSITIVEINFECTION},
+        {"timeInfectionIdentified", PersonAttribute::TIMEINFECTIONIDENTIFIED},
+        {"HEPCState", PersonAttribute::HEPCSTATE},
+        {"fibrosisState", PersonAttribute::FIBROSISSTATE},
+        {"isGenotypeThree", PersonAttribute::ISGENOTYPETHREE},
+        {"seropositivity", PersonAttribute::SEROPOSITIVITY},
+        {"timeHEPCStateChanged", PersonAttribute::TIMEHEPCSTATECHANGED},
+        {"timeFibrosisStateChanged", PersonAttribute::TIMEFIBROSISSTATECHANGED},
+        {"numInfections", PersonAttribute::NUMINFECTIONS},
+        {"numClearances", PersonAttribute::NUMCLEARANCES},
+        {"drugBehaviorClassification",
+         PersonAttribute::DRUGBEHAVIORCLASSIFICATION},
+        {"timeLastActiveDrugUse", PersonAttribute::TIMELASTACTIVEDRUGUSE},
+        {"linkageState", PersonAttribute::LINKAGESTATE},
+        {"timeOfLinkChange", PersonAttribute::TIMEOFLINKCHANGE},
+        {"linkageType", PersonAttribute::LINKAGETYPE},
+        {"linkCount", PersonAttribute::LINKCOUNT},
+        {"measuredFibrosisState", PersonAttribute::MEASUREDFIBROSISSTATE},
+        {"hadFibTestTwo", PersonAttribute::HADFIBTESTTWO},
+        {"timeOfLastStaging", PersonAttribute::TIMEOFLASTSTAGING},
+        {"timeOfLastScreening", PersonAttribute::TIMEOFLASTSCREENING},
+        {"abCount", PersonAttribute::ABCOUNT},
+        {"rnaCount", PersonAttribute::RNACOUNT},
+        {"hasIncompleteTreatment", PersonAttribute::HASINCOMPLETETREATMENT},
+        {"initiatedTreatment", PersonAttribute::INITIATEDTREATMENT},
+        {"timeOfTreatmentInitiation",
+         PersonAttribute::TIMEOFTREATMENTINITIATION},
+        {"exposedToLTFU", PersonAttribute::EXPOSEDTOLTFU},
+        {"treatmentCount", PersonAttribute::TREATMENTCOUNT},
+        {"numEOT", PersonAttribute::NUMEOT},
+        {"numSVR", PersonAttribute::NUMSVR},
+        {"numTox", PersonAttribute::NUMTOX},
+        {"numWithdrawals", PersonAttribute::NUMWITHDRAWALS},
+        {"backgroundUtility", PersonAttribute::BACKGROUNDUTILITY},
+        {"behaviorUtility", PersonAttribute::BEHAVIORUTILITY},
+        {"treatmentUtility", PersonAttribute::TREATMENTUTILITY},
+        {"liverUtility", PersonAttribute::LIVERUTILITY}};
+
     Person::Person(Data::IDataTablePtr dataTableRow) {
         count++;
 
-        if (dataTableRow->empty() || dataTableRow->ncols() < 37) {
+        if (dataTableRow->empty()) {
             return;
         }
 
-        this->id = stoi((*dataTableRow)["id"][0]);
-        this->sex = Person::sexMap[Utils::toLower((*dataTableRow)["sex"][0])];
-        this->age = stoul((*dataTableRow)["age"][0]);
-        this->isAlive = Utils::stobool((*dataTableRow)["isAlive"][0]);
-        this->idStatus.identifiedAsPositiveInfection =
-            Utils::stobool((*dataTableRow)["identifiedAsPositiveInfection"][0]);
-        this->idStatus.timeIdentified =
-            stoi((*dataTableRow)["timeInfectionIdentified"][0]);
-        this->infectionStatus.hepcState = Person::hepcStateMap[Utils::toLower(
-            (*dataTableRow)["HEPCState"][0])];
-        this->infectionStatus.fibrosisState =
-            Person::fibrosisStateMap[Utils::toLower(
-                (*dataTableRow)["fibrosisState"][0])];
-        this->infectionStatus.isGenotypeThree =
-            Utils::stobool((*dataTableRow)["isGenotypeThree"][0]);
-        this->infectionStatus.seropositivity =
-            Utils::stobool((*dataTableRow)["seropositivity"][0]);
-        this->infectionStatus.timeHEPCStateChanged =
-            stoi((*dataTableRow)["timeHEPCStateChanged"][0]);
-        this->infectionStatus.timeFibrosisStateChanged =
-            stoi((*dataTableRow)["timeFibrosisStateChanged"][0]);
-        this->infectionStatus.numInfections =
-            stoi((*dataTableRow)["numInfections"][0]);
-        this->infectionStatus.numClearances =
-            stoi((*dataTableRow)["numClearances"][0]);
-        this->behaviorDetails.behaviorClassification =
-            Person::behaviorClassificationMap[Utils::toLower(
-                (*dataTableRow)["drugBehaviorClassification"][0])];
-        this->behaviorDetails.timeLastActive =
-            stoul((*dataTableRow)["timeLastActiveDrugUse"][0]);
-        this->linkStatus.linkState = Person::linkageStateMap[Utils::toLower(
-            (*dataTableRow)["linkageState"][0])];
-        this->linkStatus.timeOfLinkChange =
-            stoi((*dataTableRow)["timeOfLinkChange"][0]);
-        this->linkStatus.linkType = Person::linkageTypeMap[Utils::toLower(
-            (*dataTableRow)["linkageType"][0])];
-        this->linkStatus.linkCount = stoi((*dataTableRow)["linkCount"][0]);
-        this->stagingDetails.measuredFibrosisState =
-            Person::measuredFibrosisStateMap[Utils::toLower(
-                (*dataTableRow)["measuredFibrosisState"][0])];
-        this->stagingDetails.hadFibTestTwo =
-            Utils::stobool((*dataTableRow)["hadFibTestTwo"][0]);
-        this->stagingDetails.timeOfLastStaging =
-            stoi((*dataTableRow)["timeOfLastStaging"][0]);
-        this->screeningDetails.timeOfLastScreening =
-            stoi((*dataTableRow)["timeOfLastScreening"][0]);
-        this->screeningDetails.abCount = stoi((*dataTableRow)["abCount"][0]);
-        this->screeningDetails.rnaCount = stoi((*dataTableRow)["rnaCount"][0]);
-        this->treatmentDetails.incompleteTreatment =
-            Utils::stobool((*dataTableRow)["hasIncompleteTreatment"][0]);
-        this->treatmentDetails.initiatedTreatment =
-            Utils::stobool((*dataTableRow)["initiatedTreatment"][0]);
-        this->treatmentDetails.timeOfTreatmentInitiation =
-            std::stoi((*dataTableRow)["timeOfTreatmentInitiation"][0]);
-        this->treatmentDetails.exposedToLTFU =
-            Utils::stobool((*dataTableRow)["exposedToLTFU"][0]);
-        this->treatmentDetails.treatmentCount =
-            std::stoi((*dataTableRow)["treatmentCount"][0]);
-        this->treatmentDetails.numEOT = std::stoi((*dataTableRow)["numEOT"][0]);
-        this->treatmentDetails.numSVR = std::stoi((*dataTableRow)["numSVR"][0]);
-        this->treatmentDetails.numTox = std::stoi((*dataTableRow)["numTox"][0]);
-        this->treatmentDetails.numWithdrawals =
-            std::stoi((*dataTableRow)["numWithdrawals"][0]);
-        this->utility.background =
-            std::stod((*dataTableRow)["backgroundUtility"][0]);
-        this->utility.behavior =
-            std::stod((*dataTableRow)["behaviorUtility"][0]);
-        this->utility.treatment =
-            std::stod((*dataTableRow)["treatmentUtility"][0]);
-        this->utility.liver = std::stod((*dataTableRow)["liverUtility"][0]);
+        for (auto &attribute : attributes) {
+            // skip missing columns
+            if (!dataTableRow->checkColumnExists(attribute)) {
+                continue;
+            }
+
+            switch (attributeMap[attribute]) {
+            case PersonAttribute::ID:
+                this->id = stoi((*dataTableRow)["id"][0]);
+                break;
+            case PersonAttribute::SEX:
+                this->sex =
+                    Person::sexMap[Utils::toLower((*dataTableRow)["sex"][0])];
+                break;
+            case PersonAttribute::AGE:
+                this->age = stoul((*dataTableRow)["age"][0]);
+                break;
+            case PersonAttribute::ISALIVE:
+                this->isAlive = Utils::stobool((*dataTableRow)["isAlive"][0]);
+                break;
+            case PersonAttribute::IDENTIFIEDASPOSITIVEINFECTION:
+                this->idStatus.identifiedAsPositiveInfection = Utils::stobool(
+                    (*dataTableRow)["identifiedAsPositiveInfection"][0]);
+                break;
+            case PersonAttribute::TIMEINFECTIONIDENTIFIED:
+                this->idStatus.timeIdentified =
+                    stoi((*dataTableRow)["timeInfectionIdentified"][0]);
+                break;
+            case PersonAttribute::HEPCSTATE:
+                this->infectionStatus.hepcState =
+                    Person::hepcStateMap[Utils::toLower(
+                        (*dataTableRow)["HEPCState"][0])];
+                break;
+            case PersonAttribute::FIBROSISSTATE:
+                this->infectionStatus.fibrosisState =
+                    Person::fibrosisStateMap[Utils::toLower(
+                        (*dataTableRow)["fibrosisState"][0])];
+                break;
+            case PersonAttribute::ISGENOTYPETHREE:
+                this->infectionStatus.isGenotypeThree =
+                    Utils::stobool((*dataTableRow)["isGenotypeThree"][0]);
+                break;
+            case PersonAttribute::SEROPOSITIVITY:
+                this->infectionStatus.seropositivity =
+                    Utils::stobool((*dataTableRow)["seropositivity"][0]);
+                break;
+            case PersonAttribute::TIMEHEPCSTATECHANGED:
+                this->infectionStatus.timeHEPCStateChanged =
+                    stoi((*dataTableRow)["timeHEPCStateChanged"][0]);
+                break;
+            case PersonAttribute::TIMEFIBROSISSTATECHANGED:
+                this->infectionStatus.timeFibrosisStateChanged =
+                    stoi((*dataTableRow)["timeFibrosisStateChanged"][0]);
+                break;
+            case PersonAttribute::NUMINFECTIONS:
+                this->infectionStatus.numInfections =
+                    stoi((*dataTableRow)["numInfections"][0]);
+                break;
+            case PersonAttribute::NUMCLEARANCES:
+                this->infectionStatus.numClearances =
+                    stoi((*dataTableRow)["numClearances"][0]);
+                break;
+            case PersonAttribute::DRUGBEHAVIORCLASSIFICATION:
+                this->behaviorDetails.behaviorClassification =
+                    Person::behaviorClassificationMap[Utils::toLower(
+                        (*dataTableRow)["drugBehaviorClassification"][0])];
+                break;
+            case PersonAttribute::TIMELASTACTIVEDRUGUSE:
+                this->behaviorDetails.timeLastActive =
+                    stoul((*dataTableRow)["timeLastActiveDrugUse"][0]);
+                break;
+            case PersonAttribute::LINKAGESTATE:
+                this->linkStatus.linkState =
+                    Person::linkageStateMap[Utils::toLower(
+                        (*dataTableRow)["linkageState"][0])];
+                break;
+            case PersonAttribute::TIMEOFLINKCHANGE:
+                this->linkStatus.timeOfLinkChange =
+                    stoi((*dataTableRow)["timeOfLinkChange"][0]);
+                break;
+            case PersonAttribute::LINKAGETYPE:
+                this->linkStatus.linkType =
+                    Person::linkageTypeMap[Utils::toLower(
+                        (*dataTableRow)["linkageType"][0])];
+                break;
+            case PersonAttribute::LINKCOUNT:
+                this->linkStatus.linkCount =
+                    stoi((*dataTableRow)["linkCount"][0]);
+                break;
+            case PersonAttribute::MEASUREDFIBROSISSTATE:
+                this->stagingDetails.measuredFibrosisState =
+                    Person::measuredFibrosisStateMap[Utils::toLower(
+                        (*dataTableRow)["measuredFibrosisState"][0])];
+                break;
+            case PersonAttribute::HADFIBTESTTWO:
+                this->stagingDetails.hadFibTestTwo =
+                    Utils::stobool((*dataTableRow)["hadFibTestTwo"][0]);
+                break;
+            case PersonAttribute::TIMEOFLASTSTAGING:
+                this->stagingDetails.timeOfLastStaging =
+                    stoi((*dataTableRow)["timeOfLastStaging"][0]);
+                break;
+            case PersonAttribute::TIMEOFLASTSCREENING:
+                this->screeningDetails.timeOfLastScreening =
+                    stoi((*dataTableRow)["timeOfLastScreening"][0]);
+                break;
+            case PersonAttribute::ABCOUNT:
+                this->screeningDetails.abCount =
+                    stoi((*dataTableRow)["abCount"][0]);
+                break;
+            case PersonAttribute::RNACOUNT:
+                this->screeningDetails.rnaCount =
+                    stoi((*dataTableRow)["rnaCount"][0]);
+                break;
+            case PersonAttribute::HASINCOMPLETETREATMENT:
+                this->treatmentDetails.incompleteTreatment = Utils::stobool(
+                    (*dataTableRow)["hasIncompleteTreatment"][0]);
+                break;
+            case PersonAttribute::INITIATEDTREATMENT:
+                this->treatmentDetails.initiatedTreatment =
+                    Utils::stobool((*dataTableRow)["initiatedTreatment"][0]);
+                break;
+            case PersonAttribute::TIMEOFTREATMENTINITIATION:
+                this->treatmentDetails.timeOfTreatmentInitiation =
+                    std::stoi((*dataTableRow)["timeOfTreatmentInitiation"][0]);
+                break;
+            case PersonAttribute::EXPOSEDTOLTFU:
+                this->treatmentDetails.exposedToLTFU =
+                    Utils::stobool((*dataTableRow)["exposedToLTFU"][0]);
+                break;
+            case PersonAttribute::TREATMENTCOUNT:
+                this->treatmentDetails.treatmentCount =
+                    std::stoi((*dataTableRow)["treatmentCount"][0]);
+                break;
+            case PersonAttribute::NUMEOT:
+                this->treatmentDetails.numEOT =
+                    std::stoi((*dataTableRow)["numEOT"][0]);
+                break;
+            case PersonAttribute::NUMSVR:
+                this->treatmentDetails.numSVR =
+                    std::stoi((*dataTableRow)["numSVR"][0]);
+                break;
+            case PersonAttribute::NUMTOX:
+                this->treatmentDetails.numTox =
+                    std::stoi((*dataTableRow)["numTox"][0]);
+                break;
+            case PersonAttribute::NUMWITHDRAWALS:
+                this->treatmentDetails.numWithdrawals =
+                    std::stoi((*dataTableRow)["numWithdrawals"][0]);
+                break;
+            case PersonAttribute::BACKGROUNDUTILITY:
+                this->utility.background =
+                    std::stod((*dataTableRow)["backgroundUtility"][0]);
+                break;
+            case PersonAttribute::BEHAVIORUTILITY:
+                this->utility.behavior =
+                    std::stod((*dataTableRow)["behaviorUtility"][0]);
+                break;
+            case PersonAttribute::TREATMENTUTILITY:
+                this->utility.treatment =
+                    std::stod((*dataTableRow)["treatmentUtility"][0]);
+                break;
+            case PersonAttribute::LIVERUTILITY:
+                this->utility.liver =
+                    std::stod((*dataTableRow)["liverUtility"][0]);
+                break;
+            }
+        }
     }
 
     void Person::die() { this->isAlive = false; }

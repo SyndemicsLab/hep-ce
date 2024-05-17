@@ -17,17 +17,13 @@
 using sharedPerson = std::shared_ptr<Person::Person>;
 
 /// @brief
-/// @tparam T
 /// @return
-template <typename T> sharedPerson makePerson() {
-    return std::make_shared<T>();
-}
+inline sharedPerson makePerson() { return std::make_shared<Person::Person>(); }
 
 /// @brief
-/// @tparam T
 /// @return
-template <typename T> sharedPerson makePerson(Data::IDataTablePtr rowData) {
-    return std::make_shared<T>(rowData);
+inline sharedPerson makePerson(Data::IDataTablePtr rowData) {
+    return std::make_shared<Person::Person>(rowData);
 }
 
 /// @brief
