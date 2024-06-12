@@ -54,6 +54,8 @@ namespace Simulation {
                 this->logger =
                     std::make_shared<spdlog::logger>("default_logger");
             }
+            this->logger->info("Simulation seed: " +
+                               std::to_string(this->seed));
         }
 
         virtual ~Simulation() = default;

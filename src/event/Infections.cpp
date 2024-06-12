@@ -18,8 +18,19 @@
 
 namespace Event {
     void Infections::doEvent(std::shared_ptr<Person::Person> person) {
-        // if person is already infected we can't infect them more
-        if (person->getHEPCState() != Person::HEPCState::NONE) {
+        // only those who aren't infected go to the rest of the event.
+        // those who are infected transition from acute to chronic after 6
+        // months.
+        switch (person->getHEPCState()) {
+        case Person::HEPCState::NONE:
+            break;
+        case Person::HEPCState::ACUTE:
+            if ((this->getCurrentTimestep() -
+                 person->getTimeHEPCStateChanged()) >= 6) {
+                person->setHEPCState(Person::HEPCState::CHRONIC);
+            }
+            return;
+        case Person::HEPCState::CHRONIC:
             return;
         }
 
@@ -44,7 +55,10 @@ namespace Event {
             Person::Person::behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()];
         auto resultTable = table->selectWhere(selectCriteria);
-
+        if (resultTable->empty()) {
+            // error
+            return {};
+        }
         double probInfected = std::stod((*resultTable)["incidence"][0]);
         std::vector<double> result = {probInfected, 1 - probInfected};
         return result;

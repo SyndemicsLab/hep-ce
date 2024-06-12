@@ -18,10 +18,8 @@
 
 namespace Event {
     void Aging::doEvent(std::shared_ptr<Person::Person> person) {
-        if (person->getIsAlive()) {
-            person->age++;
-            this->addBackgroundCost(person);
-        }
+        person->age++;
+        this->addBackgroundCost(person);
     }
 
     void Aging::addBackgroundCost(std::shared_ptr<Person::Person> person) {
@@ -35,6 +33,10 @@ namespace Event {
                 [person->getBehaviorClassification()];
 
         auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty()) {
+            // error
+            return;
+        }
         auto res = (*resultTable)["cost"];
         double cost = std::stod(res[0]);
 
@@ -42,5 +44,26 @@ namespace Event {
                                      cost};
 
         person->addCost(backgroundCost, this->getCurrentTimestep());
+    }
+
+    void Aging::setBackgroundUtility(std::shared_ptr<Person::Person> person) {
+        std::unordered_map<std::string, std::string> selectCriteria;
+
+        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
+        selectCriteria["gender"] =
+            Person::Person::sexEnumToStringMap[person->getSex()];
+        selectCriteria["drug_behavior"] =
+            Person::Person::behaviorClassificationEnumToStringMap
+                [person->getBehaviorClassification()];
+
+        auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty()) {
+            // error
+            return;
+        }
+        auto res = (*resultTable)["utility"];
+        double utility = std::stod(res[0]);
+
+        person->setUtility(Person::UtilityCategory::BACKGROUND, utility);
     }
 } // namespace Event

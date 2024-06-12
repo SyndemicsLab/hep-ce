@@ -1,6 +1,7 @@
 #ifndef RUN_HPP_
 #define RUN_HPP_
 
+#include "DataWriter.hpp"
 #include "EventFactory.hpp"
 #include "Simulation.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
@@ -16,17 +17,13 @@
 using sharedPerson = std::shared_ptr<Person::Person>;
 
 /// @brief
-/// @tparam T
 /// @return
-template <typename T> sharedPerson makePerson() {
-    return std::make_shared<T>();
-}
+inline sharedPerson makePerson() { return std::make_shared<Person::Person>(); }
 
 /// @brief
-/// @tparam T
 /// @return
-template <typename T> sharedPerson makePerson(Data::IDataTablePtr rowData) {
-    return std::make_shared<T>(rowData);
+inline sharedPerson makePerson(Data::IDataTablePtr rowData) {
+    return std::make_shared<Person::Person>(rowData);
 }
 
 /// @brief
@@ -42,7 +39,12 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 /// @brief
 /// @param config
 /// @return
-bool configChecks(Data::Configuration &config);
+bool configChecks(Data::Config &config);
+
+/// @brief Provide the pRNG seed passed to the simulation object
+/// @return User-defined seed, if provided. Otherwise, a seed based on the
+/// current millisecond.
+uint64_t getSimSeed(Data::Config &config);
 
 /// @brief
 /// @param personEvents
@@ -50,7 +52,7 @@ bool configChecks(Data::Configuration &config);
 /// @param sim
 int loadEvents(std::vector<Event::sharedEvent> &personEvents,
                std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-               Simulation::Simulation &sim, Data::Configuration &config,
+               Simulation::Simulation &sim, Data::Config &config,
                std::shared_ptr<spdlog::logger> logger =
                    std::make_shared<spdlog::logger>("default"));
 
@@ -72,14 +74,4 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
 int loadPopulation(std::vector<sharedPerson> &population,
                    std::unordered_map<std::string, Data::IDataTablePtr> &tables,
                    Simulation::Simulation &sim);
-
-Data::IDataTablePtr personToDataTable(sharedPerson &person);
-
-void writePopulation(std::vector<sharedPerson> &population,
-                     std::string dirpath);
-
-inline std::string const boolToString(bool b) {
-    return b ? std::string("true") : std::string("false");
-}
-
 #endif

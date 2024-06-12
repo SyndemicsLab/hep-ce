@@ -30,9 +30,12 @@ namespace Event {
         /// @brief Adds person's background cost
         /// @param person The person to whom cost will be added
         void addBackgroundCost(std::shared_ptr<Person::Person> person);
+        /// @brief Set person's background utility
+        /// @param person The person whose utility will be set
+        void setBackgroundUtility(std::shared_ptr<Person::Person> person);
 
     public:
-        Aging(Data::IDataTablePtr table, Data::Configuration &config,
+        Aging(Data::IDataTablePtr table, Data::Config &config,
               std::shared_ptr<spdlog::logger> logger =
                   std::make_shared<spdlog::logger>("default"),
               std::string name = std::string("Aging"))

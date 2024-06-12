@@ -80,6 +80,7 @@ public:
     MOCK_METHOD(int, ncols, (), (const, override));
     MOCK_METHOD(Data::DataTableShape, getShape, (), (const, override));
     MOCK_METHOD(bool, empty, (), (const, override));
+    MOCK_METHOD(bool, isNull, (), (const, override));
 };
 
 #endif

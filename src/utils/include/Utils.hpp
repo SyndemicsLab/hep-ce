@@ -51,6 +51,10 @@ namespace Utils {
     /// @param string
     /// @return
     bool stobool(std::string string);
+
+    inline std::string const boolToString(bool b) {
+        return b ? std::string("true") : std::string("false");
+    }
 } // namespace Utils
 
 #endif

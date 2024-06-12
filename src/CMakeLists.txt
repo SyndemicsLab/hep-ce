@@ -14,6 +14,7 @@ add_executable(hepce main.cpp run.cpp)
 add_subdirectory(event)
 add_subdirectory(person)
 add_subdirectory(simulation)
+add_subdirectory(data)
 add_subdirectory(utils)
 add_subdirectory(cost)
 
@@ -24,8 +25,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC event)
 target_link_libraries(${PROJECT_NAME} PUBLIC person)
 target_link_libraries(${PROJECT_NAME} PUBLIC simulation)
 target_link_libraries(${PROJECT_NAME} PUBLIC utils)
-
+target_link_libraries(${PROJECT_NAME} PUBLIC data)
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PRIVATE DataManagement::DataManagement)
-
-# target_include_directories(${PROJECT_NAME} PUBLIC ${DataManagement_INCLUDE_DIR})

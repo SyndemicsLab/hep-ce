@@ -101,16 +101,20 @@ namespace Event {
 
     public:
         Screening(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                  Data::Configuration &config,
+                  Data::Config &config,
                   std::shared_ptr<spdlog::logger> logger =
                       std::make_shared<spdlog::logger>("default"),
                   std::string name = std::string("Screening"))
             : ProbEvent(generator, table, config, logger, name) {
             this->costCategory = Cost::CostCategory::SCREENING;
-            this->interventionType = interventionMap[config.get<std::string>(
-                "screening.intervention_type")];
+            this->interventionType = interventionMap[std::get<std::string>(
+                config.get("screening.intervention_type", ""))];
             if (this->interventionType == InterventionType::PERIODIC) {
-                this->interventionPeriod = config.get<int>("screening.period");
+                this->interventionPeriod =
+                    std::get<int>(config.get("screening.period", (int)-1));
+                if (interventionPeriod <= 0) {
+                    // log error
+                }
             }
         }
         virtual ~Screening() = default;

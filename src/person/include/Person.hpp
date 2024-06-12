@@ -53,6 +53,7 @@ namespace Person {
         TreatmentDetails treatmentDetails;
         HCCStatus hccStatus;
         Utility utility;
+        std::pair<double, double> totalUtilities = {0, 0};
         Cost::CostTracker costs;
 
     public:
@@ -133,18 +134,39 @@ namespace Person {
         /// @return HEPC state that was diagnosed
         HEPCState diagnoseHEPC(int tstep);
 
+        /// @brief Getter for the number of HCV infections experienced by Person
+        /// @return Number of HCV infections experienced by Person
+        int getNumInfections() { return this->infectionStatus.numInfections; }
+
+        /// @brief Add an acute clearance to the running count
+        void addClearance() { this->infectionStatus.numClearances++; };
+
+        /// @brief Get the running total of clearances for Person
+        int getClearances() { return this->infectionStatus.numClearances; };
+
         /// @brief Mark somebody as having been screened this timestep
         void markScreened() { this->screeningDetails.timeOfLastScreening = 0; }
 
-        /// @brief Set the frequency in which to screen this person
-        /// @param screeningFrequency Frequency in which to screen this person
-        void setScreeningFrequency(int screeningFrequency) {
-            this->screeningDetails.screeningFrequency = screeningFrequency;
-        }
+        /// @brief
+        void addAbScreen() { this->screeningDetails.abCount++; }
 
-        /// @brief Add intervention screening to this person
-        void addInterventionScreening() {
-            this->screeningDetails.interventionScreening = true;
+        /// @brief
+        void addRnaScreen() { this->screeningDetails.rnaCount++; }
+
+        /// @brief
+        int getAbCount() { return this->screeningDetails.rnaCount; }
+
+        /// @brief
+        int getRnaCount() { return this->screeningDetails.rnaCount; }
+
+        /// @brief Getter for whether Person experienced fibtest two this cycle
+        /// @return value of hadFibTestTwo
+        bool hadFibTestTwo() { return this->stagingDetails.hadFibTestTwo; }
+
+        /// @brief Set whether the person experienced fibtest two this cycle
+        /// @param state New value of hadFibTestTwo
+        void setHadFibTestTwo(bool state) {
+            this->stagingDetails.hadFibTestTwo = state;
         }
 
         /// @brief Set the Seropositivity value
@@ -169,6 +191,7 @@ namespace Person {
             this->linkStatus.linkState = LinkageState::LINKED;
             this->linkStatus.timeOfLinkChange = tstep;
             this->linkStatus.linkType = linkType;
+            this->linkStatus.linkCount++;
         }
 
         /// @brief Mark a Person as Identified as Infected
@@ -182,18 +205,6 @@ namespace Person {
         /// @return The Time Since the Last Screening
         int getTimeOfLastScreening() const {
             return this->screeningDetails.timeOfLastScreening;
-        }
-
-        /// @brief Getter for the Screening Frequency
-        /// @return The Screening Frequency
-        int getScreeningFrequency() const {
-            return this->screeningDetails.screeningFrequency;
-        }
-
-        /// @brief Getter for the if the Person was Screened via Interventions
-        /// @return Intervention Screening Status
-        bool isInterventionScreened() const {
-            return this->screeningDetails.interventionScreening;
         }
 
         /// @brief Flips the person's overdose state
@@ -213,6 +224,12 @@ namespace Person {
         /// @return HCV State
         HEPCState getHEPCState() const {
             return this->infectionStatus.hepcState;
+        }
+
+        /// @brief Set HEPC State -- used to change to chronic infection
+        /// @param New HEPC State
+        void setHEPCState(HEPCState hcvs) {
+            this->infectionStatus.hepcState = hcvs;
         }
 
         /// @brief Getter for Alive Status
@@ -267,6 +284,10 @@ namespace Person {
             return this->linkStatus.timeOfLinkChange;
         }
 
+        /// @brief Getter for link count
+        /// @return Number of times Person has linked to care
+        int getLinkCount() const { return this->linkStatus.linkCount; }
+
         /// @brief Getter for Linkage Type
         /// @return Linkage Type
         LinkageType getLinkageType() const { return this->linkStatus.linkType; }
@@ -314,6 +335,53 @@ namespace Person {
         void setTimeOfTreatmentInitiation(int tstep) {
             this->treatmentDetails.timeOfTreatmentInitiation = tstep;
         }
+
+        /// @brief Add to the tracked count of treatment initiations for Person
+        void incrementTreatCount() { this->treatmentDetails.treatmentCount++; }
+
+        /// @brief Get the tracked count of treatment initiations for Person
+        int getTreatmentCount() const {
+            return this->treatmentDetails.treatmentCount;
+        }
+
+        /// @brief Access whether Person can be exposed to loss to follow-up
+        bool exposedToLTFU() const {
+            return this->treatmentDetails.exposedToLTFU;
+        }
+
+        /// @brief Set whether Person is to be exposed to loss to follow-up
+        /// @param state New value for exposedToLTFU
+        void setExposedToLTFU(bool state) {
+            this->treatmentDetails.exposedToLTFU = state;
+        }
+
+        /// @brief Add to end of treatment (EOT) count
+        void addEOT() { this->treatmentDetails.numEOT++; }
+
+        /// @brief Get number of treatments completed
+        int getNumEOT() { return this->treatmentDetails.numEOT; }
+
+        /// @brief Add to SVR/cure count
+        void addSVR() { this->treatmentDetails.numSVR++; }
+
+        /// @brief Get number of times Person achieved SVR
+        /// @return The number of times Person reached treatment end
+        int getNumSVR() { return this->treatmentDetails.numSVR; }
+
+        /// @brief Add to adverse treatment effect coutn
+        void addTox() { this->treatmentDetails.numTox++; }
+
+        /// @brief Get number of times Person experienced adverse treatment
+        /// effects
+        /// @return number of adverse treatment effects experienced
+        int getNumTox() { return this->treatmentDetails.numTox; }
+
+        /// @brief Add treatment withdrawal to Person
+        void addWithdrawal() { this->treatmentDetails.numWithdrawals++; }
+
+        /// @brief Get the number of treatment withdrawals experienced by Person
+        /// @return Number of treatment withdrawals
+        int getWithdrawals() { return this->treatmentDetails.numWithdrawals; }
 
         /// @brief Getter for pregnancy status
         /// @return Pregnancy State
@@ -407,6 +475,14 @@ namespace Person {
         /// utilities
         /// @return Minimal utility and multiplicative utility
         std::pair<double, double> getUtilities() const;
+
+        /// @brief Record Person's utilities
+        void measureUtilities();
+
+        /// @brief Getter for total utilities
+        std::pair<double, double> getTotalUtilities() const {
+            return this->totalUtilities;
+        }
 
         /// @brief Add a cost to the person's CostTracker object
         /// @param cost The cost to be added

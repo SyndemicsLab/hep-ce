@@ -77,7 +77,7 @@ TEST_F(EventTest, AgingLiving) {
     Data::IDataTablePtr table =
         std::make_shared<Data::DataTable>(tableData, tableShape, tableHeaders);
 
-    Data::Configuration config;
+    Data::Config config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
     int ct = 1;
@@ -105,7 +105,7 @@ TEST_F(EventTest, AgingDead) {
     Data::IDataTablePtr table =
         std::make_shared<Data::DataTable>(tableData, tableShape, tableHeaders);
 
-    Data::Configuration config;
+    Data::Config config;
     std::shared_ptr<Event::Aging> agingEvent =
         std::make_shared<Event::Aging>(table, config);
     int ct = 1;
@@ -161,7 +161,7 @@ TEST_F(EventTest, BehaviorChange) {
         transitionVal->innerJoin(costVal, joinCols, joinCols);
 
     EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(bcVal));
-    Data::Configuration config;
+    Data::Config config;
     Event::BehaviorChanges behavior(simulation->getGenerator(), table, config);
     int ct = 1;
     behavior.setCurrentTimestep(ct);
@@ -175,20 +175,45 @@ TEST_F(EventTest, BehaviorChange) {
 
 TEST_F(EventTest, Clearance) {
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
-    Data::Configuration config;
+    // making clearance probability 100% for testing
+    outStream << "[infection]" << std::endl
+              << "clearance_prob = 1.0" << std::endl;
+    Data::Config config(tempFilePath.string());
     Event::Clearance clearance(simulation->getGenerator(), table, config);
     livingPopulation[0]->infect(0);
+    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+    // current timestep
+    int ct = 1;
+    clearance.setCurrentTimestep(ct);
+    EXPECT_EQ(0, livingPopulation[0]->getClearances());
+    clearance.execute(livingPopulation);
+    // checking clears of HCV
+    EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
+    // checking that the clearance is correctly counted
+    EXPECT_EQ(1, livingPopulation[0]->getClearances());
+}
+
+TEST_F(EventTest, ClearanceNoInfection) {
+    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
+    Data::Config config;
+    Event::Clearance clearance(simulation->getGenerator(), table, config);
+    EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
+    // current timestep
     int ct = 1;
     clearance.setCurrentTimestep(ct);
     clearance.execute(livingPopulation);
-    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+    // checking that there is no clearance in the count
+    EXPECT_EQ(0, livingPopulation[0]->getClearances());
 }
 
 TEST_F(EventTest, DeathByOldAge) {
+    outStream << "[mortality]" << std::endl
+              << "f4 = 0" << std::endl
+              << "decomp = 0" << std::endl;
     Person::Person expectedPerson;
     expectedPerson.die();
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
-    Data::Configuration config;
+    Data::Config config(tempFilePath.string());
     Event::Death deathEvent(simulation->getGenerator(), table, config);
     livingPopulation[0]->age = 1210;
     int ct = 1;
@@ -198,27 +223,15 @@ TEST_F(EventTest, DeathByOldAge) {
 }
 
 TEST_F(EventTest, FibrosisProgression) {
+    outStream << "[fibrosis]" << std::endl << "f01 = 1.0" << std::endl;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
 
-    std::map<std::string, std::vector<std::string>> retData;
-    retData["initial_state"] = {"f0", "f0"};
-    retData["new_state"] = {"f0", "f1"};
-    retData["probability"] = {"0.0", "1.0"};
-
-    std::vector<std::string> retHeader = {"initial_state", "new_state",
-                                          "probability"};
-
-    Data::DataTableShape retShape(2, 3);
-
-    std::shared_ptr<Data::IDataTable> retVal =
-        std::make_shared<Data::DataTable>(retData, retShape, retHeader);
-
     std::map<std::string, std::vector<std::string>> costData;
-    costData["hcv_status"] = {"none"};
-    costData["initial_state"] = {"f0"};
-    costData["cost"] = {"100.00"};
+    costData["hcv_status"] = {"none", "acute"};
+    costData["metavir_stage"] = {"f0", "f1"};
+    costData["cost"] = {"100.00", "100.00"};
 
-    std::vector<std::string> costHeader = {"hcv_status", "initial_state",
+    std::vector<std::string> costHeader = {"hcv_status", "metavir_stage",
                                            "cost"};
 
     Data::DataTableShape costShape(1, 3);
@@ -226,14 +239,9 @@ TEST_F(EventTest, FibrosisProgression) {
     std::shared_ptr<Data::IDataTable> costVal =
         std::make_shared<Data::DataTable>(costData, costShape, costHeader);
 
-    std::string joinCol = "initial_state";
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(costVal));
 
-    std::shared_ptr<Data::IDataTable> fpVal =
-        retVal->innerJoin(costVal, joinCol, joinCol);
-
-    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(fpVal));
-
-    Data::Configuration config;
+    Data::Config config(tempFilePath.string());
     Event::FibrosisProgression fibrosisProgression(simulation->getGenerator(),
                                                    table, config);
     livingPopulation[0]->infect(0);
@@ -260,7 +268,7 @@ TEST_F(EventTest, Infections) {
     retData["age_years"] = {"0"};
     retData["gender"] = {"male"};
     retData["drug_behavior"] = {"never"};
-    retData["incidence"] = {"0"};
+    retData["incidence"] = {"1.0"};
 
     std::vector<std::string> retHeader = {"age_years", "gender",
                                           "drug_behavior", "incidence"};
@@ -272,23 +280,113 @@ TEST_F(EventTest, Infections) {
 
     EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
 
-    Data::Configuration config;
+    Data::Config config;
     Event::Infections infections(simulation->getGenerator(), table, config);
+    // current timestep
     int ct = 1;
     infections.setCurrentTimestep(ct);
+    EXPECT_EQ(0, livingPopulation[0]->getNumInfections());
     infections.execute(livingPopulation);
-    EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
+    // check that person is now infected
+    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+    // check that the infection counts correctly
+    EXPECT_EQ(1, livingPopulation[0]->getNumInfections());
+}
+
+TEST_F(EventTest, Chronic) {
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+
+    std::map<std::string, std::vector<std::string>> retData;
+    retData["age_years"] = {"0"};
+    retData["gender"] = {"male"};
+    retData["drug_behavior"] = {"never"};
+    retData["incidence"] = {"1.0"};
+
+    std::vector<std::string> retHeader = {"age_years", "gender",
+                                          "drug_behavior", "incidence"};
+
+    Data::DataTableShape retShape(1, 4);
+
+    std::shared_ptr<Data::IDataTable> retVal =
+        std::make_shared<Data::DataTable>(retData, retShape, retHeader);
+
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(retVal));
+
+    Data::Config config;
+    Event::Infections infections(simulation->getGenerator(), table, config);
+    // current timestep
+    int ct = 1;
+    infections.setCurrentTimestep(ct);
+    EXPECT_EQ(0, livingPopulation[0]->getNumInfections());
+    infections.execute(livingPopulation);
+    // check that person is now infected
+    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+
+    ct = 7;
+    infections.setCurrentTimestep(ct);
+    infections.execute(livingPopulation);
+    EXPECT_EQ(Person::HEPCState::CHRONIC, livingPopulation[0]->getHEPCState());
+
+    // check that the infection counts correctly
+    EXPECT_EQ(1, livingPopulation[0]->getNumInfections());
 }
 
 TEST_F(EventTest, Linking) {}
 
 TEST_F(EventTest, Screening) {
-    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
     outStream << "[screening]" << std::endl
               << "intervention_type = periodic" << std::endl
-              << "period = 12" << std::endl;
-    Data::Configuration config(tempFilePath.string());
-    Event::Screening(simulation->getGenerator(), table, config);
+              << "period = 12" << std::endl
+              << "seropositivity_multiplier = 1.0" << std::endl
+              << "[screening_background_ab]" << std::endl
+              << "cost = 50.00" << std::endl
+              << "acute_sensitivity = 1.0" << std::endl
+              << "chronic_sensitivity = 1.0" << std::endl
+              << "specificity = 1.0" << std::endl
+              << "[screening_background_rna]" << std::endl
+              << "cost = 25.00" << std::endl
+              << "acute_sensitivity = 1.0" << std::endl
+              << "chronic_sensitivity = 1.0" << std::endl
+              << "specificity = 1.0" << std::endl
+              << "[screening_intervention_ab]" << std::endl
+              << "cost = 1000.00" << std::endl
+              << "acute_sensitivity = 1.0" << std::endl
+              << "chronic_sensitivity = 1.0" << std::endl
+              << "specificity = 1.0" << std::endl
+              << "[screening_intervention_rna]" << std::endl
+              << "cost = 100.00" << std::endl
+              << "acute_sensitivity = 1.0" << std::endl
+              << "chronic_sensitivity = 1.0" << std::endl
+              << "specificity = 1.0" << std::endl;
+
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+    std::map<std::string, std::vector<std::string>> screeningData;
+    screeningData["age_years"] = {"0"};
+    screeningData["gender"] = {"male"};
+    screeningData["drug_behavior"] = {"never"};
+    screeningData["background_screen_probability"] = {"1.0"};
+    screeningData["background_link_probability"] = {"1.0"};
+    screeningData["intervention_screen_probability"] = {"1.0"};
+    screeningData["intervention_link_probability"] = {"1.0"};
+    std::vector<std::string> screeningHeader = {
+        "age_years",
+        "gender",
+        "drug_behavior",
+        "background_screen_probability",
+        "background_link_probability"
+        "intervention_screen_probability",
+        "intervention_link_probability"};
+    Data::DataTableShape screeningShape(1, 7);
+    std::shared_ptr<Data::IDataTable> screeningVal =
+        std::make_shared<Data::DataTable>(screeningData, screeningShape,
+                                          screeningHeader);
+
+    EXPECT_CALL((*table), selectWhere(_)).WillRepeatedly(Return(screeningVal));
+    Data::Config config(tempFilePath.string());
+    Event::Screening screening(simulation->getGenerator(), table, config);
+    int ct = 1;
+    livingPopulation[0]->infect(ct);
+    screening.execute(livingPopulation);
 }
 
 TEST_F(EventTest, Treatment) {
@@ -324,7 +422,7 @@ TEST_F(EventTest, Treatment) {
               << "duration = 5" << std::endl
               << "utility = 0.95" << std::endl;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
-    Data::Configuration config(tempFilePath.string());
+    Data::Config config(tempFilePath.string());
 
     Event::Treatment treatment(simulation->getGenerator(), table, config);
     // checking default value for event name

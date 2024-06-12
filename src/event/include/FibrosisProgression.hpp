@@ -31,18 +31,14 @@ namespace Event {
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
 
-        std::vector<double>
-        getTransitions(std::shared_ptr<Person::Person> person);
-
-        std::map<Person::FibrosisState, double>
-        getProbabilityMap(Data::IDataTablePtr subTable) const;
+        std::vector<double> getTransition(Person::FibrosisState fs);
 
         void addLiverDiseaseCost(std::shared_ptr<Person::Person> person);
 
     public:
         FibrosisProgression(
             std::mt19937_64 &generator, Data::IDataTablePtr table,
-            Data::Configuration &config,
+            Data::Config &config,
             std::shared_ptr<spdlog::logger> logger =
                 std::make_shared<spdlog::logger>("default"),
             std::string name = std::string("FibrosisProgression"))

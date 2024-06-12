@@ -47,6 +47,8 @@ namespace Event {
     /// @brief Subclass of Event used to Provide Treatment to People
     class Treatment : public ProbEvent {
     private:
+        std::vector<Course> courses;
+
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
@@ -79,11 +81,20 @@ namespace Event {
         double locateInput(std::vector<std::string> &configSections,
                            const std::string &parameter);
 
-        std::vector<Course> courses;
+        /// @brief Add the cost associated with a month of treatment
+        /// @param Person the person who accrues the cost
+        /// @param cost the cost associated with Person's treatment
+        void addTreatmentCost(std::shared_ptr<Person::Person> person,
+                              double cost);
+
+        /// @brief If Person is exposed to loss to follow-up, checks if they
+        /// unlink from care
+        /// @param Person the Person who may unlink due to loss to follow-up
+        void checkLossToFollowUp(std::shared_ptr<Person::Person> person);
 
     public:
         Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                  Data::Configuration &config,
+                  Data::Config &config,
                   std::shared_ptr<spdlog::logger> logger =
                       std::make_shared<spdlog::logger>("default"),
                   std::string name = std::string("Treatment"));

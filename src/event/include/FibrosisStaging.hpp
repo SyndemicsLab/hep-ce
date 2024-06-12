@@ -59,17 +59,18 @@ namespace Event {
 
     public:
         FibrosisStaging(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                        Data::Configuration &config,
+                        Data::Config &config,
                         std::shared_ptr<spdlog::logger> logger =
                             std::make_shared<spdlog::logger>("default"),
                         std::string name = std::string("FibrosisStaging"))
             : ProbEvent(generator, table, config, logger, name) {
             this->costCategory = Cost::CostCategory::STAGING;
-            testOneCost = config.get<double>("fibrosis_staging.test_one_cost");
-            std::shared_ptr<double> testTwo =
-                config.optional<double>("fibrosis_staging.test_two_cost");
+            testOneCost = std::get<double>(
+                config.get("fibrosis_staging.test_one_cost", 0.0));
+            std::shared_ptr<Data::ReturnType> testTwo =
+                config.get_optional("fibrosis_staging.test_two_cost", -1.0);
             if (testTwo) {
-                testTwoCost = *testTwo;
+                testTwoCost = std::get<double>(*testTwo);
             }
         }
         virtual ~FibrosisStaging() = default;

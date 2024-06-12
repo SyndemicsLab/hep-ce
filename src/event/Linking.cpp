@@ -33,18 +33,18 @@ namespace Event {
         std::vector<double> probs;
         if (person->getLinkageType() == Person::LinkageType::BACKGROUND) {
             // link probability
-            probs = getTransitions(person, "background_linking");
+            probs = getTransitions(person, "background_link_probability");
         } else {
             // add intervention cost
             this->addLinkingCost(person);
             // link probability
-            probs = getTransitions(person, "intervention_linking");
+            probs = getTransitions(person, "intervention_link_probability");
         }
 
         if (person->getLinkState() == Person::LinkageState::UNLINKED) {
             // scale by relink multiplier
-            double relinkScalar =
-                this->config.get<double>("linking.relink_multiplier");
+            double relinkScalar = std::get<double>(
+                this->config.get("linking.relink_multiplier", 1.0));
             probs[1] = probs[1] * relinkScalar;
             probs[0] = 1 - probs[1];
         }
@@ -75,6 +75,10 @@ namespace Event {
                 [person->getBehaviorClassification()];
 
         auto resultTable = table->selectWhere(selectCriteria);
+        if (resultTable->empty()) {
+            // error
+            return {};
+        }
 
         std::vector<std::string> col = resultTable->getColumn(columnKey);
 

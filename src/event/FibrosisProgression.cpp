@@ -20,62 +20,54 @@
 namespace Event {
     void FibrosisProgression::doEvent(std::shared_ptr<Person::Person> person) {
         // can only progress in fibrosis state if actively infected with HCV
-        // for people in F3 or later, there is still a chance of HCC progression
         if (person->getHEPCState() == Person::HEPCState::NONE) {
-            if (person->getFibrosisState() < Person::FibrosisState::F3) {
-                return;
-            }
+            return;
         }
-        // 1. Get current disease status
+        // 1. Get current fibrosis status
         Person::FibrosisState fs = person->getFibrosisState();
-        // 2. Get the transition probabilities from that state
-        std::vector<double> probs = getTransitions(person);
-        // currently using placeholders to test compiling
-        // std::vector<double> probs = {0.2, 0.2, 0.2, 0.2, 0.2};
-        // 3. Randomly draw the state to transition to
+        // 2. Get the transition probability
+        std::vector<double> prob = getTransition(fs);
+        // 3. Draw whether the person's fibrosis state progresses
         Person::FibrosisState toFS =
-            (Person::FibrosisState)this->getDecision(probs);
-        // 4. Transition to the new state
+            (Person::FibrosisState)((int)fs + this->getDecision(prob));
+        // 4. Apply the result state
         person->updateFibrosis(toFS, this->getCurrentTimestep());
 
-        // insert Person's liver-related disease cost
+        // insert Person's liver-related disease cost (taking the highest
+        // fibrosis state)
+        // TODO: make the ability to add this only if identified a toggle-able
         this->addLiverDiseaseCost(person);
     }
 
-    std::vector<double> FibrosisProgression::getTransitions(
-        std::shared_ptr<Person::Person> person) {
-        std::unordered_map<std::string, std::string> selectCriteria;
+    std::vector<double>
+    FibrosisProgression::getTransition(Person::FibrosisState fs) {
+        // get the probability of transitioning to the next fibrosis state
+        Data::ReturnType temp;
 
-        // intentional truncation
-        selectCriteria["initial_state"] = Person::Person::
-            fibrosisStateEnumToStringMap[person->getFibrosisState()];
-        auto resultTable = table->selectWhere(selectCriteria);
-        std::map<Person::FibrosisState, double> probMap =
-            getProbabilityMap(resultTable);
-
-        std::vector<double> result = {};
-        for (auto kv : probMap) {
-            result.push_back(kv.second);
+        switch (fs) {
+        case Person::FibrosisState::F0:
+            temp = this->config.get("fibrosis.f01", 0.0);
+            break;
+        case Person::FibrosisState::F1:
+            temp = this->config.get("fibrosis.f12", 0.0);
+            break;
+        case Person::FibrosisState::F2:
+            temp = this->config.get("fibrosis.f23", 0.0);
+            break;
+        case Person::FibrosisState::F3:
+            temp = this->config.get("fibrosis.f34", 0.0);
+            break;
+        case Person::FibrosisState::F4:
+            temp = this->config.get("fibrosis.f4d", 0.0);
+            break;
+        case Person::FibrosisState::DECOMP:
+            temp = (Data::ReturnType)0.0;
+            break;
         }
-        return result;
-    }
-    std::map<Person::FibrosisState, double>
-    FibrosisProgression::getProbabilityMap(Data::IDataTablePtr subTable) const {
-        std::map<Person::FibrosisState, double> probMap;
-        for (auto kv : Person::Person::fibrosisStateEnumToStringMap) {
-            probMap[kv.first] = 0.0;
-        }
 
-        std::vector<std::string> newStateColumn =
-            subTable->getColumn("new_state");
-        std::vector<std::string> probColumn =
-            subTable->getColumn("probability");
-
-        for (int i = 0; i < newStateColumn.size(); ++i) {
-            probMap[Person::Person::fibrosisStateMap[newStateColumn[i]]] =
-                stod(probColumn[i]);
-        }
-        return probMap;
+        // to work with getDecision, return the complement to the transition
+        // probability
+        return {1 - std::get<double>(temp)};
     }
 
     void FibrosisProgression::addLiverDiseaseCost(
@@ -83,12 +75,17 @@ namespace Event {
         std::unordered_map<std::string, std::string> selectCriteria;
         selectCriteria["hcv_status"] =
             Person::Person::hepcStateEnumToStringMap[person->getHEPCState()];
-        selectCriteria["initial_state"] = Person::Person::
+        selectCriteria["metavir_stage"] = Person::Person::
             fibrosisStateEnumToStringMap[person->getFibrosisState()];
-
         auto resultTable = table->selectWhere(selectCriteria);
-        auto res = (*resultTable)["cost"];
-        double cost = std::stod(res[0]);
+        double cost;
+        if (resultTable->empty()) {
+            // yell
+            cost = 0;
+        } else {
+            auto res = (*resultTable)["cost"];
+            cost = std::stod(res[0]);
+        }
 
         Cost::Cost liverDiseaseCost = {this->costCategory, "Liver Disease Care",
                                        cost};

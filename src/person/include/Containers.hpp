@@ -140,6 +140,8 @@ namespace Person {
         bool seropositivity = false;
         int timeHEPCStateChanged = 0;
         int timeFibrosisStateChanged = 0;
+        int numInfections = 0;
+        int numClearances = 0;
     };
 
     /// @brief Attributes characterizing HCC
@@ -159,6 +161,7 @@ namespace Person {
         LinkageState linkState = LinkageState::NEVER;
         int timeOfLinkChange = 0;
         LinkageType linkType = LinkageType::BACKGROUND;
+        int linkCount = 0;
     };
 
     /// @brief Attributes describing MOUD status
@@ -179,6 +182,7 @@ namespace Person {
     struct StagingDetails {
         MeasuredFibrosisState measuredFibrosisState =
             MeasuredFibrosisState::NONE;
+        bool hadFibTestTwo = false;
         int timeOfLastStaging = 0;
     };
 
@@ -186,15 +190,21 @@ namespace Person {
     struct ScreeningDetails {
         // -1 if never screened, otherwise [0, currentTimestep-1)
         int timeOfLastScreening = 0;
-        int screeningFrequency = -1; // -1 if screened only once and never again
-        bool interventionScreening = false;
+        int abCount = 0;
+        int rnaCount = 0;
     };
 
     /// @brief Attributes describing treatment state
     struct TreatmentDetails {
         bool incompleteTreatment = false;
         bool initiatedTreatment = false;
+        bool exposedToLTFU = true;
         int timeOfTreatmentInitiation = 0;
+        int treatmentCount = 0;
+        int numEOT = 0;
+        int numSVR = 0;
+        int numTox = 0;
+        int numWithdrawals = 0;
     };
 
     /// @brief Categories for utility values
@@ -207,10 +217,10 @@ namespace Person {
 
     /// @brief Attributes describing a person's quality of life
     struct Utility {
-        double background = 1;
-        double behavior = 1;
-        double treatment = 1;
-        double liver = 1;
+        double background = 1.0;
+        double behavior = 1.0;
+        double treatment = 1.0;
+        double liver = 1.0;
     };
 } // namespace Person
 
