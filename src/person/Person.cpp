@@ -410,6 +410,14 @@ namespace Person {
         return utilities;
     }
 
+    void Person::measureUtilities() {
+        const std::pair<double, double> &utils = this->getUtilities();
+        // total min utility
+        this->totalUtilities.first += utils.first;
+        // total mult utility
+        this->totalUtilities.second += utils.second;
+    }
+
     void Person::addCost(Cost::Cost cost, int timestep) {
         this->costs.addCost(cost, timestep);
     }

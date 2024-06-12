@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/bash -l
 # only execute these lines if the `module` command is present in the environment
 # used for the BU SCC
 if command -v module &>/dev/null; then
@@ -82,7 +82,7 @@ done
 	$CONANPATH profile detect --force
     fi
 
-	$CONANPATH install . --build=missing --settings=build_type="$BUILDTYPE"
+    $CONANPATH install . --build=missing --settings=build_type="$BUILDTYPE"
 
     (
 	cd "build" || exit

@@ -53,6 +53,7 @@ namespace Person {
         TreatmentDetails treatmentDetails;
         HCCStatus hccStatus;
         Utility utility;
+        std::pair<double, double> totalUtilities = {0, 0};
         Cost::CostTracker costs;
 
     public:
@@ -474,6 +475,14 @@ namespace Person {
         /// utilities
         /// @return Minimal utility and multiplicative utility
         std::pair<double, double> getUtilities() const;
+
+        /// @brief Record Person's utilities
+        void measureUtilities();
+
+        /// @brief Getter for total utilities
+        std::pair<double, double> getTotalUtilities() const {
+            return this->totalUtilities;
+        }
 
         /// @brief Add a cost to the person's CostTracker object
         /// @param cost The cost to be added
