@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  hepcesimulationv2:
+    image: hepcesimulationv2
+    build:
+      context: .
+      dockerfile: ./Dockerfile

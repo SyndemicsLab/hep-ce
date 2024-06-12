@@ -8,13 +8,14 @@ find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 )
 
-add_library(simulation Simulation.cpp)
+add_library(${PROJECT_NAME} 
+    Simulation.cpp 
+    run.cpp
+)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC person)
+target_link_libraries(${PROJECT_NAME} PUBLIC data)
 target_link_libraries(${PROJECT_NAME} PUBLIC event)
-
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
 
-set(SIMULATION_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
-target_include_directories(event PUBLIC ${SIMULATION_INCLUDES})
+target_include_directories(${PROJECT_NAME} PUBLIC "include/")

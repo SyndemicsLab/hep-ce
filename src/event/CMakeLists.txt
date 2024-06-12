@@ -24,12 +24,10 @@ add_library(event
     VoluntaryRelinking.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC person)
-target_link_libraries(${PROJECT_NAME} PUBLIC utils)
 target_link_libraries(${PROJECT_NAME} PUBLIC cost)
+target_link_libraries(${PROJECT_NAME} PUBLIC person)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
 
-set(EVENT_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
-target_include_directories(event PUBLIC ${EVENT_INCLUDES})
+target_include_directories(event PUBLIC "include/")
