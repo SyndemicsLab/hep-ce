@@ -1,13 +1,11 @@
 #ifndef RUN_HPP_
 #define RUN_HPP_
 
-#include "DataWriter.hpp"
-#include "EventFactory.hpp"
 #include "Simulation.hpp"
-#include "spdlog/sinks/basic_file_sink.h"
+// #include "spdlog/sinks/basic_file_sink.h"
+#include "EventFactory.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement.hpp>
-#include <filesystem>
 #include <memory>
 #include <string>
 #include <unordered_map>
