@@ -4,6 +4,7 @@
 if command -v module &>/dev/null; then
     module load python3/3.10.12
     module load gcc/12.2.0
+    module load openmpi/4.1.5
 fi
 
 # help message to be output either with the -h flag or when using invalid syntax
@@ -76,6 +77,8 @@ done
 
     # ensure the `build/` directory exists
     ([[ -d "build/" ]] && rm -rf build/*) || mkdir "build/"
+    ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
+    ([[ -d "lib/" ]] && rm -rf lib/*.a)
 
     # install dependencies via conan
     if [[ ! -f "$HOME/.conan2/profiles/default" ]]; then
@@ -110,10 +113,9 @@ done
 	# deactivate the conan virtual environment
 	# shellcheck source=/dev/null
 	source "$BUILDTYPE/generators/deactivate_conanbuild.sh"
-	# run tests, if they built properly
-    cd ..
+    )
+    # run tests, if they built properly
 	if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then
 	    bin/hepceTest
 	fi
-    )
 )
