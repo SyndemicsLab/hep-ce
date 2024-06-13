@@ -19,10 +19,6 @@
 
 namespace Event {
     void Screening::doEvent(std::shared_ptr<Person::Person> person) {
-        if (!person->getIsAlive()) {
-            return;
-        }
-
         // one-time screen or periodic screen
         switch (this->interventionType) {
         case InterventionType::ONETIME:

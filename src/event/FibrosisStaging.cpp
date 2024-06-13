@@ -18,10 +18,6 @@
 
 namespace Event {
     void FibrosisStaging::doEvent(std::shared_ptr<Person::Person> person) {
-        if (!person->getIsAlive()) {
-            return;
-        }
-
         // 1. Check the time since the person's last fibrosis staging test. If
         // the person's last test is more recent than the limit, exit event.
         int timeSinceStaging =

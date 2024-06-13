@@ -38,8 +38,8 @@ namespace Event {
 
         int timeSincePregnancyChange =
             this->currentTime - person->getTimeOfPregnancyChange();
-        if (!person->getIsAlive() || person->getSex() == Person::Sex::MALE ||
-            person->age < 15 || person->age > 45 ||
+        if (person->getSex() == Person::Sex::MALE || person->age < 15 ||
+            person->age > 45 ||
             (person->getPregnancyState() ==
                  Person::PregnancyState::POSTPARTUM &&
              timeSincePregnancyChange < 3)) {

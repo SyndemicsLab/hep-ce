@@ -70,5 +70,5 @@ jobs:
       run: source "$BUILD_TYPE/generators/deactivate_conanbuild.sh"
 
     - name: Cmake test
-      working-directory: ${{github.workspace}}/build
-      run: ./tests/hepceTest
+      working-directory: ${{github.workspace}}/bin
+      run: ./hepceTest
