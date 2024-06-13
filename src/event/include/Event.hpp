@@ -23,8 +23,9 @@
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement.hpp>
-#include <algorithm>
-#include <execution>
+#include <omp.h>
+// #include <algorithm>
+// #include <execution>
 #include <mutex>
 #include <random>
 #include <stdexcept>
@@ -71,18 +72,16 @@ namespace Event {
         /// simulation
         /// @return The population vector after the event is executed
         void execute(std::vector<std::shared_ptr<Person::Person>> &population) {
-            std::for_each(std::execution::par, std::begin(population),
-                          std::end(population),
-                          [this](std::shared_ptr<Person::Person> &p) {
-                              if (p->getIsAlive()) {
-                                  std::cout << "[Person " << p->getID()
-                                            << "] Timestep "
-                                            << this->getCurrentTimestep()
-                                            << ": " << this->EVENT_NAME
-                                            << std::endl;
-                                  this->doEvent(p);
-                              }
-                          });
+#pragma omp parallel for
+            for (int i = 0; i < population.size(); ++i) {
+                if (population[i]->getIsAlive()) {
+                    // std::cout << "[Person " << population[i]->getID()
+                    //           << "] Timestep " <<
+                    //           this->getCurrentTimestep()
+                    //           << ": " << this->EVENT_NAME << std::endl;
+                    this->doEvent(population[i]);
+                }
+            }
         }
     };
 

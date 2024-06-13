@@ -111,8 +111,9 @@ done
 	# shellcheck source=/dev/null
 	source "$BUILDTYPE/generators/deactivate_conanbuild.sh"
 	# run tests, if they built properly
-	if [[ (-n "$BUILD_TESTS") && (-f "tests/hepceTest") ]]; then
-	    tests/hepceTest
+    cd ..
+	if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then
+	    bin/hepceTest
 	fi
     )
 )
