@@ -55,7 +55,8 @@ done
 
 (
     # change to the top-level git folder
-    cd "$(git rev-parse --show-toplevel)" || exit
+    TOPLEVEL="$(git rev-parse --show-toplevel)"
+    cd "$TOPLEVEL" || exit
     CONANPATH=$(command -v conan)
 
     # install conan, if not found in the current scope
@@ -86,6 +87,18 @@ done
     fi
 
     $CONANPATH install . --build=missing --settings=build_type="$BUILDTYPE"
+
+        # detect or install DataManagement
+    if [[ ! -d "lib/dminstall" ]]; then
+	git clone git@github.com:SyndemicsLab/DataManagement
+	if ! (
+		cd "DataManagement" || exit 1
+		./install.sh "$TOPLEVEL/lib/dminstall"
+	    ); then
+	    echo "Installing \`DataManagement\` failed."
+	fi
+	rm -rf DataManagement
+    fi
 
     (
 	cd "build" || exit
