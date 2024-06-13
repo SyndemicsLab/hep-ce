@@ -30,8 +30,15 @@ namespace Event {
         // currently using placeholders to test compiling
         // std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
         // 2. Draw a behavior state to be transitioned to
+        int res = this->getDecision(probs);
+        if (res >= (int)Person::BehaviorClassification::COUNT) {
+            this->logger->error("Behavior Classification Decision returned "
+                                "value outside bounds");
+            return;
+        }
         Person::BehaviorClassification toBC =
-            (Person::BehaviorClassification)this->getDecision(probs);
+            (Person::BehaviorClassification)res;
+
         // 3. If the drawn state differs from the current state, change the
         // bools in BehaviorState to match
         person->updateBehavior(toBC, this->getCurrentTimestep());

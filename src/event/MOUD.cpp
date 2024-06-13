@@ -28,7 +28,13 @@ namespace Event {
             // TODO: MAKE THIS A REAL TRANSITION RATE
             std::vector<double> probs = {0.50, 0.25, 0.25};
             // 3. Make a transition decision.
-            Person::MOUD toMoud = (Person::MOUD)this->getDecision(probs);
+            int res = this->getDecision(probs);
+            if (res >= (int)Person::MOUD::COUNT) {
+                this->logger->error("MOUD Decision returned "
+                                    "value outside bounds");
+                return;
+            }
+            Person::MOUD toMoud = (Person::MOUD)res;
             if (toMoud == Person::MOUD::CURRENT) {
                 if (moud != toMoud) {
                     // new treatment start

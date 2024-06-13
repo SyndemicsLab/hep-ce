@@ -28,8 +28,13 @@ namespace Event {
         // 2. Get the transition probability
         std::vector<double> prob = getTransition(fs);
         // 3. Draw whether the person's fibrosis state progresses
-        Person::FibrosisState toFS =
-            (Person::FibrosisState)((int)fs + this->getDecision(prob));
+        int res = ((int)fs + this->getDecision(prob));
+        if (res >= (int)Person::FibrosisState::COUNT) {
+            this->logger->error("Fibrosis Progression Decision returned "
+                                "value outside bounds");
+            return;
+        }
+        Person::FibrosisState toFS = (Person::FibrosisState)res;
         // 4. Apply the result state
         person->updateFibrosis(toFS, this->getCurrentTimestep());
 

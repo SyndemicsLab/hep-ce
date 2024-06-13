@@ -82,7 +82,8 @@ namespace Person {
         BACKGROUNDUTILITY = 35,
         BEHAVIORUTILITY = 36,
         TREATMENTUTILITY = 37,
-        LIVERUTILITY = 38
+        LIVERUTILITY = 38,
+        COUNT = 39
     };
 
     std::map<std::string, PersonAttribute> attributeMap = {
