@@ -206,22 +206,6 @@ TEST_F(EventTest, ClearanceNoInfection) {
     EXPECT_EQ(0, livingPopulation[0]->getClearances());
 }
 
-TEST_F(EventTest, DeathByOldAge) {
-    outStream << "[mortality]" << std::endl
-              << "f4 = 0" << std::endl
-              << "decomp = 0" << std::endl;
-    Person::Person expectedPerson;
-    expectedPerson.die();
-    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
-    Data::Config config(tempFilePath.string());
-    Event::Death deathEvent(simulation->getGenerator(), table, config);
-    livingPopulation[0]->age = 1210;
-    int ct = 1;
-    deathEvent.setCurrentTimestep(ct);
-    deathEvent.execute(livingPopulation);
-    EXPECT_EQ(expectedPerson.getIsAlive(), livingPopulation[0]->getIsAlive());
-}
-
 TEST_F(EventTest, FibrosisProgression) {
     outStream << "[fibrosis]" << std::endl << "f01 = 1.0" << std::endl;
     std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
@@ -252,13 +236,6 @@ TEST_F(EventTest, FibrosisProgression) {
               livingPopulation[0]->getFibrosisState());
     auto costs = livingPopulation.at(0)->getCosts().getTotals();
     EXPECT_DOUBLE_EQ(100.00, costs[1]);
-}
-
-TEST_F(EventTest, FibrosisStagingSingleTest) {
-    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
-    outStream << "[fibrosis_staging]" << std::endl
-              << "period = 12" << std::endl
-              << "test_one = fib4" << std::endl;
 }
 
 TEST_F(EventTest, Infections) {
@@ -331,8 +308,6 @@ TEST_F(EventTest, Chronic) {
     EXPECT_EQ(1, livingPopulation[0]->getNumInfections());
 }
 
-TEST_F(EventTest, Linking) {}
-
 TEST_F(EventTest, Screening) {
     outStream << "[screening]" << std::endl
               << "intervention_type = periodic" << std::endl
@@ -387,6 +362,17 @@ TEST_F(EventTest, Screening) {
     int ct = 1;
     livingPopulation[0]->infect(ct);
     screening.execute(livingPopulation);
+}
+
+TEST_F(EventTest, Linking) {}
+
+TEST_F(EventTest, VoluntaryRelinking) {}
+
+TEST_F(EventTest, FibrosisStagingSingleTest) {
+    std::shared_ptr<MockDataTable> table = std::make_shared<MockDataTable>();
+    outStream << "[fibrosis_staging]" << std::endl
+              << "period = 12" << std::endl
+              << "test_one = fib4" << std::endl;
 }
 
 TEST_F(EventTest, Treatment) {
@@ -461,4 +447,18 @@ TEST_F(EventTest, Treatment) {
               courses[0].regimens[1].toxicityUtility);
 }
 
-TEST_F(EventTest, VoluntaryRelinking) {}
+TEST_F(EventTest, DeathByOldAge) {
+    outStream << "[mortality]" << std::endl
+              << "f4 = 0" << std::endl
+              << "decomp = 0" << std::endl;
+    Person::Person expectedPerson;
+    expectedPerson.die();
+    Data::IDataTablePtr table = std::make_shared<MockDataTable>();
+    Data::Config config(tempFilePath.string());
+    Event::Death deathEvent(simulation->getGenerator(), table, config);
+    livingPopulation[0]->age = 1210;
+    int ct = 1;
+    deathEvent.setCurrentTimestep(ct);
+    deathEvent.execute(livingPopulation);
+    EXPECT_EQ(expectedPerson.getIsAlive(), livingPopulation[0]->getIsAlive());
+}

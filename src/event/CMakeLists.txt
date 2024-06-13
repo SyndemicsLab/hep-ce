@@ -8,6 +8,8 @@ find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 )
 
+find_package(OpenMP REQUIRED)
+
 add_library(event
     Aging.cpp
     BehaviorChanges.cpp
@@ -29,5 +31,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC person)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
 target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
+target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
 
 target_include_directories(event PUBLIC "include/")
