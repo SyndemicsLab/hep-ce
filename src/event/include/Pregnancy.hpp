@@ -20,7 +20,7 @@ namespace Event {
         getPregnancyProb(std::shared_ptr<Person::Person> person);
 
         std::vector<double>
-        Pregnancy::getLiveBirthProb(std::shared_ptr<Person::Person> person);
+        getLiveBirthProb(std::shared_ptr<Person::Person> person);
 
         /// @brief
         /// @return
