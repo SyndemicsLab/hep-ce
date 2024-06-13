@@ -49,8 +49,14 @@ namespace Event {
             getTransitions(resultTable, "fibrosis_staging.test_one");
 
         // 4. Decide which stage is assigned to the person.
+        int res = this->getDecision(probs);
+        if (res >= (int)Person::MeasuredFibrosisState::COUNT) {
+            this->logger->error("Measured Fibrosis State Decision returned "
+                                "value outside bounds");
+            return;
+        }
         Person::MeasuredFibrosisState stateOne =
-            (Person::MeasuredFibrosisState)this->getDecision(probs);
+            (Person::MeasuredFibrosisState)res;
 
         // 5. Assign this value as the person's measured state.
         person->setMeasuredFibrosisState(stateOne);

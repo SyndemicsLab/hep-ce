@@ -31,7 +31,8 @@ namespace Event {
         // intervention antibody screening test
         INTERVENTION_AB = 2,
         // intervention RNA screening test
-        INTERVENTION_RNA = 3
+        INTERVENTION_RNA = 3,
+        COUNT = 4
     };
 
     /// @brief The type/cadence of intervention screening used
@@ -41,7 +42,8 @@ namespace Event {
         // intervention screen once, during the first time step
         ONETIME = 1,
         // intervention screen periodically
-        PERIODIC = 2
+        PERIODIC = 2,
+        COUNT = 3
     };
 
     static std::unordered_map<std::string, InterventionType> interventionMap = {

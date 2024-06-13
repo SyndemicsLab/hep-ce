@@ -9,7 +9,9 @@ namespace Person {
         /// New HCV infection; sub-6 months infected
         ACUTE = 1,
         /// Long-term HCV infection
-        CHRONIC = 2
+        CHRONIC = 2,
+
+        COUNT = 3
     };
 
     /// @brief Opioid Usage Behavior Classification
@@ -24,7 +26,9 @@ namespace Person {
         /// Non-injection opioid use
         NONINJECTION = 3,
         /// Injection opioid use
-        INJECTION = 4
+        INJECTION = 4,
+
+        COUNT = 5
     };
 
     /// @brief Screening type that led to linkage
@@ -32,7 +36,8 @@ namespace Person {
         /// Linked through background screening
         BACKGROUND = 0,
         /// Linked through intervention screening
-        INTERVENTION = 1
+        INTERVENTION = 1,
+        COUNT = 2
     };
 
     /// @brief Status of Linkage
@@ -42,7 +47,8 @@ namespace Person {
         /// Person is currently linked to care
         LINKED = 1,
         /// Person was previously linked to care, but is not currently linked
-        UNLINKED = 2
+        UNLINKED = 2,
+        COUNT = 3
     };
 
     /// @brief Classification of Liver Fibrosis Stage
@@ -65,7 +71,8 @@ namespace Person {
         /// Cirrhosis or advanced scarring
         F4 = 5,
         /// Symptomatic cirrhosis; overt complications
-        DECOMP = 6
+        DECOMP = 6,
+        COUNT = 7
     };
 
     /// @brief Classification of hepatocellular carcinoma (HCC) state
@@ -80,7 +87,8 @@ namespace Person {
         /// Early-stage hepatocellular carcinoma
         EARLY = 1,
         /// Late-stage hepatocellular carcinoma
-        LATE = 2
+        LATE = 2,
+        COUNT = 3
     };
 
     /// @brief Clinically staged liver fibrosis stage
@@ -94,7 +102,8 @@ namespace Person {
         /// Person is measured to be F4
         F4 = 3,
         /// Person has decompensated liver
-        DECOMP = 4
+        DECOMP = 4,
+        COUNT = 5
     };
 
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
@@ -104,7 +113,8 @@ namespace Person {
         /// Currently in MOUD
         CURRENT = 1,
         /// Recently dropped out of MOUD
-        POST = 2
+        POST = 2,
+        COUNT = 3
     };
 
     /// @brief Biological Sex
@@ -112,7 +122,8 @@ namespace Person {
         /// Assigned male at birth
         MALE = 0,
         /// Assigned female at birth
-        FEMALE = 1
+        FEMALE = 1,
+        COUNT = 2
     };
 
     /// @brief Pregnancy Classification
@@ -123,7 +134,8 @@ namespace Person {
         /// Actively pregnant
         PREGNANT = 1,
         /// Post-pregnancy
-        POSTPARTUM = 2
+        POSTPARTUM = 2,
+        COUNT = 3
     };
 
     /// @brief Attributes describing Identification
