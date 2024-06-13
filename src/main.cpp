@@ -1,3 +1,4 @@
+#include "DataWriter.hpp"
 #include "EventFactory.hpp"
 #include "run.hpp"
 #include <iostream>

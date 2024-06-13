@@ -1,15 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
-set (CMAKE_CXX_STANDARD 20)
-
-project(hepce)
 
 find_package(spdlog REQUIRED)
 
-find_package(DataManagement REQUIRED
-    HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
-)
-
-add_executable(hepce main.cpp run.cpp)
+project(
+    hepce
+    VERSION 2.0.0
+    DESCRIPTION "A Microsimulation for Hepatitis C Treatment Cost Effectiveness"
+    )
 
 add_subdirectory(event)
 add_subdirectory(person)
@@ -18,13 +15,22 @@ add_subdirectory(data)
 add_subdirectory(utils)
 add_subdirectory(cost)
 
-include(CMakePrintHelpers)
-cmake_print_variables(DataManagement_INCLUDE_DIR)
+add_executable(hepce main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC event)
-target_link_libraries(${PROJECT_NAME} PUBLIC person)
-target_link_libraries(${PROJECT_NAME} PUBLIC simulation)
-target_link_libraries(${PROJECT_NAME} PUBLIC utils)
-target_link_libraries(${PROJECT_NAME} PUBLIC data)
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${PROJECT_NAME} PRIVATE DataManagement::DataManagement)
+target_include_directories(hepce PRIVATE
+    "cost/include"
+    "data/include"
+    "event/include"
+    "person/include"
+    "simulation/include"
+    "utils/include"
+)
+
+target_link_libraries(hepce
+    event
+    person
+    simulation
+    utils
+    data
+    spdlog::spdlog
+)

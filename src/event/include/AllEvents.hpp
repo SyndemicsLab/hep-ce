@@ -10,6 +10,7 @@
 #include "FibrosisStaging.hpp"
 #include "Infections.hpp"
 #include "Linking.hpp"
+#include "Pregnancy.hpp"
 // #include "MOUD.hpp"
 #include "Overdose.hpp"
 #include "Screening.hpp"
