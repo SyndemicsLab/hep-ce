@@ -25,7 +25,8 @@ namespace Event {
     /// @brief Subclass of Event used to Link People to Treatment
     class Linking : public ProbEvent {
     private:
-        double interventionCost = 0;
+        double interventionCost = 0.0;
+        double falsePositiveCost = 0.0;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
@@ -36,7 +37,8 @@ namespace Event {
 
         /// @brief
         /// @param person
-        void addLinkingCost(std::shared_ptr<Person::Person> person);
+        void addLinkingCost(std::shared_ptr<Person::Person> person,
+                            std::string name, double cost);
 
     public:
         Linking(std::mt19937_64 &generator, Data::IDataTablePtr table,
@@ -48,6 +50,8 @@ namespace Event {
             this->costCategory = Cost::CostCategory::LINKING;
             this->interventionCost = std::get<double>(
                 this->config.get("linking.intervention_cost", 0.0));
+            this->falsePositiveCost = std::get<double>(
+                this->config.get("linking.false_positive_cost", 0.0));
         }
         virtual ~Linking() = default;
     };
