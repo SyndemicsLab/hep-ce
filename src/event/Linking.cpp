@@ -23,6 +23,8 @@ namespace Event {
         if (state == Person::HEPCState::NONE) {
             // add false positive cost
             person->unlink(this->getCurrentTimestep());
+            this->addLinkingCost(person, "False Positive Linking Cost",
+                                 this->falsePositiveCost);
             return;
         }
 
@@ -36,7 +38,8 @@ namespace Event {
             probs = getTransitions(person, "background_link_probability");
         } else {
             // add intervention cost
-            this->addLinkingCost(person);
+            this->addLinkingCost(person, "Intervention Linking Cost",
+                                 this->interventionCost);
             // link probability
             probs = getTransitions(person, "intervention_link_probability");
         }
@@ -92,10 +95,9 @@ namespace Event {
         return result;
     }
 
-    void Linking::addLinkingCost(std::shared_ptr<Person::Person> person) {
-        Cost::Cost linkingCost = {this->costCategory,
-                                  "Intervention Linking Cost",
-                                  this->interventionCost};
+    void Linking::addLinkingCost(std::shared_ptr<Person::Person> person,
+                                 std::string name, double cost) {
+        Cost::Cost linkingCost = {this->costCategory, name, cost};
         person->addCost(linkingCost, this->getCurrentTimestep());
     }
 } // namespace Event
