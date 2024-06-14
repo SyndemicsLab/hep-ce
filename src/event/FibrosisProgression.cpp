@@ -40,7 +40,10 @@ namespace Event {
 
         // insert Person's liver-related disease cost (taking the highest
         // fibrosis state)
-        // TODO: make the ability to add this only if identified a toggle-able
+        if (this->addCostOnlyIfIdentified &&
+            !person->isIdentifiedAsInfected()) {
+            return;
+        }
         this->addLiverDiseaseCost(person);
     }
 
