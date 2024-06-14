@@ -27,6 +27,7 @@ namespace Event {
     /// @brief Subclass of Event used to Progress HCV
     class FibrosisProgression : public ProbEvent {
     private:
+        bool addCostOnlyIfIdentified = false;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
@@ -44,6 +45,14 @@ namespace Event {
             std::string name = std::string("FibrosisProgression"))
             : ProbEvent(generator, table, config, logger, name) {
             this->costCategory = Cost::CostCategory::LIVER;
+            std::shared_ptr<Data::ReturnType> toggleCost =
+                this->config.get_optional(
+                    "fibrosis.add_cost_only_if_identified", false);
+            if (toggleCost) {
+                this->addCostOnlyIfIdentified = std::get<bool>(*toggleCost);
+            } else {
+                this->addCostOnlyIfIdentified = false;
+            }
         }
         virtual ~FibrosisProgression() = default;
     };
