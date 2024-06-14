@@ -55,6 +55,7 @@ namespace Person {
         Utility utility;
         std::pair<double, double> totalUtilities = {0, 0};
         Cost::CostTracker costs;
+        bool boomerClassification = false;
 
     public:
         /// @brief Person age in months
@@ -516,6 +517,12 @@ namespace Person {
         /// @brief Getter for the Person's costs
         /// @return Cost::CostTracker containing this person's costs
         Cost::CostTracker getCosts() const { return this->costs; }
+
+        bool isBoomer() { return this->boomerClassification; }
+
+        void setBoomerClassification(bool status) {
+            this->boomerClassification = status;
+        }
     };
 } // namespace Person
 #endif
