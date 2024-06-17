@@ -38,7 +38,9 @@ namespace Event {
             }
             break;
         default:
-            // error
+            this->logger->error("Intervention Type not valid During Screening "
+                                "Event with person {}",
+                                person->getID());
             return;
         }
 
@@ -172,12 +174,33 @@ namespace Event {
                 [person->getBehaviorClassification()];
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
-            // error
+            this->logger->error("No valid background screening probability "
+                                "data for person {} characteristics.",
+                                person->getID());
             return {};
         }
 
         double prob =
             std::stod((*resultTable)["background_screen_probability"][0]);
+
+        std::string configStr = "";
+
+        if (person->isBoomer()) {
+            configStr = "screening.seropositivity_multiplier_boomer";
+        } else {
+            configStr = "screening.seropositivity_multiplier_not_boomer";
+        }
+
+        double multiplier;
+        std::shared_ptr<Data::ReturnType> m =
+            config.get_optional(configStr, 1.0);
+        if (m) {
+            multiplier = std::get<double>(*m);
+        } else {
+            multiplier = 1.0;
+        }
+
+        prob *= multiplier;
         std::vector<double> result = {prob, 1 - prob};
         return result;
     }
