@@ -34,10 +34,8 @@ namespace Event {
         std::vector<double>
         getTransitions(std::shared_ptr<Person::Person> person);
 
-        /// @brief Add cost based on person's behavior state upon "experiencing"
-        /// this event
-        /// @param person Person accruing cost
-        void insertBehaviorCost(std::shared_ptr<Person::Person> person);
+        void
+        calculateCostAndUtility(std::shared_ptr<Person::Person> person) const;
 
     public:
         BehaviorChanges(std::mt19937_64 &generator, Data::IDataTablePtr table,

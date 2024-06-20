@@ -52,8 +52,7 @@ namespace Person {
         ScreeningDetails screeningDetails;
         TreatmentDetails treatmentDetails;
         HCCStatus hccStatus;
-        Utility utility;
-        std::pair<double, double> totalUtilities = {0, 0};
+        UtilityTracker utilityTracker;
         Cost::CostTracker costs;
         bool boomerClassification = false;
 
@@ -490,24 +489,11 @@ namespace Person {
         /// @param category The category of the utility to be updated
         /// @param value The value of the utility to be updated, bounded by
         /// 0, 1
-        void setUtility(UtilityCategory category, double value);
+        void setUtility(double minUtil, double multUtil);
 
         /// @brief Getter for the person's stratified utilities
         /// @return Person's stratified utilities
-        Utility getUtility() const { return this->utility; }
-
-        /// @brief Getter for the person's minimal and multiplicative
-        /// utilities
-        /// @return Minimal utility and multiplicative utility
-        std::pair<double, double> getUtilities() const;
-
-        /// @brief Record Person's utilities
-        void measureUtilities();
-
-        /// @brief Getter for total utilities
-        std::pair<double, double> getTotalUtilities() const {
-            return this->totalUtilities;
-        }
+        UtilityTracker getUtility() const { return this->utilityTracker; }
 
         /// @brief Add a cost to the person's CostTracker object
         /// @param cost The cost to be added

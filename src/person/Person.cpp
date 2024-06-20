@@ -37,11 +37,7 @@ namespace Person {
                                            "numEOT",
                                            "numSVR",
                                            "numTox",
-                                           "numWithdrawals",
-                                           "backgroundUtility",
-                                           "behaviorUtility",
-                                           "treatmentUtility",
-                                           "liverUtility"};
+                                           "numWithdrawals"};
 
     enum class PersonAttribute {
         ID = 0,
@@ -79,11 +75,7 @@ namespace Person {
         NUMSVR = 32,
         NUMTOX = 33,
         NUMWITHDRAWALS = 34,
-        BACKGROUNDUTILITY = 35,
-        BEHAVIORUTILITY = 36,
-        TREATMENTUTILITY = 37,
-        LIVERUTILITY = 38,
-        COUNT = 39
+        COUNT = 35
     };
 
     std::map<std::string, PersonAttribute> attributeMap = {
@@ -124,11 +116,7 @@ namespace Person {
         {"numEOT", PersonAttribute::NUMEOT},
         {"numSVR", PersonAttribute::NUMSVR},
         {"numTox", PersonAttribute::NUMTOX},
-        {"numWithdrawals", PersonAttribute::NUMWITHDRAWALS},
-        {"backgroundUtility", PersonAttribute::BACKGROUNDUTILITY},
-        {"behaviorUtility", PersonAttribute::BEHAVIORUTILITY},
-        {"treatmentUtility", PersonAttribute::TREATMENTUTILITY},
-        {"liverUtility", PersonAttribute::LIVERUTILITY}};
+        {"numWithdrawals", PersonAttribute::NUMWITHDRAWALS}};
 
     Person::Person(Data::IDataTablePtr dataTableRow) {
         count++;
@@ -287,22 +275,6 @@ namespace Person {
                 this->treatmentDetails.numWithdrawals =
                     std::stoi((*dataTableRow)["numWithdrawals"][0]);
                 break;
-            case PersonAttribute::BACKGROUNDUTILITY:
-                this->utility.background =
-                    std::stod((*dataTableRow)["backgroundUtility"][0]);
-                break;
-            case PersonAttribute::BEHAVIORUTILITY:
-                this->utility.behavior =
-                    std::stod((*dataTableRow)["behaviorUtility"][0]);
-                break;
-            case PersonAttribute::TREATMENTUTILITY:
-                this->utility.treatment =
-                    std::stod((*dataTableRow)["treatmentUtility"][0]);
-                break;
-            case PersonAttribute::LIVERUTILITY:
-                this->utility.liver =
-                    std::stod((*dataTableRow)["liverUtility"][0]);
-                break;
             }
         }
     }
@@ -379,44 +351,10 @@ namespace Person {
         return this->infectionStatus.hepcState;
     }
 
-    void Person::setUtility(UtilityCategory category, double value) {
-        if ((value > 1) || (value < 0)) {
-            // log error
-            return;
-        }
-        switch (category) {
-        case UtilityCategory::BACKGROUND:
-            this->utility.background = value;
-            break;
-        case UtilityCategory::BEHAVIOR:
-            this->utility.behavior = value;
-            break;
-        case UtilityCategory::TREATMENT:
-            this->utility.treatment = value;
-            break;
-        case UtilityCategory::LIVER:
-            this->utility.liver = value;
-            break;
-        }
-    }
-
-    std::pair<double, double> Person::getUtilities() const {
-        using std::min;
-        const auto &util = this->utility;
-        // utilities presented as {min, mult}
-        std::pair<double, double> utilities = {
-            min(min(util.background, util.behavior),
-                min(util.treatment, util.liver)),
-            util.background * util.behavior * util.treatment * util.liver};
-        return utilities;
-    }
-
-    void Person::measureUtilities() {
-        const std::pair<double, double> &utils = this->getUtilities();
-        // total min utility
-        this->totalUtilities.first += utils.first;
-        // total mult utility
-        this->totalUtilities.second += utils.second;
+    void Person::setUtility(double minUtil, double multUtil) {
+        this->utilityTracker.minUtil =
+            std::min(this->utilityTracker.minUtil, minUtil);
+        this->utilityTracker.multUtil *= multUtil;
     }
 
     void Person::addCost(Cost::Cost cost, int timestep) {

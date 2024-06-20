@@ -83,7 +83,7 @@ namespace Event {
         // accumulate costs
         this->addTreatmentCost(person, regimenInfo.first.cost);
         // set treatment utility
-        person->setUtility(Person::UtilityCategory::TREATMENT,
+        person->setUtility(regimenInfo.first.utility,
                            regimenInfo.first.utility);
         // 7. If time since treatment initiation > 0, draw probability of
         // adverse outcome (TOX), then draw probability of withdrawing from
@@ -106,7 +106,7 @@ namespace Event {
             // add to withdrawal count for person
             person->addWithdrawal();
             // reset utility
-            person->setUtility(Person::UtilityCategory::TREATMENT, 1.0);
+            person->setUtility(1.0, 1.0);
             return;
         }
         // 8. Compare the treatment duration to the time since treatment
@@ -117,7 +117,7 @@ namespace Event {
             // add EOT for person
             person->addEOT();
             // reset utility
-            person->setUtility(Person::UtilityCategory::TREATMENT, 1.0);
+            person->setUtility(1.0, 1.0);
             if (treatmentOutcome == 0) {
                 // log EOT without cure
                 // reached EOT without cure

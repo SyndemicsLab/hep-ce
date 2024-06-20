@@ -22,7 +22,7 @@ namespace Event {
         Person::BehaviorClassification bc = person->getBehaviorClassification();
 
         // Insert person's behavior cost
-        this->insertBehaviorCost(person);
+        this->calculateCostAndUtility(person);
 
         // Typical Behavior Change
         // 1. Generate the transition probabilities based on the starting state
@@ -70,9 +70,8 @@ namespace Event {
         return result;
     }
 
-    void BehaviorChanges::insertBehaviorCost(
-        std::shared_ptr<Person::Person> person) {
-
+    void BehaviorChanges::calculateCostAndUtility(
+        std::shared_ptr<Person::Person> person) const {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
@@ -91,12 +90,15 @@ namespace Event {
             // log error
             return;
         }
-
         auto res = (*resultTable)["cost"];
         double cost = std::stod(res[0]);
 
         Cost::Cost behaviorCost = {this->costCategory, "Drug Behavior", cost};
 
         person->addCost(behaviorCost, this->getCurrentTimestep());
+
+        auto res = (*resultTable)["utility"];
+        double util = std::stod(res[0]);
+        person->setUtility(util, util);
     }
 } // namespace Event
