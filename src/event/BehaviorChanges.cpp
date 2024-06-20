@@ -97,7 +97,7 @@ namespace Event {
 
         person->addCost(behaviorCost, this->getCurrentTimestep());
 
-        auto res = (*resultTable)["utility"];
+        res = (*resultTable)["utility"];
         double util = std::stod(res[0]);
         person->setUtility(util, util);
     }

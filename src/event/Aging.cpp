@@ -46,7 +46,7 @@ namespace Event {
 
         person->addCost(backgroundCost, this->getCurrentTimestep());
 
-        auto res = (*resultTable)["utility"];
+        res = (*resultTable)["utility"];
         double utility = std::stod(res[0]);
 
         person->setUtility(utility, utility);
