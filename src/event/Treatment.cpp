@@ -81,7 +81,8 @@ namespace Event {
         const std::pair<Regimen, int> &regimenInfo =
             this->getCurrentRegimen(course, timeSinceInitiation);
         // accumulate costs
-        this->addTreatmentCost(person, regimenInfo.first.cost);
+        this->addTreatmentCostAndUtility(person, regimenInfo.first.cost,
+                                         regimenInfo.first.toxicityUtility);
         // set treatment utility
         person->setUtility(regimenInfo.first.utility,
                            regimenInfo.first.utility);
@@ -95,7 +96,9 @@ namespace Event {
         if (toxicity == 1) {
             // log toxicity for person
             // apply toxicity cost and utility
-            this->addTreatmentCost(person, regimenInfo.first.toxicityCost);
+            this->addTreatmentCostAndUtility(person,
+                                             regimenInfo.first.toxicityCost,
+                                             regimenInfo.first.toxicityUtility);
             // add to toxicity count for person
             person->addTox();
             // adjust withdrawalProbability
@@ -262,10 +265,11 @@ namespace Event {
         return -1;
     }
 
-    void Treatment::addTreatmentCost(std::shared_ptr<Person::Person> person,
-                                     double cost) {
+    void Treatment::addTreatmentCostAndUtility(
+        std::shared_ptr<Person::Person> person, double cost, double util) {
         Cost::Cost treatmentCost = {this->costCategory, "Treatment Cost", cost};
         person->addCost(treatmentCost, this->getCurrentTimestep());
+        person->setUtility(util, util);
     }
 
     void

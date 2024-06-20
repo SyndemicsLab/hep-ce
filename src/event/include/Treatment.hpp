@@ -84,8 +84,8 @@ namespace Event {
         /// @brief Add the cost associated with a month of treatment
         /// @param Person the person who accrues the cost
         /// @param cost the cost associated with Person's treatment
-        void addTreatmentCost(std::shared_ptr<Person::Person> person,
-                              double cost);
+        void addTreatmentCostAndUtility(std::shared_ptr<Person::Person> person,
+                                        double cost, double util);
 
         /// @brief If Person is exposed to loss to follow-up, checks if they
         /// unlink from care
