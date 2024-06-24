@@ -39,16 +39,21 @@ namespace Event {
             return;
         }
         auto res = resultTable->getColumn("cost");
-        double cost = std::stod(res[0]);
-
-        Cost::Cost backgroundCost = {this->costCategory, "Background Cost",
-                                     cost};
-
-        person->addCost(backgroundCost, this->getCurrentTimestep());
+        if (res.empty()) {
+            this->logger->error("No cost avaliable for Aging");
+        } else {
+            double cost = std::stod(res[0]);
+            Cost::Cost backgroundCost = {this->costCategory, "Background Cost",
+                                         cost};
+            person->addCost(backgroundCost, this->getCurrentTimestep());
+        }
 
         res = resultTable->getColumn("utility");
+        if (res.empty()) {
+            this->logger->error("No utility avaliable for Aging");
+            return;
+        }
         double utility = std::stod(res[0]);
-
         person->setUtility(utility);
     }
 } // namespace Event

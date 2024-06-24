@@ -91,13 +91,20 @@ namespace Event {
             return;
         }
         auto res = resultTable->getColumn("cost");
-        double cost = std::stod(res[0]);
-
-        Cost::Cost behaviorCost = {this->costCategory, "Drug Behavior", cost};
-
-        person->addCost(behaviorCost, this->getCurrentTimestep());
+        if (res.empty()) {
+            this->logger->error("No cost avaliable for Behavior Changes");
+        } else {
+            double cost = std::stod(res[0]);
+            Cost::Cost behaviorCost = {this->costCategory, "Drug Behavior",
+                                       cost};
+            person->addCost(behaviorCost, this->getCurrentTimestep());
+        }
 
         res = resultTable->getColumn("utility");
+        if (res.empty()) {
+            this->logger->error("No utility avaliable for Behavior Changes");
+            return;
+        }
         double util = std::stod(res[0]);
         person->setUtility(util);
     }
