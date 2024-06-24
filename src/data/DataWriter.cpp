@@ -129,11 +129,11 @@ namespace DataWriter {
         data["numSVR"] = {std::to_string(person->getNumSVR())};
         data["numTox"] = {std::to_string(person->getNumTox())};
         data["numWithdrawals"] = {std::to_string(person->getWithdrawals())};
-        auto utility = person->getUtility();
-        data["backgroundUtility"] = {std::to_string(utility.background)};
-        data["behaviorUtility"] = {std::to_string(utility.behavior)};
-        data["treatmentUtility"] = {std::to_string(utility.treatment)};
-        data["liverUtility"] = {std::to_string(utility.liver)};
+        // auto utility = person->getUtility();
+        // data["backgroundUtility"] = {std::to_string(utility.background)};
+        // data["behaviorUtility"] = {std::to_string(utility.behavior)};
+        // data["treatmentUtility"] = {std::to_string(utility.treatment)};
+        // data["liverUtility"] = {std::to_string(utility.liver)};
 
         Data::DataTableShape newShape(1, 37);
         Data::IDataTablePtr newDT =

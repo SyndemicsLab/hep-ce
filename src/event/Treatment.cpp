@@ -81,10 +81,10 @@ namespace Event {
         const std::pair<Regimen, int> &regimenInfo =
             this->getCurrentRegimen(course, timeSinceInitiation);
         // accumulate costs
-        this->addTreatmentCost(person, regimenInfo.first.cost);
+        this->addTreatmentCostAndUtility(person, regimenInfo.first.cost,
+                                         regimenInfo.first.toxicityUtility);
         // set treatment utility
-        person->setUtility(Person::UtilityCategory::TREATMENT,
-                           regimenInfo.first.utility);
+        person->setUtility(regimenInfo.first.utility);
         // 7. If time since treatment initiation > 0, draw probability of
         // adverse outcome (TOX), then draw probability of withdrawing from
         // treatment prior to completion. TOX does not lead to withdrawal from
@@ -95,7 +95,9 @@ namespace Event {
         if (toxicity == 1) {
             // log toxicity for person
             // apply toxicity cost and utility
-            this->addTreatmentCost(person, regimenInfo.first.toxicityCost);
+            this->addTreatmentCostAndUtility(person,
+                                             regimenInfo.first.toxicityCost,
+                                             regimenInfo.first.toxicityUtility);
             // add to toxicity count for person
             person->addTox();
             // adjust withdrawalProbability
@@ -106,7 +108,7 @@ namespace Event {
             // add to withdrawal count for person
             person->addWithdrawal();
             // reset utility
-            person->setUtility(Person::UtilityCategory::TREATMENT, 1.0);
+            person->setUtility(1.0);
             return;
         }
         // 8. Compare the treatment duration to the time since treatment
@@ -117,7 +119,7 @@ namespace Event {
             // add EOT for person
             person->addEOT();
             // reset utility
-            person->setUtility(Person::UtilityCategory::TREATMENT, 1.0);
+            person->setUtility(1.0);
             if (treatmentOutcome == 0) {
                 // log EOT without cure
                 // reached EOT without cure
@@ -262,10 +264,11 @@ namespace Event {
         return -1;
     }
 
-    void Treatment::addTreatmentCost(std::shared_ptr<Person::Person> person,
-                                     double cost) {
+    void Treatment::addTreatmentCostAndUtility(
+        std::shared_ptr<Person::Person> person, double cost, double util) {
         Cost::Cost treatmentCost = {this->costCategory, "Treatment Cost", cost};
         person->addCost(treatmentCost, this->getCurrentTimestep());
+        person->setUtility(util);
     }
 
     void

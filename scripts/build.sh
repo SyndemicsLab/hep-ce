@@ -93,7 +93,7 @@ done
 	git clone git@github.com:SyndemicsLab/DataManagement
 	if ! (
 		cd "DataManagement" || exit 1
-		./install.sh "$TOPLEVEL/lib/dminstall"
+		./install.sh -i "$TOPLEVEL/lib/dminstall"
 	    ); then
 	    echo "Installing \`DataManagement\` failed."
 	fi

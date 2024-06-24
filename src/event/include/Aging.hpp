@@ -29,10 +29,8 @@ namespace Event {
         void doEvent(std::shared_ptr<Person::Person> person) override;
         /// @brief Adds person's background cost
         /// @param person The person to whom cost will be added
-        void addBackgroundCost(std::shared_ptr<Person::Person> person);
-        /// @brief Set person's background utility
-        /// @param person The person whose utility will be set
-        void setBackgroundUtility(std::shared_ptr<Person::Person> person);
+        void
+        addBackgroundCostAndUtility(std::shared_ptr<Person::Person> person);
 
     public:
         Aging(Data::IDataTablePtr table, Data::Config &config,

@@ -73,6 +73,7 @@ TEST_F(EventTest, AgingLiving) {
     tableData["gender"] = {"male"};
     tableData["drug_behavior"] = {"never"};
     tableData["cost"] = {"100.00"};
+    tableData["utility"] = {"0.75"};
     Data::DataTableShape tableShape(1, 4);
     Data::IDataTablePtr table =
         std::make_shared<Data::DataTable>(tableData, tableShape, tableHeaders);
@@ -101,6 +102,7 @@ TEST_F(EventTest, AgingDead) {
     tableData["gender"] = {"male"};
     tableData["drug_behavior"] = {"never"};
     tableData["cost"] = {"100.00"};
+    tableData["utility"] = {"0.75"};
     Data::DataTableShape tableShape(1, 4);
     Data::IDataTablePtr table =
         std::make_shared<Data::DataTable>(tableData, tableShape, tableHeaders);
@@ -147,6 +149,7 @@ TEST_F(EventTest, BehaviorChange) {
     costData["gender"] = {"male"};
     costData["drug_behavior"] = {"never"};
     costData["cost"] = {"100.00"};
+    costData["utility"] = {"0.75"};
 
     std::vector<std::string> costHeader = {"gender", "drug_behavior", "cost"};
 
@@ -214,6 +217,7 @@ TEST_F(EventTest, FibrosisProgression) {
     costData["hcv_status"] = {"none", "acute"};
     costData["metavir_stage"] = {"f0", "f1"};
     costData["cost"] = {"100.00", "100.00"};
+    costData["utility"] = {"0.75", "0.85"};
 
     std::vector<std::string> costHeader = {"hcv_status", "metavir_stage",
                                            "cost"};

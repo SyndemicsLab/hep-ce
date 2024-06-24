@@ -51,7 +51,7 @@ namespace Event {
             this->interventionCost = std::get<double>(
                 this->config.get("linking.intervention_cost", 0.0));
             this->falsePositiveCost = std::get<double>(
-                this->config.get("linking.false_positive_cost", 0.0));
+                this->config.get("linking.false_positive_test_cost", 0.0));
         }
         virtual ~Linking() = default;
     };

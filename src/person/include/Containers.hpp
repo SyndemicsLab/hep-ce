@@ -219,20 +219,10 @@ namespace Person {
         int numWithdrawals = 0;
     };
 
-    /// @brief Categories for utility values
-    enum class UtilityCategory {
-        BACKGROUND = 0,
-        BEHAVIOR = 1,
-        TREATMENT = 2,
-        LIVER = 3
-    };
-
     /// @brief Attributes describing a person's quality of life
-    struct Utility {
-        double background = 1.0;
-        double behavior = 1.0;
-        double treatment = 1.0;
-        double liver = 1.0;
+    struct UtilityTracker {
+        double multUtil = 1.0;
+        double minUtil = 1.0;
     };
 } // namespace Person
 
