@@ -153,8 +153,8 @@ TEST(PersonLiver, InvalidTransition) {
 
 TEST(PersonUtility, SetUtility) {
     Person::Person person;
-    person.setUtility(0.75, 0.75);
-    person.setUtility(0.5, 0.5);
+    person.setUtility(0.75);
+    person.setUtility(0.5);
     Person::UtilityTracker utilityTracker = person.getUtility();
     EXPECT_EQ(0.5, utilityTracker.minUtil);
     EXPECT_EQ(0.375, utilityTracker.multUtil);

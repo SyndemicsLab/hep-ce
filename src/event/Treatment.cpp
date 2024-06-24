@@ -84,8 +84,7 @@ namespace Event {
         this->addTreatmentCostAndUtility(person, regimenInfo.first.cost,
                                          regimenInfo.first.toxicityUtility);
         // set treatment utility
-        person->setUtility(regimenInfo.first.utility,
-                           regimenInfo.first.utility);
+        person->setUtility(regimenInfo.first.utility);
         // 7. If time since treatment initiation > 0, draw probability of
         // adverse outcome (TOX), then draw probability of withdrawing from
         // treatment prior to completion. TOX does not lead to withdrawal from
@@ -109,7 +108,7 @@ namespace Event {
             // add to withdrawal count for person
             person->addWithdrawal();
             // reset utility
-            person->setUtility(1.0, 1.0);
+            person->setUtility(1.0);
             return;
         }
         // 8. Compare the treatment duration to the time since treatment
@@ -120,7 +119,7 @@ namespace Event {
             // add EOT for person
             person->addEOT();
             // reset utility
-            person->setUtility(1.0, 1.0);
+            person->setUtility(1.0);
             if (treatmentOutcome == 0) {
                 // log EOT without cure
                 // reached EOT without cure
@@ -269,7 +268,7 @@ namespace Event {
         std::shared_ptr<Person::Person> person, double cost, double util) {
         Cost::Cost treatmentCost = {this->costCategory, "Treatment Cost", cost};
         person->addCost(treatmentCost, this->getCurrentTimestep());
-        person->setUtility(util, util);
+        person->setUtility(util);
     }
 
     void

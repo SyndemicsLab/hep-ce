@@ -351,10 +351,10 @@ namespace Person {
         return this->infectionStatus.hepcState;
     }
 
-    void Person::setUtility(double minUtil, double multUtil) {
+    void Person::setUtility(double util) {
         this->utilityTracker.minUtil =
-            std::min(this->utilityTracker.minUtil, minUtil);
-        this->utilityTracker.multUtil *= multUtil;
+            std::min(this->utilityTracker.minUtil, util);
+        this->utilityTracker.multUtil *= util;
     }
 
     void Person::addCost(Cost::Cost cost, int timestep) {

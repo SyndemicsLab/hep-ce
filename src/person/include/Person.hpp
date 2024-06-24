@@ -489,7 +489,7 @@ namespace Person {
         /// @param category The category of the utility to be updated
         /// @param value The value of the utility to be updated, bounded by
         /// 0, 1
-        void setUtility(double minUtil, double multUtil);
+        void setUtility(double util);
 
         /// @brief Getter for the person's stratified utilities
         /// @return Person's stratified utilities

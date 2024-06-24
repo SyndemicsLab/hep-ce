@@ -90,15 +90,15 @@ namespace Event {
             // log error
             return;
         }
-        auto res = (*resultTable)["cost"];
+        auto res = resultTable->getColumn("cost");
         double cost = std::stod(res[0]);
 
         Cost::Cost behaviorCost = {this->costCategory, "Drug Behavior", cost};
 
         person->addCost(behaviorCost, this->getCurrentTimestep());
 
-        res = (*resultTable)["utility"];
+        res = resultTable->getColumn("utility");
         double util = std::stod(res[0]);
-        person->setUtility(util, util);
+        person->setUtility(util);
     }
 } // namespace Event

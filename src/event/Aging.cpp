@@ -38,7 +38,7 @@ namespace Event {
             // error
             return;
         }
-        auto res = (*resultTable)["cost"];
+        auto res = resultTable->getColumn("cost");
         double cost = std::stod(res[0]);
 
         Cost::Cost backgroundCost = {this->costCategory, "Background Cost",
@@ -46,9 +46,9 @@ namespace Event {
 
         person->addCost(backgroundCost, this->getCurrentTimestep());
 
-        res = (*resultTable)["utility"];
+        res = resultTable->getColumn("utility");
         double utility = std::stod(res[0]);
 
-        person->setUtility(utility, utility);
+        person->setUtility(utility);
     }
 } // namespace Event
