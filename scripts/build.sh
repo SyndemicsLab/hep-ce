@@ -64,7 +64,7 @@ done
 	source "$(conda info --base)/etc/profile.d/conda.sh"
     fi
     if ! conda info --envs | grep '^hepce' >/dev/null; then
-	conda create -f "environment.yml" -p "$(conda config --show envs_dirs | awk '/-/{printf $NF;exit;}')"
+	conda create -f "environment.yml" -p "$(conda config --show envs_dirs | awk '/-/{printf $NF;exit;}')/hepce"
     fi
     conda activate hepce
 
