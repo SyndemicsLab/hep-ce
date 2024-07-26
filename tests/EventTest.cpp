@@ -19,7 +19,7 @@
 #include "Simulation.hpp"
 #include "Utils.hpp"
 #include "mocks/MockDataTable.hpp"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -33,8 +33,7 @@ class EventTest : public ::testing::Test {
 protected:
     // for temp config files
     std::ofstream outStream;
-    boost::filesystem::path tempFilePath =
-        boost::filesystem::temp_directory_path();
+    std::filesystem::path tempFilePath = std::filesystem::temp_directory_path();
 
     std::vector<std::shared_ptr<Person::Person>> livingPopulation;
     std::vector<std::shared_ptr<Person::Person>> deadPopulation;
@@ -51,7 +50,7 @@ protected:
         deadPopulation.push_back(deadPerson);
 
         // for temp config files
-        tempFilePath /= boost::filesystem::unique_path("%%%%.conf");
+        tempFilePath /= std::tmpnam(nullptr) + std::string(".conf");
         outStream.open(tempFilePath);
     }
     void TearDown() override {

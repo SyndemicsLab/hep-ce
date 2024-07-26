@@ -1,0 +1,25 @@
+name: hepce
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - _sysroot_linux-64_curr_repodata_hack=3=haa98f57_10
+  - binutils_impl_linux-64=2.40=ha1999f0_7
+  - fmt=9.1.0=hdb19cb5_1
+  - gcc=14.1.0=h6f9ffa1_0
+  - gcc_impl_linux-64=14.1.0=h3c94d91_0
+  - gtest=1.14.0=hdb19cb5_1
+  - gxx=14.1.0=h6f9ffa1_0
+  - gxx_impl_linux-64=14.1.0=h2879b86_0
+  - kernel-headers_linux-64=3.10.0=h57e8cba_10
+  - ld_impl_linux-64=2.40=hf3520f5_7
+  - libgcc-devel_linux-64=14.1.0=h5d3d1c9_100
+  - libgcc-ng=14.1.0=h77fa898_0
+  - libgomp=14.1.0=h77fa898_0
+  - libsanitizer=14.1.0=hcba0ae0_0
+  - libstdcxx-devel_linux-64=14.1.0=h5d3d1c9_100
+  - libstdcxx-ng=14.1.0=hc0a3c3a_0
+  - spdlog=1.11.0=hdb19cb5_0
+  - sysroot_linux-64=2.17=h57e8cba_10

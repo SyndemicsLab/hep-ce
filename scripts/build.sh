@@ -5,6 +5,7 @@ if command -v module &>/dev/null; then
     module load python3/3.10.12
     module load gcc/12.2.0
     module load openmpi/4.1.5
+    module load miniconda
 fi
 
 # help message to be output either with the -h flag or when using invalid syntax
@@ -57,36 +58,17 @@ done
     # change to the top-level git folder
     TOPLEVEL="$(git rev-parse --show-toplevel)"
     cd "$TOPLEVEL" || exit
-    CONANPATH=$(command -v conan)
 
-    # install conan, if not found in the current scope
-    if [[ -z "$CONANPATH" ]]; then
-	echo "The \`conan\` command is not found\! Attempting a local installation..."
-	if [[ -z "$VIRTUAL_ENV" ]]; then
-	    if ! pip install --user conan; then
-		echo "\`conan\` installation failed. Exiting."
-		exit 1
-	    fi
-	else
-	    if ! pip install conan; then
-		echo "\`conan\` installation failed. Exiting."
-		exit 1
-	    fi
-	fi
-	CONANPATH="python3 -m conans.conan"
+    # load conda environment
+    if [[ -f "$(conda info --base)/etc/profile.d/conda.sh" ]]; then
+	source "$(conda info --base)/etc/profile.d/conda.sh"
     fi
+    conda activate hepce
 
     # ensure the `build/` directory exists
     ([[ -d "build/" ]] && rm -rf build/*) || mkdir "build/"
     ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
     ([[ -d "lib/" ]] && rm -rf lib/*.a)
-
-    # install dependencies via conan
-    if [[ ! -f "$HOME/.conan2/profiles/default" ]]; then
-	$CONANPATH profile detect --force
-    fi
-
-    $CONANPATH install . --build=missing --settings=build_type="$BUILDTYPE"
 
         # detect or install DataManagement
     if [[ ! -d "lib/dminstall" ]]; then
@@ -102,30 +84,21 @@ done
 
     (
 	cd "build" || exit
-	# check if the conan generator file was generated successfully
-	if [[ -f "$BUILDTYPE/generators/conanbuild.sh" ]]; then
-	    # shellcheck source=/dev/null
-	    source "$BUILDTYPE/generators/conanbuild.sh"
-	else
-	    echo "\`conan\` generator failed. Terminating."
-	    exit 1
-	fi
+
+	CMAKE_COMMAND="cmake .. -DCMAKE_BUILD_TYPE=$BUILDTYPE"
 
 	# build tests, if specified
 	if [[ -n "$BUILD_TESTS" ]]; then
-	    cmake .. -DCMAKE_TOOLCHAIN_FILE="$BUILDTYPE"/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE="$BUILDTYPE" -DBUILD_TESTS="$BUILD_TESTS"
-	else
-	    cmake .. -DCMAKE_TOOLCHAIN_FILE="$BUILDTYPE"/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE="$BUILDTYPE"
+	    CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_TESTS=$BUILD_TESTS"
 	fi
+
+	$CMAKE_COMMAND
 	(
 	    # determine the number of processing units available
 	    CORES="$(nproc --all)"
 	    # if CORES > 1 compile in parallel where possible
 	    ([[ -n "$CORES" ]] && cmake --build . -j"$CORES") || cmake --build .
 	)
-	# deactivate the conan virtual environment
-	# shellcheck source=/dev/null
-	source "$BUILDTYPE/generators/deactivate_conanbuild.sh"
     )
     # run tests, if they built properly
 	if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then

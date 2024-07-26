@@ -5,8 +5,6 @@ find_package(GTest REQUIRED CONFIG)
 
 find_package(spdlog REQUIRED)
 
-find_package(Boost REQUIRED COMPONENTS filesystem)
-
 find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 )
@@ -22,7 +20,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gtest)
 target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gtest_main)
 target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gmock)
 target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gmock_main)
-target_link_libraries(${PROJECT_NAME} PUBLIC Boost::filesystem)
 target_link_libraries(${PROJECT_NAME} PUBLIC person)
 target_link_libraries(${PROJECT_NAME} PUBLIC simulation)
 target_link_libraries(${PROJECT_NAME} PUBLIC event)
