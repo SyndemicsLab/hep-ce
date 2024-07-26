@@ -61,7 +61,11 @@ done
 
     # load conda environment
     if [[ -f "$(conda info --base)/etc/profile.d/conda.sh" ]]; then
+	# shellcheck source=/dev/null
 	source "$(conda info --base)/etc/profile.d/conda.sh"
+    fi
+    if ! conda info --envs | grep '^hepce' >/dev/null; then
+	conda create -f "environment.yml"
     fi
     conda activate hepce
 
