@@ -2,9 +2,9 @@
 # only execute these lines if the `module` command is present in the environment
 # used for the BU SCC
 if command -v module &>/dev/null; then
-    module load python3/3.10.12
-    module load gcc/12.2.0
-    module load openmpi/4.1.5
+    # module load gcc/12.2.0
+    # module load openmpi/4.1.5
+    module load miniconda
 fi
 
 # help message to be output either with the -h flag or when using invalid syntax
@@ -18,6 +18,31 @@ showhelp () {
     echo "               Options: [Debug|Release|Build]"
     echo "               Default: Debug"
     echo "p              Build and run tests."
+}
+
+dminstall () {
+    git clone git@github.com:SyndemicsLab/DataManagement
+    # subshell needed to avoid changing working directory unnecessarily
+    (
+	cd "DataManagement" || return 1
+	scripts/build.sh -l "$TOPLEVEL/lib/dminstall"
+	if [[ ! -e "lib/libDataManagement.so" ]]; then
+	    (
+		cd "$TOPLEVEL" || return
+		rm -rf lib/* DataManagement
+	    )
+	    return 1
+	fi
+	# shared object installation is still not like it was before, so these
+	# lines accomplish the same purpose. Will require more CMakeFile
+	# troubleshooting in DataManagement in the future.
+	mkdir -p "$TOPLEVEL/lib/dminstall"
+	cp -r "include" "lib" "$TOPLEVEL/lib/dminstall"
+	mkdir -p "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
+	cp "build/"*".cmake" "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
+	cp "build/CMakeFiles/Export/"*"/DataManagementTargets"*".cmake" "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
+    )
+    rm -rf DataManagement
 }
 
 # set default build type
@@ -57,78 +82,50 @@ done
     # change to the top-level git folder
     TOPLEVEL="$(git rev-parse --show-toplevel)"
     cd "$TOPLEVEL" || exit
-    CONANPATH=$(command -v conan)
-
-    # install conan, if not found in the current scope
-    if [[ -z "$CONANPATH" ]]; then
-	echo "The \`conan\` command is not found\! Attempting a local installation..."
-	if [[ -z "$VIRTUAL_ENV" ]]; then
-	    if ! pip install --user conan; then
-		echo "\`conan\` installation failed. Exiting."
-		exit 1
-	    fi
-	else
-	    if ! pip install conan; then
-		echo "\`conan\` installation failed. Exiting."
-		exit 1
-	    fi
-	fi
-	CONANPATH="python3 -m conans.conan"
-    fi
 
     # ensure the `build/` directory exists
     ([[ -d "build/" ]] && rm -rf build/*) || mkdir "build/"
     ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
     ([[ -d "lib/" ]] && rm -rf lib/*.a)
 
-    # install dependencies via conan
-    if [[ ! -f "$HOME/.conan2/profiles/default" ]]; then
-	$CONANPATH profile detect --force
-    fi
-
-    $CONANPATH install . --build=missing --settings=build_type="$BUILDTYPE"
-
         # detect or install DataManagement
     if [[ ! -d "lib/dminstall" ]]; then
-	git clone git@github.com:SyndemicsLab/DataManagement
-	if ! (
-		cd "DataManagement" || exit 1
-		./install.sh -i "$TOPLEVEL/lib/dminstall"
-	    ); then
+	if ! dminstall; then
 	    echo "Installing \`DataManagement\` failed."
+	    exit 1
 	fi
-	rm -rf DataManagement
     fi
+
+    # load conda environment
+    if [[ -f "$(conda info --base)/etc/profile.d/conda.sh" ]]; then
+	# shellcheck source=/dev/null
+	source "$(conda info --base)/etc/profile.d/conda.sh"
+    fi
+    if ! conda info --envs | grep '^hepce' >/dev/null; then
+	conda env create -f "environment.yml" -p "$(conda config --show envs_dirs | awk '/-/{printf $NF;exit;}')/hepce"
+    fi
+    conda activate hepce
 
     (
 	cd "build" || exit
-	# check if the conan generator file was generated successfully
-	if [[ -f "$BUILDTYPE/generators/conanbuild.sh" ]]; then
-	    # shellcheck source=/dev/null
-	    source "$BUILDTYPE/generators/conanbuild.sh"
-	else
-	    echo "\`conan\` generator failed. Terminating."
-	    exit 1
-	fi
+
+	CMAKE_COMMAND="cmake .. -DCMAKE_BUILD_TYPE=$BUILDTYPE"
 
 	# build tests, if specified
 	if [[ -n "$BUILD_TESTS" ]]; then
-	    cmake .. -DCMAKE_TOOLCHAIN_FILE="$BUILDTYPE"/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE="$BUILDTYPE" -DBUILD_TESTS="$BUILD_TESTS"
-	else
-	    cmake .. -DCMAKE_TOOLCHAIN_FILE="$BUILDTYPE"/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE="$BUILDTYPE"
+	    CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_TESTS=$BUILD_TESTS"
 	fi
+
+	$CMAKE_COMMAND
 	(
 	    # determine the number of processing units available
 	    CORES="$(nproc --all)"
 	    # if CORES > 1 compile in parallel where possible
 	    ([[ -n "$CORES" ]] && cmake --build . -j"$CORES") || cmake --build .
 	)
-	# deactivate the conan virtual environment
-	# shellcheck source=/dev/null
-	source "$BUILDTYPE/generators/deactivate_conanbuild.sh"
     )
     # run tests, if they built properly
-	if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then
-	    bin/hepceTest
-	fi
+    if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then
+	bin/hepceTest
+    fi
 )
