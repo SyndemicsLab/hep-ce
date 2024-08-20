@@ -20,6 +20,31 @@ showhelp () {
     echo "p              Build and run tests."
 }
 
+dminstall () {
+    git clone git@github.com:SyndemicsLab/DataManagement
+    # subshell needed to avoid changing working directory unnecessarily
+    (
+	cd "DataManagement" || return 1
+	scripts/build.sh -l "$TOPLEVEL/lib/dminstall"
+	if [[ ! -e "lib/libDataManagement.so" ]]; then
+	    (
+		cd "$TOPLEVEL" || return
+		rm -rf lib/* DataManagement
+	    )
+	    return 1
+	fi
+	# shared object installation is still not like it was before, so these
+	# lines accomplish the same purpose. Will require more CMakeFile
+	# troubleshooting in DataManagement in the future.
+	mkdir -p "$TOPLEVEL/lib/dminstall"
+	cp -r "include" "lib" "$TOPLEVEL/lib/dminstall"
+	mkdir -p "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
+	cp "build/"*".cmake" "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
+	cp "build/CMakeFiles/Export/"*"/DataManagementTargets"*".cmake" "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
+    )
+    rm -rf DataManagement
+}
+
 # set default build type
 BUILDTYPE="Debug"
 BUILD_TESTS=""
@@ -58,6 +83,19 @@ done
     TOPLEVEL="$(git rev-parse --show-toplevel)"
     cd "$TOPLEVEL" || exit
 
+    # ensure the `build/` directory exists
+    ([[ -d "build/" ]] && rm -rf build/*) || mkdir "build/"
+    ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
+    ([[ -d "lib/" ]] && rm -rf lib/*.a)
+
+        # detect or install DataManagement
+    if [[ ! -d "lib/dminstall" ]]; then
+	if ! dminstall; then
+	    echo "Installing \`DataManagement\` failed."
+	    exit 1
+	fi
+    fi
+
     # load conda environment
     if [[ -f "$(conda info --base)/etc/profile.d/conda.sh" ]]; then
 	# shellcheck source=/dev/null
@@ -67,23 +105,6 @@ done
 	conda env create -f "environment.yml" -p "$(conda config --show envs_dirs | awk '/-/{printf $NF;exit;}')/hepce"
     fi
     conda activate hepce
-
-    # ensure the `build/` directory exists
-    ([[ -d "build/" ]] && rm -rf build/*) || mkdir "build/"
-    ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
-    ([[ -d "lib/" ]] && rm -rf lib/*.a)
-
-        # detect or install DataManagement
-    if [[ ! -d "lib/dminstall" ]]; then
-	git clone git@github.com:SyndemicsLab/DataManagement
-	if ! (
-		cd "DataManagement" || exit 1
-		scripts/install.sh -i "$TOPLEVEL/lib/dminstall"
-	    ); then
-	    echo "Installing \`DataManagement\` failed."
-	fi
-	rm -rf DataManagement
-    fi
 
     (
 	cd "build" || exit
@@ -104,7 +125,7 @@ done
 	)
     )
     # run tests, if they built properly
-	if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then
-	    bin/hepceTest
-	fi
+    if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then
+	bin/hepceTest
+    fi
 )
