@@ -34,9 +34,6 @@ jobs:
         conda info
         # ensure the packages are installed in the env
         conda env export
-        # switch back to the base env
-        conda init
-        conda activate base
 
     - name: Clone and Build DataManagement
       working-directory: ${{ github.workspace }}
