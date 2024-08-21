@@ -26,8 +26,12 @@ jobs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         environment-file: environment.yml
-        auto-activate-base: true
-        activate-environment: ""
+        auto-activate-base: false
+        activate-environment: hepce
+      - run: |
+          # show installed packages
+          conda env export
+          conda activate base
 
     - name: Clone and Build DataManagement
       working-directory: ${{ github.workspace }}
