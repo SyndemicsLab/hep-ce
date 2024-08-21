@@ -8,7 +8,6 @@ dependencies:
   - _sysroot_linux-64_curr_repodata_hack=3=haa98f57_10
   - binutils_impl_linux-64=2.40=ha1999f0_7
   - blas=1.0=openblas
-  - boost=1.85.0=h9cebb41_4
   - bzip2=1.0.8=h5eee18b_6
   - c-ares=1.32.3=h4bc722e_0
   - ca-certificates=2024.7.2=h06a4308_0
@@ -24,11 +23,6 @@ dependencies:
   - keyutils=1.6.1=h166bdaf_0
   - krb5=1.21.3=h659f571_0
   - ld_impl_linux-64=2.40=hf3520f5_7
-  - libboost=1.85.0=h0ccab89_4
-  - libboost-devel=1.85.0=h00ab1b0_4
-  - libboost-headers=1.85.0=ha770c72_4
-  - libboost-python=1.85.0=py312hf74af30_4
-  - libboost-python-devel=1.85.0=py312h9cebb41_4
   - libcurl=8.9.0=hdb1bdb2_0
   - libedit=3.1.20230828=h5eee18b_0
   - libev=4.33=h7f8727e_1
