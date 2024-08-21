@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
 
-    - name: Build Release
+    name: Build Release
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
