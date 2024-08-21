@@ -51,4 +51,4 @@ jobs:
 
     - name: Build and Test
       working-directory: ${{ github.workspace }}
-      run: scripts/build.sh -p
+      run: BOOST_ROOT="${{ steps.install-boost.outputs.BOOST_ROOT }}" scripts/build.sh -pt "$BUILD_TYPE"
