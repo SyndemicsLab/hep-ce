@@ -21,7 +21,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # load conda environment
     - name: Load Conda
       uses: conda-incubator/setup-miniconda@v3
       with:
@@ -29,7 +28,6 @@ jobs:
         auto-activate-base: false
         activate-environment: hepce
       - run: |
-          # show installed packages
           conda env export
           conda activate base
 
