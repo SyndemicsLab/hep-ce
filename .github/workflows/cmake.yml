@@ -28,9 +28,8 @@ jobs:
         environment-file: environment.yml
         auto-activate-base: false
         activate-environment: hepce
-
-    - name: Check Conda Environment
       run: |
+        conda info
         # ensure the packages are installed in the env
         conda env export
         # switch back to the base env
