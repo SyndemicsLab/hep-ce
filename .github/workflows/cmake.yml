@@ -21,6 +21,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install Boost
+      uses: MarkusJx/install-boost@v2.4.5
+      id: install-boost
+      with:
+        boost_version: 1.82.0
+
     # Load the conda environment
     - name: Load Conda
       uses: conda-incubator/setup-miniconda@v3
