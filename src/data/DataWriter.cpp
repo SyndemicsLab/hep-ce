@@ -117,18 +117,10 @@ namespace DataWriter {
             std::to_string(person->getTimeOfLastScreening())};
         data["abCount"] = {std::to_string(person->getAbCount())};
         data["rnaCount"] = {std::to_string(person->getRnaCount())};
-        data["hasIncompleteTreatment"] = {
-            Utils::boolToString(person->hadIncompleteTreatment())};
         data["initiatedTreatment"] = {
             Utils::boolToString(person->hasInitiatedTreatment())};
-        data["exposedToLTFU"] = {Utils::boolToString(person->exposedToLTFU())};
         data["timeOfTreatmentInitiation"] = {
             std::to_string(person->getTimeOfTreatmentInitiation())};
-        data["treatmentCount"] = {std::to_string(person->getTreatmentCount())};
-        data["numEOT"] = {std::to_string(person->getNumEOT())};
-        data["numSVR"] = {std::to_string(person->getNumSVR())};
-        data["numTox"] = {std::to_string(person->getNumTox())};
-        data["numWithdrawals"] = {std::to_string(person->getWithdrawals())};
         // auto utility = person->getUtility();
         // data["backgroundUtility"] = {std::to_string(utility.background)};
         // data["behaviorUtility"] = {std::to_string(utility.behavior)};

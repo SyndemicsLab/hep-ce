@@ -66,17 +66,6 @@ namespace Event {
         // outcomes (test two) provided there is a second test.
         probs = getTransitions(resultTable, "fibrosis_staging.test_two");
 
-        // if person is exposed to LTFU, they are not exposed to the second
-        // fibtest
-        if (!probs.empty()) {
-            if (person->exposedToLTFU()) {
-                person->setHadFibTestTwo(false);
-                return;
-            } else {
-                person->setExposedToLTFU(true);
-            }
-        }
-
         // 7. Decide which stage is assigned to the person.
         if (!probs.empty()) {
             person->setHadFibTestTwo(true);

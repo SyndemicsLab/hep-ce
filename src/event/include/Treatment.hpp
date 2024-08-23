@@ -56,15 +56,15 @@ namespace Event {
         bool initiatesTreatment(std::shared_ptr<Person::Person> person);
 
         bool doesWithdraw(std::shared_ptr<Person::Person> person,
-                          IDataTablePtr course);
+                          Data::IDataTablePtr course);
 
         bool isToxified(std::shared_ptr<Person::Person> person,
-                        IDataTablePtr course);
+                        Data::IDataTablePtr course);
 
         void chargeCostOfVisit(std::shared_ptr<Person::Person> person);
 
         void chargeCostOfCourse(std::shared_ptr<Person::Person> person,
-                                IDataTablePtr course);
+                                Data::IDataTablePtr course);
 
         void quitEngagement(std::shared_ptr<Person::Person> person);
 
@@ -74,10 +74,6 @@ namespace Event {
                   std::shared_ptr<spdlog::logger> logger =
                       std::make_shared<spdlog::logger>("default"),
                   std::string name = std::string("Treatment"));
-
-        /// @brief Getter for treatment courses
-        /// @return vector of treatment Course objects
-        std::vector<Course> getCourses() { return this->courses; }
 
         virtual ~Treatment() = default;
     };

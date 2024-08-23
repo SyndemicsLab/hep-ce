@@ -23,7 +23,6 @@ namespace Event {
                          std::string name)
         : ProbEvent::ProbEvent(generator, table, config, logger, name) {
         this->costCategory = Cost::CostCategory::TREATMENT;
-        this->populateCourses();
     }
 
     void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
@@ -67,16 +66,16 @@ namespace Event {
                 std::get<double>(this->config.get("treatment.tox_cost", 0.0))};
             person->addCost(toxicityCost, this->getCurrentTimestep());
             person->setUtility(std::get<double>(
-                this->config.get("treatment.tox_utility", 0.0)))
+                this->config.get("treatment.tox_utility", 0.0)));
         }
 
         // 8. Determine if the person has been treated long enough, if they
         // achieve SVR
         int timeSinceInitiation =
             this->getCurrentTimestep() - person->getTimeOfTreatmentInitiation();
-        int treatmentTime = stod(course->getColumn("time")[0]);
-        int treatmentOutcome =
-            this->getDecision({stod(course->getColumn("svr")[0])});
+        int treatmentTime = std::stod(course->getColumn("time")[0]);
+        double svr = std::stod(course->getColumn("svr")[0]);
+        int treatmentOutcome = this->getDecision({svr});
         if (timeSinceInitiation >= treatmentTime && treatmentOutcome == 1) {
             person->clearHCV(this->getCurrentTimestep());
             this->quitEngagement(person);
@@ -147,8 +146,8 @@ namespace Event {
     }
 
     void Treatment::chargeCostOfCourse(std::shared_ptr<Person::Person> person,
-                                       IDataTablePtr course) {
-        double cost = stod(course->getColumn("treatment_cost")[0]);
+                                       Data::IDataTablePtr course) {
+        double cost = std::stod(course->getColumn("treatment_cost")[0]);
         double util = std::get<double>(
             this->config.get("treatment.treatment_utility", 0.0));
         Cost::Cost courseCost = {this->costCategory, "Cost of Treatment Course",
@@ -177,9 +176,9 @@ namespace Event {
     }
 
     bool Treatment::doesWithdraw(std::shared_ptr<Person::Person>,
-                                 IDataTablePtr course) {
+                                 Data::IDataTablePtr course) {
         double withdrawalProb =
-            stod(course->getColumn("withdrawal_probability")[0]);
+            std::stod(course->getColumn("withdrawal_probability")[0]);
 
         int withdraw = this->getDecision({withdrawalProb});
         if (withdraw == 1) {
@@ -189,9 +188,9 @@ namespace Event {
     }
 
     bool Treatment::isToxified(std::shared_ptr<Person::Person> person,
-                               IDataTablePtr course) {
-        int toxicity =
-            this->getDecision({regimenInfo.first.toxicityProbability});
+                               Data::IDataTablePtr course) {
+        double toxProb = std::stod(course->getColumn("toxicity")[0]);
+        int toxicity = this->getDecision({toxProb});
         return (toxicity == 1) ? true : false;
     }
 

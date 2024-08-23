@@ -29,15 +29,8 @@ namespace Person {
                                            "timeOfLastScreening",
                                            "abCount",
                                            "rnaCount",
-                                           "hasIncompleteTreatment",
                                            "initiatedTreatment",
-                                           "timeOfTreatmentInitiation",
-                                           "exposedToLTFU",
-                                           "treatmentCount",
-                                           "numEOT",
-                                           "numSVR",
-                                           "numTox",
-                                           "numWithdrawals"};
+                                           "timeOfTreatmentInitiation"};
 
     enum class PersonAttribute {
         ID = 0,
@@ -66,16 +59,9 @@ namespace Person {
         TIMEOFLASTSCREENING = 23,
         ABCOUNT = 24,
         RNACOUNT = 25,
-        HASINCOMPLETETREATMENT = 26,
-        INITIATEDTREATMENT = 27,
-        TIMEOFTREATMENTINITIATION = 28,
-        EXPOSEDTOLTFU = 29,
-        TREATMENTCOUNT = 30,
-        NUMEOT = 31,
-        NUMSVR = 32,
-        NUMTOX = 33,
-        NUMWITHDRAWALS = 34,
-        COUNT = 35
+        INITIATEDTREATMENT = 26,
+        TIMEOFTREATMENTINITIATION = 27,
+        COUNT = 28
     };
 
     std::map<std::string, PersonAttribute> attributeMap = {
@@ -107,16 +93,9 @@ namespace Person {
         {"timeOfLastScreening", PersonAttribute::TIMEOFLASTSCREENING},
         {"abCount", PersonAttribute::ABCOUNT},
         {"rnaCount", PersonAttribute::RNACOUNT},
-        {"hasIncompleteTreatment", PersonAttribute::HASINCOMPLETETREATMENT},
         {"initiatedTreatment", PersonAttribute::INITIATEDTREATMENT},
         {"timeOfTreatmentInitiation",
-         PersonAttribute::TIMEOFTREATMENTINITIATION},
-        {"exposedToLTFU", PersonAttribute::EXPOSEDTOLTFU},
-        {"treatmentCount", PersonAttribute::TREATMENTCOUNT},
-        {"numEOT", PersonAttribute::NUMEOT},
-        {"numSVR", PersonAttribute::NUMSVR},
-        {"numTox", PersonAttribute::NUMTOX},
-        {"numWithdrawals", PersonAttribute::NUMWITHDRAWALS}};
+         PersonAttribute::TIMEOFTREATMENTINITIATION}};
 
     Person::Person(Data::IDataTablePtr dataTableRow) {
         count++;
@@ -239,10 +218,6 @@ namespace Person {
                 this->screeningDetails.rnaCount =
                     stoi((*dataTableRow)["rnaCount"][0]);
                 break;
-            case PersonAttribute::HASINCOMPLETETREATMENT:
-                this->treatmentDetails.incompleteTreatment = Utils::stobool(
-                    (*dataTableRow)["hasIncompleteTreatment"][0]);
-                break;
             case PersonAttribute::INITIATEDTREATMENT:
                 this->treatmentDetails.initiatedTreatment =
                     Utils::stobool((*dataTableRow)["initiatedTreatment"][0]);
@@ -250,30 +225,6 @@ namespace Person {
             case PersonAttribute::TIMEOFTREATMENTINITIATION:
                 this->treatmentDetails.timeOfTreatmentInitiation =
                     std::stoi((*dataTableRow)["timeOfTreatmentInitiation"][0]);
-                break;
-            case PersonAttribute::EXPOSEDTOLTFU:
-                this->treatmentDetails.exposedToLTFU =
-                    Utils::stobool((*dataTableRow)["exposedToLTFU"][0]);
-                break;
-            case PersonAttribute::TREATMENTCOUNT:
-                this->treatmentDetails.treatmentCount =
-                    std::stoi((*dataTableRow)["treatmentCount"][0]);
-                break;
-            case PersonAttribute::NUMEOT:
-                this->treatmentDetails.numEOT =
-                    std::stoi((*dataTableRow)["numEOT"][0]);
-                break;
-            case PersonAttribute::NUMSVR:
-                this->treatmentDetails.numSVR =
-                    std::stoi((*dataTableRow)["numSVR"][0]);
-                break;
-            case PersonAttribute::NUMTOX:
-                this->treatmentDetails.numTox =
-                    std::stoi((*dataTableRow)["numTox"][0]);
-                break;
-            case PersonAttribute::NUMWITHDRAWALS:
-                this->treatmentDetails.numWithdrawals =
-                    std::stoi((*dataTableRow)["numWithdrawals"][0]);
                 break;
             }
         }

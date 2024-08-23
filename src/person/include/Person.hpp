@@ -296,12 +296,6 @@ namespace Person {
         /// @return Person's numeric ID
         int getID() const { return this->id; }
 
-        /// @brief
-        /// @return
-        bool hadIncompleteTreatment() const {
-            return this->treatmentDetails.incompleteTreatment;
-        }
-
         /// @brief Getter for whether Person has initiated treatment
         /// @return Boolean true if Person has initiated treatment, false
         /// otherwise

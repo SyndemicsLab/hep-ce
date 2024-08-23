@@ -131,7 +131,7 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     f = ((std::filesystem::path)dirpath) / "screening_and_linkage.csv";
     Data::IDataTablePtr screen = std::make_shared<Data::DataTable>(f);
 
-    f = ((std::filesystem::path)dirname) / "treatments.csv";
+    f = ((std::filesystem::path)dirpath) / "treatments.csv";
     Data::IDataTablePtr treatments = std::make_shared<Data::DataTable>(f);
 
     // f = ((std::filesystem::path)dirpath) / "all_types_overdose.csv";
