@@ -208,15 +208,8 @@ namespace Person {
 
     /// @brief Attributes describing treatment state
     struct TreatmentDetails {
-        bool incompleteTreatment = false;
         bool initiatedTreatment = false;
-        bool exposedToLTFU = true;
         int timeOfTreatmentInitiation = 0;
-        int treatmentCount = 0;
-        int numEOT = 0;
-        int numSVR = 0;
-        int numTox = 0;
-        int numWithdrawals = 0;
     };
 
     /// @brief Attributes describing a person's quality of life

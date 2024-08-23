@@ -316,13 +316,6 @@ namespace Person {
             return this->treatmentDetails.timeOfTreatmentInitiation;
         }
 
-        /// @brief Setter for Person's incomplete treatment state
-        /// @param incompleteTreatment Boolean value for incomplete treatment
-        /// state to be set
-        void setIncompleteTreatment(bool incompleteTreatment) {
-            this->treatmentDetails.incompleteTreatment = incompleteTreatment;
-        }
-
         /// @brief Setter for Person's treatment initiation state
         /// @param incompleteTreatment Boolean value for initiated treatment
         /// state to be set
@@ -334,54 +327,8 @@ namespace Person {
         /// @param tstep The timestep during which treatment is initiated
         void setTimeOfTreatmentInitiation(int tstep) {
             this->treatmentDetails.timeOfTreatmentInitiation = tstep;
+            this->setInitiatedTreatment(true);
         }
-
-        /// @brief Add to the tracked count of treatment initiations for Person
-        void incrementTreatCount() { this->treatmentDetails.treatmentCount++; }
-
-        /// @brief Get the tracked count of treatment initiations for Person
-        int getTreatmentCount() const {
-            return this->treatmentDetails.treatmentCount;
-        }
-
-        /// @brief Access whether Person can be exposed to loss to follow-up
-        bool exposedToLTFU() const {
-            return this->treatmentDetails.exposedToLTFU;
-        }
-
-        /// @brief Set whether Person is to be exposed to loss to follow-up
-        /// @param state New value for exposedToLTFU
-        void setExposedToLTFU(bool state) {
-            this->treatmentDetails.exposedToLTFU = state;
-        }
-
-        /// @brief Add to end of treatment (EOT) count
-        void addEOT() { this->treatmentDetails.numEOT++; }
-
-        /// @brief Get number of treatments completed
-        int getNumEOT() { return this->treatmentDetails.numEOT; }
-
-        /// @brief Add to SVR/cure count
-        void addSVR() { this->treatmentDetails.numSVR++; }
-
-        /// @brief Get number of times Person achieved SVR
-        /// @return The number of times Person reached treatment end
-        int getNumSVR() { return this->treatmentDetails.numSVR; }
-
-        /// @brief Add to adverse treatment effect coutn
-        void addTox() { this->treatmentDetails.numTox++; }
-
-        /// @brief Get number of times Person experienced adverse treatment
-        /// effects
-        /// @return number of adverse treatment effects experienced
-        int getNumTox() { return this->treatmentDetails.numTox; }
-
-        /// @brief Add treatment withdrawal to Person
-        void addWithdrawal() { this->treatmentDetails.numWithdrawals++; }
-
-        /// @brief Get the number of treatment withdrawals experienced by Person
-        /// @return Number of treatment withdrawals
-        int getWithdrawals() { return this->treatmentDetails.numWithdrawals; }
 
         /// @brief Getter for pregnancy status
         /// @return Pregnancy State
@@ -505,6 +452,14 @@ namespace Person {
         Cost::CostTracker getCosts() const { return this->costs; }
 
         bool isBoomer() { return this->boomerClassification; }
+
+        bool isCirrhotic() {
+            if (this->getFibrosisState() == FibrosisState::F4 ||
+                this->getFibrosisState() == FibrosisState::DECOMP) {
+                return true;
+            }
+            return false;
+        }
 
         void setBoomerClassification(bool status) {
             this->boomerClassification = status;

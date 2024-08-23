@@ -28,58 +28,19 @@ namespace Event {
         return vector1;
     }
 
-    struct Regimen {
-        int duration = 0;
-        double cost = 0.0;
-        double utility = 0.0;
-        double withdrawalProbability = 0.0;
-        double svrProbability = 0.0;
-        double toxicityProbability = 0.0;
-        double toxicityCost = 0.0;
-        double toxicityUtility = 0.0;
-    };
-
-    struct Course {
-        std::vector<Regimen> regimens = {};
-        double initiationProbability = 0.0;
-    };
-
     /// @brief Subclass of Event used to Provide Treatment to People
     class Treatment : public ProbEvent {
     private:
-        std::vector<Course> courses;
-
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<Person::Person> person) override;
         bool isEligible(std::shared_ptr<Person::Person> const person) const;
         bool isEligibleFibrosisStage(Person::FibrosisState fibrosisState) const;
-        Course
-        getTreatmentCourse(const std::shared_ptr<Person::Person> person) const;
-
-        /// @brief Populate this Treatment event's treatment courses based on
-        /// values in the config tree.
-        void populateCourses();
-
-        /// @brief
-        /// @param course
-        /// @param duration
-        /// @return
-        std::pair<Regimen, int> getCurrentRegimen(const Course &course,
-                                                  int duration);
 
         std::vector<Person::FibrosisState> eligibleFibrosisStates = {
             Person::FibrosisState::NONE};
         int eligibleTimeSinceLinked = -1;
         int eligibleTimeBehaviorChange = -1;
-        /// @brief Locate the most specific definition of a parameter in the
-        /// treatment config hierarchy.
-        /// @param configSections vector of strings representing config sections
-        /// in reverse order of specificity
-        /// @param parameter the config parameter name to find among sections
-        /// @return The most-specifically-defined value of \code{parameter}
-        double locateInput(std::vector<std::string> &configSections,
-                           const std::string &parameter);
 
         /// @brief Add the cost associated with a month of treatment
         /// @param Person the person who accrues the cost
@@ -90,7 +51,22 @@ namespace Event {
         /// @brief If Person is exposed to loss to follow-up, checks if they
         /// unlink from care
         /// @param Person the Person who may unlink due to loss to follow-up
-        void checkLossToFollowUp(std::shared_ptr<Person::Person> person);
+        bool isLostToFollowUp(std::shared_ptr<Person::Person> person);
+
+        bool initiatesTreatment(std::shared_ptr<Person::Person> person);
+
+        bool doesWithdraw(std::shared_ptr<Person::Person> person,
+                          IDataTablePtr course);
+
+        bool isToxified(std::shared_ptr<Person::Person> person,
+                        IDataTablePtr course);
+
+        void chargeCostOfVisit(std::shared_ptr<Person::Person> person);
+
+        void chargeCostOfCourse(std::shared_ptr<Person::Person> person,
+                                IDataTablePtr course);
+
+        void quitEngagement(std::shared_ptr<Person::Person> person);
 
     public:
         Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
