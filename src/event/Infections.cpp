@@ -47,12 +47,6 @@ namespace Event {
     std::vector<double>
     Infections::getInfectProb(std::shared_ptr<Person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
-
-        std::cout << Person::Person::sexEnumToStringMap[person->getSex()]
-                  << std::endl;
-        std::cout << Person::Person::behaviorClassificationEnumToStringMap
-                         [person->getBehaviorClassification()]
-                  << std::endl;
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];

@@ -212,7 +212,7 @@ namespace Person {
 
         /// @brief Getter for the person's overdose state
         /// @return Boolean representing overdose or not
-        bool getOverdose() { return this->overdose; }
+        bool getOverdose() const { return this->overdose; }
 
         /// @brief Getter for the Fibrosis State
         /// @return The Current Fibrosis State
@@ -391,7 +391,7 @@ namespace Person {
 
         /// @brief Getter for whether Person is genotype three
         /// @return True if genotype three, false otherwise
-        bool getGenotype() const {
+        bool isGenotypeThree() const {
             return this->infectionStatus.isGenotypeThree;
         }
 
@@ -445,7 +445,7 @@ namespace Person {
         /// @return Cost::CostTracker containing this person's costs
         Cost::CostTracker getCosts() const { return this->costs; }
 
-        bool isBoomer() { return this->boomerClassification; }
+        bool isBoomer() const { return this->boomerClassification; }
 
         bool isCirrhotic() {
             if (this->getFibrosisState() == FibrosisState::F4 ||
@@ -458,6 +458,32 @@ namespace Person {
         void setBoomerClassification(bool status) {
             this->boomerClassification = status;
         }
+
+        IdentificationStatus getIdentificationStatus() const {
+            return this->idStatus;
+        }
+        InfectionStatus getInfectionStatus() const {
+            return this->infectionStatus;
+        }
+        BehaviorDetails getBehaviorDetails() const {
+            return this->behaviorDetails;
+        }
+        LinkageDetails getLinkStatus() const { return this->linkStatus; }
+        MOUDDetails getMOUDDetails() const { return this->moudDetails; }
+        PregnancyDetails getPregnancyDetails() const {
+            return this->pregnancyDetails;
+        }
+        StagingDetails getStagingDetails() const {
+            return this->stagingDetails;
+        }
+        ScreeningDetails getScreeningDetails() const {
+            return this->screeningDetails;
+        }
+        TreatmentDetails getTreatmentDetails() const {
+            return this->treatmentDetails;
+        }
+        HCCStatus getHCCStatus() const { return this->hccStatus; }
     };
+    std::ostream &operator<<(std::ostream &os, const Person &person);
 } // namespace Person
 #endif

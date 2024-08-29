@@ -311,4 +311,27 @@ namespace Person {
     void Person::addCost(Cost::Cost cost, int timestep) {
         this->costs.addCost(cost, timestep);
     }
+
+    std::ostream &operator<<(std::ostream &os, const Person &person) {
+        os << "id: " << person.getID() << std::endl;
+        os << "sex: " << Person::sexEnumToStringMap[person.getSex()]
+           << std::endl;
+        os << "alive: " << person.getIsAlive() << std::endl;
+        os << person.getIdentificationStatus() << std::endl;
+        os << person.getInfectionStatus() << std::endl;
+        os << person.getBehaviorDetails() << std::endl;
+        os << person.getLinkStatus() << std::endl;
+        os << std::boolalpha << person.getOverdose() << std::endl;
+        os << person.getMOUDDetails() << std::endl;
+        os << person.getPregnancyDetails() << std::endl;
+        os << person.getStagingDetails() << std::endl;
+        os << person.getScreeningDetails() << std::endl;
+        os << person.getTreatmentDetails() << std::endl;
+        os << person.getHCCStatus() << std::endl;
+        os << person.getUtility() << std::endl;
+        // os << person.getCosts() << std::endl;
+        os << std::boolalpha << person.isBoomer() << std::endl;
+        os << "Age: " << person.age << std::endl;
+        return os;
+    }
 } // namespace Person

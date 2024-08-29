@@ -45,8 +45,10 @@ namespace Event {
         // 4. Select the treatment course for a person based on their measured
         // fibrosis stage, genotype.
         std::unordered_map<std::string, std::string> selectCriteria = {};
-        selectCriteria["is_genotype3"] = person->getGenotype();
-        selectCriteria["is_cirrhotic"] = person->isCirrhotic();
+        selectCriteria["is_genotype3"] =
+            (person->isGenotypeThree()) ? "TRUE" : "FALSE";
+        selectCriteria["is_cirrhotic"] =
+            (person->isCirrhotic()) ? "TRUE" : "FALSE";
         Data::IDataTablePtr course = this->table->selectWhere(selectCriteria);
 
         // 5. Charge the person for the Course they are on
@@ -76,8 +78,10 @@ namespace Event {
         int treatmentTime = std::stod(course->getColumn("time")[0]);
         double svr = std::stod(course->getColumn("svr")[0]);
         int treatmentOutcome = this->getDecision({svr});
-        if (timeSinceInitiation >= treatmentTime && treatmentOutcome == 1) {
+        if (treatmentOutcome == 1) {
             person->clearHCV(this->getCurrentTimestep());
+        }
+        if (timeSinceInitiation >= treatmentTime) {
             this->quitEngagement(person);
         }
     }
@@ -147,6 +151,7 @@ namespace Event {
 
     void Treatment::chargeCostOfCourse(std::shared_ptr<Person::Person> person,
                                        Data::IDataTablePtr course) {
+
         double cost = std::stod(course->getColumn("treatment_cost")[0]);
         double util = std::get<double>(
             this->config.get("treatment.treatment_utility", 0.0));

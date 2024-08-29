@@ -156,8 +156,17 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
 
     Data::IDataTablePtr behavior;
     std::vector<std::string> joinCols = {"gender", "drug_behavior"};
+
+    // std::shared_ptr<Data::DataTable> dtp =
+    //     std::dynamic_pointer_cast<Data::DataTable>(behaviorTransitions);
+    // Data::DataTable dt = *dtp;
+    // std::cout << dt;
+
+    // std::cout << "------------------------------------" << std::endl;
+
     behavior =
         behaviorTransitions->innerJoin(behaviorCosts, joinCols, joinCols);
+
     behavior = behavior->innerJoin(behaviorUtilities, joinCols, joinCols);
 
     fibrosisProgression = fibrosisProgression->innerJoin(

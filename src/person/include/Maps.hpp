@@ -1,3 +1,6 @@
+#ifndef PERSON_MAPS_HPP_
+#define PERSON_MAPS_HPP_
+
 #include "Person.hpp"
 
 namespace Person {
@@ -103,3 +106,4 @@ namespace Person {
             {PregnancyState::PREGNANT, "pregnant"},
             {PregnancyState::POSTPARTUM, "postpartum"}};
 } // namespace Person
+#endif

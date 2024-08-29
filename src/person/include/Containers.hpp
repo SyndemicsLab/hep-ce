@@ -1,6 +1,8 @@
 #ifndef PERSON_CONTAINERS_HPP_
 #define PERSON_CONTAINERS_HPP_
 
+#include <ostream>
+
 namespace Person {
     /// @brief HEP-C Infection States
     enum class HEPCState {
@@ -143,6 +145,8 @@ namespace Person {
         bool identifiedAsPositiveInfection = false;
         int timeIdentified = 0;
     };
+    std::ostream &operator<<(std::ostream &os,
+                             const IdentificationStatus &idst);
 
     /// @brief Attributes describing an Infection
     struct InfectionStatus {
@@ -155,11 +159,13 @@ namespace Person {
         int numInfections = 0;
         int numClearances = 0;
     };
+    std::ostream &operator<<(std::ostream &os, const InfectionStatus &inst);
 
     /// @brief Attributes characterizing HCC
     struct HCCStatus {
         HCCState hccState = HCCState::NONE;
     };
+    std::ostream &operator<<(std::ostream &os, HCCStatus const &stat);
 
     /// @brief Attributes describing drug use behavior
     struct BehaviorDetails {
@@ -167,6 +173,7 @@ namespace Person {
             BehaviorClassification::NEVER;
         int timeLastActive = 0;
     };
+    std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav);
 
     /// @brief Attributes describing Linkage
     struct LinkageDetails {
@@ -175,12 +182,14 @@ namespace Person {
         LinkageType linkType = LinkageType::BACKGROUND;
         int linkCount = 0;
     };
+    std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet);
 
     /// @brief Attributes describing MOUD status
     struct MOUDDetails {
         MOUD moudState = MOUD::NONE;
         int timeStartedMoud = 0;
     };
+    std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 
     /// @brief Attributes describing pregnancy
     struct PregnancyDetails {
@@ -189,6 +198,7 @@ namespace Person {
         int infantCount = 0;
         int miscarriageCount = 0;
     };
+    std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
 
     /// @brief Person attributes describing clinically assessed liver stage
     struct StagingDetails {
@@ -197,6 +207,7 @@ namespace Person {
         bool hadFibTestTwo = false;
         int timeOfLastStaging = 0;
     };
+    std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet);
 
     /// @brief Attributes describing screening status
     struct ScreeningDetails {
@@ -205,18 +216,21 @@ namespace Person {
         int abCount = 0;
         int rnaCount = 0;
     };
+    std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 
     /// @brief Attributes describing treatment state
     struct TreatmentDetails {
         bool initiatedTreatment = false;
         int timeOfTreatmentInitiation = 0;
     };
+    std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 
     /// @brief Attributes describing a person's quality of life
     struct UtilityTracker {
         double multUtil = 1.0;
         double minUtil = 1.0;
     };
+    std::ostream &operator<<(std::ostream &os, UtilityTracker const &utra);
 } // namespace Person
 
 #endif

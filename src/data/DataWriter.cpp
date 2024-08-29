@@ -49,8 +49,6 @@ namespace DataWriter {
                                                 "seropositivity",
                                                 "timeHEPCStateChanged",
                                                 "timeFibrosisStateChanged",
-                                                "numInfections",
-                                                "numClearances",
                                                 "drugBehaviorClassification",
                                                 "timeLastActiveDrugUse",
                                                 "linkageState",
@@ -66,10 +64,6 @@ namespace DataWriter {
                                                 "initiatedTreatment",
                                                 "timeOfTreatmentInitiation",
                                                 "treatmentCount",
-                                                "numEOT",
-                                                "numSVR",
-                                                "numTox",
-                                                "numWithdrawals",
                                                 "backgroundUtility",
                                                 "behaviorUtility",
                                                 "treatmentUtility",
@@ -86,15 +80,14 @@ namespace DataWriter {
             person->hepcStateEnumToStringMap[person->getHEPCState()]};
         data["fibrosisState"] = {
             person->fibrosisStateEnumToStringMap[person->getFibrosisState()]};
-        data["isGenotypeThree"] = {Utils::boolToString(person->getGenotype())};
+        data["isGenotypeThree"] = {
+            Utils::boolToString(person->isGenotypeThree())};
         data["seropositivity"] = {
             Utils::boolToString(person->getSeropositivity())};
         data["timeHEPCStateChanged"] = {
             std::to_string(person->getTimeHEPCStateChanged())};
         data["timeFibrosisStateChanged"] = {
             std::to_string(person->getTimeFibrosisStateChanged())};
-        data["numInfections"] = {std::to_string(person->getNumInfections())};
-        data["numClearances"] = {std::to_string(person->getClearances())};
         data["drugBehaviorClassification"] = {
             person->behaviorClassificationEnumToStringMap
                 [person->getBehaviorClassification()]};
@@ -110,7 +103,6 @@ namespace DataWriter {
         data["measuredFibrosisState"] = {
             person->measuredFibrosisStateEnumToStringMap
                 [person->getMeasuredFibrosisState()]};
-        data["hadFibTestTwo"] = {Utils::boolToString(person->hadFibTestTwo())};
         data["timeOfLastStaging"] = {
             std::to_string(person->getTimeOfLastStaging())};
         data["timeOfLastScreening"] = {
@@ -127,7 +119,7 @@ namespace DataWriter {
         // data["treatmentUtility"] = {std::to_string(utility.treatment)};
         // data["liverUtility"] = {std::to_string(utility.liver)};
 
-        Data::DataTableShape newShape(1, 37);
+        Data::DataTableShape newShape(1, data.size());
         Data::IDataTablePtr newDT =
             std::make_shared<Data::DataTable>(data, newShape, headerOrder);
         return newDT;

@@ -45,6 +45,10 @@ namespace Cost {
         std::string name = "";
         double cost = 0;
     };
+    std::ostream &operator<<(std::ostream &os, const Cost &cost) {
+        os << cost.name << " " << cost.cost << std::endl;
+        return os;
+    }
 
     class CostTracker {
     public:

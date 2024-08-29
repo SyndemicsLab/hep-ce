@@ -91,9 +91,6 @@ namespace Event {
             return;
         }
 
-        for (auto &v : resultTable->getColumnNames()) {
-            std::cout << v << std::endl;
-        }
         auto res = resultTable->getColumn("cost");
         if (res.empty()) {
             this->logger->error("No cost avaliable for Behavior Changes");
