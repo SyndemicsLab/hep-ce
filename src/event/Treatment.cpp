@@ -90,15 +90,14 @@ namespace Event {
     Treatment::isEligible(std::shared_ptr<Person::Person> const person) const {
         Person::FibrosisState fibrosisState = person->getFibrosisState();
         int timeSinceLinked = person->getTimeOfLinkChange();
-        Person::BehaviorClassification behavior =
-            person->getBehaviorClassification();
+        Person::Behavior behavior = person->getBehavior();
         int timeBehaviorChange = person->getTimeBehaviorChange();
         Person::PregnancyState pregnancyState = person->getPregnancyState();
         if (!isEligibleFibrosisStage(fibrosisState) ||
             ((this->getCurrentTimestep() - timeSinceLinked) >
              eligibleTimeSinceLinked) ||
-            (behavior == Person::BehaviorClassification::INJECTION) ||
-            (behavior == Person::BehaviorClassification::FORMER_INJECTION &&
+            (behavior == Person::Behavior::INJECTION) ||
+            (behavior == Person::Behavior::FORMER_INJECTION &&
              timeBehaviorChange < eligibleTimeBehaviorChange) ||
             (pregnancyState == Person::PregnancyState::PREGNANT ||
              pregnancyState == Person::PregnancyState::POSTPARTUM)) {

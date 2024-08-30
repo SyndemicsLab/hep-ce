@@ -30,8 +30,7 @@ namespace Event {
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorClassificationEnumToStringMap
-                [person->getBehaviorClassification()];
+            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
 
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {

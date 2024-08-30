@@ -4,19 +4,15 @@
 #include "Person.hpp"
 
 namespace Person {
-    std::map<std::string, HEPCState> Person::hepcStateMap = {
-        {"none", HEPCState::NONE},
-        {"acute", HEPCState::ACUTE},
-        {"chronic", HEPCState::CHRONIC}};
+    std::map<std::string, HCV> Person::hcvMap = {
+        {"none", HCV::NONE}, {"acute", HCV::ACUTE}, {"chronic", HCV::CHRONIC}};
 
-    std::map<std::string, BehaviorClassification>
-        Person::behaviorClassificationMap = {
-            {"never", BehaviorClassification::NEVER},
-            {"former_noninjection",
-             BehaviorClassification::FORMER_NONINJECTION},
-            {"former_injection", BehaviorClassification::FORMER_INJECTION},
-            {"noninjection", BehaviorClassification::NONINJECTION},
-            {"injection", BehaviorClassification::INJECTION}};
+    std::map<std::string, Behavior> Person::behaviorMap = {
+        {"never", Behavior::NEVER},
+        {"former_noninjection", Behavior::FORMER_NONINJECTION},
+        {"former_injection", Behavior::FORMER_INJECTION},
+        {"noninjection", Behavior::NONINJECTION},
+        {"injection", Behavior::INJECTION}};
 
     std::map<std::string, LinkageType> Person::linkageTypeMap = {
         {"background", LinkageType::BACKGROUND},
@@ -57,19 +53,15 @@ namespace Person {
         {"pregnant", PregnancyState::PREGNANT},
         {"postpartum", PregnancyState::POSTPARTUM}};
 
-    std::map<HEPCState, std::string> Person::hepcStateEnumToStringMap = {
-        {HEPCState::NONE, "none"},
-        {HEPCState::ACUTE, "acute"},
-        {HEPCState::CHRONIC, "chronic"}};
+    std::map<HCV, std::string> Person::hcvEnumToStringMap = {
+        {HCV::NONE, "none"}, {HCV::ACUTE, "acute"}, {HCV::CHRONIC, "chronic"}};
 
-    std::map<BehaviorClassification, std::string>
-        Person::behaviorClassificationEnumToStringMap = {
-            {BehaviorClassification::NEVER, "never"},
-            {BehaviorClassification::FORMER_NONINJECTION,
-             "former_noninjection"},
-            {BehaviorClassification::FORMER_INJECTION, "former_injection"},
-            {BehaviorClassification::NONINJECTION, "noninjection"},
-            {BehaviorClassification::INJECTION, "injection"}};
+    std::map<Behavior, std::string> Person::behaviorEnumToStringMap = {
+        {Behavior::NEVER, "never"},
+        {Behavior::FORMER_NONINJECTION, "former_noninjection"},
+        {Behavior::FORMER_INJECTION, "former_injection"},
+        {Behavior::NONINJECTION, "noninjection"},
+        {Behavior::INJECTION, "injection"}};
 
     std::map<LinkageType, std::string> Person::linkageTypeEnumToStringMap = {
         {LinkageType::BACKGROUND, "background"},

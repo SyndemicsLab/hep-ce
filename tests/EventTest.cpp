@@ -169,8 +169,7 @@ TEST_F(EventTest, BehaviorChange) {
     behavior.setCurrentTimestep(ct);
     behavior.execute(livingPopulation);
 
-    EXPECT_EQ(Person::BehaviorClassification::NEVER,
-              livingPopulation.at(0)->getBehaviorClassification());
+    EXPECT_EQ(Person::Behavior::NEVER, livingPopulation.at(0)->getBehavior());
     auto costs = livingPopulation.at(0)->getCosts().getTotals();
     EXPECT_DOUBLE_EQ(expectedCost, costs[1]);
 }
@@ -183,14 +182,14 @@ TEST_F(EventTest, Clearance) {
     Data::Config config(tempFilePath.string());
     Event::Clearance clearance(simulation->getGenerator(), table, config);
     livingPopulation[0]->infect(0);
-    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+    EXPECT_EQ(Person::HCV::ACUTE, livingPopulation[0]->getHCV());
     // current timestep
     int ct = 1;
     clearance.setCurrentTimestep(ct);
     EXPECT_EQ(0, livingPopulation[0]->getClearances());
     clearance.execute(livingPopulation);
     // checking clears of HCV
-    EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
+    EXPECT_EQ(Person::HCV::NONE, livingPopulation[0]->getHCV());
     // checking that the clearance is correctly counted
     EXPECT_EQ(1, livingPopulation[0]->getClearances());
 }
@@ -199,7 +198,7 @@ TEST_F(EventTest, ClearanceNoInfection) {
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Config config;
     Event::Clearance clearance(simulation->getGenerator(), table, config);
-    EXPECT_EQ(Person::HEPCState::NONE, livingPopulation[0]->getHEPCState());
+    EXPECT_EQ(Person::HCV::NONE, livingPopulation[0]->getHCV());
     // current timestep
     int ct = 1;
     clearance.setCurrentTimestep(ct);
@@ -265,12 +264,12 @@ TEST_F(EventTest, Infections) {
     // current timestep
     int ct = 1;
     infections.setCurrentTimestep(ct);
-    EXPECT_EQ(0, livingPopulation[0]->getNumInfections());
+    EXPECT_EQ(0, livingPopulation[0]->gettimesInfected());
     infections.execute(livingPopulation);
     // check that person is now infected
-    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+    EXPECT_EQ(Person::HCV::ACUTE, livingPopulation[0]->getHCV());
     // check that the infection counts correctly
-    EXPECT_EQ(1, livingPopulation[0]->getNumInfections());
+    EXPECT_EQ(1, livingPopulation[0]->gettimesInfected());
 }
 
 TEST_F(EventTest, Chronic) {
@@ -297,25 +296,25 @@ TEST_F(EventTest, Chronic) {
     // current timestep
     int ct = 1;
     infections.setCurrentTimestep(ct);
-    EXPECT_EQ(0, livingPopulation[0]->getNumInfections());
+    EXPECT_EQ(0, livingPopulation[0]->gettimesInfected());
     infections.execute(livingPopulation);
     // check that person is now infected
-    EXPECT_EQ(Person::HEPCState::ACUTE, livingPopulation[0]->getHEPCState());
+    EXPECT_EQ(Person::HCV::ACUTE, livingPopulation[0]->getHCV());
 
     ct = 7;
     infections.setCurrentTimestep(ct);
     infections.execute(livingPopulation);
-    EXPECT_EQ(Person::HEPCState::CHRONIC, livingPopulation[0]->getHEPCState());
+    EXPECT_EQ(Person::HCV::CHRONIC, livingPopulation[0]->getHCV());
 
     // check that the infection counts correctly
-    EXPECT_EQ(1, livingPopulation[0]->getNumInfections());
+    EXPECT_EQ(1, livingPopulation[0]->gettimesInfected());
 }
 
 TEST_F(EventTest, Screening) {
     outStream << "[screening]" << std::endl
               << "intervention_type = periodic" << std::endl
               << "period = 12" << std::endl
-              << "seropositivity_multiplier = 1.0" << std::endl
+              << "seropositive_multiplier = 1.0" << std::endl
               << "[screening_background_ab]" << std::endl
               << "cost = 50.00" << std::endl
               << "acute_sensitivity = 1.0" << std::endl

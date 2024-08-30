@@ -2,41 +2,30 @@
 
 namespace Person {
 
-    std::ostream &operator<<(std::ostream &os,
-                             IdentificationStatus const &idst) {
-        os << "Identified as a Positive Infection: "
-           << idst.identifiedAsPositiveInfection << std::endl;
-        os << "Time Identified: " << idst.timeIdentified << std::endl;
-        return os;
-    }
-
-    std::ostream &operator<<(std::ostream &os, InfectionStatus const &inst) {
-        os << "HCV State: " << Person::hepcStateEnumToStringMap[inst.hepcState]
+    std::ostream &operator<<(std::ostream &os, Health const &inst) {
+        os << "HCV State: " << Person::hcvEnumToStringMap[inst.hcv]
            << std::endl;
         os << "Fibrosis State: "
            << Person::fibrosisStateEnumToStringMap[inst.fibrosisState]
            << std::endl;
         os << "Genotype 3: " << inst.isGenotypeThree << std::endl;
-        os << "Seropositivity: " << inst.seropositivity << std::endl;
-        os << "Last Time the HCV State Changed: " << inst.timeHEPCStateChanged
+        os << "Seropositive: " << inst.seropositive << std::endl;
+        os << "Last Time the HCV State Changed: " << inst.timeHCVChanged
            << std::endl;
         os << "Last Time the Fibrosis State Changed: "
            << inst.timeFibrosisStateChanged << std::endl;
-        os << "Number of Times Infected: " << inst.numInfections << std::endl;
-        os << "Number of Times Cleared: " << inst.numClearances << std::endl;
+        os << "Number of Times Infected: " << inst.timesInfected << std::endl;
+        os << "Number of Times Cleared: " << inst.timesCleared << std::endl;
+        os << "Identified as a Positive Infection: " << inst.identifiedHCV
+           << std::endl;
+        os << "Time Identified: " << inst.timeIdentified << std::endl;
         return os;
-    }
-
-    std::ostream &operator<<(std::ostream &os, HCCStatus const &stat) {
-        // os << "HCC Status: " << stat.hccState << std::endl;
         return os;
     }
 
     std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav) {
         os << "Behavior Type: "
-           << Person::behaviorClassificationEnumToStringMap
-                  [behav.behaviorClassification]
-           << std::endl;
+           << Person::behaviorEnumToStringMap[behav.behavior] << std::endl;
         os << "Last Timestep Active: " << behav.timeLastActive << std::endl;
         return os;
     }
@@ -65,8 +54,8 @@ namespace Person {
            << std::endl;
         os << "Time of Pregnancy State Change: " << pdet.timeOfPregnancyChange
            << std::endl;
-        os << "Infant Count: " << pdet.infantCount << std::endl;
-        os << "Miscarriage Count: " << pdet.miscarriageCount << std::endl;
+        os << "Infant Count: " << pdet.numInfants << std::endl;
+        os << "Miscarriage Count: " << pdet.numMiscarriages << std::endl;
         return os;
     }
 
@@ -75,7 +64,7 @@ namespace Person {
            << Person::measuredFibrosisStateEnumToStringMap
                   [sdet.measuredFibrosisState]
            << std::endl;
-        os << "Has a Second Fibrosis Test: " << sdet.hadFibTestTwo << std::endl;
+        os << "Has a Second Fibrosis Test: " << sdet.hadSecondTest << std::endl;
         os << "Time of Last Staging: " << sdet.timeOfLastStaging << std::endl;
         return os;
     }
@@ -83,8 +72,8 @@ namespace Person {
     std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet) {
         os << "Time of Last Screening: " << sdet.timeOfLastScreening
            << std::endl;
-        os << "AB Test Counts: " << sdet.abCount << std::endl;
-        os << "RNA Testing Counts: " << sdet.rnaCount << std::endl;
+        os << "AB Test Counts: " << sdet.numABTests << std::endl;
+        os << "RNA Testing Counts: " << sdet.numRNATests << std::endl;
         return os;
     }
 

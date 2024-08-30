@@ -5,7 +5,7 @@
 
 namespace Person {
     /// @brief HEP-C Infection States
-    enum class HEPCState {
+    enum class HCV {
         /// No HCV infection
         NONE = 0,
         /// New HCV infection; sub-6 months infected
@@ -18,7 +18,7 @@ namespace Person {
 
     /// @brief Opioid Usage Behavior Classification
     /// @details There are five possible possible usage classifications.
-    enum class BehaviorClassification {
+    enum class Behavior {
         /// No history of opioid use
         NEVER = 0,
         /// Former non-injection opioid use
@@ -140,37 +140,25 @@ namespace Person {
         COUNT = 3
     };
 
-    /// @brief Attributes describing Identification
-    struct IdentificationStatus {
-        bool identifiedAsPositiveInfection = false;
-        int timeIdentified = 0;
-    };
-    std::ostream &operator<<(std::ostream &os,
-                             const IdentificationStatus &idst);
-
     /// @brief Attributes describing an Infection
-    struct InfectionStatus {
-        HEPCState hepcState = HEPCState::NONE;
+    struct Health {
+        HCV hcv = HCV::NONE;
         FibrosisState fibrosisState = FibrosisState::NONE;
         bool isGenotypeThree = false;
-        bool seropositivity = false;
-        int timeHEPCStateChanged = 0;
+        bool seropositive = false;
+        int timeHCVChanged = 0;
         int timeFibrosisStateChanged = 0;
-        int numInfections = 0;
-        int numClearances = 0;
-    };
-    std::ostream &operator<<(std::ostream &os, const InfectionStatus &inst);
-
-    /// @brief Attributes characterizing HCC
-    struct HCCStatus {
+        int timesInfected = 0;
+        int timesCleared = 0;
+        bool identifiedHCV = false;
+        int timeIdentified = 0;
         HCCState hccState = HCCState::NONE;
     };
-    std::ostream &operator<<(std::ostream &os, HCCStatus const &stat);
+    std::ostream &operator<<(std::ostream &os, const Health &inst);
 
     /// @brief Attributes describing drug use behavior
     struct BehaviorDetails {
-        BehaviorClassification behaviorClassification =
-            BehaviorClassification::NEVER;
+        Behavior behavior = Behavior::NEVER;
         int timeLastActive = 0;
     };
     std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav);
@@ -195,8 +183,8 @@ namespace Person {
     struct PregnancyDetails {
         PregnancyState pregnancyState = PregnancyState::NONE;
         int timeOfPregnancyChange = 0;
-        int infantCount = 0;
-        int miscarriageCount = 0;
+        int numInfants = 0;
+        int numMiscarriages = 0;
     };
     std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
 
@@ -204,7 +192,7 @@ namespace Person {
     struct StagingDetails {
         MeasuredFibrosisState measuredFibrosisState =
             MeasuredFibrosisState::NONE;
-        bool hadFibTestTwo = false;
+        bool hadSecondTest = false;
         int timeOfLastStaging = 0;
     };
     std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet);
@@ -213,8 +201,8 @@ namespace Person {
     struct ScreeningDetails {
         // -1 if never screened, otherwise [0, currentTimestep-1)
         int timeOfLastScreening = 0;
-        int abCount = 0;
-        int rnaCount = 0;
+        int numABTests = 0;
+        int numRNATests = 0;
     };
     std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 

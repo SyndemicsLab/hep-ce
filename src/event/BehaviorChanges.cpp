@@ -19,7 +19,7 @@
 namespace Event {
     void BehaviorChanges::doEvent(std::shared_ptr<Person::Person> person) {
         // Determine person's current behavior classification
-        Person::BehaviorClassification bc = person->getBehaviorClassification();
+        Person::Behavior bc = person->getBehavior();
 
         // Insert person's behavior cost
         this->calculateCostAndUtility(person);
@@ -31,13 +31,12 @@ namespace Event {
         // std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
         // 2. Draw a behavior state to be transitioned to
         int res = this->getDecision(probs);
-        if (res >= (int)Person::BehaviorClassification::COUNT) {
+        if (res >= (int)Person::Behavior::COUNT) {
             this->logger->error("Behavior Classification Decision returned "
                                 "value outside bounds");
             return;
         }
-        Person::BehaviorClassification toBC =
-            (Person::BehaviorClassification)res;
+        Person::Behavior toBC = (Person::Behavior)res;
 
         // 3. If the drawn state differs from the current state, change the
         // bools in BehaviorState to match
@@ -55,15 +54,14 @@ namespace Event {
         // selectCriteria["moud"] =
         //     Person::Person::moudEnumToStringMap[person->getMoudState()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorClassificationEnumToStringMap
-                [person->getBehaviorClassification()];
+            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
 
         auto resultTable = table->selectWhere(selectCriteria);
 
         std::vector<double> result = {};
 
         std::vector<std::string> columnVec = resultTable->getColumnNames();
-        for (auto kv : Person::Person::behaviorClassificationEnumToStringMap) {
+        for (auto kv : Person::Person::behaviorEnumToStringMap) {
             auto res = (*resultTable)[kv.second];
             result.push_back(std::stod(res[0]));
         }
@@ -80,8 +78,7 @@ namespace Event {
         // selectCriteria["moud"] =
         //     Person::Person::moudEnumToStringMap[person->getMoudState()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorClassificationEnumToStringMap
-                [person->getBehaviorClassification()];
+            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
 
         // should reduce to a single value
         auto resultTable = table->selectWhere(selectCriteria);

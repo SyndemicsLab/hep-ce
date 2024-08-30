@@ -19,8 +19,8 @@
 
 namespace Event {
     void Linking::doEvent(std::shared_ptr<Person::Person> person) {
-        Person::HEPCState state = person->getHEPCState();
-        if (state == Person::HEPCState::NONE) {
+        Person::HCV state = person->getHCV();
+        if (state == Person::HCV::NONE) {
             // add false positive cost
             person->unlink(this->getCurrentTimestep());
             this->addLinkingCost(person, "False Positive Linking Cost",
@@ -74,8 +74,7 @@ namespace Event {
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorClassificationEnumToStringMap
-                [person->getBehaviorClassification()];
+            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
 
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {

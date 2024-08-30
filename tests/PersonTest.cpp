@@ -63,9 +63,9 @@ TEST(PersonGrowth, DeathAge) {
 TEST(PersonInfect, InfectNormally) {
     Person::Person person;
     person.infect(0);
-    EXPECT_EQ(person.getHEPCState(), Person::HEPCState::ACUTE);
-    EXPECT_EQ(person.getTimeHEPCStateChanged(), 0);
-    EXPECT_TRUE(person.getSeropositivity());
+    EXPECT_EQ(person.getHCV(), Person::HCV::ACUTE);
+    EXPECT_EQ(person.getTimeHCVChanged(), 0);
+    EXPECT_TRUE(person.getSeropositive());
 
     EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::F0);
     EXPECT_EQ(person.getTimeFibrosisStateChanged(), 0);
@@ -74,17 +74,17 @@ TEST(PersonInfect, InfectNormally) {
 TEST(PersonInfect, ResistMultiHCVInfect) {
     Person::Person person;
     person.diagnoseHEPC(5);
-    person.setSeropositivity(false);
+    person.setSeropositive(false);
     person.infect(0);
-    EXPECT_EQ(person.getHEPCState(), Person::HEPCState::ACUTE);
-    EXPECT_FALSE(person.getSeropositivity());
+    EXPECT_EQ(person.getHCV(), Person::HCV::ACUTE);
+    EXPECT_FALSE(person.getSeropositive());
 }
 
 TEST(PersonInfect, ResistMultiFibrosisInfect) {
     Person::Person person;
     person.diagnoseFibrosis(5);
     person.infect(0);
-    EXPECT_EQ(person.getHEPCState(), Person::HEPCState::ACUTE);
+    EXPECT_EQ(person.getHCV(), Person::HCV::ACUTE);
     EXPECT_EQ(person.getFibrosisState(), Person::FibrosisState::F0);
 }
 
@@ -117,21 +117,18 @@ TEST(PersonUnlink, UnableToUnlink) {
 TEST(PersonBehavior, BehaviorUpdate) {
     Person::Person person;
     // newly-generated person starts in the NEVER state
-    EXPECT_EQ(person.getBehaviorClassification(),
-              Person::BehaviorClassification::NEVER);
+    EXPECT_EQ(person.getBehavior(), Person::Behavior::NEVER);
     // change to the NONINJECTION opioid usage state
-    person.updateBehavior(Person::BehaviorClassification::NONINJECTION, 0);
-    EXPECT_EQ(person.getBehaviorClassification(),
-              Person::BehaviorClassification::NONINJECTION);
+    person.updateBehavior(Person::Behavior::NONINJECTION, 0);
+    EXPECT_EQ(person.getBehavior(), Person::Behavior::NONINJECTION);
 }
 
 TEST(PersonBehavior, InvalidTransition) {
     Person::Person person;
-    person.updateBehavior(Person::BehaviorClassification::NONINJECTION, 0);
+    person.updateBehavior(Person::Behavior::NONINJECTION, 0);
     // cannot transition back to NEVER
-    person.updateBehavior(Person::BehaviorClassification::NEVER, 0);
-    EXPECT_EQ(person.getBehaviorClassification(),
-              Person::BehaviorClassification::NONINJECTION);
+    person.updateBehavior(Person::Behavior::NEVER, 0);
+    EXPECT_EQ(person.getBehavior(), Person::Behavior::NONINJECTION);
 }
 
 TEST(PersonLiver, FibrosisUpdate) {
@@ -158,4 +155,9 @@ TEST(PersonUtility, SetUtility) {
     Person::UtilityTracker utilityTracker = person.getUtility();
     EXPECT_EQ(0.5, utilityTracker.minUtil);
     EXPECT_EQ(0.375, utilityTracker.multUtil);
+}
+
+TEST(PersonPrint, PrintPerson) {
+    Person::Person person;
+    std::cout << person;
 }

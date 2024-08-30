@@ -68,7 +68,7 @@ namespace Event {
 
         // 7. Decide which stage is assigned to the person.
         if (!probs.empty()) {
-            person->setHadFibTestTwo(true);
+            person->setHadSecondTest(true);
 
             Person::MeasuredFibrosisState stateTwo =
                 (Person::MeasuredFibrosisState)this->getDecision(probs);

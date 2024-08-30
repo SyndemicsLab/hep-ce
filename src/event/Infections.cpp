@@ -21,16 +21,16 @@ namespace Event {
         // only those who aren't infected go to the rest of the event.
         // those who are infected transition from acute to chronic after 6
         // months.
-        switch (person->getHEPCState()) {
-        case Person::HEPCState::NONE:
+        switch (person->getHCV()) {
+        case Person::HCV::NONE:
             break;
-        case Person::HEPCState::ACUTE:
-            if ((this->getCurrentTimestep() -
-                 person->getTimeHEPCStateChanged()) >= 6) {
-                person->setHEPCState(Person::HEPCState::CHRONIC);
+        case Person::HCV::ACUTE:
+            if ((this->getCurrentTimestep() - person->getTimeHCVChanged()) >=
+                6) {
+                person->setHCV(Person::HCV::CHRONIC);
             }
             return;
-        case Person::HEPCState::CHRONIC:
+        case Person::HCV::CHRONIC:
             return;
         }
 
@@ -51,8 +51,7 @@ namespace Event {
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorClassificationEnumToStringMap
-                [person->getBehaviorClassification()];
+            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
             // error

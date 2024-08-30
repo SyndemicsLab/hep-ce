@@ -19,9 +19,9 @@
 
 namespace Event {
     void Overdose::doEvent(std::shared_ptr<Person::Person> person) {
-        Person::BehaviorClassification bc = person->getBehaviorClassification();
+        Person::Behavior bc = person->getBehavior();
         // return immediately if not in active use state
-        if (bc < Person::BehaviorClassification::NONINJECTION) {
+        if (bc < Person::Behavior::NONINJECTION) {
             return;
         }
         // check od probability

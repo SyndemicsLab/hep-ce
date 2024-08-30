@@ -41,8 +41,7 @@ namespace Person {
         int id = count;
         Sex sex = Sex::MALE;
         bool isAlive = true;
-        IdentificationStatus idStatus;
-        InfectionStatus infectionStatus;
+        Health infectionStatus;
         BehaviorDetails behaviorDetails;
         LinkageDetails linkStatus;
         bool overdose = false;
@@ -51,7 +50,6 @@ namespace Person {
         StagingDetails stagingDetails;
         ScreeningDetails screeningDetails;
         TreatmentDetails treatmentDetails;
-        HCCStatus hccStatus;
         UtilityTracker utilityTracker;
         Cost::CostTracker costs;
         bool boomerClassification = false;
@@ -60,9 +58,8 @@ namespace Person {
         /// @brief Person age in months
         int age = 0;
 
-        static std::map<std::string, HEPCState> hepcStateMap;
-        static std::map<std::string, BehaviorClassification>
-            behaviorClassificationMap;
+        static std::map<std::string, HCV> hcvMap;
+        static std::map<std::string, Behavior> behaviorMap;
         static std::map<std::string, LinkageType> linkageTypeMap;
         static std::map<std::string, LinkageState> linkageStateMap;
 
@@ -75,9 +72,8 @@ namespace Person {
 
         static std::map<std::string, PregnancyState> pregnancyStateMap;
 
-        static std::map<HEPCState, std::string> hepcStateEnumToStringMap;
-        static std::map<BehaviorClassification, std::string>
-            behaviorClassificationEnumToStringMap;
+        static std::map<HCV, std::string> hcvEnumToStringMap;
+        static std::map<Behavior, std::string> behaviorEnumToStringMap;
         static std::map<LinkageType, std::string> linkageTypeEnumToStringMap;
         static std::map<LinkageState, std::string> linkageStateEnumToStringMap;
 
@@ -122,9 +118,9 @@ namespace Person {
         void updateFibrosis(const FibrosisState &ls, int tstep);
 
         /// @brief Update Opioid Use Behavior Classification
-        /// @param bc The intended resultant BehaviorClassification
+        /// @param bc The intended resultant Behavior
         /// @param timestep Current simulation timestep
-        void updateBehavior(const BehaviorClassification &bc, int tstep);
+        void updateBehavior(const Behavior &bc, int tstep);
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
@@ -132,47 +128,47 @@ namespace Person {
 
         /// @brief Dignose somebody with HEPC
         /// @return HEPC state that was diagnosed
-        HEPCState diagnoseHEPC(int tstep);
+        HCV diagnoseHEPC(int tstep);
 
         /// @brief Getter for the number of HCV infections experienced by Person
         /// @return Number of HCV infections experienced by Person
-        int getNumInfections() { return this->infectionStatus.numInfections; }
+        int gettimesInfected() { return this->infectionStatus.timesInfected; }
 
         /// @brief Add an acute clearance to the running count
-        void addClearance() { this->infectionStatus.numClearances++; };
+        void addClearance() { this->infectionStatus.timesCleared++; };
 
         /// @brief Get the running total of clearances for Person
-        int getClearances() { return this->infectionStatus.numClearances; };
+        int getClearances() { return this->infectionStatus.timesCleared; };
 
         /// @brief Mark somebody as having been screened this timestep
         void markScreened() { this->screeningDetails.timeOfLastScreening = 0; }
 
         /// @brief
-        void addAbScreen() { this->screeningDetails.abCount++; }
+        void addAbScreen() { this->screeningDetails.numABTests++; }
 
         /// @brief
-        void addRnaScreen() { this->screeningDetails.rnaCount++; }
+        void addRnaScreen() { this->screeningDetails.numRNATests++; }
 
         /// @brief
-        int getAbCount() { return this->screeningDetails.rnaCount; }
+        int getNumABTests() { return this->screeningDetails.numRNATests; }
 
         /// @brief
-        int getRnaCount() { return this->screeningDetails.rnaCount; }
+        int getNumRNATests() { return this->screeningDetails.numRNATests; }
 
         /// @brief Getter for whether Person experienced fibtest two this cycle
-        /// @return value of hadFibTestTwo
-        bool hadFibTestTwo() { return this->stagingDetails.hadFibTestTwo; }
+        /// @return value of hadSecondTest
+        bool hadSecondTest() { return this->stagingDetails.hadSecondTest; }
 
         /// @brief Set whether the person experienced fibtest two this cycle
-        /// @param state New value of hadFibTestTwo
-        void setHadFibTestTwo(bool state) {
-            this->stagingDetails.hadFibTestTwo = state;
+        /// @param state New value of hadSecondTest
+        void setHadSecondTest(bool state) {
+            this->stagingDetails.hadSecondTest = state;
         }
 
-        /// @brief Set the Seropositivity value
-        /// @param seropositivity Seropositivity status to set
-        void setSeropositivity(bool seropositivity) {
-            this->infectionStatus.seropositivity = seropositivity;
+        /// @brief Set the Seropositive value
+        /// @param seropositive Seropositive status to set
+        void setSeropositive(bool seropositive) {
+            this->infectionStatus.seropositive = seropositive;
         }
 
         /// @brief Reset a Person's Link State to Unlinked
@@ -197,8 +193,8 @@ namespace Person {
         /// @brief Mark a Person as Identified as Infected
         /// @param timestep Timestep during which Identification Occurs
         void identifyAsInfected(int tstep) {
-            this->idStatus.identifiedAsPositiveInfection = true;
-            this->idStatus.timeIdentified = tstep;
+            this->infectionStatus.identifiedHCV = true;
+            this->infectionStatus.timeIdentified = tstep;
         }
 
         /// @brief Getter for the Time Since the Last Screening
@@ -222,15 +218,11 @@ namespace Person {
 
         /// @brief Getter for the HCV State
         /// @return HCV State
-        HEPCState getHEPCState() const {
-            return this->infectionStatus.hepcState;
-        }
+        HCV getHCV() const { return this->infectionStatus.hcv; }
 
         /// @brief Set HEPC State -- used to change to chronic infection
         /// @param New HEPC State
-        void setHEPCState(HEPCState hcvs) {
-            this->infectionStatus.hepcState = hcvs;
-        }
+        void setHCV(HCV hcvs) { this->infectionStatus.hcv = hcvs; }
 
         /// @brief Getter for Alive Status
         /// @return Alive Status
@@ -238,9 +230,7 @@ namespace Person {
 
         /// @brief Getter for Behavior Classification
         /// @return Behavior Classification
-        BehaviorClassification getBehaviorClassification() const {
-            return this->behaviorDetails.behaviorClassification;
-        }
+        Behavior getBehavior() const { return this->behaviorDetails.behavior; }
 
         /// @brief Getter for time since active drug use
         /// @return Time since the person left an active drug use state
@@ -250,8 +240,8 @@ namespace Person {
 
         /// @brief Getter for timestep in which HCV last changed
         /// @return Time Since HCV Change
-        int getTimeHEPCStateChanged() const {
-            return this->infectionStatus.timeHEPCStateChanged;
+        int getTimeHCVChanged() const {
+            return this->infectionStatus.timeHCVChanged;
         }
 
         /// @brief Getter for Time since Fibrosis State Change
@@ -260,19 +250,21 @@ namespace Person {
             return this->infectionStatus.timeFibrosisStateChanged;
         }
 
-        /// @brief Getter for Seropositivity
-        /// @return Seropositivity
-        bool getSeropositivity() const {
-            return this->infectionStatus.seropositivity;
+        /// @brief Getter for Seropositive
+        /// @return Seropositive
+        bool getSeropositive() const {
+            return this->infectionStatus.seropositive;
         }
 
         /// @brief Getter for Identification Status
         /// @return Boolean Describing Indentified as Positive Status
         bool isIdentifiedAsInfected() const {
-            return this->idStatus.identifiedAsPositiveInfection;
+            return this->infectionStatus.identifiedHCV;
         }
 
-        int getTimeIdentified() const { return this->idStatus.timeIdentified; }
+        int getTimeIdentified() const {
+            return this->infectionStatus.timeIdentified;
+        }
 
         /// @brief Getter for Link State
         /// @return Link State
@@ -338,12 +330,12 @@ namespace Person {
 
         /// @brief Getter for number of infants
         /// @return Number of infants born to this person
-        int getInfantCount() { return this->pregnancyDetails.infantCount; }
+        int getNumInfants() { return this->pregnancyDetails.numInfants; }
 
         /// @brief Getter for number of miscarriages
         /// @return Number of miscarriages this person has experienced
-        int getMiscarriageCount() {
-            return this->pregnancyDetails.miscarriageCount;
+        int getNumMiscarriages() {
+            return this->pregnancyDetails.numMiscarriages;
         }
 
         /// @brief Setter for Pregnancy State
@@ -360,14 +352,14 @@ namespace Person {
 
         /// @brief Add infants to the count
         /// @param infants Number infants to add
-        void setInfantCount(int infants) {
-            this->pregnancyDetails.infantCount += infants;
+        void setNumInfants(int infants) {
+            this->pregnancyDetails.numInfants += infants;
         }
 
         /// @brief Add miscarriages to the count
         /// @param miscarriages Number of miscarriages to add
-        void setMiscarriageCount(int miscarriages) {
-            this->pregnancyDetails.miscarriageCount += miscarriages;
+        void setNumMiscarriages(int miscarriages) {
+            this->pregnancyDetails.numMiscarriages += miscarriages;
         }
 
         /// @brief Set Person's measured fibrosis state
@@ -458,13 +450,7 @@ namespace Person {
         void setBoomerClassification(bool status) {
             this->boomerClassification = status;
         }
-
-        IdentificationStatus getIdentificationStatus() const {
-            return this->idStatus;
-        }
-        InfectionStatus getInfectionStatus() const {
-            return this->infectionStatus;
-        }
+        Health getHealth() const { return this->infectionStatus; }
         BehaviorDetails getBehaviorDetails() const {
             return this->behaviorDetails;
         }
@@ -482,7 +468,6 @@ namespace Person {
         TreatmentDetails getTreatmentDetails() const {
             return this->treatmentDetails;
         }
-        HCCStatus getHCCStatus() const { return this->hccStatus; }
     };
     std::ostream &operator<<(std::ostream &os, const Person &person);
 } // namespace Person

@@ -122,10 +122,10 @@ namespace Event {
     bool Screening::antibodyTest(std::shared_ptr<Person::Person> person,
                                  std::string configKey) {
         double probability = 0.5;
-        if (person->getSeropositivity()) {
-            Person::HEPCState infectionStatus = person->getHEPCState();
-            if (infectionStatus == Person::HEPCState::ACUTE ||
-                infectionStatus == Person::HEPCState::NONE) {
+        if (person->getSeropositive()) {
+            Person::HCV infectionStatus = person->getHCV();
+            if (infectionStatus == Person::HCV::ACUTE ||
+                infectionStatus == Person::HCV::NONE) {
                 probability = 1 - std::get<double>(this->config.get(
                                       configKey + ".acute_sensitivity", 0.0));
             } else {
@@ -145,11 +145,11 @@ namespace Event {
     bool Screening::rnaTest(std::shared_ptr<Person::Person> person,
                             std::string configKey) {
         double probability = 0.5;
-        Person::HEPCState infectionStatus = person->getHEPCState();
-        if (infectionStatus == Person::HEPCState::ACUTE) {
+        Person::HCV infectionStatus = person->getHCV();
+        if (infectionStatus == Person::HCV::ACUTE) {
             probability = 1 - std::get<double>(this->config.get(
                                   configKey + ".acute_sensitivity", 0.0));
-        } else if (infectionStatus == Person::HEPCState::CHRONIC) {
+        } else if (infectionStatus == Person::HCV::CHRONIC) {
             probability = 1 - std::get<double>(this->config.get(
                                   configKey + ".chronic_sensitivity", 0.0));
         } else {
@@ -170,8 +170,7 @@ namespace Event {
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorClassificationEnumToStringMap
-                [person->getBehaviorClassification()];
+            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
             this->logger->error("No valid background screening probability "
@@ -186,9 +185,9 @@ namespace Event {
         std::string configStr = "";
 
         if (person->isBoomer()) {
-            configStr = "screening.seropositivity_multiplier_boomer";
+            configStr = "screening.seropositive_multiplier_boomer";
         } else {
-            configStr = "screening.seropositivity_multiplier_not_boomer";
+            configStr = "screening.seropositive_multiplier_not_boomer";
         }
 
         double multiplier;
@@ -213,8 +212,7 @@ namespace Event {
         selectCriteria["gender"] =
             Person::Person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorClassificationEnumToStringMap
-                [person->getBehaviorClassification()];
+            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
             // error

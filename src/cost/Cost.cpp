@@ -80,4 +80,9 @@ namespace Cost {
         }
         this->costs[timestep].push_back(cost);
     }
+
+    std::ostream &operator<<(std::ostream &os, const Cost &cost) {
+        os << cost.name << " " << cost.cost << std::endl;
+        return os;
+    }
 } // namespace Cost

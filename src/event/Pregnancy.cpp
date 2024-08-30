@@ -80,7 +80,7 @@ namespace Event {
         // if a miscarriage (getDecision == 0)
         if (!this->getDecision(prob)) {
             person->setPregnancyState(Person::PregnancyState::POSTPARTUM);
-            person->setMiscarriageCount(1);
+            person->setNumMiscarriages(1);
             person->setTimeOfPregnancyChange(this->currentTime);
         }
     }
