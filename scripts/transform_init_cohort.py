@@ -2,9 +2,9 @@ import pandas as pds
 import re
 
 
-def old2new():
+def old2new(old_path, new_path, num_rows=-1):
     df = pds.read_csv(
-        "/home/matt/Repos/TestData/HEP-CE/oldinputs/hepce-inputs/shared_data/init_cohort.csv", index_col=False)
+        old_path, index_col=False)
 
     df.rename(columns={"age_months": "age", "gender": "sex", "idu": "drugBehaviorClassification", "time_in_former_idu_months": "timeLastActiveDrugUse", "seropositive": "seropositivity",
               "infection": "isGenotypeThree", "fibrosis": "fibrosisState", "known_status_flag": "identifiedAsPositiveInfection", "linkage": "linkageState"}, inplace=True)
@@ -17,10 +17,12 @@ def old2new():
     geno_map = {"chronic-three": True, "chronic-one": False}
     df.replace({"drugBehaviorClassification": idu_map,
                "seropositivity": sero_map, "isGenotypeThree": geno_map}, inplace=True)
-    print(df.head())
-    df.to_csv(
-        "/home/matt/Repos/TestData/HEP-CE/newinputs/new_init_cohort.csv", index=False)
+    df[:num_rows].to_csv(
+        new_path, index=False)
 
 
 if __name__ == "__main__":
-    old2new()
+    num_rows = 1000
+    old_path = "/home/matt/Repos/TestData/HEP-CE/oldinputs/hepce-inputs/shared_data/init_cohort.csv"
+    new_path = f"/home/matt/Repos/TestData/HEP-CE/newinputs/init_cohort_{num_rows}.csv"
+    old2new(old_path, new_path, num_rows)
