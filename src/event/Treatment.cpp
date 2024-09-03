@@ -61,7 +61,7 @@ namespace Event {
         }
 
         // 7. Determine if the person has a toxic reaction
-        if (this->isToxified(person, course)) {
+        if (this->experiencedToxicity(person, course)) {
             this->quitEngagement(person);
             Cost::Cost toxicityCost = {
                 this->costCategory, "Toxicity Cost",
@@ -191,8 +191,8 @@ namespace Event {
         return false;
     }
 
-    bool Treatment::isToxified(std::shared_ptr<Person::Person> person,
-                               Data::IDataTablePtr course) {
+    bool Treatment::experiencedToxicity(std::shared_ptr<Person::Person> person,
+                                        Data::IDataTablePtr course) {
         double toxProb = std::stod(course->getColumn("toxicity")[0]);
         int toxicity = this->getDecision({toxProb});
         return (toxicity == 1) ? true : false;

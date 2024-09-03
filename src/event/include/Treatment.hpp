@@ -58,8 +58,8 @@ namespace Event {
         bool doesWithdraw(std::shared_ptr<Person::Person> person,
                           Data::IDataTablePtr course);
 
-        bool isToxified(std::shared_ptr<Person::Person> person,
-                        Data::IDataTablePtr course);
+        bool experiencedToxicity(std::shared_ptr<Person::Person> person,
+                                 Data::IDataTablePtr course);
 
         void chargeCostOfVisit(std::shared_ptr<Person::Person> person);
 
