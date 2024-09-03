@@ -22,7 +22,7 @@ showhelp () {
 
 dminstall () {
     if [[ ! -d "DataManagement" ]]; then
-	git clone git@github.com:SyndemicsLab/DataManagement -b output-op-overload
+	git clone git@github.com:SyndemicsLab/DataManagement
     fi
     # subshell needed to avoid changing working directory unnecessarily
     (
