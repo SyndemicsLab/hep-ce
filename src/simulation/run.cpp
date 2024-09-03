@@ -84,7 +84,6 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     tables["blank"] = blank;
     tables["Clearance"] = blank;
     tables["VoluntaryRelinking"] = blank;
-    tables["Treatment"] = blank;
 
     // Costs and Utilities
     std::filesystem::path f =
@@ -132,6 +131,9 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     f = ((std::filesystem::path)dirpath) / "screening_and_linkage.csv";
     Data::IDataTablePtr screen = std::make_shared<Data::DataTable>(f);
 
+    f = ((std::filesystem::path)dirpath) / "treatments.csv";
+    Data::IDataTablePtr treatments = std::make_shared<Data::DataTable>(f);
+
     // f = ((std::filesystem::path)dirpath) / "all_types_overdose.csv";
     // Data::IDataTablePtr overdoses = std::make_shared<Data::DataTable>(f);
 
@@ -154,8 +156,17 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
 
     Data::IDataTablePtr behavior;
     std::vector<std::string> joinCols = {"gender", "drug_behavior"};
+
+    // std::shared_ptr<Data::DataTable> dtp =
+    //     std::dynamic_pointer_cast<Data::DataTable>(behaviorTransitions);
+    // Data::DataTable dt = *dtp;
+    // std::cout << dt;
+
+    // std::cout << "------------------------------------" << std::endl;
+
     behavior =
         behaviorTransitions->innerJoin(behaviorCosts, joinCols, joinCols);
+
     behavior = behavior->innerJoin(behaviorUtilities, joinCols, joinCols);
 
     fibrosisProgression = fibrosisProgression->innerJoin(
@@ -181,6 +192,7 @@ int loadTables(std::unordered_map<std::string, Data::IDataTablePtr> &tables,
     // tables["Overdose"] = overdoses;
     tables["Death"] = death;
     tables["population"] = population;
+    tables["Treatment"] = treatments;
     return 0;
 }
 

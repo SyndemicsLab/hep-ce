@@ -23,144 +23,81 @@ namespace Event {
                          std::string name)
         : ProbEvent::ProbEvent(generator, table, config, logger, name) {
         this->costCategory = Cost::CostCategory::TREATMENT;
-        this->populateCourses();
     }
 
     void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
-        // 1. Determine person's treatment eligibility. Bypass this if person
-        // has already initiated treatment.
-        if (!person->hasInitiatedTreatment()) {
-            if (!this->isEligible(person)) {
-                // check if person is lost to follow-up due to ineligibility
-                this->checkLossToFollowUp(person);
-                return;
-            }
-            if (person->getTreatmentCount() > 0) {
-                double rt_prob = std::get<double>(
-                    this->config.get("treatment.retreatment_probability", 1.0));
-                int retreat = this->getDecision({rt_prob});
-                if (retreat == 0) {
-                    return;
-                }
-            }
-        }
-
-        // 2. Check loss to follow-up, should be due to second fib test.
-        if (person->exposedToLTFU() && !person->hadFibTestTwo()) {
-            // only pull once after condition is met
-            person->setExposedToLTFU(false);
-            this->checkLossToFollowUp(person);
+        // 1. Check if the Person is Lost To Follow Up (LTFU)
+        if (this->isLostToFollowUp(person)) {
+            this->quitEngagement(person);
             return;
         }
 
-        // 3. Select the treatment course for a person based on their measured
+        // 2. Charge the Cost of the Visit (varies if this is retreatment)
+        chargeCostOfVisit(person);
+
+        // 3. Determine if the Person Engages and Initiates Treatment (i.e.
+        // picks up medicine)
+        if (!this->initiatesTreatment(person)) {
+            this->quitEngagement(person);
+            return;
+        }
+
+        // 4. Select the treatment course for a person based on their measured
         // fibrosis stage, genotype.
-        const Course &course = this->getTreatmentCourse(person);
-        // 4. If the person has not yet initiated treatment, draw the
-        // probability that person will initiate treatment.
-        if (!person->hasInitiatedTreatment()) {
-            int initiation = this->getDecision({course.initiationProbability});
-            // if the randomly-drawn value from getDecision is 0, person does
-            // not initiate treatment
-            if (initiation == 0) {
-                return;
-            }
-            // person initiates treatment -- set treatment initiation values
-            person->setInitiatedTreatment(true);
-            person->setTimeOfTreatmentInitiation(this->getCurrentTimestep());
-            // add to treatment initiation count
-            person->incrementTreatCount();
-            // return, as a person's state doesn't change the timestep they
-            // start treatment
+        std::unordered_map<std::string, std::string> selectCriteria = {};
+        selectCriteria["is_genotype3"] =
+            (person->isGenotypeThree()) ? "TRUE" : "FALSE";
+        selectCriteria["is_cirrhotic"] =
+            (person->isCirrhotic()) ? "TRUE" : "FALSE";
+        Data::IDataTablePtr course = this->table->selectWhere(selectCriteria);
+
+        // 5. Charge the person for the Course they are on
+        chargeCostOfCourse(person, course);
+
+        // 6. Determine if the person withdraws from the treatment
+        if (this->doesWithdraw(person, course)) {
+            this->quitEngagement(person);
             return;
         }
-        // 5. Check the time since treatment initiation.
+
+        // 7. Determine if the person has a toxic reaction
+        if (this->experiencedToxicity(person, course)) {
+            this->quitEngagement(person);
+            Cost::Cost toxicityCost = {
+                this->costCategory, "Toxicity Cost",
+                std::get<double>(this->config.get("treatment.tox_cost", 0.0))};
+            person->addCost(toxicityCost, this->getCurrentTimestep());
+            person->setUtility(std::get<double>(
+                this->config.get("treatment.tox_utility", 0.0)));
+        }
+
+        // 8. Determine if the person has been treated long enough, if they
+        // achieve SVR
         int timeSinceInitiation =
             this->getCurrentTimestep() - person->getTimeOfTreatmentInitiation();
-        // 6. Get the treatment regimen the person is currently experiencing.
-        const std::pair<Regimen, int> &regimenInfo =
-            this->getCurrentRegimen(course, timeSinceInitiation);
-        // accumulate costs
-        this->addTreatmentCostAndUtility(person, regimenInfo.first.cost,
-                                         regimenInfo.first.toxicityUtility);
-        // set treatment utility
-        person->setUtility(regimenInfo.first.utility);
-        // 7. If time since treatment initiation > 0, draw probability of
-        // adverse outcome (TOX), then draw probability of withdrawing from
-        // treatment prior to completion. TOX does not lead to withdrawal from
-        // care but withdrawal probabilities are stratified by TOX.
-        double withdrawalProbability = regimenInfo.first.withdrawalProbability;
-        int toxicity =
-            this->getDecision({regimenInfo.first.toxicityProbability});
-        if (toxicity == 1) {
-            // log toxicity for person
-            // apply toxicity cost and utility
-            this->addTreatmentCostAndUtility(person,
-                                             regimenInfo.first.toxicityCost,
-                                             regimenInfo.first.toxicityUtility);
-            // add to toxicity count for person
-            person->addTox();
-            // adjust withdrawalProbability
+        int treatmentTime = std::stod(course->getColumn("time")[0]);
+        double svr = std::stod(course->getColumn("svr")[0]);
+        int treatmentOutcome = this->getDecision({svr});
+        if (treatmentOutcome == 1) {
+            person->clearHCV(this->getCurrentTimestep());
         }
-        int withdraw = this->getDecision({withdrawalProbability});
-        if (withdraw == 1) {
-            person->setInitiatedTreatment(false);
-            // add to withdrawal count for person
-            person->addWithdrawal();
-            // reset utility
-            person->setUtility(1.0);
-            return;
+        if (timeSinceInitiation >= treatmentTime) {
+            this->quitEngagement(person);
         }
-        // 8. Compare the treatment duration to the time since treatment
-        // initiation. If equal, draw for cure (SVR) vs no cure (EOT).
-        if (timeSinceInitiation == regimenInfo.second) {
-            int treatmentOutcome =
-                this->getDecision({regimenInfo.first.svrProbability});
-            // add EOT for person
-            person->addEOT();
-            // reset utility
-            person->setUtility(1.0);
-            if (treatmentOutcome == 0) {
-                // log EOT without cure
-                // reached EOT without cure
-                person->setIncompleteTreatment(true);
-                return;
-            }
-            // cure
-            // add SVR count to person
-            person->addSVR();
-            // log person cured
-            // cured people remove half their hcv cost
-            person->clearHCV(false);
-        }
-    }
-
-    std::pair<Regimen, int> Treatment::getCurrentRegimen(const Course &course,
-                                                         int duration) {
-        int totalDuration = 0;
-        for (const Regimen &curr : course.regimens) {
-            totalDuration += curr.duration;
-            if (duration <= totalDuration) {
-                return {curr, totalDuration};
-            }
-        }
-        // error
-        return {Regimen(), 0};
     }
 
     bool
     Treatment::isEligible(std::shared_ptr<Person::Person> const person) const {
         Person::FibrosisState fibrosisState = person->getFibrosisState();
         int timeSinceLinked = person->getTimeOfLinkChange();
-        Person::BehaviorClassification behavior =
-            person->getBehaviorClassification();
+        Person::Behavior behavior = person->getBehavior();
         int timeBehaviorChange = person->getTimeBehaviorChange();
         Person::PregnancyState pregnancyState = person->getPregnancyState();
         if (!isEligibleFibrosisStage(fibrosisState) ||
             ((this->getCurrentTimestep() - timeSinceLinked) >
              eligibleTimeSinceLinked) ||
-            (behavior == Person::BehaviorClassification::INJECTION) ||
-            (behavior == Person::BehaviorClassification::FORMER_INJECTION &&
+            (behavior == Person::Behavior::INJECTION) ||
+            (behavior == Person::Behavior::FORMER_INJECTION &&
              timeBehaviorChange < eligibleTimeBehaviorChange) ||
             (pregnancyState == Person::PregnancyState::PREGNANT ||
              pregnancyState == Person::PregnancyState::POSTPARTUM)) {
@@ -181,89 +118,6 @@ namespace Event {
         return false;
     }
 
-    Course Treatment::getTreatmentCourse(
-        const std::shared_ptr<Person::Person> person) const {
-        const Person::FibrosisState &personFibrosisState =
-            person->getFibrosisState();
-        // check person's infection genotype
-        // if gt3, start at index 3 instead of 0
-        int idx = person->getGenotype() ? 3 : 0;
-
-        if (personFibrosisState > Person::FibrosisState::F4) {
-            // cirrhotic
-            if (personFibrosisState == Person::FibrosisState::F4) {
-                // compensated
-                idx += 1;
-            } else {
-                // decompensated
-                idx += 2;
-            }
-        }
-
-        return this->courses[idx];
-    }
-
-    void Treatment::populateCourses() {
-        std::vector<Course> tempCourses = {};
-        std::vector<std::string> courseList =
-            this->config.getStringVector("treatment.courses");
-        // error if courseList length != total number of treatment groups
-        // total number of treatment groups = 6 (2024-02-20)
-        if (courseList.size() != 6) {
-            // log error
-            return;
-        }
-
-        // used for tracking section hierarchy
-        std::vector<std::string> sections = {"treatment"};
-
-        for (std::string &course : courseList) {
-            // local variable for sections relevant to courses
-            std::vector<std::string> courseSections =
-                setupTreatmentSections({"course_" + course}, sections);
-            // setting up regimens for the current course
-            std::vector<Regimen> regimens = {};
-            std::vector<std::string> regimenList =
-                this->config.getStringVector(courseSections[0] + ".regimens");
-            for (std::string &regimen : regimenList) {
-                std::vector<std::string> regimenSections =
-                    setupTreatmentSections({"regimen_" + regimen},
-                                           courseSections);
-                Regimen currentRegimen = {
-                    (int)this->locateInput(regimenSections, "duration"),
-                    this->locateInput(regimenSections, "cost"),
-                    this->locateInput(regimenSections, "utility"),
-                    this->locateInput(regimenSections,
-                                      "withdrawal_probability"),
-                    this->locateInput(regimenSections, "svr_probability"),
-                    this->locateInput(regimenSections, "tox_probability"),
-                    this->locateInput(regimenSections, "tox_cost"),
-                    this->locateInput(regimenSections, "tox_utility")};
-                regimens.push_back(currentRegimen);
-            }
-
-            Course currentCourse = {
-                regimens,
-                this->locateInput(courseSections, "initiation_probability")};
-            tempCourses.push_back(currentCourse);
-        }
-        this->courses = tempCourses;
-    }
-
-    double Treatment::locateInput(std::vector<std::string> &configSections,
-                                  const std::string &parameter) {
-        for (auto section : configSections) {
-            std::shared_ptr<Data::ReturnType> param =
-                this->config.get_optional(section + '.' + parameter, -1.0);
-            if (param) {
-                return std::get<double>(*param);
-            }
-        }
-        // error, value not specified
-        // throw std::runtime_error
-        return -1;
-    }
-
     void Treatment::addTreatmentCostAndUtility(
         std::shared_ptr<Person::Person> person, double cost, double util) {
         Cost::Cost treatmentCost = {this->costCategory, "Treatment Cost", cost};
@@ -271,14 +125,83 @@ namespace Event {
         person->setUtility(util);
     }
 
-    void
-    Treatment::checkLossToFollowUp(std::shared_ptr<Person::Person> person) {
-        double ltfuProb =
-            std::get<double>(this->config.get("treatment.ltfu_prob", 0.0));
-        int ltfu = this->getDecision({ltfuProb});
-        if (ltfu == 0) {
-            // unlink
-            person->unlink(this->getCurrentTimestep());
+    bool Treatment::isLostToFollowUp(std::shared_ptr<Person::Person> person) {
+        if (!person->hasInitiatedTreatment() && !this->isEligible(person)) {
+            // check if person is lost to follow-up due to ineligibility
+            double ltfuProb = std::get<double>(
+                this->config.get("treatment.ltfu_probability", 0.0));
+            int ltfu = this->getDecision({ltfuProb});
+            if (ltfu == 0) {
+                // unlink
+                person->unlink(this->getCurrentTimestep());
+                return true;
+            }
         }
+        return false;
+    }
+
+    void Treatment::chargeCostOfVisit(std::shared_ptr<Person::Person> person) {
+        double cost =
+            std::get<double>(this->config.get("treatment.treatment_cost", 0.0));
+        Cost::Cost visitCost = {this->costCategory, "Cost of Treatment Visit",
+                                cost};
+        person->addCost(visitCost, this->getCurrentTimestep());
+    }
+
+    void Treatment::chargeCostOfCourse(std::shared_ptr<Person::Person> person,
+                                       Data::IDataTablePtr course) {
+
+        double cost = std::stod(course->getColumn("treatment_cost")[0]);
+        double util = std::get<double>(
+            this->config.get("treatment.treatment_utility", 0.0));
+        Cost::Cost courseCost = {this->costCategory, "Cost of Treatment Course",
+                                 cost};
+        person->addCost(courseCost, this->getCurrentTimestep());
+        person->setUtility(util);
+    }
+
+    bool Treatment::initiatesTreatment(std::shared_ptr<Person::Person> person) {
+        // if person hasn't initialized draw, if they have, continue treatment
+        if (!person->hasInitiatedTreatment()) {
+            double initProb = std::get<double>(
+                this->config.get("treatment.treatment_initialization", 0.0));
+            int initiation = this->getDecision({initProb});
+            // if the randomly-drawn value from getDecision is 0, person does
+            // not initiate treatment
+            if (initiation == 0) {
+
+                return false;
+            }
+            // person initiates treatment -- set treatment initiation values
+            person->setInitiatedTreatment(true);
+            person->setTimeOfTreatmentInitiation(this->getCurrentTimestep());
+        }
+        return true;
+    }
+
+    bool Treatment::doesWithdraw(std::shared_ptr<Person::Person>,
+                                 Data::IDataTablePtr course) {
+        double withdrawalProb =
+            std::stod(course->getColumn("withdrawal_probability")[0]);
+
+        int withdraw = this->getDecision({withdrawalProb});
+        if (withdraw == 1) {
+            return true;
+        }
+        return false;
+    }
+
+    bool Treatment::experiencedToxicity(std::shared_ptr<Person::Person> person,
+                                        Data::IDataTablePtr course) {
+        double toxProb = std::stod(course->getColumn("toxicity")[0]);
+        int toxicity = this->getDecision({toxProb});
+        return (toxicity == 1) ? true : false;
+    }
+
+    void Treatment::quitEngagement(std::shared_ptr<Person::Person> person) {
+        // unlink from care
+        person->unlink(this->getCurrentTimestep());
+        // reset utility
+        person->setUtility(1.0);
     }
 } // namespace Event
