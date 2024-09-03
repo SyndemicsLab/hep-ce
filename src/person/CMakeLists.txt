@@ -10,7 +10,7 @@ HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 
 add_library(${PROJECT_NAME} 
     Person.cpp 
-    Maps.cpp
+    ContainerOperators.cpp
 )
 target_link_libraries(${PROJECT_NAME} PUBLIC utils)
 target_link_libraries(${PROJECT_NAME} PUBLIC cost)

@@ -21,7 +21,9 @@ showhelp () {
 }
 
 dminstall () {
-    git clone git@github.com:SyndemicsLab/DataManagement
+    if [[ ! -d "DataManagement" ]]; then
+	git clone git@github.com:SyndemicsLab/DataManagement
+    fi
     # subshell needed to avoid changing working directory unnecessarily
     (
 	cd "DataManagement" || return 1
@@ -78,6 +80,16 @@ while getopts ":hpt:" option; do
     esac
 done
 
+# load conda environment
+echo "Checking if \`conda\` is found..."
+# ensure conda is present on the system
+if ! command -v conda &>/dev/null; then
+    echo "\`conda\` not present on the system! Exiting..."
+    exit 1
+else
+    echo "\`conda\` found!"
+fi
+
 (
     # change to the top-level git folder
     TOPLEVEL="$(git rev-parse --show-toplevel)"
@@ -88,7 +100,7 @@ done
     ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
     ([[ -d "lib/" ]] && rm -rf lib/*.a)
 
-        # detect or install DataManagement
+    # detect or install DataManagement
     if [[ ! -d "lib/dminstall" ]]; then
 	if ! dminstall; then
 	    echo "Installing \`DataManagement\` failed."

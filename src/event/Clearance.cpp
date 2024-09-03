@@ -40,7 +40,7 @@ namespace Event {
         // clearance.
 
         // if person isn't infected or is chronic, nothing to do
-        if (person->getHEPCState() != Person::HEPCState::ACUTE) {
+        if (person->getHCV() != Person::HCV::ACUTE) {
             return;
         }
         // 1. Get the probability of acute clearance

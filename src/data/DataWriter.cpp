@@ -41,17 +41,15 @@ namespace DataWriter {
                                                 "sex",
                                                 "age",
                                                 "isAlive",
-                                                "identifiedAsPositiveInfection",
+                                                "identifiedHCV",
                                                 "timeInfectionIdentified",
-                                                "HEPCState",
+                                                "HCV",
                                                 "fibrosisState",
                                                 "isGenotypeThree",
-                                                "seropositivity",
-                                                "timeHEPCStateChanged",
+                                                "seropositive",
+                                                "timeHCVChanged",
                                                 "timeFibrosisStateChanged",
-                                                "numInfections",
-                                                "numClearances",
-                                                "drugBehaviorClassification",
+                                                "drugBehavior",
                                                 "timeLastActiveDrugUse",
                                                 "linkageState",
                                                 "timeOfLinkChange",
@@ -60,16 +58,14 @@ namespace DataWriter {
                                                 "measuredFibrosisState",
                                                 "timeOfLastStaging",
                                                 "timeOfLastScreening",
-                                                "abCount",
-                                                "rnaCount",
+                                                "numABTests",
+                                                "numRNATests",
+                                                "timesInfected",
+                                                "timesCleared",
                                                 "hasIncompleteTreatment",
                                                 "initiatedTreatment",
                                                 "timeOfTreatmentInitiation",
                                                 "treatmentCount",
-                                                "numEOT",
-                                                "numSVR",
-                                                "numTox",
-                                                "numWithdrawals",
                                                 "backgroundUtility",
                                                 "behaviorUtility",
                                                 "treatmentUtility",
@@ -78,26 +74,21 @@ namespace DataWriter {
         data["sex"] = {person->sexEnumToStringMap[person->getSex()]};
         data["age"] = {std::to_string(person->age)};
         data["isAlive"] = {Utils::boolToString(person->getIsAlive())};
-        data["identifiedAsPositiveInfection"] = {
+        data["identifiedHCV"] = {
             Utils::boolToString(person->isIdentifiedAsInfected())};
         data["timeInfectionIdentified"] = {
             std::to_string(person->getTimeIdentified())};
-        data["HEPCState"] = {
-            person->hepcStateEnumToStringMap[person->getHEPCState()]};
+        data["HCV"] = {person->hcvEnumToStringMap[person->getHCV()]};
         data["fibrosisState"] = {
             person->fibrosisStateEnumToStringMap[person->getFibrosisState()]};
-        data["isGenotypeThree"] = {Utils::boolToString(person->getGenotype())};
-        data["seropositivity"] = {
-            Utils::boolToString(person->getSeropositivity())};
-        data["timeHEPCStateChanged"] = {
-            std::to_string(person->getTimeHEPCStateChanged())};
+        data["isGenotypeThree"] = {
+            Utils::boolToString(person->isGenotypeThree())};
+        data["seropositive"] = {Utils::boolToString(person->getSeropositive())};
+        data["timeHCVChanged"] = {std::to_string(person->getTimeHCVChanged())};
         data["timeFibrosisStateChanged"] = {
             std::to_string(person->getTimeFibrosisStateChanged())};
-        data["numInfections"] = {std::to_string(person->getNumInfections())};
-        data["numClearances"] = {std::to_string(person->getClearances())};
-        data["drugBehaviorClassification"] = {
-            person->behaviorClassificationEnumToStringMap
-                [person->getBehaviorClassification()]};
+        data["drugBehavior"] = {
+            person->behaviorEnumToStringMap[person->getBehavior()]};
         data["timeLastActiveDrugUse"] = {
             std::to_string(person->getTimeBehaviorChange())};
         data["linkageState"] = {
@@ -110,32 +101,25 @@ namespace DataWriter {
         data["measuredFibrosisState"] = {
             person->measuredFibrosisStateEnumToStringMap
                 [person->getMeasuredFibrosisState()]};
-        data["hadFibTestTwo"] = {Utils::boolToString(person->hadFibTestTwo())};
         data["timeOfLastStaging"] = {
             std::to_string(person->getTimeOfLastStaging())};
         data["timeOfLastScreening"] = {
             std::to_string(person->getTimeOfLastScreening())};
-        data["abCount"] = {std::to_string(person->getAbCount())};
-        data["rnaCount"] = {std::to_string(person->getRnaCount())};
-        data["hasIncompleteTreatment"] = {
-            Utils::boolToString(person->hadIncompleteTreatment())};
+        data["numABTests"] = {std::to_string(person->getNumABTests())};
+        data["numRNATests"] = {std::to_string(person->getNumRNATests())};
         data["initiatedTreatment"] = {
             Utils::boolToString(person->hasInitiatedTreatment())};
-        data["exposedToLTFU"] = {Utils::boolToString(person->exposedToLTFU())};
         data["timeOfTreatmentInitiation"] = {
             std::to_string(person->getTimeOfTreatmentInitiation())};
-        data["treatmentCount"] = {std::to_string(person->getTreatmentCount())};
-        data["numEOT"] = {std::to_string(person->getNumEOT())};
-        data["numSVR"] = {std::to_string(person->getNumSVR())};
-        data["numTox"] = {std::to_string(person->getNumTox())};
-        data["numWithdrawals"] = {std::to_string(person->getWithdrawals())};
+        data["timesInfected"] = {std::to_string(person->gettimesInfected())};
+        data["timesCleared"] = {std::to_string(person->getClearances())};
         // auto utility = person->getUtility();
         // data["backgroundUtility"] = {std::to_string(utility.background)};
         // data["behaviorUtility"] = {std::to_string(utility.behavior)};
         // data["treatmentUtility"] = {std::to_string(utility.treatment)};
         // data["liverUtility"] = {std::to_string(utility.liver)};
 
-        Data::DataTableShape newShape(1, 37);
+        Data::DataTableShape newShape(1, data.size());
         Data::IDataTablePtr newDT =
             std::make_shared<Data::DataTable>(data, newShape, headerOrder);
         return newDT;

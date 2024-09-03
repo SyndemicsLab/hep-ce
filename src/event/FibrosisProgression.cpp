@@ -20,7 +20,7 @@
 namespace Event {
     void FibrosisProgression::doEvent(std::shared_ptr<Person::Person> person) {
         // can only progress in fibrosis state if actively infected with HCV
-        if (person->getHEPCState() == Person::HEPCState::NONE) {
+        if (person->getHCV() == Person::HCV::NONE) {
             return;
         }
         // 1. Get current fibrosis status
@@ -82,7 +82,7 @@ namespace Event {
         std::shared_ptr<Person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
         selectCriteria["hcv_status"] =
-            Person::Person::hepcStateEnumToStringMap[person->getHEPCState()];
+            Person::Person::hcvEnumToStringMap[person->getHCV()];
         selectCriteria["metavir_stage"] = Person::Person::
             fibrosisStateEnumToStringMap[person->getFibrosisState()];
         auto resultTable = table->selectWhere(selectCriteria);

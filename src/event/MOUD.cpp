@@ -18,10 +18,10 @@
 
 namespace Event {
     void MOUD::doEvent(std::shared_ptr<Person::Person> person) {
-        Person::BehaviorClassification bc = person->getBehaviorClassification();
+        Person::Behavior bc = person->getBehavior();
 
         // Can only enter MOUD if in an active use state.
-        if (!(bc >= Person::BehaviorClassification::NONINJECTION)) {
+        if (!(bc >= Person::Behavior::NONINJECTION)) {
             // 1. Check the person's current MOUD status
             Person::MOUD moud = person->getMoudState();
             // 2. Draw probability of changing MOUD state.
