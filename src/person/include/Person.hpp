@@ -19,6 +19,7 @@
 #define PERSON_PERSON_HPP_
 
 #include "Containers.hpp"
+#include "Cost.hpp"
 #include <memory>
 
 /// @brief Namespace containing all code pertaining to an individual Person
@@ -48,7 +49,7 @@ namespace person {
         int Unlink();
         int Link(LinkageType linkType);
         int IdentifyAsInfected();
-        int AddCost(Cost::Cost cost);
+        int AddCost(cost::Cost cost);
         int ToggleOverdose();
         // Checks
         bool IsAlive();
@@ -91,7 +92,7 @@ namespace person {
         int GetTimeStartedMoud() const;
         Sex GetSex() const;
         UtilityTracker GetUtility() const;
-        Cost::CostTracker GetCosts() const;
+        cost::CostTracker GetCosts() const;
         Health GetHealth() const;
         BehaviorDetails GetBehaviorDetails() const;
         LinkageDetails GetLinkStatus() const;

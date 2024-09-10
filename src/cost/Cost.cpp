@@ -1,8 +1,9 @@
 #include "Cost.hpp"
+#include <cmath>
 #include <iostream>
 #include <unordered_map>
 
-namespace Cost {
+namespace cost {
     std::unordered_map<int, double> CostTracker::getTotals() const {
         std::unordered_map<int, double> totals = {};
         for (auto &timestep : this->costs) {
@@ -87,4 +88,4 @@ namespace Cost {
         os << cost.name << " " << cost.cost << std::endl;
         return os;
     }
-} // namespace Cost
+} // namespace cost

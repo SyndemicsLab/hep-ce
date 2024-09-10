@@ -19,12 +19,11 @@
 #ifndef COST_COST_HPP_
 #define COST_COST_HPP_
 
-#include <cmath>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-namespace Cost {
+namespace cost {
     /// @brief Categories for classifying cost items
     enum class CostCategory {
         MISC = 0,
@@ -86,5 +85,5 @@ namespace Cost {
     private:
         std::unordered_map<int, std::vector<Cost>> costs = {};
     };
-} // namespace Cost
+} // namespace cost
 #endif

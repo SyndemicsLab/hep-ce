@@ -1,5 +1,4 @@
 #include "Person.hpp"
-#include "Cost.hpp"
 #include "Utils.hpp"
 #include <DataManager.hpp>
 #include <algorithm>
@@ -25,7 +24,7 @@ namespace person {
         ScreeningDetails screeningDetails;
         TreatmentDetails treatmentDetails;
         UtilityTracker utilityTracker;
-        Cost::CostTracker costs;
+        cost::CostTracker costs;
         bool boomerClassification = false;
         /// @brief Person Age in months
         int age = 0;
@@ -167,7 +166,7 @@ namespace person {
         /// @brief Add a cost to the person's CostTracker object
         /// @param cost The cost to be added
         /// @param timestep The timestep during which the cost was accrued
-        void AddCost(Cost::Cost cost) {
+        void AddCost(cost::Cost cost) {
             this->costs.addCost(cost, this->_currentTime);
         }
 
@@ -369,8 +368,8 @@ namespace person {
         UtilityTracker GetUtility() const { return this->utilityTracker; }
 
         /// @brief Getter for the Person's costs
-        /// @return Cost::CostTracker containing this person's costs
-        Cost::CostTracker GetCosts() const { return this->costs; }
+        /// @return cost::CostTracker containing this person's costs
+        cost::CostTracker GetCosts() const { return this->costs; }
 
         Health GetHealth() const { return this->infectionStatus; }
 
@@ -514,7 +513,6 @@ namespace person {
     }
     PersonBase::~PersonBase() = default;
 
-    bool PersonBase::IsAlive() { return pImplPERSON->GetIsAlive(); }
     int PersonBase::Grow() {
         pImplPERSON->Grow();
         return 0;
@@ -575,7 +573,7 @@ namespace person {
         pImplPERSON->IdentifyAsInfected();
         return 0;
     }
-    int PersonBase::AddCost(Cost::Cost cost) {
+    int PersonBase::AddCost(cost::Cost cost) {
         pImplPERSON->AddCost(cost);
         return 0;
     }
@@ -684,7 +682,7 @@ namespace person {
     UtilityTracker PersonBase::GetUtility() const {
         return pImplPERSON->GetUtility();
     }
-    Cost::CostTracker PersonBase::GetCosts() const {
+    cost::CostTracker PersonBase::GetCosts() const {
         return pImplPERSON->GetCosts();
     }
     Health PersonBase::GetHealth() const { return pImplPERSON->GetHealth(); }

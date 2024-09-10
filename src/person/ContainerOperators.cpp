@@ -1,4 +1,4 @@
-#include "Maps.hpp"
+#include "Containers.hpp"
 
 namespace person {
     std::ostream &operator<<(std::ostream &os, const HCV &inst) {
@@ -158,12 +158,24 @@ namespace person {
         return os;
     }
 
+    std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
+        switch (inst) {
+        case PregnancyState::POSTPARTUM:
+            os << "Postpartum";
+            break;
+        case PregnancyState::PREGNANT:
+            os << "Pregnant";
+            break;
+        default:
+            os << "None";
+            break;
+        }
+        return os;
+    }
+
     std::ostream &operator<<(std::ostream &os, Health const &inst) {
-        os << "HCV State: " << person::hcvEnumToStringMap[inst.hcv]
-           << std::endl;
-        os << "Fibrosis State: "
-           << person::fibrosisStateEnumToStringMap[inst.fibrosisState]
-           << std::endl;
+        os << "HCV State: " << inst.hcv << std::endl;
+        os << "Fibrosis State: " << inst.fibrosisState << std::endl;
         os << "Genotype 3: " << inst.isGenotypeThree << std::endl;
         os << "Seropositive: " << inst.seropositive << std::endl;
         os << "Last Time the HCV State Changed: " << inst.timeHCVChanged
@@ -179,34 +191,28 @@ namespace person {
     }
 
     std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav) {
-        os << "Behavior Type: "
-           << person::behaviorEnumToStringMap[behav.behavior] << std::endl;
+        os << "Behavior Type: " << behav.behavior << std::endl;
         os << "Last Timestep Active: " << behav.timeLastActive << std::endl;
         return os;
     }
 
     std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet) {
-        os << "Linkage State: "
-           << person::linkageStateEnumToStringMap[ldet.linkState] << std::endl;
+        os << "Linkage State: " << ldet.linkState << std::endl;
         os << "Last Time Linkage State Changed: " << ldet.timeOfLinkChange
            << std::endl;
-        os << "Linkage Type: "
-           << person::linkageTypeEnumToStringMap[ldet.linkType] << std::endl;
+        os << "Linkage Type: " << ldet.linkType << std::endl;
         os << "Times Linked: " << ldet.linkCount << std::endl;
         return os;
     }
 
     std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet) {
-        os << "MOUD State: " << person::moudEnumToStringMap[mdet.moudState]
-           << std::endl;
+        os << "MOUD State: " << mdet.moudState << std::endl;
         os << "Time Started MOUD: " << mdet.timeStartedMoud << std::endl;
         return os;
     }
 
     std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet) {
-        os << "Pregnancy State: "
-           << person::pregnancyStateEnumToStringMap[pdet.pregnancyState]
-           << std::endl;
+        os << "Pregnancy State: " << pdet.pregnancyState << std::endl;
         os << "Time of Pregnancy State Change: " << pdet.timeOfPregnancyChange
            << std::endl;
         os << "Infant Count: " << pdet.numInfants << std::endl;
@@ -215,10 +221,7 @@ namespace person {
     }
 
     std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet) {
-        os << "Fibrosis State: "
-           << person::measuredFibrosisStateEnumToStringMap
-                  [sdet.measuredFibrosisState]
-           << std::endl;
+        os << "Fibrosis State: " << sdet.measuredFibrosisState << std::endl;
         os << "Has a Second Fibrosis Test: " << sdet.hadSecondTest << std::endl;
         os << "Time of Last Staging: " << sdet.timeOfLastStaging << std::endl;
         return os;

@@ -149,6 +149,7 @@ namespace person {
         POSTPARTUM = 2,
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const PregnancyState &inst);
 
     /// @brief Attributes describing an Infection
     struct Health {
