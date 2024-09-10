@@ -21,7 +21,7 @@
 #include <iostream>
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
     /// @brief The type of screening that a person is currently undergoing
     enum class ScreeningType {
         // background antibody screening test
@@ -62,43 +62,43 @@ namespace Event {
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
 
         /// @brief The Background Screening Event Undertaken on a Person
         /// @param person The Person undergoing a background Screening
-        void backgroundScreen(std::shared_ptr<Person::Person> person);
+        void backgroundScreen(std::shared_ptr<person::Person> person);
 
         /// @brief The Intervention Screening Event Undertaken on a Person
         /// @param person The Person undergoing an Intervention Screening
-        void interventionScreen(std::shared_ptr<Person::Person> person);
+        void interventionScreen(std::shared_ptr<person::Person> person);
 
         /// @brief The antibody test to determine if the person is positive for
         /// HCV
         /// @param person The Person undergoing an antibody test
         /// @return Boolean True for a Positive Result, False for a Negative
         /// Result
-        bool antibodyTest(std::shared_ptr<Person::Person> person,
+        bool antibodyTest(std::shared_ptr<person::Person> person,
                           std::string configKey);
 
         /// @brief The RNA test to determine if the person is positive for HCV
         /// @param person The Person undergoing an RNA test
         /// @return Boolean True for a Positive Result, False for a Negative
         /// Result
-        bool rnaTest(std::shared_ptr<Person::Person> person,
+        bool rnaTest(std::shared_ptr<person::Person> person,
                      std::string configKey);
 
         std::vector<double> getBackgroundScreeningProbability(
-            std::shared_ptr<Person::Person> person);
+            std::shared_ptr<person::Person> person);
 
         std::vector<double> getInterventionScreeningProbability(
-            std::shared_ptr<Person::Person> person);
+            std::shared_ptr<person::Person> person);
 
-        void interventionDecision(std::shared_ptr<Person::Person> person);
+        void interventionDecision(std::shared_ptr<person::Person> person);
 
         /// @brief Insert cost for screening of type \code{type}
         /// @param person The person who is accruing cost
         /// @param type The screening type, used to discern the cost to add
-        void insertScreeningCost(std::shared_ptr<Person::Person> person,
+        void insertScreeningCost(std::shared_ptr<person::Person> person,
                                  ScreeningType type);
 
     public:
@@ -121,6 +121,6 @@ namespace Event {
         }
         virtual ~Screening() = default;
     };
-} // namespace Event
+} // namespace event
 
 #endif

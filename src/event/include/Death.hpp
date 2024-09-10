@@ -20,7 +20,7 @@
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
 
     /// @brief Subclass of Event used to End the Aging Process of Individuals
     class Death : public ProbEvent {
@@ -30,14 +30,14 @@ namespace Event {
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
 
         /// @brief The actual death of a person
         /// @param person Person who dies
-        void die(std::shared_ptr<Person::Person> person);
+        void die(std::shared_ptr<person::Person> person);
 
         void
-        getMortalityProbabilities(std::shared_ptr<Person::Person> const person,
+        getMortalityProbabilities(std::shared_ptr<person::Person> const person,
                                   // double &fatalOverdoseProb,
                                   double &backgroundMortProb, double &smr,
                                   double &fibrosisDeathProb);
@@ -55,6 +55,6 @@ namespace Event {
         }
         virtual ~Death() = default;
     };
-} // namespace Event
+} // namespace event
 
 #endif

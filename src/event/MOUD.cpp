@@ -16,26 +16,26 @@
 //===----------------------------------------------------------------------===//
 #include "MOUD.hpp"
 
-namespace Event {
-    void MOUD::doEvent(std::shared_ptr<Person::Person> person) {
-        Person::Behavior bc = person->getBehavior();
+namespace event {
+    void MOUD::doEvent(std::shared_ptr<person::Person> person) {
+        person::Behavior bc = person->getBehavior();
 
         // Can only enter MOUD if in an active use state.
-        if (!(bc >= Person::Behavior::NONINJECTION)) {
+        if (!(bc >= person::Behavior::NONINJECTION)) {
             // 1. Check the person's current MOUD status
-            Person::MOUD moud = person->getMoudState();
+            person::MOUD moud = person->getMoudState();
             // 2. Draw probability of changing MOUD state.
             // TODO: MAKE THIS A REAL TRANSITION RATE
             std::vector<double> probs = {0.50, 0.25, 0.25};
             // 3. Make a transition decision.
             int res = this->getDecision(probs);
-            if (res >= (int)Person::MOUD::COUNT) {
+            if (res >= (int)person::MOUD::COUNT) {
                 this->logger->error("MOUD Decision returned "
                                     "value outside bounds");
                 return;
             }
-            Person::MOUD toMoud = (Person::MOUD)res;
-            if (toMoud == Person::MOUD::CURRENT) {
+            person::MOUD toMoud = (person::MOUD)res;
+            if (toMoud == person::MOUD::CURRENT) {
                 if (moud != toMoud) {
                     // new treatment start
                     person->setMoudState(toMoud);
@@ -52,4 +52,4 @@ namespace Event {
             }
         }
     }
-} // namespace Event
+} // namespace event

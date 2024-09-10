@@ -18,7 +18,7 @@
 
 namespace DataWriter {
     void
-    writePopulation(std::vector<std::shared_ptr<Person::Person>> &population,
+    writePopulation(std::vector<std::shared_ptr<person::Person>> &population,
                     std::string dirpath) {
         Data::IDataTablePtr newDT = std::make_shared<Data::DataTable>();
         for (int i = 0; i < population.size(); ++i) {
@@ -35,7 +35,7 @@ namespace DataWriter {
     }
 
     Data::IDataTablePtr
-    personToDataTable(std::shared_ptr<Person::Person> person) {
+    personToDataTable(std::shared_ptr<person::Person> person) {
         std::map<std::string, std::vector<std::string>> data;
         std::vector<std::string> headerOrder = {"id",
                                                 "sex",
@@ -126,7 +126,7 @@ namespace DataWriter {
     }
 
     void
-    writeGeneralStats(std::vector<std::shared_ptr<Person::Person>> &population,
+    writeGeneralStats(std::vector<std::shared_ptr<person::Person>> &population,
                       std::string dirpath, Data::Config &config) {
         // discount fraction
         double discountRate;

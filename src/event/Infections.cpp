@@ -16,21 +16,21 @@
 //===----------------------------------------------------------------------===//
 #include "Infections.hpp"
 
-namespace Event {
-    void Infections::doEvent(std::shared_ptr<Person::Person> person) {
+namespace event {
+    void Infections::doEvent(std::shared_ptr<person::Person> person) {
         // only those who aren't infected go to the rest of the event.
         // those who are infected transition from acute to chronic after 6
         // months.
         switch (person->getHCV()) {
-        case Person::HCV::NONE:
+        case person::HCV::NONE:
             break;
-        case Person::HCV::ACUTE:
+        case person::HCV::ACUTE:
             if ((this->getCurrentTimestep() - person->getTimeHCVChanged()) >=
                 6) {
-                person->setHCV(Person::HCV::CHRONIC);
+                person->setHCV(person::HCV::CHRONIC);
             }
             return;
-        case Person::HCV::CHRONIC:
+        case person::HCV::CHRONIC:
             return;
         }
 
@@ -45,13 +45,13 @@ namespace Event {
     }
 
     std::vector<double>
-    Infections::getInfectProb(std::shared_ptr<Person::Person> person) {
+    Infections::getInfectProb(std::shared_ptr<person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
+            person::person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
+            person::person::behaviorEnumToStringMap[person->getBehavior()];
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
             // error
@@ -61,4 +61,4 @@ namespace Event {
         std::vector<double> result = {probInfected, 1 - probInfected};
         return result;
     }
-} // namespace Event
+} // namespace event

@@ -3,10 +3,10 @@
 namespace Person {
 
     std::ostream &operator<<(std::ostream &os, Health const &inst) {
-        os << "HCV State: " << Person::hcvEnumToStringMap[inst.hcv]
+        os << "HCV State: " << person::hcvEnumToStringMap[inst.hcv]
            << std::endl;
         os << "Fibrosis State: "
-           << Person::fibrosisStateEnumToStringMap[inst.fibrosisState]
+           << person::fibrosisStateEnumToStringMap[inst.fibrosisState]
            << std::endl;
         os << "Genotype 3: " << inst.isGenotypeThree << std::endl;
         os << "Seropositive: " << inst.seropositive << std::endl;
@@ -25,24 +25,24 @@ namespace Person {
 
     std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav) {
         os << "Behavior Type: "
-           << Person::behaviorEnumToStringMap[behav.behavior] << std::endl;
+           << person::behaviorEnumToStringMap[behav.behavior] << std::endl;
         os << "Last Timestep Active: " << behav.timeLastActive << std::endl;
         return os;
     }
 
     std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet) {
         os << "Linkage State: "
-           << Person::linkageStateEnumToStringMap[ldet.linkState] << std::endl;
+           << person::linkageStateEnumToStringMap[ldet.linkState] << std::endl;
         os << "Last Time Linkage State Changed: " << ldet.timeOfLinkChange
            << std::endl;
         os << "Linkage Type: "
-           << Person::linkageTypeEnumToStringMap[ldet.linkType] << std::endl;
+           << person::linkageTypeEnumToStringMap[ldet.linkType] << std::endl;
         os << "Times Linked: " << ldet.linkCount << std::endl;
         return os;
     }
 
     std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet) {
-        os << "MOUD State: " << Person::moudEnumToStringMap[mdet.moudState]
+        os << "MOUD State: " << person::moudEnumToStringMap[mdet.moudState]
            << std::endl;
         os << "Time Started MOUD: " << mdet.timeStartedMoud << std::endl;
         return os;
@@ -50,7 +50,7 @@ namespace Person {
 
     std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet) {
         os << "Pregnancy State: "
-           << Person::pregnancyStateEnumToStringMap[pdet.pregnancyState]
+           << person::pregnancyStateEnumToStringMap[pdet.pregnancyState]
            << std::endl;
         os << "Time of Pregnancy State Change: " << pdet.timeOfPregnancyChange
            << std::endl;
@@ -61,7 +61,7 @@ namespace Person {
 
     std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet) {
         os << "Fibrosis State: "
-           << Person::measuredFibrosisStateEnumToStringMap
+           << person::measuredFibrosisStateEnumToStringMap
                   [sdet.measuredFibrosisState]
            << std::endl;
         os << "Has a Second Fibrosis Test: " << sdet.hadSecondTest << std::endl;

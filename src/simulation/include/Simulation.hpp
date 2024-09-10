@@ -17,112 +17,36 @@
 #ifndef SIMULATION_HPP_
 #define SIMULATION_HPP_
 
-#include "Event.hpp"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/spdlog.h"
-
 #include <memory>
+#include <string>
+
+// Forward Defining Person to use in Execute
+namespace person {
+    class Person;
+}
+
+namespace event {
+    class EventBase;
+}
 
 /// @brief Namespace containing Simulation Level Attributes
-namespace Simulation {
-    class Simulation {
+namespace simulation {
+    class Environment {
     private:
-        int currentTimestep = 0;
-        uint64_t seed;
-        std::vector<std::shared_ptr<Person::Person>> population = {};
-        std::vector<std::shared_ptr<Event::Event>> events = {};
-        std::shared_ptr<spdlog::logger> logger;
-        static std::mt19937_64 generator;
+        class Simulation;
+        std::unique_ptr<Simulation> pImplSIM;
 
     public:
-        Simulation() : Simulation((uint64_t)0, (int)0){};
-
-        Simulation(uint64_t seed) : Simulation(seed, (int)0){};
-
-        Simulation(int duration) : Simulation((uint64_t)0, duration){};
-
-        Simulation(uint64_t seed, int duration)
-            : Simulation(seed, duration, NULL) {}
-
-        Simulation(uint64_t seed, int duration,
-                   std::shared_ptr<spdlog::logger> logger) {
-            this->generator.seed(this->seed);
-            this->duration = duration;
-            if (logger) {
-                this->logger = logger;
-            } else {
-                this->logger =
-                    std::make_shared<spdlog::logger>("default_logger");
-            }
-            this->logger->info("Simulation seed: " +
-                               std::to_string(this->seed));
-        }
-
-        virtual ~Simulation() = default;
-
-        int duration;
-
-        /// @brief Function used to Create Population Set
-        /// @param N Number of People to create in the Population
-        void createPopulation(const int N);
-
-        /// @brief Function used to Create Events List
-        /// @return Vector of Events to be used in the Simulation
-        std::vector<std::shared_ptr<Event::Event>> createEvents();
-
-        /// @brief Function to Load the Population to the Simulation
-        /// @param population Population Set Loaded to Simulation
-        void loadPopulation(
-            std::vector<std::shared_ptr<Person::Person>> &population);
-
-        /// @brief Function used to add a Single Person to the Population in the
-        /// Simulation
-        /// @param person Person to add to the Population
-        void addPerson(Person::Person person);
-
-        /// @brief Function used to load the Events List to the Simulation
-        /// @param events Events List to Load to the Simulation
-        void loadEvents(std::vector<std::shared_ptr<Event::Event>> events);
-
-        /// @brief Add an Event to the end of the Event List
-        /// @param event Event to add to the Simulation Event List
-        void addEventToEnd(std::shared_ptr<Event::Event> event);
-
-        /// @brief Add an Event to the beginning of the Event List
-        /// @param event Event to add to the Simulation Event List
-        void addEventToBeginning(std::shared_ptr<Event::Event> event);
-
-        /// @brief Add an Event to the provided index in the Event List
-        /// @param event Even to add to the Simulation Event List
-        /// @param idx Index of the location to add the Event
-        /// @return True if it succeeds, False if it fails
-        bool addEventAtIndex(std::shared_ptr<Event::Event> event, int idx);
-
-        /// @brief Retrieve the Population Vector from the Simulation
-        /// @return List of People in the Simulation
-        std::vector<std::shared_ptr<Person::Person>> getPopulation() const {
-            return this->population;
-        }
-
-        /// @brief Retrieve the Events in the Simulation
-        /// @return List of Events in the Simulation
-        std::vector<std::shared_ptr<Event::Event>> getEvents() const {
-            return this->events;
-        }
-
-        /// @brief Execute the Simulation
-        /// @return The Final State of the entire Population
-        std::vector<std::shared_ptr<Person::Person>> run();
-
-        /// @brief Access the random number generator, for events that need to
-        /// sample the pRNG
-        /// @return Reference to the simulation's pseudorandom number generator
-        std::mt19937_64 &getGenerator() { return generator; }
-
-        /// @brief A getter for the Current Timestep variable
-        /// @return currentTimestep as a int
-        int getCurrentTimestep() { return this->currentTimestep; }
+        Environment(size_t seed = 1234, std::string const &logfile = "");
+        ~Environment();
+        int Run();
+        int LoadData(std::string const &infile);
+        int LoadTable(std::string const &infile);
+        int LoadConfig(std::stirng const &infile);
+        int WriteResults(std::string const &outfile);
+        int SaveSimulationState(std::string const &outfile);
+        int LoadSimulationState(std::string const &infile);
     };
 
-} // namespace Simulation
+} // namespace simulation
 #endif

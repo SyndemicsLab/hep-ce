@@ -17,8 +17,8 @@
 #include "Screening.hpp"
 #include <string>
 
-namespace Event {
-    void Screening::doEvent(std::shared_ptr<Person::Person> person) {
+namespace event {
+    void Screening::doEvent(std::shared_ptr<person::Person> person) {
         // one-time screen or periodic screen
         switch (this->interventionType) {
         case InterventionType::ONETIME:
@@ -54,7 +54,7 @@ namespace Event {
     }
 
     void
-    Screening::interventionDecision(std::shared_ptr<Person::Person> person) {
+    Screening::interventionDecision(std::shared_ptr<person::Person> person) {
         std::vector<double> interventionProbability =
             this->getInterventionScreeningProbability(person);
         int choice = getDecision(interventionProbability);
@@ -63,7 +63,7 @@ namespace Event {
         }
     }
 
-    void Screening::backgroundScreen(std::shared_ptr<Person::Person> person) {
+    void Screening::backgroundScreen(std::shared_ptr<person::Person> person) {
         if (!(this->getCurrentTimestep() - person->getTimeOfLastScreening()) &&
             this->getCurrentTimestep() > 0) {
             return;
@@ -89,14 +89,14 @@ namespace Event {
         this->insertScreeningCost(person, ScreeningType::BACKGROUND_RNA);
         if (this->rnaTest(person, testPrefix + "rna")) {
             person->link(this->getCurrentTimestep(),
-                         Person::LinkageType::BACKGROUND);
+                         person::LinkageType::BACKGROUND);
             // what else needs to happen during a link?
         }
 
         person->unlink(this->getCurrentTimestep());
     }
 
-    void Screening::interventionScreen(std::shared_ptr<Person::Person> person) {
+    void Screening::interventionScreen(std::shared_ptr<person::Person> person) {
         person->markScreened();
 
         std::string testPrefix = "screening_intervention_";
@@ -112,20 +112,20 @@ namespace Event {
         this->insertScreeningCost(person, ScreeningType::INTERVENTION_RNA);
         if (this->rnaTest(person, testPrefix + "rna")) {
             person->link(this->getCurrentTimestep(),
-                         Person::LinkageType::INTERVENTION);
+                         person::LinkageType::INTERVENTION);
             // what else needs to happen during a link?
         } else {
             person->unlink(this->getCurrentTimestep());
         }
     }
 
-    bool Screening::antibodyTest(std::shared_ptr<Person::Person> person,
+    bool Screening::antibodyTest(std::shared_ptr<person::Person> person,
                                  std::string configKey) {
         double probability = 0.5;
         if (person->getSeropositive()) {
-            Person::HCV infectionStatus = person->getHCV();
-            if (infectionStatus == Person::HCV::ACUTE ||
-                infectionStatus == Person::HCV::NONE) {
+            person::HCV infectionStatus = person->getHCV();
+            if (infectionStatus == person::HCV::ACUTE ||
+                infectionStatus == person::HCV::NONE) {
                 probability = 1 - std::get<double>(this->config.get(
                                       configKey + ".acute_sensitivity", 0.0));
             } else {
@@ -142,14 +142,14 @@ namespace Event {
         return value;
     }
 
-    bool Screening::rnaTest(std::shared_ptr<Person::Person> person,
+    bool Screening::rnaTest(std::shared_ptr<person::Person> person,
                             std::string configKey) {
         double probability = 0.5;
-        Person::HCV infectionStatus = person->getHCV();
-        if (infectionStatus == Person::HCV::ACUTE) {
+        person::HCV infectionStatus = person->getHCV();
+        if (infectionStatus == person::HCV::ACUTE) {
             probability = 1 - std::get<double>(this->config.get(
                                   configKey + ".acute_sensitivity", 0.0));
-        } else if (infectionStatus == Person::HCV::CHRONIC) {
+        } else if (infectionStatus == person::HCV::CHRONIC) {
             probability = 1 - std::get<double>(this->config.get(
                                   configKey + ".chronic_sensitivity", 0.0));
         } else {
@@ -163,14 +163,14 @@ namespace Event {
     }
 
     std::vector<double> Screening::getBackgroundScreeningProbability(
-        std::shared_ptr<Person::Person> person) {
+        std::shared_ptr<person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
+            person::person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
+            person::person::behaviorEnumToStringMap[person->getBehavior()];
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
             this->logger->error("No valid background screening probability "
@@ -205,14 +205,14 @@ namespace Event {
     }
 
     std::vector<double> Screening::getInterventionScreeningProbability(
-        std::shared_ptr<Person::Person> person) {
+        std::shared_ptr<person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
+            person::person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
+            person::person::behaviorEnumToStringMap[person->getBehavior()];
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
             // error
@@ -225,7 +225,7 @@ namespace Event {
         return result;
     }
 
-    void Screening::insertScreeningCost(std::shared_ptr<Person::Person> person,
+    void Screening::insertScreeningCost(std::shared_ptr<person::Person> person,
                                         ScreeningType type) {
         double screeningCost;
         std::string screeningName;
@@ -255,4 +255,4 @@ namespace Event {
         Cost::Cost cost = {this->costCategory, screeningName, screeningCost};
         person->addCost(cost, this->getCurrentTimestep());
     }
-} // namespace Event
+} // namespace event

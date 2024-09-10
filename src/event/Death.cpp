@@ -16,8 +16,8 @@
 //===----------------------------------------------------------------------===//
 #include "Death.hpp"
 
-namespace Event {
-    void Death::doEvent(std::shared_ptr<Person::Person> person) {
+namespace event {
+    void Death::doEvent(std::shared_ptr<person::Person> person) {
         if (person->age >= 1200) {
             this->die(person);
             return;
@@ -57,13 +57,13 @@ namespace Event {
         }
     }
 
-    void Death::die(std::shared_ptr<Person::Person> person) {
+    void Death::die(std::shared_ptr<person::Person> person) {
         // do the death thing here
         person->die();
     }
 
     void
-    Death::getMortalityProbabilities(std::shared_ptr<Person::Person> const
+    Death::getMortalityProbabilities(std::shared_ptr<person::Person> const
                                          person, // double &fatalOverdoseProb,
                                      double &backgroundMortProb, double &smr,
                                      double &fibrosisDeathProb) {
@@ -71,9 +71,9 @@ namespace Event {
 
         selectCriteria["age_years"] = std::to_string((int)person->age);
         selectCriteria["gender"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
+            person::person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
+            person::person::behaviorEnumToStringMap[person->getBehavior()];
 
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
@@ -87,10 +87,10 @@ namespace Event {
         }
 
         switch (person->getFibrosisState()) {
-        case Person::FibrosisState::F4:
+        case person::FibrosisState::F4:
             fibrosisDeathProb = this->f4Mort;
             break;
-        case Person::FibrosisState::DECOMP:
+        case person::FibrosisState::DECOMP:
             fibrosisDeathProb = this->decompMort;
             break;
         default:
@@ -103,4 +103,4 @@ namespace Event {
         //         stod((*resultTable)["fatal_overdose_cycle52"][0]);
         // }
     }
-} // namespace Event
+} // namespace event

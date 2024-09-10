@@ -31,7 +31,7 @@ namespace DataWriter {
     /// simulation
     /// @param dirpath Path to the output folder
     void
-    writePopulation(std::vector<std::shared_ptr<Person::Person>> &population,
+    writePopulation(std::vector<std::shared_ptr<person::Person>> &population,
                     std::string dirpath);
 
     /// @brief Function that takes attributes from a Person object and places
@@ -39,10 +39,10 @@ namespace DataWriter {
     /// @param person Pointer to the current Person object
     /// @return Pointer to a DataTable row
     Data::IDataTablePtr
-    personToDataTable(std::shared_ptr<Person::Person> person);
+    personToDataTable(std::shared_ptr<person::Person> person);
 
     void
-    writeGeneralStats(std::vector<std::shared_ptr<Person::Person>> &population,
+    writeGeneralStats(std::vector<std::shared_ptr<person::Person>> &population,
                       std::string dirpath, Data::Config &config);
 } // namespace DataWriter
 #endif

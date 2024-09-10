@@ -16,7 +16,7 @@
 //===----------------------------------------------------------------------===//
 #include "Treatment.hpp"
 
-namespace Event {
+namespace event {
     Treatment::Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
                          Data::Config &config,
                          std::shared_ptr<spdlog::logger> logger,
@@ -25,7 +25,7 @@ namespace Event {
         this->costCategory = Cost::CostCategory::TREATMENT;
     }
 
-    void Treatment::doEvent(std::shared_ptr<Person::Person> person) {
+    void Treatment::doEvent(std::shared_ptr<person::Person> person) {
         // 1. Check if the Person is Lost To Follow Up (LTFU)
         if (this->isLostToFollowUp(person)) {
             this->quitEngagement(person);
@@ -87,20 +87,20 @@ namespace Event {
     }
 
     bool
-    Treatment::isEligible(std::shared_ptr<Person::Person> const person) const {
-        Person::FibrosisState fibrosisState = person->getFibrosisState();
+    Treatment::isEligible(std::shared_ptr<person::Person> const person) const {
+        person::FibrosisState fibrosisState = person->getFibrosisState();
         int timeSinceLinked = person->getTimeOfLinkChange();
-        Person::Behavior behavior = person->getBehavior();
+        person::Behavior behavior = person->getBehavior();
         int timeBehaviorChange = person->getTimeBehaviorChange();
-        Person::PregnancyState pregnancyState = person->getPregnancyState();
+        person::PregnancyState pregnancyState = person->getPregnancyState();
         if (!isEligibleFibrosisStage(fibrosisState) ||
             ((this->getCurrentTimestep() - timeSinceLinked) >
              eligibleTimeSinceLinked) ||
-            (behavior == Person::Behavior::INJECTION) ||
-            (behavior == Person::Behavior::FORMER_INJECTION &&
+            (behavior == person::Behavior::INJECTION) ||
+            (behavior == person::Behavior::FORMER_INJECTION &&
              timeBehaviorChange < eligibleTimeBehaviorChange) ||
-            (pregnancyState == Person::PregnancyState::PREGNANT ||
-             pregnancyState == Person::PregnancyState::POSTPARTUM)) {
+            (pregnancyState == person::PregnancyState::PREGNANT ||
+             pregnancyState == person::PregnancyState::POSTPARTUM)) {
             return false;
         } else {
             return true;
@@ -108,8 +108,8 @@ namespace Event {
     }
 
     bool Treatment::isEligibleFibrosisStage(
-        Person::FibrosisState fibrosisState) const {
-        for (Person::FibrosisState eligibleState :
+        person::FibrosisState fibrosisState) const {
+        for (person::FibrosisState eligibleState :
              this->eligibleFibrosisStates) {
             if (fibrosisState < eligibleState) {
                 return true;
@@ -119,13 +119,13 @@ namespace Event {
     }
 
     void Treatment::addTreatmentCostAndUtility(
-        std::shared_ptr<Person::Person> person, double cost, double util) {
+        std::shared_ptr<person::Person> person, double cost, double util) {
         Cost::Cost treatmentCost = {this->costCategory, "Treatment Cost", cost};
         person->addCost(treatmentCost, this->getCurrentTimestep());
         person->setUtility(util);
     }
 
-    bool Treatment::isLostToFollowUp(std::shared_ptr<Person::Person> person) {
+    bool Treatment::isLostToFollowUp(std::shared_ptr<person::Person> person) {
         if (!person->hasInitiatedTreatment() && !this->isEligible(person)) {
             // check if person is lost to follow-up due to ineligibility
             double ltfuProb = std::get<double>(
@@ -140,7 +140,7 @@ namespace Event {
         return false;
     }
 
-    void Treatment::chargeCostOfVisit(std::shared_ptr<Person::Person> person) {
+    void Treatment::chargeCostOfVisit(std::shared_ptr<person::Person> person) {
         double cost =
             std::get<double>(this->config.get("treatment.treatment_cost", 0.0));
         Cost::Cost visitCost = {this->costCategory, "Cost of Treatment Visit",
@@ -148,7 +148,7 @@ namespace Event {
         person->addCost(visitCost, this->getCurrentTimestep());
     }
 
-    void Treatment::chargeCostOfCourse(std::shared_ptr<Person::Person> person,
+    void Treatment::chargeCostOfCourse(std::shared_ptr<person::Person> person,
                                        Data::IDataTablePtr course) {
 
         double cost = std::stod(course->getColumn("treatment_cost")[0]);
@@ -160,7 +160,7 @@ namespace Event {
         person->setUtility(util);
     }
 
-    bool Treatment::initiatesTreatment(std::shared_ptr<Person::Person> person) {
+    bool Treatment::initiatesTreatment(std::shared_ptr<person::Person> person) {
         // if person hasn't initialized draw, if they have, continue treatment
         if (!person->hasInitiatedTreatment()) {
             double initProb = std::get<double>(
@@ -179,7 +179,7 @@ namespace Event {
         return true;
     }
 
-    bool Treatment::doesWithdraw(std::shared_ptr<Person::Person>,
+    bool Treatment::doesWithdraw(std::shared_ptr<person::Person>,
                                  Data::IDataTablePtr course) {
         double withdrawalProb =
             std::stod(course->getColumn("withdrawal_probability")[0]);
@@ -191,17 +191,17 @@ namespace Event {
         return false;
     }
 
-    bool Treatment::experiencedToxicity(std::shared_ptr<Person::Person> person,
+    bool Treatment::experiencedToxicity(std::shared_ptr<person::Person> person,
                                         Data::IDataTablePtr course) {
         double toxProb = std::stod(course->getColumn("toxicity")[0]);
         int toxicity = this->getDecision({toxProb});
         return (toxicity == 1) ? true : false;
     }
 
-    void Treatment::quitEngagement(std::shared_ptr<Person::Person> person) {
+    void Treatment::quitEngagement(std::shared_ptr<person::Person> person) {
         // unlink from care
         person->unlink(this->getCurrentTimestep());
         // reset utility
         person->setUtility(1.0);
     }
-} // namespace Event
+} // namespace event

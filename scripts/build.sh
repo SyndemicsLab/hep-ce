@@ -22,8 +22,9 @@ showhelp () {
 
 dminstall () {
     if [[ ! -d "DataManagement" ]]; then
-	git clone git@github.com:SyndemicsLab/DataManagement
+	git clone -b sql git@github.com:SyndemicsLab/DataManagement
     fi
+    echo "DataManagement clone complete."
     # subshell needed to avoid changing working directory unnecessarily
     (
 	cd "DataManagement" || return 1

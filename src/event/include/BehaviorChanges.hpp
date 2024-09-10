@@ -19,23 +19,23 @@
 
 #include "Event.hpp"
 
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to process Behavior Changes
     class BehaviorChanges : public ProbEvent {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
 
         /// @brief Retrieve Transition Rates for Behavior Changes for the
         /// individual Person from the SQL Table
         /// @param person Person to retrieve transition rates for
         /// @return Vector of Transition Rates for each Behavior State
         std::vector<double>
-        getTransitions(std::shared_ptr<Person::Person> person);
+        getTransitions(std::shared_ptr<person::Person> person);
 
         void
-        calculateCostAndUtility(std::shared_ptr<Person::Person> person) const;
+        calculateCostAndUtility(std::shared_ptr<person::Person> person) const;
 
     public:
         BehaviorChanges(std::mt19937_64 &generator, Data::IDataTablePtr table,
@@ -48,5 +48,5 @@ namespace Event {
         }
         virtual ~BehaviorChanges() = default;
     };
-} // namespace Event
+} // namespace event
 #endif // EVENT_BEHAVIORCHANGES_HPP_

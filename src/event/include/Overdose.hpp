@@ -20,20 +20,20 @@
 
 #include "Event.hpp"
 
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to simulate overdoses among active drug
     /// users.
     class Overdose : public ProbEvent {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
 
         /// @brief Get the probability that a person will overdose.
-        /// @param person Pointer to the relevant Person::Person object which
+        /// @param person Pointer to the relevant person::Person object which
         /// might overdose.
         /// @return Overdose probability based on person attributes
-        double getProbability(std::shared_ptr<Person::Person> person);
+        double getProbability(std::shared_ptr<person::Person> person);
 
     public:
         Overdose(std::mt19937_64 &generator, Data::IDataTablePtr table,
@@ -44,5 +44,5 @@ namespace Event {
             : ProbEvent(generator, table, config, logger, name) {}
         virtual ~Overdose() = default;
     };
-} // namespace Event
+} // namespace event
 #endif // EVENT_OVERDOSE_HPP_

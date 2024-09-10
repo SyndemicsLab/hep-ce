@@ -19,26 +19,26 @@
 
 #include "Event.hpp"
 
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to process medication for opioid use
     /// disorder
     class MOUD : public ProbEvent {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
 
         /// @brief Retrieve Transition Rates for MOUD for the
         /// individual Person from the SQL Table
         /// @param person Person to retrieve transition rates for
         /// @return Vector of Transition Rates for each MOUD status
         std::vector<double>
-        getTransitions(std::shared_ptr<Person::Person> person);
+        getTransitions(std::shared_ptr<person::Person> person);
 
         /// @brief Add cost based on person's current treatment status upon
         /// "experiencing" this event
         /// @param person Person accruing cost
-        void insertMOUDCost(std::shared_ptr<Person::Person> person);
+        void insertMOUDCost(std::shared_ptr<person::Person> person);
 
     public:
         MOUD(std::mt19937_64 &generator, Data::IDataTablePtr table,
@@ -51,5 +51,5 @@ namespace Event {
         }
         virtual ~MOUD() = default;
     };
-} // namespace Event
+} // namespace event
 #endif // EVENT_MOUD_HPP_

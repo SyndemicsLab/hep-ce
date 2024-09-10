@@ -36,17 +36,17 @@ protected:
 
 TEST_F(SimulationTest, CreatePopulation) {
     // the population size should match the arg passed to createPopulation
-    const std::vector<std::shared_ptr<Person::Person>> &population =
+    const std::vector<std::shared_ptr<person::Person>> &population =
         sim.getPopulation();
     EXPECT_EQ(population.size(), N);
-    EXPECT_EQ(Person::count, N);
+    EXPECT_EQ(person::count, N);
 }
 
 TEST_F(SimulationTest, AddPerson) {
-    Person::Person person;
+    person::Person person;
     sim.addPerson(person);
 
-    const std::vector<std::shared_ptr<Person::Person>> &population =
+    const std::vector<std::shared_ptr<person::Person>> &population =
         sim.getPopulation();
 
     // check that the population size increased

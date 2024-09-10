@@ -16,10 +16,10 @@
 //===----------------------------------------------------------------------===//
 #include "BehaviorChanges.hpp"
 
-namespace Event {
-    void BehaviorChanges::doEvent(std::shared_ptr<Person::Person> person) {
+namespace event {
+    void BehaviorChanges::doEvent(std::shared_ptr<person::Person> person) {
         // Determine person's current behavior classification
-        Person::Behavior bc = person->getBehavior();
+        person::Behavior bc = person->getBehavior();
 
         // Insert person's behavior cost
         this->calculateCostAndUtility(person);
@@ -31,12 +31,12 @@ namespace Event {
         // std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
         // 2. Draw a behavior state to be transitioned to
         int res = this->getDecision(probs);
-        if (res >= (int)Person::Behavior::COUNT) {
+        if (res >= (int)person::Behavior::COUNT) {
             this->logger->error("Behavior Classification Decision returned "
                                 "value outside bounds");
             return;
         }
-        Person::Behavior toBC = (Person::Behavior)res;
+        person::Behavior toBC = (person::Behavior)res;
 
         // 3. If the drawn state differs from the current state, change the
         // bools in BehaviorState to match
@@ -44,24 +44,24 @@ namespace Event {
     }
 
     std::vector<double>
-    BehaviorChanges::getTransitions(std::shared_ptr<Person::Person> person) {
+    BehaviorChanges::getTransitions(std::shared_ptr<person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         // intentional truncation
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
+            person::person::sexEnumToStringMap[person->getSex()];
         // selectCriteria["moud"] =
-        //     Person::Person::moudEnumToStringMap[person->getMoudState()];
+        //     person::person::moudEnumToStringMap[person->getMoudState()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
+            person::person::behaviorEnumToStringMap[person->getBehavior()];
 
         auto resultTable = table->selectWhere(selectCriteria);
 
         std::vector<double> result = {};
 
         std::vector<std::string> columnVec = resultTable->getColumnNames();
-        for (auto kv : Person::Person::behaviorEnumToStringMap) {
+        for (auto kv : person::person::behaviorEnumToStringMap) {
             auto res = (*resultTable)[kv.second];
             result.push_back(std::stod(res[0]));
         }
@@ -69,16 +69,16 @@ namespace Event {
     }
 
     void BehaviorChanges::calculateCostAndUtility(
-        std::shared_ptr<Person::Person> person) const {
+        std::shared_ptr<person::Person> person) const {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
+            person::person::sexEnumToStringMap[person->getSex()];
         // selectCriteria["moud"] =
-        //     Person::Person::moudEnumToStringMap[person->getMoudState()];
+        //     person::person::moudEnumToStringMap[person->getMoudState()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
+            person::person::behaviorEnumToStringMap[person->getBehavior()];
 
         // should reduce to a single value
         auto resultTable = table->selectWhere(selectCriteria);
@@ -106,4 +106,4 @@ namespace Event {
         double util = std::stod(res[0]);
         person->setUtility(util);
     }
-} // namespace Event
+} // namespace event

@@ -16,7 +16,7 @@
 //===----------------------------------------------------------------------===//
 #include "Clearance.hpp"
 
-namespace Event {
+namespace event {
     Clearance::Clearance(std::mt19937_64 &generator, Data::IDataTablePtr table,
                          Data::Config &config,
                          std::shared_ptr<spdlog::logger> logger,
@@ -35,12 +35,12 @@ namespace Event {
         }
     }
 
-    void Clearance::doEvent(std::shared_ptr<Person::Person> person) {
+    void Clearance::doEvent(std::shared_ptr<person::Person> person) {
         // people infected with hcv have some probability of spontaneous
         // clearance.
 
         // if person isn't infected or is chronic, nothing to do
-        if (person->getHCV() != Person::HCV::ACUTE) {
+        if (person->getHCV() != person::HCV::ACUTE) {
             return;
         }
         // 1. Get the probability of acute clearance
@@ -57,4 +57,4 @@ namespace Event {
     std::vector<double> Clearance::getClearanceProb() {
         return {this->clearanceProb};
     }
-} // namespace Event
+} // namespace event

@@ -20,17 +20,17 @@
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to Increase the Age of a Person
     class Aging : public Event {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
         /// @brief Adds person's background cost
         /// @param person The person to whom cost will be added
         void
-        addBackgroundCostAndUtility(std::shared_ptr<Person::Person> person);
+        addBackgroundCostAndUtility(std::shared_ptr<person::Person> person);
 
     public:
         Aging(Data::IDataTablePtr table, Data::Config &config,
@@ -40,5 +40,5 @@ namespace Event {
             : Event(table, config, logger, name) {}
         virtual ~Aging() = default;
     };
-} // namespace Event
+} // namespace event
 #endif

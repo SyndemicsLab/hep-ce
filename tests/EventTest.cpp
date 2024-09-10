@@ -35,17 +35,17 @@ protected:
     std::ofstream outStream;
     std::filesystem::path tempFilePath = std::filesystem::temp_directory_path();
 
-    std::vector<std::shared_ptr<Person::Person>> livingPopulation;
-    std::vector<std::shared_ptr<Person::Person>> deadPopulation;
+    std::vector<std::shared_ptr<person::Person>> livingPopulation;
+    std::vector<std::shared_ptr<person::Person>> deadPopulation;
     std::shared_ptr<Simulation::Simulation> simulation;
     void SetUp() override {
         simulation = std::make_shared<Simulation::Simulation>(0, 0);
-        std::shared_ptr<Person::Person> livingPerson =
-            std::make_shared<Person::Person>();
+        std::shared_ptr<person::Person> livingPerson =
+            std::make_shared<person::Person>();
         livingPopulation.push_back(livingPerson);
 
-        std::shared_ptr<Person::Person> deadPerson =
-            std::make_shared<Person::Person>();
+        std::shared_ptr<person::Person> deadPerson =
+            std::make_shared<person::Person>();
         deadPerson->die();
         deadPopulation.push_back(deadPerson);
 
@@ -169,7 +169,7 @@ TEST_F(EventTest, BehaviorChange) {
     behavior.setCurrentTimestep(ct);
     behavior.execute(livingPopulation);
 
-    EXPECT_EQ(Person::Behavior::NEVER, livingPopulation.at(0)->getBehavior());
+    EXPECT_EQ(person::Behavior::NEVER, livingPopulation.at(0)->getBehavior());
     auto costs = livingPopulation.at(0)->getCosts().getTotals();
     EXPECT_DOUBLE_EQ(expectedCost, costs[1]);
 }
@@ -182,14 +182,14 @@ TEST_F(EventTest, Clearance) {
     Data::Config config(tempFilePath.string());
     Event::Clearance clearance(simulation->getGenerator(), table, config);
     livingPopulation[0]->infect(0);
-    EXPECT_EQ(Person::HCV::ACUTE, livingPopulation[0]->getHCV());
+    EXPECT_EQ(person::HCV::ACUTE, livingPopulation[0]->getHCV());
     // current timestep
     int ct = 1;
     clearance.setCurrentTimestep(ct);
     EXPECT_EQ(0, livingPopulation[0]->getClearances());
     clearance.execute(livingPopulation);
     // checking clears of HCV
-    EXPECT_EQ(Person::HCV::NONE, livingPopulation[0]->getHCV());
+    EXPECT_EQ(person::HCV::NONE, livingPopulation[0]->getHCV());
     // checking that the clearance is correctly counted
     EXPECT_EQ(1, livingPopulation[0]->getClearances());
 }
@@ -198,7 +198,7 @@ TEST_F(EventTest, ClearanceNoInfection) {
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Config config;
     Event::Clearance clearance(simulation->getGenerator(), table, config);
-    EXPECT_EQ(Person::HCV::NONE, livingPopulation[0]->getHCV());
+    EXPECT_EQ(person::HCV::NONE, livingPopulation[0]->getHCV());
     // current timestep
     int ct = 1;
     clearance.setCurrentTimestep(ct);
@@ -234,7 +234,7 @@ TEST_F(EventTest, FibrosisProgression) {
     int ct = 1;
     fibrosisProgression.setCurrentTimestep(ct);
     fibrosisProgression.execute(livingPopulation);
-    EXPECT_EQ(Person::FibrosisState::F1,
+    EXPECT_EQ(person::FibrosisState::F1,
               livingPopulation[0]->getFibrosisState());
     auto costs = livingPopulation.at(0)->getCosts().getTotals();
     EXPECT_DOUBLE_EQ(100.00, costs[1]);
@@ -267,7 +267,7 @@ TEST_F(EventTest, Infections) {
     EXPECT_EQ(0, livingPopulation[0]->gettimesInfected());
     infections.execute(livingPopulation);
     // check that person is now infected
-    EXPECT_EQ(Person::HCV::ACUTE, livingPopulation[0]->getHCV());
+    EXPECT_EQ(person::HCV::ACUTE, livingPopulation[0]->getHCV());
     // check that the infection counts correctly
     EXPECT_EQ(1, livingPopulation[0]->gettimesInfected());
 }
@@ -299,12 +299,12 @@ TEST_F(EventTest, Chronic) {
     EXPECT_EQ(0, livingPopulation[0]->gettimesInfected());
     infections.execute(livingPopulation);
     // check that person is now infected
-    EXPECT_EQ(Person::HCV::ACUTE, livingPopulation[0]->getHCV());
+    EXPECT_EQ(person::HCV::ACUTE, livingPopulation[0]->getHCV());
 
     ct = 7;
     infections.setCurrentTimestep(ct);
     infections.execute(livingPopulation);
-    EXPECT_EQ(Person::HCV::CHRONIC, livingPopulation[0]->getHCV());
+    EXPECT_EQ(person::HCV::CHRONIC, livingPopulation[0]->getHCV());
 
     // check that the infection counts correctly
     EXPECT_EQ(1, livingPopulation[0]->gettimesInfected());
@@ -381,7 +381,7 @@ TEST_F(EventTest, DeathByOldAge) {
     outStream << "[mortality]" << std::endl
               << "f4 = 0" << std::endl
               << "decomp = 0" << std::endl;
-    Person::Person expectedPerson;
+    person::Person expectedPerson;
     expectedPerson.die();
     Data::IDataTablePtr table = std::make_shared<MockDataTable>();
     Data::Config config(tempFilePath.string());

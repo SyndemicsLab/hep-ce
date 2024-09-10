@@ -20,7 +20,7 @@
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
 
     /// @brief Subclass of Event used to Link People to Treatment
     class Linking : public ProbEvent {
@@ -30,14 +30,14 @@ namespace Event {
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
         std::vector<double>
-        getTransitions(std::shared_ptr<Person::Person> person,
+        getTransitions(std::shared_ptr<person::Person> person,
                        std::string columnKey);
 
         /// @brief
         /// @param person
-        void addLinkingCost(std::shared_ptr<Person::Person> person,
+        void addLinkingCost(std::shared_ptr<person::Person> person,
                             std::string name, double cost);
 
     public:
@@ -55,5 +55,5 @@ namespace Event {
         }
         virtual ~Linking() = default;
     };
-} // namespace Event
+} // namespace event
 #endif

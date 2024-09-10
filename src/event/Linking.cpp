@@ -17,10 +17,10 @@
 //===----------------------------------------------------------------------===//
 #include "Linking.hpp"
 
-namespace Event {
-    void Linking::doEvent(std::shared_ptr<Person::Person> person) {
-        Person::HCV state = person->getHCV();
-        if (state == Person::HCV::NONE) {
+namespace event {
+    void Linking::doEvent(std::shared_ptr<person::Person> person) {
+        person::HCV state = person->getHCV();
+        if (state == person::HCV::NONE) {
             // add false positive cost
             person->unlink(this->getCurrentTimestep());
             this->addLinkingCost(person, "False Positive Linking Cost",
@@ -33,7 +33,7 @@ namespace Event {
         }
 
         std::vector<double> probs;
-        if (person->getLinkageType() == Person::LinkageType::BACKGROUND) {
+        if (person->getLinkageType() == person::LinkageType::BACKGROUND) {
             // link probability
             probs = getTransitions(person, "background_link_probability");
         } else {
@@ -44,7 +44,7 @@ namespace Event {
             probs = getTransitions(person, "intervention_link_probability");
         }
 
-        if (person->getLinkState() == Person::LinkageState::UNLINKED) {
+        if (person->getLinkState() == person::LinkageState::UNLINKED) {
             // scale by relink multiplier
             double relinkScalar = std::get<double>(
                 this->config.get("linking.relink_multiplier", 1.0));
@@ -59,22 +59,22 @@ namespace Event {
             // need to figure out how to pass in the LinkageType to the event
             person->link(this->getCurrentTimestep(), person->getLinkageType());
         } else if (!doLink &&
-                   person->getLinkState() == Person::LinkageState::LINKED) {
+                   person->getLinkState() == person::LinkageState::LINKED) {
             person->unlink(this->getCurrentTimestep());
         }
     }
 
     std::vector<double>
-    Linking::getTransitions(std::shared_ptr<Person::Person> person,
+    Linking::getTransitions(std::shared_ptr<person::Person> person,
                             std::string columnKey) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         // intentional truncation
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
+            person::person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
+            person::person::behaviorEnumToStringMap[person->getBehavior()];
 
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
@@ -94,9 +94,9 @@ namespace Event {
         return result;
     }
 
-    void Linking::addLinkingCost(std::shared_ptr<Person::Person> person,
+    void Linking::addLinkingCost(std::shared_ptr<person::Person> person,
                                  std::string name, double cost) {
         Cost::Cost linkingCost = {this->costCategory, name, cost};
         person->addCost(linkingCost, this->getCurrentTimestep());
     }
-} // namespace Event
+} // namespace event

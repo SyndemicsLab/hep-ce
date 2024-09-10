@@ -18,14 +18,14 @@
 #include "VoluntaryRelinking.hpp"
 #include <string>
 
-namespace Event {
-    void VoluntaryRelinking::doEvent(std::shared_ptr<Person::Person> person) {
+namespace event {
+    void VoluntaryRelinking::doEvent(std::shared_ptr<person::Person> person) {
         double relinkProbability = std::get<double>(
             this->config.get("linking.voluntary_relinkage_probability", 0.0));
 
         int relink = this->getDecision({relinkProbability});
 
-        if (person->getLinkState() != Person::LinkageState::UNLINKED ||
+        if (person->getLinkState() != person::LinkageState::UNLINKED ||
             (this->getCurrentTimestep() - person->getTimeOfLinkChange()) >
                 this->voluntaryRelinkDuration ||
             relink == 1) {
@@ -33,7 +33,7 @@ namespace Event {
                     // OR relink draw is false
         }
         person->link(this->getCurrentTimestep(),
-                     Person::LinkageType::BACKGROUND);
+                     person::LinkageType::BACKGROUND);
         // This is sorta a place for a background screening?
     }
-} // namespace Event
+} // namespace event

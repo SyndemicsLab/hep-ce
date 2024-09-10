@@ -16,21 +16,21 @@
 //===----------------------------------------------------------------------===//
 #include "Aging.hpp"
 
-namespace Event {
-    void Aging::doEvent(std::shared_ptr<Person::Person> person) {
+namespace event {
+    void Aging::doEvent(std::shared_ptr<person::Person> person) {
         person->age++;
         this->addBackgroundCostAndUtility(person);
     }
 
     void
-    Aging::addBackgroundCostAndUtility(std::shared_ptr<Person::Person> person) {
+    Aging::addBackgroundCostAndUtility(std::shared_ptr<person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
+            person::person::sexEnumToStringMap[person->getSex()];
         selectCriteria["drug_behavior"] =
-            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
+            person::person::behaviorEnumToStringMap[person->getBehavior()];
 
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty()) {
@@ -55,4 +55,4 @@ namespace Event {
         double utility = std::stod(res[0]);
         person->setUtility(utility);
     }
-} // namespace Event
+} // namespace event

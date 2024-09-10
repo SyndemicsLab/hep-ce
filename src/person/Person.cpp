@@ -95,7 +95,7 @@ namespace Person {
         {"timeOfTreatmentInitiation",
          PersonAttribute::TIMEOFTREATMENTINITIATION}};
 
-    Person::Person(Data::IDataTablePtr dataTableRow) {
+    person::Person(Data::IDataTablePtr dataTableRow) {
         count++;
 
         if (dataTableRow->empty()) {
@@ -114,7 +114,7 @@ namespace Person {
                 break;
             case PersonAttribute::SEX:
                 this->sex =
-                    Person::sexMap[Utils::toLower((*dataTableRow)["sex"][0])];
+                    person::sexMap[Utils::toLower((*dataTableRow)["sex"][0])];
                 break;
             case PersonAttribute::AGE:
                 this->age = stoul((*dataTableRow)["age"][0]);
@@ -132,11 +132,11 @@ namespace Person {
                 break;
             case PersonAttribute::HCV:
                 this->infectionStatus.hcv =
-                    Person::hcvMap[Utils::toLower((*dataTableRow)["HCV"][0])];
+                    person::hcvMap[Utils::toLower((*dataTableRow)["HCV"][0])];
                 break;
             case PersonAttribute::FIBROSISSTATE:
                 this->infectionStatus.fibrosisState =
-                    Person::fibrosisStateMap[Utils::toLower(
+                    person::fibrosisStateMap[Utils::toLower(
                         (*dataTableRow)["fibrosisState"][0])];
                 break;
             case PersonAttribute::ISGENOTYPETHREE:
@@ -165,7 +165,7 @@ namespace Person {
                 break;
             case PersonAttribute::DRUGBEHAVIOR:
                 this->behaviorDetails.behavior =
-                    Person::behaviorMap[Utils::toLower(
+                    person::behaviorMap[Utils::toLower(
                         (*dataTableRow)["drugBehavior"][0])];
                 break;
             case PersonAttribute::TIMELASTACTIVEDRUGUSE:
@@ -174,7 +174,7 @@ namespace Person {
                 break;
             case PersonAttribute::LINKAGESTATE:
                 this->linkStatus.linkState =
-                    Person::linkageStateMap[Utils::toLower(
+                    person::linkageStateMap[Utils::toLower(
                         (*dataTableRow)["linkageState"][0])];
                 break;
             case PersonAttribute::TIMEOFLINKCHANGE:
@@ -183,7 +183,7 @@ namespace Person {
                 break;
             case PersonAttribute::LINKAGETYPE:
                 this->linkStatus.linkType =
-                    Person::linkageTypeMap[Utils::toLower(
+                    person::linkageTypeMap[Utils::toLower(
                         (*dataTableRow)["linkageType"][0])];
                 break;
             case PersonAttribute::LINKCOUNT:
@@ -192,7 +192,7 @@ namespace Person {
                 break;
             case PersonAttribute::MEASUREDFIBROSISSTATE:
                 this->stagingDetails.measuredFibrosisState =
-                    Person::measuredFibrosisStateMap[Utils::toLower(
+                    person::measuredFibrosisStateMap[Utils::toLower(
                         (*dataTableRow)["measuredFibrosisState"][0])];
                 break;
             case PersonAttribute::HADSECONDTEST:
@@ -227,15 +227,15 @@ namespace Person {
         }
     }
 
-    void Person::die() { this->isAlive = false; }
+    void person::die() { this->isAlive = false; }
 
-    void Person::grow() {
+    void person::grow() {
         if (this->isAlive) {
             this->age++;
         }
     }
 
-    void Person::infect(int tstep) {
+    void person::infect(int tstep) {
         // cannot be multiply infected
         if (this->infectionStatus.hcv != HCV::NONE) {
             return;
@@ -253,7 +253,7 @@ namespace Person {
         this->infectionStatus.timeFibrosisStateChanged = tstep;
     }
 
-    void Person::clearHCV(int tstep) {
+    void person::clearHCV(int tstep) {
         // cannot clear if the person is not infected
         if (this->infectionStatus.hcv == HCV::NONE) {
             return;
@@ -263,7 +263,7 @@ namespace Person {
         this->addClearance();
     }
 
-    void Person::updateFibrosis(const FibrosisState &ls, int tstep) {
+    void person::updateFibrosis(const FibrosisState &ls, int tstep) {
         // nothing to do -- can only advance fibrosis state
         if (ls <= this->infectionStatus.fibrosisState) {
             return;
@@ -272,7 +272,7 @@ namespace Person {
         this->infectionStatus.timeFibrosisStateChanged = tstep;
     }
 
-    void Person::updateBehavior(const Behavior &bc, int tstep) {
+    void person::updateBehavior(const Behavior &bc, int tstep) {
         // nothing to do -- cannot go back to NEVER
         if (bc == this->behaviorDetails.behavior || bc == Behavior::NEVER) {
             return;
@@ -286,31 +286,31 @@ namespace Person {
         this->behaviorDetails.behavior = bc;
     }
 
-    FibrosisState Person::diagnoseFibrosis(int tstep) {
+    FibrosisState person::diagnoseFibrosis(int tstep) {
         // need to add functionality here
         this->infectionStatus.fibrosisState = FibrosisState::F0;
         return this->infectionStatus.fibrosisState;
     }
 
-    HCV Person::diagnoseHEPC(int tstep) {
+    HCV person::diagnoseHEPC(int tstep) {
         // need to add functionality here
         this->infectionStatus.hcv = HCV::ACUTE;
         return this->infectionStatus.hcv;
     }
 
-    void Person::setUtility(double util) {
+    void person::setUtility(double util) {
         this->utilityTracker.minUtil =
             std::min(this->utilityTracker.minUtil, util);
         this->utilityTracker.multUtil *= util;
     }
 
-    void Person::addCost(Cost::Cost cost, int timestep) {
+    void person::addCost(Cost::Cost cost, int timestep) {
         this->costs.addCost(cost, timestep);
     }
 
     std::ostream &operator<<(std::ostream &os, const Person &person) {
         os << "id: " << person.getID() << std::endl;
-        os << "sex: " << Person::sexEnumToStringMap[person.getSex()]
+        os << "sex: " << person::sexEnumToStringMap[person.getSex()]
            << std::endl;
         os << "alive: " << std::boolalpha << person.getIsAlive() << std::endl;
         os << person.getHealth() << std::endl;

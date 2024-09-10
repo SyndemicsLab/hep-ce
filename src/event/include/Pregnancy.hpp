@@ -4,7 +4,7 @@
 #include "Utils.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to Assess Pregnancy
     class Pregnancy : public ProbEvent {
     private:
@@ -14,20 +14,20 @@ namespace Event {
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
         /// @brief Returns the probability of pregnancy
         std::vector<double>
-        getPregnancyProb(std::shared_ptr<Person::Person> person);
+        getPregnancyProb(std::shared_ptr<person::Person> person);
 
         std::vector<double>
-        getLiveBirthProb(std::shared_ptr<Person::Person> person);
+        getLiveBirthProb(std::shared_ptr<person::Person> person);
 
         /// @brief
         /// @return
         std::vector<double>
-        getMiscarriageProb(std::shared_ptr<Person::Person> person);
+        getMiscarriageProb(std::shared_ptr<person::Person> person);
 
-        void checkMiscarriage(std::shared_ptr<Person::Person> person);
+        void checkMiscarriage(std::shared_ptr<person::Person> person);
 
     public:
         Pregnancy(std::mt19937_64 &generator, Data::IDataTablePtr table,
@@ -37,5 +37,5 @@ namespace Event {
                   std::string name = std::string("Pregnancy"));
         virtual ~Pregnancy() = default;
     };
-} // namespace Event
+} // namespace event
 #endif // EVENT_PREGNANCY_HPP_

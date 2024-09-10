@@ -16,7 +16,7 @@
 //===----------------------------------------------------------------------===//
 #include "Pregnancy.hpp"
 
-namespace Event {
+namespace event {
     Pregnancy::Pregnancy(std::mt19937_64 &generator, Data::IDataTablePtr table,
                          Data::Config &config,
                          std::shared_ptr<spdlog::logger> logger,
@@ -32,21 +32,21 @@ namespace Event {
             "pregnancy.infant_hcv_tested_probability", (double)-1.0);
     }
 
-    void Pregnancy::doEvent(std::shared_ptr<Person::Person> person) {
+    void Pregnancy::doEvent(std::shared_ptr<person::Person> person) {
         // If a person is dead, male, younger than 15, older than 45, or been in
         // postpartum for less than 3 months then skip
 
         int timeSincePregnancyChange =
             this->currentTime - person->getTimeOfPregnancyChange();
-        if (person->getSex() == Person::Sex::MALE || person->age < 15 ||
+        if (person->getSex() == person::Sex::MALE || person->age < 15 ||
             person->age > 45 ||
             (person->getPregnancyState() ==
-                 Person::PregnancyState::POSTPARTUM &&
+                 person::PregnancyState::POSTPARTUM &&
              timeSincePregnancyChange < 3)) {
             return;
         }
 
-        if (person->getPregnancyState() == Person::PregnancyState::PREGNANCY) {
+        if (person->getPregnancyState() == person::PregnancyState::PREGNANCY) {
             if (person->timeSincePregnancyChange() >= 9) {
                 // have child
                 checkMiscarriage(person);
@@ -64,7 +64,7 @@ namespace Event {
         if (this->getDecision(prob)) {
             return;
         }
-        person->setPregnancyState(Person::PregnancyState::PREGNANT);
+        person->setPregnancyState(person::PregnancyState::PREGNANT);
 
         // 2. Decide whether the person clears
         int doesNotClear = this->getDecision(prob);
@@ -75,18 +75,18 @@ namespace Event {
         person->clearHCV(this->getCurrentTimestep());
     }
 
-    void Pregnancy::checkMiscarriage(std::shared_ptr<Person::Person> person) {
+    void Pregnancy::checkMiscarriage(std::shared_ptr<person::Person> person) {
         std::vector<double> prob = this->getMiscarriageProb(person);
         // if a miscarriage (getDecision == 0)
         if (!this->getDecision(prob)) {
-            person->setPregnancyState(Person::PregnancyState::POSTPARTUM);
+            person->setPregnancyState(person::PregnancyState::POSTPARTUM);
             person->setNumMiscarriages(1);
             person->setTimeOfPregnancyChange(this->currentTime);
         }
     }
 
     std::vector<double>
-    Pregnancy::getPregnancyProb(std::shared_ptr<Person::Person> person) {
+    Pregnancy::getPregnancyProb(std::shared_ptr<person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age"] = std::to_string((int)(person->age / 12.0));
@@ -102,7 +102,7 @@ namespace Event {
     }
 
     std::vector<double>
-    Pregnancy::getLiveBirthProb(std::shared_ptr<Person::Person> person) {
+    Pregnancy::getLiveBirthProb(std::shared_ptr<person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age"] = std::to_string((int)(person->age / 12.0));
@@ -118,12 +118,12 @@ namespace Event {
     }
 
     std::vector<double>
-    Pregnancy::getMiscarriageProb(std::shared_ptr<Person::Person> person) {
+    Pregnancy::getMiscarriageProb(std::shared_ptr<person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gestation"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
+            person::person::sexEnumToStringMap[person->getSex()];
         auto resultTable = table->selectWhere(selectCriteria);
         if (resultTable->empty() == 0) {
             // error
@@ -133,4 +133,4 @@ namespace Event {
         std::vector<double> result = {probMiscarriage, 1 - probMiscarriage};
         return result;
     }
-} // namespace Event
+} // namespace event

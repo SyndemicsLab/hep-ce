@@ -22,7 +22,7 @@
 #include <algorithm>
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
 
     /// @brief Subclass of Event used to Progress Fibrosis Stages
     class FibrosisStaging : public ProbEvent {
@@ -31,7 +31,7 @@ namespace Event {
         double testTwoCost = 0;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
 
         /// @brief Aggregate the fibrosis stage testing probabilities for a
         /// given Person object.
@@ -54,7 +54,7 @@ namespace Event {
         std::vector<double> getTransitions(Data::IDataTablePtr table,
                                            std::string configLookupKey);
 
-        void addStagingCost(std::shared_ptr<Person::Person> person,
+        void addStagingCost(std::shared_ptr<person::Person> person,
                             const bool testTwo = false);
 
     public:
@@ -75,6 +75,6 @@ namespace Event {
         }
         virtual ~FibrosisStaging() = default;
     };
-} // namespace Event
+} // namespace event
 
 #endif

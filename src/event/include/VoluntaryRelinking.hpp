@@ -20,7 +20,7 @@
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
 
     /// @brief Subclass of Event used to Create Voluntary Relinkage to Treatment
     /// for People
@@ -31,7 +31,7 @@ namespace Event {
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void doEvent(std::shared_ptr<person::Person> person) override;
 
     public:
         VoluntaryRelinking(std::mt19937_64 &generator,
@@ -51,6 +51,6 @@ namespace Event {
         }
     };
 
-} // namespace Event
+} // namespace event
 
 #endif

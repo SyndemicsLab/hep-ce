@@ -12,16 +12,16 @@
 #include <vector>
 
 /// @brief
-using sharedPerson = std::shared_ptr<Person::Person>;
+using sharedPerson = std::shared_ptr<person::Person>;
 
 /// @brief
 /// @return
-inline sharedPerson makePerson() { return std::make_shared<Person::Person>(); }
+inline sharedPerson makePerson() { return std::make_shared<person::Person>(); }
 
 /// @brief
 /// @return
 inline sharedPerson makePerson(Data::IDataTablePtr rowData) {
-    return std::make_shared<Person::Person>(rowData);
+    return std::make_shared<person::Person>(rowData);
 }
 
 /// @brief

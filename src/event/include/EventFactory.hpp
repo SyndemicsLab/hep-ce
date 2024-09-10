@@ -6,7 +6,7 @@
 
 #include "AllEvents.hpp"
 
-namespace Event {
+namespace event {
 
     using sharedEvent = std::shared_ptr<Event>;
 
@@ -92,6 +92,6 @@ namespace Event {
             return nullptr;
         }
     };
-} // namespace Event
+} // namespace event
 
 #endif

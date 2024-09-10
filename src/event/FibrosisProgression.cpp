@@ -17,24 +17,24 @@
 //===----------------------------------------------------------------------===//
 #include "FibrosisProgression.hpp"
 
-namespace Event {
-    void FibrosisProgression::doEvent(std::shared_ptr<Person::Person> person) {
+namespace event {
+    void FibrosisProgression::doEvent(std::shared_ptr<person::Person> person) {
         // can only progress in fibrosis state if actively infected with HCV
-        if (person->getHCV() == Person::HCV::NONE) {
+        if (person->getHCV() == person::HCV::NONE) {
             return;
         }
         // 1. Get current fibrosis status
-        Person::FibrosisState fs = person->getFibrosisState();
+        person::FibrosisState fs = person->getFibrosisState();
         // 2. Get the transition probability
         std::vector<double> prob = getTransition(fs);
         // 3. Draw whether the person's fibrosis state progresses
         int res = ((int)fs + this->getDecision(prob));
-        if (res >= (int)Person::FibrosisState::COUNT) {
+        if (res >= (int)person::FibrosisState::COUNT) {
             this->logger->error("Fibrosis Progression Decision returned "
                                 "value outside bounds");
             return;
         }
-        Person::FibrosisState toFS = (Person::FibrosisState)res;
+        person::FibrosisState toFS = (person::FibrosisState)res;
         // 4. Apply the result state
         person->updateFibrosis(toFS, this->getCurrentTimestep());
 
@@ -48,27 +48,27 @@ namespace Event {
     }
 
     std::vector<double>
-    FibrosisProgression::getTransition(Person::FibrosisState fs) {
+    FibrosisProgression::getTransition(person::FibrosisState fs) {
         // get the probability of transitioning to the next fibrosis state
         Data::ReturnType temp;
 
         switch (fs) {
-        case Person::FibrosisState::F0:
+        case person::FibrosisState::F0:
             temp = this->config.get("fibrosis.f01", 0.0);
             break;
-        case Person::FibrosisState::F1:
+        case person::FibrosisState::F1:
             temp = this->config.get("fibrosis.f12", 0.0);
             break;
-        case Person::FibrosisState::F2:
+        case person::FibrosisState::F2:
             temp = this->config.get("fibrosis.f23", 0.0);
             break;
-        case Person::FibrosisState::F3:
+        case person::FibrosisState::F3:
             temp = this->config.get("fibrosis.f34", 0.0);
             break;
-        case Person::FibrosisState::F4:
+        case person::FibrosisState::F4:
             temp = this->config.get("fibrosis.f4d", 0.0);
             break;
-        case Person::FibrosisState::DECOMP:
+        case person::FibrosisState::DECOMP:
             temp = (Data::ReturnType)0.0;
             break;
         }
@@ -79,11 +79,11 @@ namespace Event {
     }
 
     void FibrosisProgression::addLiverDiseaseCost(
-        std::shared_ptr<Person::Person> person) {
+        std::shared_ptr<person::Person> person) {
         std::unordered_map<std::string, std::string> selectCriteria;
         selectCriteria["hcv_status"] =
-            Person::Person::hcvEnumToStringMap[person->getHCV()];
-        selectCriteria["metavir_stage"] = Person::Person::
+            person::person::hcvEnumToStringMap[person->getHCV()];
+        selectCriteria["metavir_stage"] = person::person::
             fibrosisStateEnumToStringMap[person->getFibrosisState()];
         auto resultTable = table->selectWhere(selectCriteria);
         double cost;
@@ -100,4 +100,4 @@ namespace Event {
 
         person->addCost(liverDiseaseCost, this->getCurrentTimestep());
     }
-} // namespace Event
+} // namespace event
