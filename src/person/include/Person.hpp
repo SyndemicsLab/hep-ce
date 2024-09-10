@@ -19,456 +19,101 @@
 #define PERSON_PERSON_HPP_
 
 #include "Containers.hpp"
-#include "Cost.hpp"
-#include "Utils.hpp"
-#include "spdlog/spdlog.h"
-#include <DataManager.hpp>
-#include <algorithm>
-#include <cstdint>
-#include <map>
-#include <string>
-#include <vector>
+#include <memory>
 
 /// @brief Namespace containing all code pertaining to an individual Person
-namespace Person {
-    /// @brief A running count of the number of people in the simulation
-    extern int count;
-
+namespace person {
     /// @brief Class describing a Person
-    class Person {
+    class PersonBase {
     private:
-        // set person ID to the current number of total people in the runtime
-        int id = count;
-        Sex sex = Sex::MALE;
-        bool isAlive = true;
-        Health infectionStatus;
-        BehaviorDetails behaviorDetails;
-        LinkageDetails linkStatus;
-        bool overdose = false;
-        MOUDDetails moudDetails;
-        PregnancyDetails pregnancyDetails;
-        StagingDetails stagingDetails;
-        ScreeningDetails screeningDetails;
-        TreatmentDetails treatmentDetails;
-        UtilityTracker utilityTracker;
-        Cost::CostTracker costs;
-        bool boomerClassification = false;
+        class Person;
+        std::unique_ptr<Person> pImplPERSON;
 
     public:
-        /// @brief Person age in months
-        int age = 0;
-
-        static std::map<std::string, HCV> hcvMap;
-        static std::map<std::string, Behavior> behaviorMap;
-        static std::map<std::string, LinkageType> linkageTypeMap;
-        static std::map<std::string, LinkageState> linkageStateMap;
-
-        static std::map<std::string, FibrosisState> fibrosisStateMap;
-        static std::map<std::string, MeasuredFibrosisState>
-            measuredFibrosisStateMap;
-        static std::map<std::string, HCCState> hccStateMap;
-        static std::map<std::string, MOUD> moudMap;
-        static std::map<std::string, Sex> sexMap;
-
-        static std::map<std::string, PregnancyState> pregnancyStateMap;
-
-        static std::map<HCV, std::string> hcvEnumToStringMap;
-        static std::map<Behavior, std::string> behaviorEnumToStringMap;
-        static std::map<LinkageType, std::string> linkageTypeEnumToStringMap;
-        static std::map<LinkageState, std::string> linkageStateEnumToStringMap;
-
-        static std::map<FibrosisState, std::string>
-            fibrosisStateEnumToStringMap;
-        static std::map<MeasuredFibrosisState, std::string>
-            measuredFibrosisStateEnumToStringMap;
-        static std::map<MOUD, std::string> moudEnumToStringMap;
-        static std::map<Sex, std::string> sexEnumToStringMap;
-
-        static std::map<PregnancyState, std::string>
-            pregnancyStateEnumToStringMap;
-
-        /// @brief Default constructor for Person
-        Person() { count++; }
-
-        /// @brief Constructor for creating a person with pre-defined
-        /// characteristics
-        /// @param dataTableRow A single row from a DataTable object
-        Person(Data::IDataTablePtr dataTableRow);
-
-        /// @brief Default destructor for Person
-        virtual ~Person() { count--; }
-
-        /// @brief End a Person's life and set final age
-        void die();
-
-        /// @brief increase a person's age
-        void grow();
-
-        /// @brief Infect the person
-        /// @param timestep Current simulation timestep
-        void infect(int tstep);
-
-        /// @brief Clear of HCV
-        /// @param timestep Current simulation timestep
-        void clearHCV(int tstep);
-
-        /// @brief Update the Liver State
-        /// @param ls Current Liver State
-        /// @param timestep Current simulation timestep
-        void updateFibrosis(const FibrosisState &ls, int tstep);
-
-        /// @brief Update Opioid Use Behavior Classification
-        /// @param bc The intended resultant Behavior
-        /// @param timestep Current simulation timestep
-        void updateBehavior(const Behavior &bc, int tstep);
-
-        /// @brief Diagnose somebody's fibrosis
-        /// @return Fibrosis state that is diagnosed
-        FibrosisState diagnoseFibrosis(int tstep);
-
-        /// @brief Dignose somebody with HEPC
-        /// @return HEPC state that was diagnosed
-        HCV diagnoseHEPC(int tstep);
-
-        /// @brief Getter for the number of HCV infections experienced by Person
-        /// @return Number of HCV infections experienced by Person
-        int gettimesInfected() { return this->infectionStatus.timesInfected; }
-
-        /// @brief Add an acute clearance to the running count
-        void addClearance() { this->infectionStatus.timesCleared++; };
-
-        /// @brief Get the running total of clearances for Person
-        int getClearances() { return this->infectionStatus.timesCleared; };
-
-        /// @brief Mark somebody as having been screened this timestep
-        void markScreened() { this->screeningDetails.timeOfLastScreening = 0; }
-
-        /// @brief
-        void addAbScreen() { this->screeningDetails.numABTests++; }
-
-        /// @brief
-        void addRnaScreen() { this->screeningDetails.numRNATests++; }
-
-        /// @brief
-        int getNumABTests() { return this->screeningDetails.numRNATests; }
-
-        /// @brief
-        int getNumRNATests() { return this->screeningDetails.numRNATests; }
-
-        /// @brief Getter for whether Person experienced fibtest two this cycle
-        /// @return value of hadSecondTest
-        bool hadSecondTest() { return this->stagingDetails.hadSecondTest; }
-
-        /// @brief Set whether the person experienced fibtest two this cycle
-        /// @param state New value of hadSecondTest
-        void setHadSecondTest(bool state) {
-            this->stagingDetails.hadSecondTest = state;
-        }
-
-        /// @brief Set the Seropositive value
-        /// @param seropositive Seropositive status to set
-        void setSeropositive(bool seropositive) {
-            this->infectionStatus.seropositive = seropositive;
-        }
-
-        /// @brief Reset a Person's Link State to Unlinked
-        /// @param timestep Timestep during which the Person is Unlinked
-        void unlink(const int tstep) {
-            if (this->linkStatus.linkState == LinkageState::LINKED) {
-                this->linkStatus.linkState = LinkageState::UNLINKED;
-                this->linkStatus.timeOfLinkChange = tstep;
-            }
-        }
-
-        /// @brief Reset a Person's Link State to Linked
-        /// @param timestep Timestep during which the Person is Linked
-        /// @param linkType The linkage type the Person recieves
-        void link(int tstep, LinkageType linkType) {
-            this->linkStatus.linkState = LinkageState::LINKED;
-            this->linkStatus.timeOfLinkChange = tstep;
-            this->linkStatus.linkType = linkType;
-            this->linkStatus.linkCount++;
-        }
-
-        /// @brief Mark a Person as Identified as Infected
-        /// @param timestep Timestep during which Identification Occurs
-        void identifyAsInfected(int tstep) {
-            this->infectionStatus.identifiedHCV = true;
-            this->infectionStatus.timeIdentified = tstep;
-        }
-
-        /// @brief Getter for the Time Since the Last Screening
-        /// @return The Time Since the Last Screening
-        int getTimeOfLastScreening() const {
-            return this->screeningDetails.timeOfLastScreening;
-        }
-
-        /// @brief Flips the person's overdose state
-        void toggleOverdose() { this->overdose = !this->overdose; }
-
-        /// @brief Getter for the person's overdose state
-        /// @return Boolean representing overdose or not
-        bool getOverdose() const { return this->overdose; }
-
-        /// @brief Getter for the Fibrosis State
-        /// @return The Current Fibrosis State
-        FibrosisState getFibrosisState() const {
-            return this->infectionStatus.fibrosisState;
-        }
-
-        /// @brief Getter for the HCV State
-        /// @return HCV State
-        HCV getHCV() const { return this->infectionStatus.hcv; }
-
-        /// @brief Set HEPC State -- used to change to chronic infection
-        /// @param New HEPC State
-        void setHCV(HCV hcvs) { this->infectionStatus.hcv = hcvs; }
-
-        /// @brief Getter for Alive Status
-        /// @return Alive Status
-        bool getIsAlive() const { return this->isAlive; }
-
-        /// @brief Getter for Behavior Classification
-        /// @return Behavior Classification
-        Behavior getBehavior() const { return this->behaviorDetails.behavior; }
-
-        /// @brief Getter for time since active drug use
-        /// @return Time since the person left an active drug use state
-        int getTimeBehaviorChange() {
-            return this->behaviorDetails.timeLastActive;
-        }
-
-        /// @brief Getter for timestep in which HCV last changed
-        /// @return Time Since HCV Change
-        int getTimeHCVChanged() const {
-            return this->infectionStatus.timeHCVChanged;
-        }
-
-        /// @brief Getter for Time since Fibrosis State Change
-        /// @return Time Since Fibrosis State Change
-        int getTimeFibrosisStateChanged() const {
-            return this->infectionStatus.timeFibrosisStateChanged;
-        }
-
-        /// @brief Getter for Seropositive
-        /// @return Seropositive
-        bool getSeropositive() const {
-            return this->infectionStatus.seropositive;
-        }
-
-        /// @brief Getter for Identification Status
-        /// @return Boolean Describing Indentified as Positive Status
-        bool isIdentifiedAsInfected() const {
-            return this->infectionStatus.identifiedHCV;
-        }
-
-        int getTimeIdentified() const {
-            return this->infectionStatus.timeIdentified;
-        }
-
-        /// @brief Getter for Link State
-        /// @return Link State
-        LinkageState getLinkState() const { return this->linkStatus.linkState; }
-
-        /// @brief Getter for Timestep in which linkage changed
-        /// @return Time Link Change
-        int getTimeOfLinkChange() const {
-            return this->linkStatus.timeOfLinkChange;
-        }
-
-        /// @brief Getter for link count
-        /// @return Number of times Person has linked to care
-        int getLinkCount() const { return this->linkStatus.linkCount; }
-
-        /// @brief Getter for Linkage Type
-        /// @return Linkage Type
-        LinkageType getLinkageType() const { return this->linkStatus.linkType; }
-
-        /// @brief Get the person's numeric ID
-        /// @return Person's numeric ID
-        int getID() const { return this->id; }
-
-        /// @brief Getter for whether Person has initiated treatment
-        /// @return Boolean true if Person has initiated treatment, false
-        /// otherwise
-        bool hasInitiatedTreatment() const {
-            return this->treatmentDetails.initiatedTreatment;
-        }
-
-        /// @brief Getter for the number of timesteps Person has been in
-        /// treatment
-        /// @return Integer number of timesteps spent in treatment
-        int getTimeOfTreatmentInitiation() const {
-            return this->treatmentDetails.timeOfTreatmentInitiation;
-        }
-
-        /// @brief Setter for Person's treatment initiation state
-        /// @param incompleteTreatment Boolean value for initiated treatment
-        /// state to be set
-        void setInitiatedTreatment(bool initiatedTreatment) {
-            this->treatmentDetails.initiatedTreatment = initiatedTreatment;
-        }
-
-        /// @brief Setter for treatment initiation timestep
-        /// @param tstep The timestep during which treatment is initiated
-        void setTimeOfTreatmentInitiation(int tstep) {
-            this->treatmentDetails.timeOfTreatmentInitiation = tstep;
-            this->setInitiatedTreatment(true);
-        }
-
-        /// @brief Getter for pregnancy status
-        /// @return Pregnancy State
-        PregnancyState getPregnancyState() {
-            return this->pregnancyDetails.pregnancyState;
-        }
-
-        /// @brief Getter for timestep in which last pregnancy change happened
-        /// @return Time pregnancy state last changed
-        int getTimeOfPregnancyChange() {
-            return this->pregnancyDetails.timeOfPregnancyChange;
-        }
-
-        /// @brief Getter for number of infants
-        /// @return Number of infants born to this person
-        int getNumInfants() { return this->pregnancyDetails.numInfants; }
-
-        /// @brief Getter for number of miscarriages
-        /// @return Number of miscarriages this person has experienced
-        int getNumMiscarriages() {
-            return this->pregnancyDetails.numMiscarriages;
-        }
-
-        /// @brief Setter for Pregnancy State
-        /// @param state Person's pregnancy State
-        void setPregnancyState(PregnancyState state) {
-            this->pregnancyDetails.pregnancyState = state;
-        }
-
-        /// @brief Set Pregnancy State Time Change
-        /// @param time Time of Pregnancy Change
-        void setTimeOfPregnancyChange(int time) {
-            this->pregnancyDetails.timeOfPregnancyChange = time;
-        }
-
-        /// @brief Add infants to the count
-        /// @param infants Number infants to add
-        void setNumInfants(int infants) {
-            this->pregnancyDetails.numInfants += infants;
-        }
-
-        /// @brief Add miscarriages to the count
-        /// @param miscarriages Number of miscarriages to add
-        void setNumMiscarriages(int miscarriages) {
-            this->pregnancyDetails.numMiscarriages += miscarriages;
-        }
-
-        /// @brief Set Person's measured fibrosis state
-        /// @param state
-        void setMeasuredFibrosisState(MeasuredFibrosisState state) {
-            this->stagingDetails.measuredFibrosisState = state;
-        }
-
-        /// @brief Getter for measured fibrosis state
-        /// @return Measured Fibrosis State
-        MeasuredFibrosisState getMeasuredFibrosisState() {
-            return this->stagingDetails.measuredFibrosisState;
-        }
-
-        /// @brief Setter for whether Person is genotype three
-        /// @param genotype True if infection is genotype three, false
-        /// otherwise
-        void setGenotype(bool genotype) {
-            this->infectionStatus.isGenotypeThree = genotype;
-        }
-
-        /// @brief Getter for whether Person is genotype three
-        /// @return True if genotype three, false otherwise
-        bool isGenotypeThree() const {
-            return this->infectionStatus.isGenotypeThree;
-        }
-
-        /// @brief Getter for timestep in which the last fibrosis
-        /// staging test happened
-        /// @return Timestep of person's last fibrosis staging
-        int getTimeOfLastStaging() const {
-            return this->stagingDetails.timeOfLastStaging;
-        }
-
-        /// @brief Getter for MOUD State
-        /// @return MOUD State
-        MOUD getMoudState() const { return this->moudDetails.moudState; }
-
-        /// @brief Setter for MOUD State
-        /// @param moud Person's new MOUD state
-        void setMoudState(MOUD moud) { this->moudDetails.moudState = moud; }
-
-        /// @brief Getter for timestep in which MOUD was started
-        /// @return Time spent on MOUD
-        int getTimeStartedMoud() const {
-            return this->moudDetails.timeStartedMoud;
-        }
-
-        /// @brief Setter for timestep in which MOUD was started
-        /// @param timestep Timestep during which MOUD started
-        void setTimeStartedMoud(int timestep) {
-            this->moudDetails.timeStartedMoud = timestep;
-        }
-
-        /// @brief Getter for the person's sex
-        /// @return Person's sex
-        Sex getSex() const { return this->sex; }
-
-        /// @brief Set a value for a person's utility
-        /// @param category The category of the utility to be updated
-        /// @param value The value of the utility to be updated, bounded by
-        /// 0, 1
-        void setUtility(double util);
-
-        /// @brief Getter for the person's stratified utilities
-        /// @return Person's stratified utilities
-        UtilityTracker getUtility() const { return this->utilityTracker; }
-
-        /// @brief Add a cost to the person's CostTracker object
-        /// @param cost The cost to be added
-        /// @param timestep The timestep during which the cost was accrued
-        void addCost(Cost::Cost cost, int timestep);
-
-        /// @brief Getter for the Person's costs
-        /// @return Cost::CostTracker containing this person's costs
-        Cost::CostTracker getCosts() const { return this->costs; }
-
-        bool isBoomer() const { return this->boomerClassification; }
-
-        bool isCirrhotic() {
-            if (this->getFibrosisState() == FibrosisState::F4 ||
-                this->getFibrosisState() == FibrosisState::DECOMP) {
-                return true;
-            }
-            return false;
-        }
-
-        void setBoomerClassification(bool status) {
-            this->boomerClassification = status;
-        }
-        Health getHealth() const { return this->infectionStatus; }
-        BehaviorDetails getBehaviorDetails() const {
-            return this->behaviorDetails;
-        }
-        LinkageDetails getLinkStatus() const { return this->linkStatus; }
-        MOUDDetails getMOUDDetails() const { return this->moudDetails; }
-        PregnancyDetails getPregnancyDetails() const {
-            return this->pregnancyDetails;
-        }
-        StagingDetails getStagingDetails() const {
-            return this->stagingDetails;
-        }
-        ScreeningDetails getScreeningDetails() const {
-            return this->screeningDetails;
-        }
-        TreatmentDetails getTreatmentDetails() const {
-            return this->treatmentDetails;
-        }
+        PersonBase();
+        ~PersonBase();
+        // Functionality
+        int Grow();
+        int Die();
+        int Infect();
+        int ClearHCV();
+        int UpdateFibrosis(const FibrosisState &ls);
+        int UpdateBehavior(const Behavior &bc);
+        int DiagnoseFibrosis(FibrosisState &data);
+        int DiagnoseHEPC(HCV &data);
+        int AddClearance();
+        int MarkScreened();
+        int AddAbScreen();
+        int AddRnaScreen();
+        int Unlink();
+        int Link(LinkageType linkType);
+        int IdentifyAsInfected();
+        int AddCost(Cost::Cost cost);
+        int ToggleOverdose();
+        // Checks
+        bool IsAlive();
+        bool HadSecondTest();
+        bool IsIdentifiedAsInfected() const;
+        bool HasInitiatedTreatment() const;
+        bool IsGenotypeThree() const;
+        bool IsBoomer() const;
+        bool IsCirrhotic();
+        // Getters
+        int GetAge() const;
+        int GetTimesInfected() const;
+        int GetClearances() const;
+        int GetNumABTests() const;
+        int GetNumRNATests() const;
+        int GetTimeOfLastScreening() const;
+        bool GetCurrentlyOverdosing() const;
+        int GetNumberOfOverdoses() const;
+        FibrosisState GetFibrosisState() const;
+        HCV GetHCV() const;
+        bool GetIsAlive() const;
+        Behavior GetBehavior() const;
+        int GetTimeBehaviorChange() const;
+        int GetTimeHCVChanged() const;
+        int GetTimeFibrosisStateChanged() const;
+        bool GetSeropositive() const;
+        int GetTimeIdentified() const;
+        LinkageState GetLinkState() const;
+        int GetTimeOfLinkChange() const;
+        int GetLinkCount() const;
+        LinkageType GetLinkageType() const;
+        int GetTimeOfTreatmentInitiation() const;
+        PregnancyState GetPregnancyState() const;
+        int GetTimeOfPregnancyChange() const;
+        int GetNumInfants() const;
+        int GetNumMiscarriages() const;
+        int GetTimeOfLastStaging() const;
+        MOUD GetMoudState() const;
+        MeasuredFibrosisState GetMeasuredFibrosisState() const;
+        int GetTimeStartedMoud() const;
+        Sex GetSex() const;
+        UtilityTracker GetUtility() const;
+        Cost::CostTracker GetCosts() const;
+        Health GetHealth() const;
+        BehaviorDetails GetBehaviorDetails() const;
+        LinkageDetails GetLinkStatus() const;
+        MOUDDetails GetMOUDDetails() const;
+        PregnancyDetails GetPregnancyDetails() const;
+        StagingDetails GetStagingDetails() const;
+        ScreeningDetails GetScreeningDetails() const;
+        TreatmentDetails GetTreatmentDetails() const;
+        // Setters
+        void SetAge(int age);
+        void SetHadSecondTest(bool state);
+        void SetSeropositive(bool seropositive);
+        void SetHCV(HCV hcvs);
+        void SetInitiatedTreatment(bool initiatedTreatment);
+        void SetPregnancyState(PregnancyState state);
+        void SetNumInfants(int infants);
+        void SetNumMiscarriages(int miscarriages);
+        void SetMeasuredFibrosisState(MeasuredFibrosisState state);
+        void SetGenotype(bool genotype);
+        void SetMoudState(MOUD moud);
+        void SetUtility(double util);
+        void SetBoomerClassification(bool status);
     };
-    std::ostream &operator<<(std::ostream &os, const Person &person);
-} // namespace Person
+} // namespace person
 #endif

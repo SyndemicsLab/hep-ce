@@ -2,8 +2,10 @@
 #define PERSON_MAPS_HPP_
 
 #include "Person.hpp"
+#include <map>
+#include <string>
 
-namespace Person {
+namespace person {
     std::map<std::string, HCV> person::hcvMap = {
         {"none", HCV::NONE}, {"acute", HCV::ACUTE}, {"chronic", HCV::CHRONIC}};
 
@@ -97,5 +99,5 @@ namespace Person {
             {PregnancyState::NONE, "none"},
             {PregnancyState::PREGNANT, "pregnant"},
             {PregnancyState::POSTPARTUM, "postpartum"}};
-} // namespace Person
+} // namespace person
 #endif

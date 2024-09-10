@@ -1,4 +1,6 @@
 #include "Cost.hpp"
+#include <iostream>
+#include <unordered_map>
 
 namespace Cost {
     std::unordered_map<int, double> CostTracker::getTotals() const {

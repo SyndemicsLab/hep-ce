@@ -25,7 +25,7 @@
 
 // Forward Defining Person to use in Execute
 namespace person {
-    class Person;
+    class PersonBase;
 }
 
 /// @brief Namespace containing the Events that occur during the simulation
@@ -38,10 +38,10 @@ namespace event {
         std::unique_ptr<ProbEvent> pImplPROBEVENT;
 
     public:
-        EventBase(std::unique_ptr<std::mt19937_64> generator = NULL,
+        EventBase(std::shared_ptr<std::mt19937_64> generator = NULL,
                   std::string dataquery = "", std::string name = "");
         ~EventBase() = default;
-        int Execute(person::Person &person);
+        int Execute(person::PersonBase &person);
     };
 
 } // namespace event

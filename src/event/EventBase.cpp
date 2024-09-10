@@ -12,7 +12,7 @@ namespace event {
     /// function definition
     class EventBase::Event {
     private:
-        virtual void doEvent(person::Person &person) = 0;
+        virtual void doEvent(person::PersonBase &person) = 0;
 
     protected:
         std::string QUERY;
@@ -31,14 +31,14 @@ namespace event {
         /// @param  timestep integer containing the current timestep of the
         /// simulation
         /// @return The population vector after the event is executed
-        int execute(person::Person &person) {
+        int execute(person::PersonBase &person) {
             // #pragma omp parallel for
             //             for (int i = 0; i < population.size(); ++i) {
             //                 if (population[i].getIsAlive()) {
             //                     this->doEvent(population[i]);
             //                 }
             //             }
-            if (person.getIsAlive()) {
+            if (person.IsAlive()) {
                 this->doEvent(person);
             }
             return 0;
@@ -49,7 +49,7 @@ namespace event {
     /// random number generator to make decisions.
     class EventBase::ProbEvent : public EventBase::Event {
     protected:
-        std::unique_ptr<std::mt19937_64> generator;
+        std::shared_ptr<std::mt19937_64> generator;
         std::mutex generatorMutex;
 
         /// @brief When making a decision with two or more choices, pick one
@@ -84,14 +84,14 @@ namespace event {
         }
 
     public:
-        ProbEvent(std::unique_ptr<std::mt19937_64> generator,
+        ProbEvent(std::shared_ptr<std::mt19937_64> generator,
                   std::string dataquery,
                   std::string name = std::string("ProbEvent"))
             : generator(generator), EventBase::Event(dataquery, name) {}
         virtual ~ProbEvent() = default;
     };
 
-    EventBase::EventBase(std::unique_ptr<std::mt19937_64> generator,
+    EventBase::EventBase(std::shared_ptr<std::mt19937_64> generator,
                          std::string dataquery, std::string name) {
         // only build a single probability event based on if a generator is
         // included
@@ -105,7 +105,7 @@ namespace event {
         }
     }
 
-    int EventBase::Execute(person::Person &person) {
+    int EventBase::Execute(person::PersonBase &person) {
         if (!pImplPROBEVENT) {
             return pImplPROBEVENT->execute(person);
         } else if (!pImplEVENT) {

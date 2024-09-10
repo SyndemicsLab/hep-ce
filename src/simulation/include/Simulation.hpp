@@ -42,7 +42,7 @@ namespace simulation {
         int Run();
         int LoadData(std::string const &infile);
         int LoadTable(std::string const &infile);
-        int LoadConfig(std::stirng const &infile);
+        int LoadConfig(std::string const &infile);
         int WriteResults(std::string const &outfile);
         int SaveSimulationState(std::string const &outfile);
         int LoadSimulationState(std::string const &infile);

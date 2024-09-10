@@ -15,22 +15,25 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Simulation.hpp"
-#include "EventBase.hpp"
+#include "Event.hpp"
 #include "Person.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 #include <DataManager.hpp>
 #include <filesystem>
+#include <random>
 
 namespace simulation {
     class Environment::Simulation {
     private:
         datamanagement::DataManager _dm;
-        int currentTimestep = 0;
+        int tstep = 0;
         uint64_t _seed;
-        std::vector<person::Person> population = {};
+        std::vector<person::PersonBase> population = {};
         std::vector<event::EventBase> events = {};
         static std::mt19937_64 generator;
+        size_t popSize = 0;
 
     public:
         Simulation(size_t seed = 1234, std::string const &logfile = "")
@@ -62,118 +65,92 @@ namespace simulation {
 
         /// @brief Function used to Create Population Set
         /// @param N Number of People to create in the Population
-        void createPopulation(const int N) {
-            if (N > 0) {
-                this->population = {};
-            }
-            for (int i = 0; i < N; ++i) {
-                this->population.push_back(std::make_shared<person::Person>());
+        void CreateNPeople(size_t N) {
+            this->population.clear();
+            this->popSize = 0;
+            for (size_t i = 0; i < N; ++i) {
+                CreatePerson();
             }
         }
 
-        /// @brief Function used to Create Events List
-        /// @return Vector of Events to be used in the Simulation
-        std::vector<std::shared_ptr<Event::Event>> createEvents() {
-            this->loadEvents(std::vector<std::shared_ptr<Event::Event>>());
-            return this->getEvents();
-        }
-
-        /// @brief Function to Load the Population to the Simulation
-        /// @param population Population Set Loaded to Simulation
-        void loadPopulation(
-            std::vector<std::shared_ptr<person::Person>> &population) {
-            if (!this->population.empty()) {
-                this->logger->info(
-                    "Simulation Population not empty, overwriting "
-                    "existing population.");
-            }
-            this->population = population;
-        }
-
-        /// @brief Function used to add a Single Person to the Population in the
-        /// Simulation
-        /// @param person Person to add to the Population
-        void addPerson(person::Person person) {
-            this->population.push_back(
-                std::make_shared<person::Person>(person));
-        }
-
-        /// @brief Function used to load the Events List to the Simulation
-        /// @param events Events List to Load to the Simulation
-        void loadEvents(std::vector<std::shared_ptr<Event::Event>> events) {
-            if (events.empty()) {
-                this->logger->warn(
-                    "Empty Event being added to simulation event "
-                    "list! Make sure this is intentional.");
-            }
-            if (!this->events.empty()) {
-                this->logger->info("Simulation Events not empty, overwriting "
-                                   "existing events.");
-            }
-            this->events = events;
+        void CreatePerson() {
+            person::PersonBase newperson;
+            this->population.push_back(newperson);
+            this->popSize++;
         }
 
         /// @brief Add an Event to the end of the Event List
         /// @param event Event to add to the Simulation Event List
-        void addEventToEnd(std::shared_ptr<Event::Event> event) {
-            this->logger->info("Event being added to end of Event Queue");
+        int AddEventToEnd(event::EventBase event) {
+            spdlog::get("main")->info(
+                "Event being added to end of Event Queue");
             this->events.push_back(event);
+            return 0;
         }
 
         /// @brief Add an Event to the beginning of the Event List
         /// @param event Event to add to the Simulation Event List
-        void addEventToBeginning(std::shared_ptr<Event::Event> event) {
-            this->logger->info(
+        int AddEventToBeginning(event::EventBase event) {
+            spdlog::get("main")->info(
                 "Event being added to beginning of Event Queue.");
             this->events.insert(this->events.begin(), event);
+            return 0;
         }
 
         /// @brief Add an Event to the provided index in the Event List
         /// @param event Even to add to the Simulation Event List
         /// @param idx Index of the location to add the Event
         /// @return True if it succeeds, False if it fails
-        bool addEventAtIndex(std::shared_ptr<Event::Event> event, int idx) {
+        int AddEventAtIndex(event::EventBase event, int idx) {
             if (idx >= this->events.size() || idx < 0) {
-                this->logger->warn(
+                spdlog::get("main")->warn(
                     "Index {0} out of Event Queue Range of size {1}!",
                     std::to_string(idx), std::to_string(this->events.size()));
-                return false;
+                return 1;
             }
-            this->logger->info("Event being added to index {0} of Event Queue.",
-                               std::to_string(idx));
+            spdlog::get("main")->info(
+                "Event being added to index {0} of Event Queue.",
+                std::to_string(idx));
             this->events.insert(this->events.begin() + idx, event);
-            return true;
+            return 0;
         }
 
         /// @brief Retrieve the Population Vector from the Simulation
         /// @return List of People in the Simulation
-        std::vector<std::shared_ptr<person::Person>> getPopulation() const {
+        std::vector<person::PersonBase> getPopulation() const {
             return this->population;
         }
 
         /// @brief Retrieve the Events in the Simulation
         /// @return List of Events in the Simulation
-        std::vector<std::shared_ptr<Event::Event>> getEvents() const {
-            return this->events;
-        }
+        std::vector<event::EventBase> getEvents() const { return this->events; }
 
         /// @brief Execute the Simulation
         /// @return The Final State of the entire Population
-        std::vector<std::shared_ptr<person::Person>> run() {
+        int run() {
             spdlog::get("main")->info("Simulation Run Started");
-            for (currentTimestep; currentTimestep < ((int)this->duration);
-                 ++currentTimestep) {
-                for (std::shared_ptr<Event::Event> event : this->events) {
-                    event->setCurrentTimestep(currentTimestep);
+            std::string data = "";
+            if (_dm.GetFromConfig("simulation.duration", data) != 0) {
+                spdlog::get("main")->error(
+                    "Simulation Found no Duration Parameter!\nExiting...");
+                exit(-1);
+            }
+            size_t duration = std::stol(data);
+            for (tstep; tstep < duration; ++tstep) {
+                for (event::EventBase &event : this->events) {
 #pragma omp parallel for
-                    for (person::Person person : this->population) {
-                        event->execute(person);
+                    for (person::PersonBase &person : this->population) {
+                        event.Execute(person);
                     }
                 }
-                this->logger->info("Simulation completed timestep {}",
-                                   currentTimestep);
+#pragma omp parallel for
+                for (person::PersonBase &person : this->population) {
+                    person.Grow();
+                }
+                spdlog::get("main")->info("Simulation completed timestep {}",
+                                          tstep);
             }
-            return this->population;
+            return 0;
         }
 
         /// @brief Access the random number generator, for events that need to
@@ -182,10 +159,10 @@ namespace simulation {
         std::mt19937_64 &getGenerator() { return generator; }
 
         /// @brief A getter for the Current Timestep variable
-        /// @return currentTimestep as a int
-        int getCurrentTimestep() { return this->currentTimestep; }
+        /// @return tstep as a int
+        int getCurrentTimestep() { return this->tstep; }
     };
-    std::mt19937_64 Simulation::generator;
+    std::mt19937_64 Environment::Simulation::generator;
 
     Environment::Environment(size_t seed = 1234,
                              std::string const &logfile = "") {
@@ -232,15 +209,14 @@ namespace simulation {
         }
         return 0;
     }
-    int Environment::LoadConfig(std::stirng const &infile) {
+    int Environment::LoadConfig(std::string const &infile) {
         if (!std::filesystem::exists(infile)) {
             spdlog::get("main")->warn(
                 "File {} not found when attempting to load config!", infile);
             return 1;
         }
         if (pImplSIM->LoadConfig(infile)) {
-            spdlog::get("main")->warn("Failed to add config file {}!",
-                                      p.string());
+            spdlog::get("main")->warn("Failed to add config file {}!", infile);
             return 1;
         }
         return 0;

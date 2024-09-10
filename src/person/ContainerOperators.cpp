@@ -1,6 +1,162 @@
 #include "Maps.hpp"
 
-namespace Person {
+namespace person {
+    std::ostream &operator<<(std::ostream &os, const HCV &inst) {
+        switch (inst) {
+        case HCV::ACUTE:
+            os << "Acute";
+            break;
+        case HCV::CHRONIC:
+            os << "Chronic";
+            break;
+        default:
+            os << "None";
+            break;
+        }
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os, const Behavior &inst) {
+        switch (inst) {
+        case Behavior::FORMER_INJECTION:
+            os << "Former Injection";
+            break;
+        case Behavior::FORMER_NONINJECTION:
+            os << "Former Noninjection";
+            break;
+        case Behavior::INJECTION:
+            os << "Injection";
+            break;
+        case Behavior::NONINJECTION:
+            os << "Noninjection";
+            break;
+        default:
+            os << "Never";
+            break;
+        }
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os, const LinkageType &inst) {
+        switch (inst) {
+        case LinkageType::BACKGROUND:
+            os << "Background";
+            break;
+        default:
+            os << "Intervention";
+            break;
+        }
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os, const LinkageState &inst) {
+        switch (inst) {
+        case LinkageState::LINKED:
+            os << "Linked";
+            break;
+        case LinkageState::UNLINKED:
+            os << "Unlinked";
+            break;
+        default:
+            os << "Never";
+            break;
+        }
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os, const FibrosisState &inst) {
+        switch (inst) {
+        case FibrosisState::DECOMP:
+            os << "Decomp";
+            break;
+        case FibrosisState::F0:
+            os << "F0";
+            break;
+        case FibrosisState::F1:
+            os << "F1";
+            break;
+        case FibrosisState::F2:
+            os << "F2";
+            break;
+        case FibrosisState::F3:
+            os << "F3";
+            break;
+        case FibrosisState::F4:
+            os << "F4";
+            break;
+        default:
+            os << "None";
+            break;
+        }
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os, const HCCState &inst) {
+        switch (inst) {
+        case HCCState::EARLY:
+            os << "Early";
+            break;
+        case HCCState::LATE:
+            os << "Late";
+            break;
+        default:
+            os << "None";
+            break;
+        }
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os,
+                             const MeasuredFibrosisState &inst) {
+        switch (inst) {
+        case MeasuredFibrosisState::DECOMP:
+            os << "Decomp";
+            break;
+        case MeasuredFibrosisState::F01:
+            os << "F01";
+            break;
+        case MeasuredFibrosisState::F23:
+            os << "F23";
+            break;
+        case MeasuredFibrosisState::F4:
+            os << "F4";
+            break;
+        default:
+            os << "None";
+            break;
+        }
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os, const MOUD &inst) {
+        switch (inst) {
+        case MOUD::CURRENT:
+            os << "Current";
+            break;
+        case MOUD::POST:
+            os << "Post";
+            break;
+        default:
+            os << "None";
+            break;
+        }
+        return os;
+    }
+
+    std::ostream &operator<<(std::ostream &os, const Sex &inst) {
+        switch (inst) {
+        case Sex::MALE:
+            os << "Male";
+            break;
+        case Sex::FEMALE:
+            os << "Female";
+            break;
+        default:
+            os << "";
+            break;
+        }
+        return os;
+    }
 
     std::ostream &operator<<(std::ostream &os, Health const &inst) {
         os << "HCV State: " << person::hcvEnumToStringMap[inst.hcv]
@@ -19,7 +175,6 @@ namespace Person {
         os << "Identified as a Positive Infection: " << inst.identifiedHCV
            << std::endl;
         os << "Time Identified: " << inst.timeIdentified << std::endl;
-        return os;
         return os;
     }
 
@@ -90,4 +245,4 @@ namespace Person {
         os << "Minimum Utility: " << utra.minUtil << std::endl;
         return os;
     }
-} // namespace Person
+} // namespace person

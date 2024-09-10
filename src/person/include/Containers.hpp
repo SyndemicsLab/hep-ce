@@ -3,7 +3,7 @@
 
 #include <ostream>
 
-namespace Person {
+namespace person {
     /// @brief HEP-C Infection States
     enum class HCV {
         /// No HCV infection
@@ -15,6 +15,7 @@ namespace Person {
 
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const HCV &inst);
 
     /// @brief Opioid Usage Behavior Classification
     /// @details There are five possible possible usage classifications.
@@ -32,6 +33,7 @@ namespace Person {
 
         COUNT = 5
     };
+    std::ostream &operator<<(std::ostream &os, const Behavior &inst);
 
     /// @brief Screening type that led to linkage
     enum class LinkageType {
@@ -41,6 +43,7 @@ namespace Person {
         INTERVENTION = 1,
         COUNT = 2
     };
+    std::ostream &operator<<(std::ostream &os, const LinkageType &inst);
 
     /// @brief Status of Linkage
     enum class LinkageState {
@@ -52,6 +55,7 @@ namespace Person {
         UNLINKED = 2,
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const LinkageState &inst);
 
     /// @brief Classification of Liver Fibrosis Stage
     /// @details HCV infection causes liver fibrosis and cirrhosis and increases
@@ -76,6 +80,7 @@ namespace Person {
         DECOMP = 6,
         COUNT = 7
     };
+    std::ostream &operator<<(std::ostream &os, const FibrosisState &inst);
 
     /// @brief Classification of hepatocellular carcinoma (HCC) state
     /// @details Advanced liver fibrosis and cirrhosis significantly increase
@@ -92,6 +97,7 @@ namespace Person {
         LATE = 2,
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const HCCState &inst);
 
     /// @brief Clinically staged liver fibrosis stage
     enum class MeasuredFibrosisState {
@@ -107,6 +113,8 @@ namespace Person {
         DECOMP = 4,
         COUNT = 5
     };
+    std::ostream &operator<<(std::ostream &os,
+                             const MeasuredFibrosisState &inst);
 
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
     enum class MOUD {
@@ -118,6 +126,7 @@ namespace Person {
         POST = 2,
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const MOUD &inst);
 
     /// @brief Biological Sex
     enum class Sex {
@@ -127,6 +136,7 @@ namespace Person {
         FEMALE = 1,
         COUNT = 2
     };
+    std::ostream &operator<<(std::ostream &os, const Sex &inst);
 
     /// @brief Pregnancy Classification
     /// @details There are three possible pregnancy states.
@@ -219,6 +229,6 @@ namespace Person {
         double minUtil = 1.0;
     };
     std::ostream &operator<<(std::ostream &os, UtilityTracker const &utra);
-} // namespace Person
+} // namespace person
 
 #endif
