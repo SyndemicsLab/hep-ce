@@ -16,29 +16,26 @@
 //===----------------------------------------------------------------------===//
 #ifndef EVENT_CLEARANCE_HPP_
 #define EVENT_CLEARANCE_HPP_
+#include "Decider.hpp"
 #include "Event.hpp"
-#include "Utils.hpp"
+#include <memory>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
     /// @brief Subclass of Event used to Clear HCV Infections
-    class Clearance : public ProbEvent {
+    class Clearance : public Event {
     private:
-        double clearanceProb;
+        class ClearanceIMPL;
+        std::unique_ptr<ClearanceIMPL> impl;
+        std::shared_ptr<stats::Decider> decider;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
-        /// @brief Returns the probability of acute clearance
-        /// @details Typically, there's a 25% chance of acute hcv clearance in
-        /// the first six months of infection.
-        std::vector<double> getClearanceProb();
+        void doEvent(person::PersonBase &person) override;
 
     public:
-        Clearance(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                  Data::Config &config,
-                  std::shared_ptr<spdlog::logger> logger =
-                      std::make_shared<spdlog::logger>("default"),
+        Clearance(std::shared_ptr<stats::Decider> decider,
+                  std::shared_ptr<datamanagement::DataManager> dm,
                   std::string name = std::string("Clearance"));
         virtual ~Clearance() = default;
     };

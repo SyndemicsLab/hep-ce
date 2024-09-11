@@ -4,13 +4,13 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const HCV &inst) {
         switch (inst) {
         case HCV::ACUTE:
-            os << "Acute";
+            os << "acute";
             break;
         case HCV::CHRONIC:
-            os << "Chronic";
+            os << "chronic";
             break;
         default:
-            os << "None";
+            os << "none";
             break;
         }
         return os;
@@ -19,19 +19,19 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const Behavior &inst) {
         switch (inst) {
         case Behavior::FORMER_INJECTION:
-            os << "Former Injection";
+            os << "former_injection";
             break;
         case Behavior::FORMER_NONINJECTION:
-            os << "Former Noninjection";
+            os << "former_noninjection";
             break;
         case Behavior::INJECTION:
-            os << "Injection";
+            os << "injection";
             break;
         case Behavior::NONINJECTION:
-            os << "Noninjection";
+            os << "noninjection";
             break;
         default:
-            os << "Never";
+            os << "never";
             break;
         }
         return os;
@@ -40,10 +40,10 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const LinkageType &inst) {
         switch (inst) {
         case LinkageType::BACKGROUND:
-            os << "Background";
+            os << "background";
             break;
         default:
-            os << "Intervention";
+            os << "intervention";
             break;
         }
         return os;
@@ -52,13 +52,13 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const LinkageState &inst) {
         switch (inst) {
         case LinkageState::LINKED:
-            os << "Linked";
+            os << "linked";
             break;
         case LinkageState::UNLINKED:
-            os << "Unlinked";
+            os << "unlinked";
             break;
         default:
-            os << "Never";
+            os << "never";
             break;
         }
         return os;
@@ -67,25 +67,25 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const FibrosisState &inst) {
         switch (inst) {
         case FibrosisState::DECOMP:
-            os << "Decomp";
+            os << "decomp";
             break;
         case FibrosisState::F0:
-            os << "F0";
+            os << "f0";
             break;
         case FibrosisState::F1:
-            os << "F1";
+            os << "f1";
             break;
         case FibrosisState::F2:
-            os << "F2";
+            os << "f2";
             break;
         case FibrosisState::F3:
-            os << "F3";
+            os << "f3";
             break;
         case FibrosisState::F4:
-            os << "F4";
+            os << "f4";
             break;
         default:
-            os << "None";
+            os << "none";
             break;
         }
         return os;
@@ -94,13 +94,13 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const HCCState &inst) {
         switch (inst) {
         case HCCState::EARLY:
-            os << "Early";
+            os << "early";
             break;
         case HCCState::LATE:
-            os << "Late";
+            os << "late";
             break;
         default:
-            os << "None";
+            os << "none";
             break;
         }
         return os;
@@ -110,19 +110,19 @@ namespace person {
                              const MeasuredFibrosisState &inst) {
         switch (inst) {
         case MeasuredFibrosisState::DECOMP:
-            os << "Decomp";
+            os << "decomp";
             break;
         case MeasuredFibrosisState::F01:
-            os << "F01";
+            os << "f01";
             break;
         case MeasuredFibrosisState::F23:
-            os << "F23";
+            os << "f23";
             break;
         case MeasuredFibrosisState::F4:
-            os << "F4";
+            os << "f4";
             break;
         default:
-            os << "None";
+            os << "none";
             break;
         }
         return os;
@@ -131,13 +131,13 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const MOUD &inst) {
         switch (inst) {
         case MOUD::CURRENT:
-            os << "Current";
+            os << "current";
             break;
         case MOUD::POST:
-            os << "Post";
+            os << "post";
             break;
         default:
-            os << "None";
+            os << "none";
             break;
         }
         return os;
@@ -146,10 +146,10 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const Sex &inst) {
         switch (inst) {
         case Sex::MALE:
-            os << "Male";
+            os << "male";
             break;
         case Sex::FEMALE:
-            os << "Female";
+            os << "female";
             break;
         default:
             os << "";
@@ -161,13 +161,13 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
         switch (inst) {
         case PregnancyState::POSTPARTUM:
-            os << "Postpartum";
+            os << "postpartum";
             break;
         case PregnancyState::PREGNANT:
-            os << "Pregnant";
+            os << "pregnant";
             break;
         default:
-            os << "None";
+            os << "none";
             break;
         }
         return os;

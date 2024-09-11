@@ -15,44 +15,85 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Aging.hpp"
+#include "Cost.hpp"
+#include "DataManager.hpp"
+#include "Person.hpp"
+#include "spdlog/spdlog.h"
+#include <sstream>
 
 namespace event {
-    void Aging::doEvent(std::shared_ptr<person::Person> person) {
-        person->age++;
-        this->addBackgroundCostAndUtility(person);
+    class Aging::AgingIMPL {
+    private:
+        struct cost_util {
+            double cost;
+            double util;
+        };
+        static int callback(void *storage, int count, char **data,
+                            char **columns) {
+            std::vector<struct cost_util> *d =
+                (std::vector<struct cost_util> *)storage;
+            struct cost_util temp;
+            temp.cost = std::stod(data[0]); // First Column Selected
+            temp.util = std::stod(data[1]); // Second Column Selected
+            d->push_back(temp);
+            return 0;
+        }
+
+        std::string buildSQL(person::PersonBase const person) const {
+            std::string a = std::to_string((person.GetAge() / 12.0));
+            std::stringstream sql;
+            sql << "SELECT cost, utility FROM background_costs";
+            sql << "INNER JOIN background_utilities ON "
+                   "((background_costs.age_years = "
+                   "background_utilities.age_years) AND "
+                   "(background_costs.gender = background_utilities.gender) "
+                   "AND (background_costs.drug_behavior = "
+                   "background_utilities.drug_behavior)) ";
+            sql << "WHERE background_costs.age_years = " << a
+                << " AND background_costs.gender = " << person.GetSex()
+                << " AND background_costs.drug_behavior = "
+                << person.GetBehavior();
+            return sql.str();
+        }
+
+        /// @brief Adds person's background cost
+        /// @param person The person to whom cost will be added
+        void addBackgroundCostAndUtility(
+            person::PersonBase &person,
+            std::shared_ptr<datamanagement::DataManager> dm) {
+            std::string query = this->buildSQL(person);
+            std::vector<struct cost_util> storage;
+            std::string error;
+            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
+                                              error);
+            if (!rc) {
+                spdlog::get("main")->error(
+                    "Error extracting Aging Data from background costs and "
+                    "background behaviors! Error Message: {}",
+                    error);
+            }
+            cost::Cost backgroundCost = {cost::CostCategory::MISC,
+                                         "Background Cost", storage[0].cost};
+            person.AddCost(backgroundCost);
+            person.SetUtility(storage[0].util);
+        }
+
+    public:
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm) {
+            person.Grow();
+            this->addBackgroundCostAndUtility(person, dm);
+        }
+    };
+
+    Aging::Aging(std::shared_ptr<datamanagement::DataManager> dm,
+                 std::string name)
+        : Event(dm, name) {
+        impl = std::make_unique<AgingIMPL>();
     }
 
-    void
-    Aging::addBackgroundCostAndUtility(std::shared_ptr<person::Person> person) {
-        std::unordered_map<std::string, std::string> selectCriteria;
-
-        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
-        selectCriteria["gender"] =
-            person::person::sexEnumToStringMap[person->getSex()];
-        selectCriteria["drug_behavior"] =
-            person::person::behaviorEnumToStringMap[person->getBehavior()];
-
-        auto resultTable = table->selectWhere(selectCriteria);
-        if (resultTable->empty()) {
-            // error
-            return;
-        }
-        auto res = resultTable->getColumn("cost");
-        if (res.empty()) {
-            this->logger->error("No cost avaliable for Aging");
-        } else {
-            double cost = std::stod(res[0]);
-            Cost::Cost backgroundCost = {this->costCategory, "Background Cost",
-                                         cost};
-            person->addCost(backgroundCost, this->getCurrentTimestep());
-        }
-
-        res = resultTable->getColumn("utility");
-        if (res.empty()) {
-            this->logger->error("No utility avaliable for Aging");
-            return;
-        }
-        double utility = std::stod(res[0]);
-        person->setUtility(utility);
+    void Aging::doEvent(person::PersonBase &person) {
+        impl->doEvent(person, dm);
     }
+
 } // namespace event

@@ -28,21 +28,25 @@ namespace person {
     class PersonBase;
 }
 
+// Forward Defining DataManager to require in constructor
+namespace datamanagement {
+    class DataManager;
+}
+
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-    class EventBase {
-    private:
-        class Event;
-        class ProbEvent;
-        std::unique_ptr<Event> pImplEVENT;
-        std::unique_ptr<ProbEvent> pImplPROBEVENT;
+    class Event {
+    protected:
+        std::shared_ptr<datamanagement::DataManager> dm;
+        virtual void doEvent(person::PersonBase &person) = 0;
 
     public:
-        EventBase(std::shared_ptr<std::mt19937_64> generator = NULL,
-                  std::string dataquery = "", std::string name = "");
-        ~EventBase() = default;
-        int Execute(person::PersonBase &person);
+        const std::string EVENT_NAME;
+        Event(std::shared_ptr<datamanagement::DataManager> dm,
+              std::string name = std::string("Event"))
+            : dm(dm), EVENT_NAME(name) {}
+        ~Event() = default;
+        virtual int Execute(person::PersonBase &person);
     };
-
 } // namespace event
 #endif

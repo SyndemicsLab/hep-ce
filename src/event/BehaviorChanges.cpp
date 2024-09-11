@@ -15,95 +15,153 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "BehaviorChanges.hpp"
+#include "DataManager.hpp"
+#include "Decider.hpp"
+#include "Person.hpp"
+#include "spdlog/spdlog.h"
+#include <sstream>
 
 namespace event {
-    void BehaviorChanges::doEvent(std::shared_ptr<person::Person> person) {
-        // Determine person's current behavior classification
-        person::Behavior bc = person->getBehavior();
+    class BehaviorChanges::BehaviorChangesIMPL {
+    private:
+        cost::CostCategory costCategory = cost::CostCategory::BEHAVIOR;
 
-        // Insert person's behavior cost
-        this->calculateCostAndUtility(person);
+        struct behavior_trans_select {
+            double never;
+            double fni;
+            double fi;
+            double ni;
+            double in;
+        };
 
-        // Typical Behavior Change
-        // 1. Generate the transition probabilities based on the starting state
-        std::vector<double> probs = getTransitions(person);
-        // currently using placeholders to test compiling
-        // std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
-        // 2. Draw a behavior state to be transitioned to
-        int res = this->getDecision(probs);
-        if (res >= (int)person::Behavior::COUNT) {
-            this->logger->error("Behavior Classification Decision returned "
-                                "value outside bounds");
-            return;
+        struct behavior_costs_select {
+            double cost;
+            double util;
+        };
+
+        static int callback_trans(void *storage, int count, char **data,
+                                  char **columns) {
+            std::vector<struct behavior_trans_select> *d =
+                (std::vector<struct behavior_trans_select> *)storage;
+            struct behavior_trans_select temp;
+            temp.never = std::stod(data[0]);
+            temp.fni = std::stod(data[1]);
+            temp.fi = std::stod(data[2]);
+            temp.ni = std::stod(data[3]);
+            temp.in = std::stod(data[4]);
+            d->push_back(temp);
+            return 0;
         }
-        person::Behavior toBC = (person::Behavior)res;
 
-        // 3. If the drawn state differs from the current state, change the
-        // bools in BehaviorState to match
-        person->updateBehavior(toBC, this->getCurrentTimestep());
+        static int callback_costs(void *storage, int count, char **data,
+                                  char **columns) {
+            std::vector<struct behavior_costs_select> *d =
+                (std::vector<struct behavior_costs_select> *)storage;
+            struct behavior_costs_select temp;
+            temp.cost = std::stod(data[0]); // First Column Selected
+            temp.util = std::stod(data[1]); // Second Column Selected
+            d->push_back(temp);
+            return 0;
+        }
+
+        std::string buildTransitionSQL(person::PersonBase const person) const {
+            std::stringstream sql;
+            sql << "SELECT never, former_noninjection, former_injection, "
+                   "noninjection, injection ";
+            sql << "FROM behavior_transitions ";
+            sql << "WHERE age_years = " << std::to_string(person.GetAge());
+            sql << "AND gender = " << person.GetSex();
+            sql << "AND moud = " << person.GetMoudState();
+            sql << "AND drug_behavior = " << person.GetBehavior();
+
+            return sql.str();
+        }
+
+        std::string buildCostSQL(person::PersonBase const person) const {
+            std::stringstream sql;
+            sql << "SELECT cost, utility FROM behavior_costs";
+            sql << "INNER JOIN behavior_utilities ON "
+                   "((behavior_costs.age_years = "
+                   "behavior_utilities.age_years) AND "
+                   "(behavior_costs.gender = behavior_utilities.gender) "
+                   "AND (behavior_costs.drug_behavior = "
+                   "behavior_utilities.drug_behavior)) ";
+            sql << "WHERE behavior_costs.age_years = "
+                << std::to_string(person.GetAge());
+            sql << " AND behavior_costs.gender = " << person.GetSex();
+            sql << " AND behavior_costs.drug_behavior = "
+                << person.GetBehavior();
+            return sql.str();
+        }
+
+        void calculateCostAndUtility(
+            person::PersonBase &person,
+            std::shared_ptr<datamanagement::DataManager> dm) const {
+            std::string query = this->buildCostSQL(person);
+            std::vector<struct behavior_costs_select> storage;
+            std::string error;
+            int rc = dm->SelectCustomCallback(query, this->callback_costs,
+                                              &storage, error);
+            if (!rc) {
+                spdlog::get("main")->error(
+                    "No cost avaliable for Behavior Changes");
+            }
+
+            cost::Cost behaviorCost = {this->costCategory, "Drug Behavior",
+                                       storage[0].cost};
+            person.AddCost(behaviorCost);
+            person.SetUtility(storage[0].util);
+        }
+
+    public:
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) {
+
+            // Determine person's current behavior classification
+            person::Behavior bc = person.GetBehavior();
+
+            // Insert person's behavior cost
+            this->calculateCostAndUtility(person, dm);
+
+            // Typical Behavior Change
+            // 1. Generate the transition probabilities based on the starting
+            // state
+            std::string query = this->buildTransitionSQL(person);
+            std::vector<struct behavior_trans_select> storage;
+            std::string error;
+            int rc = dm->SelectCustomCallback(query, this->callback_trans,
+                                              &storage, error);
+
+            std::vector<double> probs = {storage[0].never, storage[0].fni,
+                                         storage[0].fi, storage[0].ni,
+                                         storage[0].in};
+            // currently using placeholders to test compiling
+            // std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
+            // 2. Draw a behavior state to be transitioned to
+            int res = decider->GetDecision(probs);
+            if (res >= (int)person::Behavior::COUNT) {
+                spdlog::get("main")->error(
+                    "Behavior Classification Decision returned "
+                    "value outside bounds");
+                return;
+            }
+            person::Behavior toBC = (person::Behavior)res;
+
+            // 3. If the drawn state differs from the current state, change the
+            // bools in BehaviorState to match
+            person.UpdateBehavior(toBC);
+        }
+    };
+
+    BehaviorChanges::BehaviorChanges(
+        std::shared_ptr<stats::Decider> decider,
+        std::shared_ptr<datamanagement::DataManager> dm, std::string name)
+        : Event(dm, name), decider(decider) {
+        impl = std::make_unique<BehaviorChangesIMPL>();
     }
 
-    std::vector<double>
-    BehaviorChanges::getTransitions(std::shared_ptr<person::Person> person) {
-        std::unordered_map<std::string, std::string> selectCriteria;
-
-        // intentional truncation
-        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
-        selectCriteria["gender"] =
-            person::person::sexEnumToStringMap[person->getSex()];
-        // selectCriteria["moud"] =
-        //     person::person::moudEnumToStringMap[person->getMoudState()];
-        selectCriteria["drug_behavior"] =
-            person::person::behaviorEnumToStringMap[person->getBehavior()];
-
-        auto resultTable = table->selectWhere(selectCriteria);
-
-        std::vector<double> result = {};
-
-        std::vector<std::string> columnVec = resultTable->getColumnNames();
-        for (auto kv : person::person::behaviorEnumToStringMap) {
-            auto res = (*resultTable)[kv.second];
-            result.push_back(std::stod(res[0]));
-        }
-        return result;
-    }
-
-    void BehaviorChanges::calculateCostAndUtility(
-        std::shared_ptr<person::Person> person) const {
-        std::unordered_map<std::string, std::string> selectCriteria;
-
-        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
-        selectCriteria["gender"] =
-            person::person::sexEnumToStringMap[person->getSex()];
-        // selectCriteria["moud"] =
-        //     person::person::moudEnumToStringMap[person->getMoudState()];
-        selectCriteria["drug_behavior"] =
-            person::person::behaviorEnumToStringMap[person->getBehavior()];
-
-        // should reduce to a single value
-        auto resultTable = table->selectWhere(selectCriteria);
-
-        if (resultTable->empty()) {
-            // log error
-            return;
-        }
-
-        auto res = resultTable->getColumn("cost");
-        if (res.empty()) {
-            this->logger->error("No cost avaliable for Behavior Changes");
-        } else {
-            double cost = std::stod(res[0]);
-            Cost::Cost behaviorCost = {this->costCategory, "Drug Behavior",
-                                       cost};
-            person->addCost(behaviorCost, this->getCurrentTimestep());
-        }
-
-        res = resultTable->getColumn("utility");
-        if (res.empty()) {
-            this->logger->error("No utility avaliable for Behavior Changes");
-            return;
-        }
-        double util = std::stod(res[0]);
-        person->setUtility(util);
+    void BehaviorChanges::doEvent(person::PersonBase &person) {
+        impl->doEvent(person, dm, decider);
     }
 } // namespace event

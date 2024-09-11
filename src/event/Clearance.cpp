@@ -15,46 +15,56 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Clearance.hpp"
+#include "DataManager.hpp"
+#include "Person.hpp"
+#include "Utils.hpp"
 
 namespace event {
-    Clearance::Clearance(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                         Data::Config &config,
-                         std::shared_ptr<spdlog::logger> logger,
+    class Clearance::ClearanceIMPL {
+    private:
+    public:
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) {
+            std::string data;
+            int rc = dm->GetFromConfig("infection.clearance_prob", data);
+            double clearanceProbability = 0.0;
+            if (data.empty()) {
+                // it's basically universally accepted that 25% of acute hcv
+                // infections clear in the 6-month acute infection period
+                clearanceProbability = Utils::probabilityToRate(0.25) / 6.0;
+            } else {
+                // if the user provides a clearance probability, use that value
+                // instead
+                clearanceProbability = std::stod(data);
+            }
+
+            // people infected with hcv have some probability of spontaneous
+            // clearance.
+
+            // if person isn't infected or is chronic, nothing to do
+            if (person.GetHCV() != person::HCV::ACUTE) {
+                return;
+            }
+            // 1. Get the probability of acute clearance
+            std::vector<double> prob = {clearanceProbability};
+            // 2. Decide whether the person clears
+            int doesNotClear = decider->GetDecision(prob);
+            // if you do not clear, return immediately
+            if (doesNotClear) {
+                return;
+            }
+            person.ClearHCV();
+        }
+    };
+    Clearance::Clearance(std::shared_ptr<stats::Decider> decider,
+                         std::shared_ptr<datamanagement::DataManager> dm,
                          std::string name)
-        : ProbEvent(generator, table, config, logger, name) {
-        std::shared_ptr<Data::ReturnType> clearance =
-            this->config.get_optional("infection.clearance_prob", (double)-1.0);
-        if (clearance) {
-            // if the user provides a clearance probability, use that value
-            // instead
-            this->clearanceProb = std::get<double>(*clearance);
-        } else {
-            // it's basically universally accepted that 25% of acute hcv
-            // infections clear in the 6-month acute infection period
-            this->clearanceProb = Utils::probabilityToRate(0.25) / 6.0;
-        }
+        : Event(dm, name), decider(decider) {
+        impl = std::make_unique<ClearanceIMPL>();
     }
 
-    void Clearance::doEvent(std::shared_ptr<person::Person> person) {
-        // people infected with hcv have some probability of spontaneous
-        // clearance.
-
-        // if person isn't infected or is chronic, nothing to do
-        if (person->getHCV() != person::HCV::ACUTE) {
-            return;
-        }
-        // 1. Get the probability of acute clearance
-        std::vector<double> prob = this->getClearanceProb();
-        // 2. Decide whether the person clears
-        int doesNotClear = this->getDecision(prob);
-        // if you do not clear, return immediately
-        if (doesNotClear) {
-            return;
-        }
-        person->clearHCV(this->getCurrentTimestep());
-    }
-
-    std::vector<double> Clearance::getClearanceProb() {
-        return {this->clearanceProb};
+    void Clearance::doEvent(person::PersonBase &person) {
+        impl->doEvent(person, dm, decider);
     }
 } // namespace event

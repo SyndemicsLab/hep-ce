@@ -24,20 +24,15 @@ namespace event {
     /// @brief Subclass of Event used to Increase the Age of a Person
     class Aging : public Event {
     private:
+        class AgingIMPL;
+        std::unique_ptr<AgingIMPL> impl;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
-        /// @brief Adds person's background cost
-        /// @param person The person to whom cost will be added
-        void
-        addBackgroundCostAndUtility(std::shared_ptr<person::Person> person);
+        void doEvent(person::PersonBase &person) override;
 
     public:
-        Aging(Data::IDataTablePtr table, Data::Config &config,
-              std::shared_ptr<spdlog::logger> logger =
-                  std::make_shared<spdlog::logger>("default"),
-              std::string name = std::string("Aging"))
-            : Event(table, config, logger, name) {}
+        Aging(std::shared_ptr<datamanagement::DataManager> dm,
+              std::string name = std::string("Aging"));
         virtual ~Aging() = default;
     };
 } // namespace event

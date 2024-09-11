@@ -509,7 +509,7 @@ namespace person {
     /// Base Defined Pass Through Wrappers
 
     PersonBase::PersonBase() {
-        pImplPERSON = std::make_unique<person::PersonBase::Person>();
+        pImplPERSON = std::make_shared<person::PersonBase::Person>();
     }
     PersonBase::~PersonBase() = default;
 

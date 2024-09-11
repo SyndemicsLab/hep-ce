@@ -28,7 +28,7 @@ namespace person {
     class PersonBase {
     private:
         class Person;
-        std::unique_ptr<Person> pImplPERSON;
+        std::shared_ptr<Person> pImplPERSON;
 
     public:
         PersonBase();
