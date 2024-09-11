@@ -32,7 +32,7 @@ namespace event {
             "pregnancy.infant_hcv_tested_probability", (double)-1.0);
     }
 
-    void Pregnancy::doEvent(std::shared_ptr<person::Person> person) {
+    void Pregnancy::doEvent(person::PersonBase &person) {
         // If a person is dead, male, younger than 15, older than 45, or been in
         // postpartum for less than 3 months then skip
 
@@ -75,7 +75,7 @@ namespace event {
         person->clearHCV(this->getCurrentTimestep());
     }
 
-    void Pregnancy::checkMiscarriage(std::shared_ptr<person::Person> person) {
+    void Pregnancy::checkMiscarriage(person::PersonBase &person) {
         std::vector<double> prob = this->getMiscarriageProb(person);
         // if a miscarriage (getDecision == 0)
         if (!this->getDecision(prob)) {
@@ -86,7 +86,7 @@ namespace event {
     }
 
     std::vector<double>
-    Pregnancy::getPregnancyProb(std::shared_ptr<person::Person> person) {
+    Pregnancy::getPregnancyProb(person::PersonBase &person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age"] = std::to_string((int)(person->age / 12.0));
@@ -102,7 +102,7 @@ namespace event {
     }
 
     std::vector<double>
-    Pregnancy::getLiveBirthProb(std::shared_ptr<person::Person> person) {
+    Pregnancy::getLiveBirthProb(person::PersonBase &person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age"] = std::to_string((int)(person->age / 12.0));
@@ -118,7 +118,7 @@ namespace event {
     }
 
     std::vector<double>
-    Pregnancy::getMiscarriageProb(std::shared_ptr<person::Person> person) {
+    Pregnancy::getMiscarriageProb(person::PersonBase &person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age"] = std::to_string((int)(person->age / 12.0));

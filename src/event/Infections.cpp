@@ -17,7 +17,7 @@
 #include "Infections.hpp"
 
 namespace event {
-    void Infections::doEvent(std::shared_ptr<person::Person> person) {
+    void Infections::doEvent(person::PersonBase &person) {
         // only those who aren't infected go to the rest of the event.
         // those who are infected transition from acute to chronic after 6
         // months.
@@ -44,8 +44,7 @@ namespace event {
         person->infect(this->getCurrentTimestep());
     }
 
-    std::vector<double>
-    Infections::getInfectProb(std::shared_ptr<person::Person> person) {
+    std::vector<double> Infections::getInfectProb(person::PersonBase &person) {
         std::unordered_map<std::string, std::string> selectCriteria;
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
         selectCriteria["gender"] =

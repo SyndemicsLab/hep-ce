@@ -38,8 +38,7 @@ namespace DataWriter {
     /// them into a DataTable row
     /// @param person Pointer to the current Person object
     /// @return Pointer to a DataTable row
-    Data::IDataTablePtr
-    personToDataTable(std::shared_ptr<person::Person> person);
+    Data::IDataTablePtr personToDataTable(person::PersonBase &person);
 
     void
     writeGeneralStats(std::vector<std::shared_ptr<person::Person>> &population,

@@ -34,8 +34,7 @@ namespace DataWriter {
         newDT->toCSV(f.string());
     }
 
-    Data::IDataTablePtr
-    personToDataTable(std::shared_ptr<person::Person> person) {
+    Data::IDataTablePtr personToDataTable(person::PersonBase &person) {
         std::map<std::string, std::vector<std::string>> data;
         std::vector<std::string> headerOrder = {"id",
                                                 "sex",

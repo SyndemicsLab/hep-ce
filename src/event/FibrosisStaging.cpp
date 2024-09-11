@@ -17,7 +17,7 @@
 #include "FibrosisStaging.hpp"
 
 namespace event {
-    void FibrosisStaging::doEvent(std::shared_ptr<person::Person> person) {
+    void FibrosisStaging::doEvent(person::PersonBase &person) {
         // 1. Check the time since the person's last fibrosis staging test. If
         // the person's last test is more recent than the limit, exit event.
         int timeSinceStaging =
@@ -119,7 +119,7 @@ namespace event {
         }
     }
 
-    void FibrosisStaging::addStagingCost(std::shared_ptr<person::Person> person,
+    void FibrosisStaging::addStagingCost(person::PersonBase &person,
                                          const bool testTwo) {
         double cost = testTwo ? this->testOneCost : this->testTwoCost;
         std::string costName = "Fibrosis Staging Cost (Test" +

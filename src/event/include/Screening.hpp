@@ -62,43 +62,41 @@ namespace event {
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
+        void doEvent(person::PersonBase &person) override;
 
         /// @brief The Background Screening Event Undertaken on a Person
         /// @param person The Person undergoing a background Screening
-        void backgroundScreen(std::shared_ptr<person::Person> person);
+        void backgroundScreen(person::PersonBase &person);
 
         /// @brief The Intervention Screening Event Undertaken on a Person
         /// @param person The Person undergoing an Intervention Screening
-        void interventionScreen(std::shared_ptr<person::Person> person);
+        void interventionScreen(person::PersonBase &person);
 
         /// @brief The antibody test to determine if the person is positive for
         /// HCV
         /// @param person The Person undergoing an antibody test
         /// @return Boolean True for a Positive Result, False for a Negative
         /// Result
-        bool antibodyTest(std::shared_ptr<person::Person> person,
-                          std::string configKey);
+        bool antibodyTest(person::PersonBase &person, std::string configKey);
 
         /// @brief The RNA test to determine if the person is positive for HCV
         /// @param person The Person undergoing an RNA test
         /// @return Boolean True for a Positive Result, False for a Negative
         /// Result
-        bool rnaTest(std::shared_ptr<person::Person> person,
-                     std::string configKey);
+        bool rnaTest(person::PersonBase &person, std::string configKey);
 
-        std::vector<double> getBackgroundScreeningProbability(
-            std::shared_ptr<person::Person> person);
+        std::vector<double>
+        getBackgroundScreeningProbability(person::PersonBase &person);
 
-        std::vector<double> getInterventionScreeningProbability(
-            std::shared_ptr<person::Person> person);
+        std::vector<double>
+        getInterventionScreeningProbability(person::PersonBase &person);
 
-        void interventionDecision(std::shared_ptr<person::Person> person);
+        void interventionDecision(person::PersonBase &person);
 
         /// @brief Insert cost for screening of type \code{type}
         /// @param person The person who is accruing cost
         /// @param type The screening type, used to discern the cost to add
-        void insertScreeningCost(std::shared_ptr<person::Person> person,
+        void insertScreeningCost(person::PersonBase &person,
                                  ScreeningType type);
 
     public:

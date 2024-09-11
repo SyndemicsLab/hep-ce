@@ -33,7 +33,7 @@ namespace event {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
+        void doEvent(person::PersonBase &person) override;
         bool isEligible(std::shared_ptr<person::Person> const person) const;
         bool isEligibleFibrosisStage(person::FibrosisState fibrosisState) const;
 
@@ -45,28 +45,28 @@ namespace event {
         /// @brief Add the cost associated with a month of treatment
         /// @param Person the person who accrues the cost
         /// @param cost the cost associated with Person's treatment
-        void addTreatmentCostAndUtility(std::shared_ptr<person::Person> person,
-                                        double cost, double util);
+        void addTreatmentCostAndUtility(person::PersonBase &person, double cost,
+                                        double util);
 
         /// @brief If Person is exposed to loss to follow-up, checks if they
         /// unlink from care
         /// @param Person the Person who may unlink due to loss to follow-up
-        bool isLostToFollowUp(std::shared_ptr<person::Person> person);
+        bool isLostToFollowUp(person::PersonBase &person);
 
-        bool initiatesTreatment(std::shared_ptr<person::Person> person);
+        bool initiatesTreatment(person::PersonBase &person);
 
-        bool doesWithdraw(std::shared_ptr<person::Person> person,
+        bool doesWithdraw(person::PersonBase &person,
                           Data::IDataTablePtr course);
 
-        bool experiencedToxicity(std::shared_ptr<person::Person> person,
+        bool experiencedToxicity(person::PersonBase &person,
                                  Data::IDataTablePtr course);
 
-        void chargeCostOfVisit(std::shared_ptr<person::Person> person);
+        void chargeCostOfVisit(person::PersonBase &person);
 
-        void chargeCostOfCourse(std::shared_ptr<person::Person> person,
+        void chargeCostOfCourse(person::PersonBase &person,
                                 Data::IDataTablePtr course);
 
-        void quitEngagement(std::shared_ptr<person::Person> person);
+        void quitEngagement(person::PersonBase &person);
 
     public:
         Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,

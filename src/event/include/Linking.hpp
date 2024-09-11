@@ -30,15 +30,14 @@ namespace event {
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
-        std::vector<double>
-        getTransitions(std::shared_ptr<person::Person> person,
-                       std::string columnKey);
+        void doEvent(person::PersonBase &person) override;
+        std::vector<double> getTransitions(person::PersonBase &person,
+                                           std::string columnKey);
 
         /// @brief
         /// @param person
-        void addLinkingCost(std::shared_ptr<person::Person> person,
-                            std::string name, double cost);
+        void addLinkingCost(person::PersonBase &person, std::string name,
+                            double cost);
 
     public:
         Linking(std::mt19937_64 &generator, Data::IDataTablePtr table,

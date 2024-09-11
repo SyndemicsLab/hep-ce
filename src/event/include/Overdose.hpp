@@ -27,13 +27,13 @@ namespace event {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
+        void doEvent(person::PersonBase &person) override;
 
         /// @brief Get the probability that a person will overdose.
         /// @param person Pointer to the relevant person::Person object which
         /// might overdose.
         /// @return Overdose probability based on person attributes
-        double getProbability(std::shared_ptr<person::Person> person);
+        double getProbability(person::PersonBase &person);
 
     public:
         Overdose(std::mt19937_64 &generator, Data::IDataTablePtr table,

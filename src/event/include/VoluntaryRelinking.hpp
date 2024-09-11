@@ -31,7 +31,7 @@ namespace event {
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
+        void doEvent(person::PersonBase &person) override;
 
     public:
         VoluntaryRelinking(std::mt19937_64 &generator,

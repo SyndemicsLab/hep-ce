@@ -25,7 +25,7 @@ namespace event {
         this->costCategory = Cost::CostCategory::TREATMENT;
     }
 
-    void Treatment::doEvent(std::shared_ptr<person::Person> person) {
+    void Treatment::doEvent(person::PersonBase &person) {
         // 1. Check if the Person is Lost To Follow Up (LTFU)
         if (this->isLostToFollowUp(person)) {
             this->quitEngagement(person);
@@ -118,14 +118,14 @@ namespace event {
         return false;
     }
 
-    void Treatment::addTreatmentCostAndUtility(
-        std::shared_ptr<person::Person> person, double cost, double util) {
+    void Treatment::addTreatmentCostAndUtility(person::PersonBase &person,
+                                               double cost, double util) {
         Cost::Cost treatmentCost = {this->costCategory, "Treatment Cost", cost};
         person->addCost(treatmentCost, this->getCurrentTimestep());
         person->setUtility(util);
     }
 
-    bool Treatment::isLostToFollowUp(std::shared_ptr<person::Person> person) {
+    bool Treatment::isLostToFollowUp(person::PersonBase &person) {
         if (!person->hasInitiatedTreatment() && !this->isEligible(person)) {
             // check if person is lost to follow-up due to ineligibility
             double ltfuProb = std::get<double>(
@@ -140,7 +140,7 @@ namespace event {
         return false;
     }
 
-    void Treatment::chargeCostOfVisit(std::shared_ptr<person::Person> person) {
+    void Treatment::chargeCostOfVisit(person::PersonBase &person) {
         double cost =
             std::get<double>(this->config.get("treatment.treatment_cost", 0.0));
         Cost::Cost visitCost = {this->costCategory, "Cost of Treatment Visit",
@@ -148,7 +148,7 @@ namespace event {
         person->addCost(visitCost, this->getCurrentTimestep());
     }
 
-    void Treatment::chargeCostOfCourse(std::shared_ptr<person::Person> person,
+    void Treatment::chargeCostOfCourse(person::PersonBase &person,
                                        Data::IDataTablePtr course) {
 
         double cost = std::stod(course->getColumn("treatment_cost")[0]);
@@ -160,7 +160,7 @@ namespace event {
         person->setUtility(util);
     }
 
-    bool Treatment::initiatesTreatment(std::shared_ptr<person::Person> person) {
+    bool Treatment::initiatesTreatment(person::PersonBase &person) {
         // if person hasn't initialized draw, if they have, continue treatment
         if (!person->hasInitiatedTreatment()) {
             double initProb = std::get<double>(
@@ -191,14 +191,14 @@ namespace event {
         return false;
     }
 
-    bool Treatment::experiencedToxicity(std::shared_ptr<person::Person> person,
+    bool Treatment::experiencedToxicity(person::PersonBase &person,
                                         Data::IDataTablePtr course) {
         double toxProb = std::stod(course->getColumn("toxicity")[0]);
         int toxicity = this->getDecision({toxProb});
         return (toxicity == 1) ? true : false;
     }
 
-    void Treatment::quitEngagement(std::shared_ptr<person::Person> person) {
+    void Treatment::quitEngagement(person::PersonBase &person) {
         // unlink from care
         person->unlink(this->getCurrentTimestep());
         // reset utility

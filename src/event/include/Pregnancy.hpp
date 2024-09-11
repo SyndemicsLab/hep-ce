@@ -14,20 +14,17 @@ namespace event {
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
+        void doEvent(person::PersonBase &person) override;
         /// @brief Returns the probability of pregnancy
-        std::vector<double>
-        getPregnancyProb(std::shared_ptr<person::Person> person);
+        std::vector<double> getPregnancyProb(person::PersonBase &person);
 
-        std::vector<double>
-        getLiveBirthProb(std::shared_ptr<person::Person> person);
+        std::vector<double> getLiveBirthProb(person::PersonBase &person);
 
         /// @brief
         /// @return
-        std::vector<double>
-        getMiscarriageProb(std::shared_ptr<person::Person> person);
+        std::vector<double> getMiscarriageProb(person::PersonBase &person);
 
-        void checkMiscarriage(std::shared_ptr<person::Person> person);
+        void checkMiscarriage(person::PersonBase &person);
 
     public:
         Pregnancy(std::mt19937_64 &generator, Data::IDataTablePtr table,

@@ -18,7 +18,7 @@
 #include "Linking.hpp"
 
 namespace event {
-    void Linking::doEvent(std::shared_ptr<person::Person> person) {
+    void Linking::doEvent(person::PersonBase &person) {
         person::HCV state = person->getHCV();
         if (state == person::HCV::NONE) {
             // add false positive cost
@@ -64,9 +64,8 @@ namespace event {
         }
     }
 
-    std::vector<double>
-    Linking::getTransitions(std::shared_ptr<person::Person> person,
-                            std::string columnKey) {
+    std::vector<double> Linking::getTransitions(person::PersonBase &person,
+                                                std::string columnKey) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         // intentional truncation
@@ -94,8 +93,8 @@ namespace event {
         return result;
     }
 
-    void Linking::addLinkingCost(std::shared_ptr<person::Person> person,
-                                 std::string name, double cost) {
+    void Linking::addLinkingCost(person::PersonBase &person, std::string name,
+                                 double cost) {
         Cost::Cost linkingCost = {this->costCategory, name, cost};
         person->addCost(linkingCost, this->getCurrentTimestep());
     }

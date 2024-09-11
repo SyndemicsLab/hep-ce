@@ -31,7 +31,7 @@ namespace event {
         double testTwoCost = 0;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
+        void doEvent(person::PersonBase &person) override;
 
         /// @brief Aggregate the fibrosis stage testing probabilities for a
         /// given Person object.
@@ -54,7 +54,7 @@ namespace event {
         std::vector<double> getTransitions(Data::IDataTablePtr table,
                                            std::string configLookupKey);
 
-        void addStagingCost(std::shared_ptr<person::Person> person,
+        void addStagingCost(person::PersonBase &person,
                             const bool testTwo = false);
 
     public:

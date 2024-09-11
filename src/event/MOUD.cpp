@@ -17,7 +17,7 @@
 #include "MOUD.hpp"
 
 namespace event {
-    void MOUD::doEvent(std::shared_ptr<person::Person> person) {
+    void MOUD::doEvent(person::PersonBase &person) {
         person::Behavior bc = person->getBehavior();
 
         // Can only enter MOUD if in an active use state.

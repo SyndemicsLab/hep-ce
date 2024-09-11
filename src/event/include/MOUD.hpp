@@ -26,19 +26,18 @@ namespace event {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
+        void doEvent(person::PersonBase &person) override;
 
         /// @brief Retrieve Transition Rates for MOUD for the
         /// individual Person from the SQL Table
         /// @param person Person to retrieve transition rates for
         /// @return Vector of Transition Rates for each MOUD status
-        std::vector<double>
-        getTransitions(std::shared_ptr<person::Person> person);
+        std::vector<double> getTransitions(person::PersonBase &person);
 
         /// @brief Add cost based on person's current treatment status upon
         /// "experiencing" this event
         /// @param person Person accruing cost
-        void insertMOUDCost(std::shared_ptr<person::Person> person);
+        void insertMOUDCost(person::PersonBase &person);
 
     public:
         MOUD(std::mt19937_64 &generator, Data::IDataTablePtr table,

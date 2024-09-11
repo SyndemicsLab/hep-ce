@@ -19,7 +19,7 @@
 #include <string>
 
 namespace event {
-    void VoluntaryRelinking::doEvent(std::shared_ptr<person::Person> person) {
+    void VoluntaryRelinking::doEvent(person::PersonBase &person) {
         double relinkProbability = std::get<double>(
             this->config.get("linking.voluntary_relinkage_probability", 0.0));
 

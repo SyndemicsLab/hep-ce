@@ -29,14 +29,13 @@ namespace event {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
+        void doEvent(person::PersonBase &person) override;
 
         /// @brief Retrieve Infection Probabilities for Infection Chances for
         /// the individual Person from the SQL Table
         /// @param person Person whom to retrieve Infection Probabilities for
         /// @return Vector of Infection Probabilities
-        std::vector<double>
-        getInfectProb(std::shared_ptr<person::Person> person);
+        std::vector<double> getInfectProb(person::PersonBase &person);
 
     public:
         Infections(std::mt19937_64 &generator, Data::IDataTablePtr table,

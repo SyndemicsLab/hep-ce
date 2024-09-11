@@ -18,7 +18,7 @@
 #include "Overdose.hpp"
 
 namespace event {
-    void Overdose::doEvent(std::shared_ptr<person::Person> person) {
+    void Overdose::doEvent(person::PersonBase &person) {
         person::Behavior bc = person->getBehavior();
         // return immediately if not in active use state
         if (bc < person::Behavior::NONINJECTION) {
@@ -33,7 +33,7 @@ namespace event {
         }
     }
 
-    double Overdose::getProbability(std::shared_ptr<person::Person> person) {
+    double Overdose::getProbability(person::PersonBase &person) {
         // overdose probability is stratified by behavior classification and
         // MOUD state
         return 0.0;

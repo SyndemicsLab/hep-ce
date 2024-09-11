@@ -18,7 +18,7 @@
 #include <string>
 
 namespace event {
-    void Screening::doEvent(std::shared_ptr<person::Person> person) {
+    void Screening::doEvent(person::PersonBase &person) {
         // one-time screen or periodic screen
         switch (this->interventionType) {
         case InterventionType::ONETIME:
@@ -53,8 +53,7 @@ namespace event {
         }
     }
 
-    void
-    Screening::interventionDecision(std::shared_ptr<person::Person> person) {
+    void Screening::interventionDecision(person::PersonBase &person) {
         std::vector<double> interventionProbability =
             this->getInterventionScreeningProbability(person);
         int choice = getDecision(interventionProbability);
@@ -63,7 +62,7 @@ namespace event {
         }
     }
 
-    void Screening::backgroundScreen(std::shared_ptr<person::Person> person) {
+    void Screening::backgroundScreen(person::PersonBase &person) {
         if (!(this->getCurrentTimestep() - person->getTimeOfLastScreening()) &&
             this->getCurrentTimestep() > 0) {
             return;
@@ -96,7 +95,7 @@ namespace event {
         person->unlink(this->getCurrentTimestep());
     }
 
-    void Screening::interventionScreen(std::shared_ptr<person::Person> person) {
+    void Screening::interventionScreen(person::PersonBase &person) {
         person->markScreened();
 
         std::string testPrefix = "screening_intervention_";
@@ -119,7 +118,7 @@ namespace event {
         }
     }
 
-    bool Screening::antibodyTest(std::shared_ptr<person::Person> person,
+    bool Screening::antibodyTest(person::PersonBase &person,
                                  std::string configKey) {
         double probability = 0.5;
         if (person->getSeropositive()) {
@@ -142,8 +141,7 @@ namespace event {
         return value;
     }
 
-    bool Screening::rnaTest(std::shared_ptr<person::Person> person,
-                            std::string configKey) {
+    bool Screening::rnaTest(person::PersonBase &person, std::string configKey) {
         double probability = 0.5;
         person::HCV infectionStatus = person->getHCV();
         if (infectionStatus == person::HCV::ACUTE) {
@@ -162,8 +160,8 @@ namespace event {
         return value;
     }
 
-    std::vector<double> Screening::getBackgroundScreeningProbability(
-        std::shared_ptr<person::Person> person) {
+    std::vector<double>
+    Screening::getBackgroundScreeningProbability(person::PersonBase &person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
@@ -204,8 +202,8 @@ namespace event {
         return result;
     }
 
-    std::vector<double> Screening::getInterventionScreeningProbability(
-        std::shared_ptr<person::Person> person) {
+    std::vector<double>
+    Screening::getInterventionScreeningProbability(person::PersonBase &person) {
         std::unordered_map<std::string, std::string> selectCriteria;
 
         selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
@@ -225,7 +223,7 @@ namespace event {
         return result;
     }
 
-    void Screening::insertScreeningCost(std::shared_ptr<person::Person> person,
+    void Screening::insertScreeningCost(person::PersonBase &person,
                                         ScreeningType type) {
         double screeningCost;
         std::string screeningName;

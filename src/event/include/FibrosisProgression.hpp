@@ -18,42 +18,30 @@
 #ifndef EVENT_FIBROSISPROGRESSION_HPP_
 #define EVENT_FIBROSISPROGRESSION_HPP_
 
+#include "Decider.hpp"
 #include "Event.hpp"
 #include <map>
+#include <memory>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
 
     /// @brief Subclass of Event used to Progress HCV
-    class FibrosisProgression : public ProbEvent {
+    class FibrosisProgression : public Event {
     private:
-        bool addCostOnlyIfIdentified = false;
+        class FibrosisProgressionIMPL;
+        std::unique_ptr<FibrosisProgressionIMPL> impl;
+        std::shared_ptr<stats::Decider> decider;
+
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::Person> person) override;
-
-        std::vector<double> getTransition(person::FibrosisState fs);
-
-        void addLiverDiseaseCost(std::shared_ptr<person::Person> person);
+        void doEvent(person::PersonBase &person) override;
 
     public:
         FibrosisProgression(
-            std::mt19937_64 &generator, Data::IDataTablePtr table,
-            Data::Config &config,
-            std::shared_ptr<spdlog::logger> logger =
-                std::make_shared<spdlog::logger>("default"),
-            std::string name = std::string("FibrosisProgression"))
-            : ProbEvent(generator, table, config, logger, name) {
-            this->costCategory = Cost::CostCategory::LIVER;
-            std::shared_ptr<Data::ReturnType> toggleCost =
-                this->config.get_optional(
-                    "fibrosis.add_cost_only_if_identified", false);
-            if (toggleCost) {
-                this->addCostOnlyIfIdentified = std::get<bool>(*toggleCost);
-            } else {
-                this->addCostOnlyIfIdentified = false;
-            }
-        }
+            std::shared_ptr<stats::Decider> decider,
+            std::shared_ptr<datamanagement::DataManager> dm,
+            std::string name = std::string("FibrosisProgression"));
         virtual ~FibrosisProgression() = default;
     };
 } // namespace event
