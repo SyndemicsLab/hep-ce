@@ -75,6 +75,7 @@ namespace person {
         int GetTimeBehaviorChange() const;
         int GetTimeHCVChanged() const;
         int GetTimeFibrosisStateChanged() const;
+        int GetTimeSinceStaging() const;
         bool GetSeropositive() const;
         int GetTimeIdentified() const;
         LinkageState GetLinkState() const;

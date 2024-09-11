@@ -102,7 +102,7 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback_costs,
                                               &storage, error);
-            if (rc) {
+            if (rc != 0) {
                 spdlog::get("main")->error(
                     "No cost avaliable for Behavior Changes");
             }

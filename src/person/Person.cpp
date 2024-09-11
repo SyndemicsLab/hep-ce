@@ -210,6 +210,8 @@ namespace person {
         ////////////// CHECKS /////////////////
         ////////////// GETTERS ////////////////
 
+        int GetCurrentTimestep() const { return this->_currentTime; }
+
         int GetAge() const { return this->age; }
 
         /// @brief Getter for the number of HCV infections experienced by Person
@@ -668,6 +670,10 @@ namespace person {
     }
     int PersonBase::GetTimeOfLastStaging() const {
         return pImplPERSON->GetTimeOfLastStaging();
+    }
+    int PersonBase::GetTimeSinceStaging() const {
+        return pImplPERSON->GetCurrentTimestep() -
+               pImplPERSON->GetTimeOfLastStaging();
     }
     MOUD PersonBase::GetMoudState() const {
         return pImplPERSON->GetMoudState();

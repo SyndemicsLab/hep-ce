@@ -15,72 +15,155 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "FibrosisStaging.hpp"
+#include "DataManager.hpp"
+#include "Decider.hpp"
+#include "Person.hpp"
+#include "spdlog/spdlog.h"
+#include <sstream>
 
 namespace event {
-    void FibrosisStaging::doEvent(person::PersonBase &person) {
-        // 1. Check the time since the person's last fibrosis staging test. If
-        // the person's last test is more recent than the limit, exit event.
-        int timeSinceStaging =
-            this->getCurrentTimestep() - person->getTimeOfLastStaging();
-        if (timeSinceStaging < 0) {
-            // log an error
-            return;
+    class FibrosisStaging::FibrosisStagingIMPL {
+    private:
+        static int callback(void *storage, int count, char **data,
+                            char **columns) {
+            std::vector<std::vector<double>> *d =
+                (std::vector<std::vector<double>> *)storage;
+            std::vector<double> probs;
+            for (int i = 0; i < count; ++i) {
+                probs.push_back(std::stod(data[i]));
+            }
+            d->push_back(probs);
+            return 0;
+        }
+        std::string buildSQL(person::PersonBase &person, std::string columns) {
+            std::stringstream sql;
+            sql << "SELECT " << columns << " FROM fibrosis ";
+            sql << "WHERE true_fib = " << person.GetFibrosisState();
+            return sql.str();
         }
 
-        int period =
-            std::get<int>(this->config.get("fibrosis_staging.period", (int)-1));
-        if (period <= 0) {
-            // log error
+        std::string
+        getColumnNameFromConfig(std::shared_ptr<datamanagement::DataManager> dm,
+                                std::string configLookupKey) {
+            std::string column;
+            column.clear();
+            dm->GetFromConfig(configLookupKey, column);
+            return column;
         }
-        if (((int)timeSinceStaging) < period) {
-            return;
+        /// @brief Aggregate the fibrosis stage testing probabilities for a
+        /// given Person object.
+        /// @details Fibrosis staging inputs are provided both in the tabular
+        /// inputs and in the text-based configuration:
+        // clang-format off
+        /// | Configuration Input Name | Description |
+        /// | ------------------------ | ----------- |
+        /// | period                   | Number of months between staging tests.                                                                                                              |
+        /// | multitest_result_method  | (Optional) Possible values: latest, maximum. Specifies whether to use the latest test result or the maximum test result when using two test methods. |
+        /// | test_one                 | Name of fibrosis staging test one. Must match a column header in the fibrosis staging tabular input.                                                 |
+        /// | test_one_cost            | Cost of fibrosis staging test one in USD.                                                                                                            |
+        /// | test_two                 | (Optional) Name of fibrosis staging test two. Must match a column header in the fibrosis staging tabular input.                                      |
+        /// | test_two_cost            | Cost of fibrosis staging test two in USD.                                                                                                            |
+        /// | test_two_eligible_stages | A comma-separated list of which outcomes from test one will be tested again with fibrosis staging test two.                                          |
+        // clang-format on
+        /// @param table
+        /// @param configLookupKey
+        /// @return Vector of fibrosis staging outcome probabilities
+        std::vector<double> getTransitionProbabilities(
+            person::PersonBase &person,
+            std::shared_ptr<datamanagement::DataManager> dm,
+            std::string column) {
+            std::string query = buildSQL(person, column);
+            std::vector<std::vector<double>> storage;
+            std::string error;
+            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
+                                              error);
+
+            return storage[0];
         }
 
-        // 2. Check the person's true fibrosis state and use it to search for
-        // the input table to grab only test characteristics for this state.
-        std::unordered_map<std::string, std::string> selectCriteria;
-        selectCriteria["true_fib"] = person::person::
-            fibrosisStateEnumToStringMap[person->getFibrosisState()];
-        auto resultTable = this->table->selectWhere(selectCriteria);
+        void addStagingCost(person::PersonBase &person,
+                            std::shared_ptr<datamanagement::DataManager> dm,
+                            const bool testTwo = false) {
+            std::string t1;
+            t1.clear();
+            dm->GetFromConfig("fibrosis_staging.test_one_cost", t1);
 
-        // 3. Get a vector of the probabilities of each of the possible fibrosis
-        // outcomes (test one).
-        std::vector<double> probs =
-            getTransitions(resultTable, "fibrosis_staging.test_one");
+            std::string t2;
+            t2.clear();
+            dm->GetFromConfig("fibrosis_staging.test_two_cost", t2);
 
-        // 4. Decide which stage is assigned to the person.
-        int res = this->getDecision(probs);
-        if (res >= (int)person::MeasuredFibrosisState::COUNT) {
-            this->logger->error("Measured Fibrosis State Decision returned "
-                                "value outside bounds");
-            return;
+            double cost = testTwo ? std::stod(t1) : std::stod(t2);
+
+            std::string costName = "Fibrosis Staging Cost (Test" +
+                                   ((std::string)(testTwo ? "1" : "2")) + ")";
+            cost::Cost fibrosisStagingCost = {cost::CostCategory::STAGING,
+                                              costName, cost};
+            person.AddCost(fibrosisStagingCost);
         }
-        person::MeasuredFibrosisState stateOne =
-            (person::MeasuredFibrosisState)res;
 
-        // 5. Assign this value as the person's measured state.
-        person->setMeasuredFibrosisState(stateOne);
-        this->addStagingCost(person);
+    public:
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) {
+            // 1. Check the time since the person's last fibrosis staging test.
+            // If the person's last test is more recent than the limit, exit
+            // event.
+            int timeSinceStaging = person.GetTimeSinceStaging();
 
-        // 6. Get a vector of the probabilities of each of the possible fibrosis
-        // outcomes (test two) provided there is a second test.
-        probs = getTransitions(resultTable, "fibrosis_staging.test_two");
+            std::string data;
+            dm->GetFromConfig("fibrosis_staging.period", data);
+            int period = std::stoi(data);
+            if (((int)timeSinceStaging) < period) {
+                return;
+            }
 
-        // 7. Decide which stage is assigned to the person.
-        if (!probs.empty()) {
-            person->setHadSecondTest(true);
+            // 2. Check the person's true fibrosis state and use it to search
+            // for the input table to grab only test characteristics for this
+            // state.
+
+            // 3. Get a vector of the probabilities of each of the possible
+            // fibrosis outcomes (test one).
+            std::vector<double> probs = getTransitionProbabilities(
+                person, dm, "fibrosis_staging.test_one");
+
+            // 4. Decide which stage is assigned to the person.
+            int res = decider->GetDecision(probs);
+            if (res >= (int)person::MeasuredFibrosisState::COUNT) {
+                spdlog::get("main")->error(
+                    "Measured Fibrosis State Decision returned "
+                    "value outside bounds");
+                return;
+            }
+            person::MeasuredFibrosisState stateOne =
+                (person::MeasuredFibrosisState)res;
+
+            // 5. Assign this value as the person's measured state.
+            person.SetMeasuredFibrosisState(stateOne);
+            this->addStagingCost(person, dm);
+
+            // 6. Get a vector of the probabilities of each of the possible
+            // fibrosis outcomes (test two) provided there is a second test.
+            probs = getTransitionProbabilities(person, dm,
+                                               "fibrosis_staging.test_two");
+
+            // 7. Decide which stage is assigned to the person.
+            if (probs.empty()) {
+                return;
+            }
+
+            person.SetHadSecondTest(true);
 
             person::MeasuredFibrosisState stateTwo =
-                (person::MeasuredFibrosisState)this->getDecision(probs);
+                (person::MeasuredFibrosisState)decider->GetDecision(probs);
 
             // determine whether to use latest test value or greatest
-            std::string method = std::get<std::string>(this->config.get(
-                "fibrosis_staging.multitest_result_method", ""));
+            data.clear();
+            dm->GetFromConfig("fibrosis_staging.multitest_result_method", data);
 
             person::MeasuredFibrosisState measured;
-            if (method == "latest") {
+            if (data == "latest") {
                 measured = stateTwo;
-            } else if (method == "maximum") {
+            } else if (data == "maximum") {
                 measured =
                     std::max<person::MeasuredFibrosisState>(stateOne, stateTwo);
             } else {
@@ -88,43 +171,20 @@ namespace event {
                 return;
             }
             // 8. Assign this state to the person.
-            person->setMeasuredFibrosisState(measured);
-            this->addStagingCost(person, true);
-        } else {
-            // either means the name provided is incorrect or there is no second
-            // test
-            std::shared_ptr<Data::ReturnType> testTwo =
-                this->config.get_optional("fibrosis_staging.test_two", "");
-            if (testTwo) {
-                // log an error
-            }
+            person.SetMeasuredFibrosisState(measured);
+            this->addStagingCost(person, dm, true);
         }
+    };
+
+    FibrosisStaging::FibrosisStaging(
+        std::shared_ptr<stats::Decider> decider,
+        std::shared_ptr<datamanagement::DataManager> dm, std::string name)
+        : Event(dm, name), decider(decider) {
+        impl = std::make_unique<FibrosisStagingIMPL>();
     }
 
-    std::vector<double>
-    FibrosisStaging::getTransitions(Data::IDataTablePtr table,
-                                    std::string configLookupKey) {
-        std::shared_ptr<Data::ReturnType> stageTest =
-            this->config.get_optional(configLookupKey, "");
-        if (stageTest) {
-            std::vector<std::string> testColumn =
-                table->getColumn(std::get<std::string>(*stageTest));
-            std::vector<double> probs;
-            for (std::string c : testColumn) {
-                probs.push_back(stod(c));
-            }
-            return probs;
-        } else {
-            return {};
-        }
+    void FibrosisStaging::doEvent(person::PersonBase &person) {
+        impl->doEvent(person, dm, decider);
     }
 
-    void FibrosisStaging::addStagingCost(person::PersonBase &person,
-                                         const bool testTwo) {
-        double cost = testTwo ? this->testOneCost : this->testTwoCost;
-        std::string costName = "Fibrosis Staging Cost (Test" +
-                               ((std::string)(testTwo ? "1" : "2")) + ")";
-        Cost::Cost fibrosisStagingCost = {this->costCategory, costName, cost};
-        person->addCost(fibrosisStagingCost, this->getCurrentTimestep());
-    }
 } // namespace event
