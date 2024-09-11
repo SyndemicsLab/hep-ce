@@ -15,49 +15,82 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Infections.hpp"
-
+#include "DataManager.hpp"
+#include "Decider.hpp"
+#include "Person.hpp"
+#include <sstream>
 namespace event {
-    void Infections::doEvent(person::PersonBase &person) {
-        // only those who aren't infected go to the rest of the event.
-        // those who are infected transition from acute to chronic after 6
-        // months.
-        switch (person->getHCV()) {
-        case person::HCV::NONE:
-            break;
-        case person::HCV::ACUTE:
-            if ((this->getCurrentTimestep() - person->getTimeHCVChanged()) >=
-                6) {
-                person->setHCV(person::HCV::CHRONIC);
+    class Infections::InfectionsIMPL {
+    private:
+        static int callback(void *storage, int count, char **data,
+                            char **columns) {
+            std::vector<double> *d = (std::vector<double> *)storage;
+            double temp = std::stod(data[0]);
+            d->push_back(temp);
+            return 0;
+        }
+
+        std::string buildSQL(person::PersonBase &person) {
+            std::stringstream sql;
+            std::string age_years =
+                std::to_string((int)(person.GetAge() / 12.0));
+            sql << "SELECT incidence FROM incidence ";
+            sql << "WHERE age_years = " << age_years;
+            sql << " AND gender = " << person.GetSex();
+            sql << " AND drug_behavior = " << person.GetBehavior();
+            return sql.str();
+        }
+
+        std::vector<double>
+        getInfectProb(person::PersonBase &person,
+                      std::shared_ptr<datamanagement::DataManager> dm) {
+            std::string query = this->buildSQL(person);
+            std::vector<double> storage;
+            std::string error;
+            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
+                                              error);
+            std::vector<double> result = {storage[0], 1 - storage[0]};
+            return result;
+        }
+
+    public:
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) {
+            // only those who aren't infected go to the rest of the event.
+            // those who are infected transition from acute to chronic after 6
+            // months.
+            switch (person.GetHCV()) {
+            case person::HCV::NONE:
+                break;
+            case person::HCV::ACUTE:
+                if (person.GetTimeSinceHCVChanged() >= 6) {
+                    person.SetHCV(person::HCV::CHRONIC);
+                }
+                return;
+            case person::HCV::CHRONIC:
+                return;
             }
-            return;
-        case person::HCV::CHRONIC:
-            return;
-        }
 
-        // draw new infection probability
-        std::vector<double> prob = this->getInfectProb(person);
-        // decide whether person is infected; if value == 0, infect
-        int value = this->getDecision(prob);
-        if (value != 0) {
-            return;
+            // draw new infection probability
+            std::vector<double> prob = this->getInfectProb(person, dm);
+            // decide whether person is infected; if value == 0, infect
+            int value = decider->GetDecision(prob);
+            if (value != 0) {
+                return;
+            }
+            person.Infect();
         }
-        person->infect(this->getCurrentTimestep());
+    };
+    Infections::Infections(std::shared_ptr<stats::Decider> decider,
+                           std::shared_ptr<datamanagement::DataManager> dm,
+                           std::string name)
+        : Event(dm, name), decider(decider) {
+        impl = std::make_unique<InfectionsIMPL>();
     }
 
-    std::vector<double> Infections::getInfectProb(person::PersonBase &person) {
-        std::unordered_map<std::string, std::string> selectCriteria;
-        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
-        selectCriteria["gender"] =
-            person::person::sexEnumToStringMap[person->getSex()];
-        selectCriteria["drug_behavior"] =
-            person::person::behaviorEnumToStringMap[person->getBehavior()];
-        auto resultTable = table->selectWhere(selectCriteria);
-        if (resultTable->empty()) {
-            // error
-            return {};
-        }
-        double probInfected = std::stod((*resultTable)["incidence"][0]);
-        std::vector<double> result = {probInfected, 1 - probInfected};
-        return result;
+    void Infections::doEvent(person::PersonBase &person) {
+        impl->doEvent(person, dm, decider);
     }
+
 } // namespace event

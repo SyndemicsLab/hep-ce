@@ -17,16 +17,19 @@
 #ifndef EVENT_INFECTIONS_HPP_
 #define EVENT_INFECTIONS_HPP_
 
-#include <cmath>
-
+#include "Decider.hpp"
 #include "Event.hpp"
+#include <memory>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
 
     /// @brief Subclass of Event used to Spread Infections
-    class Infections : public ProbEvent {
+    class Infections : public Event {
     private:
+        class InfectionsIMPL;
+        std::unique_ptr<InfectionsIMPL> impl;
+        std::shared_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(person::PersonBase &person) override;
@@ -38,12 +41,9 @@ namespace event {
         std::vector<double> getInfectProb(person::PersonBase &person);
 
     public:
-        Infections(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                   Data::Config &config,
-                   std::shared_ptr<spdlog::logger> logger =
-                       std::make_shared<spdlog::logger>("default"),
-                   std::string name = std::string("Infections"))
-            : ProbEvent(generator, table, config, logger, name) {}
+        Infections(std::shared_ptr<stats::Decider> decider,
+                   std::shared_ptr<datamanagement::DataManager> dm,
+                   std::string name = std::string("Infections"));
         virtual ~Infections() = default;
     };
 } // namespace event

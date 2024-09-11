@@ -74,6 +74,7 @@ namespace person {
         Behavior GetBehavior() const;
         int GetTimeBehaviorChange() const;
         int GetTimeHCVChanged() const;
+        int GetTimeSinceHCVChanged() const;
         int GetTimeFibrosisStateChanged() const;
         int GetTimeSinceStaging() const;
         bool GetSeropositive() const;

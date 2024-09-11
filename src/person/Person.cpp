@@ -634,6 +634,11 @@ namespace person {
     int PersonBase::GetTimeHCVChanged() const {
         return pImplPERSON->GetTimeHCVChanged();
     }
+
+    int PersonBase::GetTimeSinceHCVChanged() const {
+        return pImplPERSON->GetCurrentTimestep() - GetTimeHCVChanged();
+    }
+
     int PersonBase::GetTimeFibrosisStateChanged() const {
         return pImplPERSON->GetTimeFibrosisStateChanged();
     }
