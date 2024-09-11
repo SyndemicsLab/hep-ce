@@ -16,86 +16,124 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Linking.hpp"
+#include "DataManager.hpp"
+#include "Decider.hpp"
+#include "Person.hpp"
+#include <sstream>
 
 namespace event {
+    class Linking::LinkingIMPL {
+    private:
+        static int callback(void *storage, int count, char **data,
+                            char **columns) {
+            std::vector<double> *d = (std::vector<double> *)storage;
+            double temp = std::stod(data[0]);
+            d->push_back(temp);
+            return 0;
+        }
+        std::string buildSQL(person::PersonBase &person,
+                             std::string const column) const {
+            std::stringstream sql;
+            std::string age_years =
+                std::to_string((int)(person.GetAge() / 12.0));
+            sql << "SELECT " << column;
+            sql << " FROM screening_and_linkage ";
+            sql << "WHERE age_years = " << age_years;
+            sql << " AND gender = " << person.GetSex();
+            sql << " AND drug_behavior = " << person.GetBehavior();
+            return sql.str();
+        }
+
+        std::vector<double>
+        getTransitions(person::PersonBase &person,
+                       std::shared_ptr<datamanagement::DataManager> dm,
+                       std::string columnKey) {
+            std::unordered_map<std::string, std::string> selectCriteria;
+
+            std::string query = this->buildSQL(person, columnKey);
+            std::vector<double> storage;
+            std::string error;
+            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
+                                              error);
+            // {0: don't link, 1: link}
+            std::vector<double> result = {1 - storage[0], storage[0]};
+            return result;
+        }
+
+        void addLinkingCost(person::PersonBase &person, std::string name,
+                            double cost) {
+            cost::Cost linkingCost = {cost::CostCategory::LINKING, name, cost};
+            person.AddCost(linkingCost);
+        }
+
+    public:
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) {
+            person::HCV state = person.GetHCV();
+            if (state == person::HCV::NONE) {
+                // add false positive cost
+                person.Unlink();
+
+                std::string data;
+                dm->GetFromConfig("linking.false_positive_test_cost", data);
+                double falsePositiveCost = std::stod(data);
+                this->addLinkingCost(person, "False Positive Linking Cost",
+                                     falsePositiveCost);
+                return;
+            }
+
+            if (!person.IsIdentifiedAsInfected()) {
+                person.IdentifyAsInfected();
+            }
+
+            std::vector<double> probs;
+            if (person.GetLinkageType() == person::LinkageType::BACKGROUND) {
+                // link probability
+                probs =
+                    getTransitions(person, dm, "background_link_probability");
+            } else {
+                // add intervention cost
+                std::string data;
+                dm->GetFromConfig("linking.intervention_cost", data);
+                double interventionCost = std::stod(data);
+                this->addLinkingCost(person, "Intervention Linking Cost",
+                                     interventionCost);
+                // link probability
+                probs =
+                    getTransitions(person, dm, "intervention_link_probability");
+            }
+
+            if (person.GetLinkState() == person::LinkageState::UNLINKED) {
+                // scale by relink multiplier
+                std::string data;
+                dm->GetFromConfig("linking.relink_multiplier", data);
+                double relinkScalar = std::stod(data);
+                probs[1] = probs[1] * relinkScalar;
+                probs[0] = 1 - probs[1];
+            }
+
+            // draw from link probability
+            bool doLink = (bool)decider->GetDecision(probs);
+
+            if (doLink) {
+                // need to figure out how to pass in the LinkageType to the
+                // event
+                person.Link(person.GetLinkageType());
+            } else if (!doLink &&
+                       person.GetLinkState() == person::LinkageState::LINKED) {
+                person.Unlink();
+            }
+        }
+    };
+    Linking::Linking(std::shared_ptr<stats::Decider> decider,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::string name)
+        : Event(dm, name), decider(decider) {
+        impl = std::make_unique<LinkingIMPL>();
+    }
+
     void Linking::doEvent(person::PersonBase &person) {
-        person::HCV state = person->getHCV();
-        if (state == person::HCV::NONE) {
-            // add false positive cost
-            person->unlink(this->getCurrentTimestep());
-            this->addLinkingCost(person, "False Positive Linking Cost",
-                                 this->falsePositiveCost);
-            return;
-        }
-
-        if (!person->isIdentifiedAsInfected()) {
-            person->identifyAsInfected(this->getCurrentTimestep());
-        }
-
-        std::vector<double> probs;
-        if (person->getLinkageType() == person::LinkageType::BACKGROUND) {
-            // link probability
-            probs = getTransitions(person, "background_link_probability");
-        } else {
-            // add intervention cost
-            this->addLinkingCost(person, "Intervention Linking Cost",
-                                 this->interventionCost);
-            // link probability
-            probs = getTransitions(person, "intervention_link_probability");
-        }
-
-        if (person->getLinkState() == person::LinkageState::UNLINKED) {
-            // scale by relink multiplier
-            double relinkScalar = std::get<double>(
-                this->config.get("linking.relink_multiplier", 1.0));
-            probs[1] = probs[1] * relinkScalar;
-            probs[0] = 1 - probs[1];
-        }
-
-        // draw from link probability
-        bool doLink = (bool)this->getDecision(probs);
-
-        if (doLink) {
-            // need to figure out how to pass in the LinkageType to the event
-            person->link(this->getCurrentTimestep(), person->getLinkageType());
-        } else if (!doLink &&
-                   person->getLinkState() == person::LinkageState::LINKED) {
-            person->unlink(this->getCurrentTimestep());
-        }
-    }
-
-    std::vector<double> Linking::getTransitions(person::PersonBase &person,
-                                                std::string columnKey) {
-        std::unordered_map<std::string, std::string> selectCriteria;
-
-        // intentional truncation
-        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
-        selectCriteria["gender"] =
-            person::person::sexEnumToStringMap[person->getSex()];
-        selectCriteria["drug_behavior"] =
-            person::person::behaviorEnumToStringMap[person->getBehavior()];
-
-        auto resultTable = table->selectWhere(selectCriteria);
-        if (resultTable->empty()) {
-            // error
-            return {};
-        }
-
-        std::vector<std::string> col = resultTable->getColumn(columnKey);
-
-        std::vector<double> doubleVector(col.size());
-        std::transform(col.begin(), col.end(), doubleVector.begin(),
-                       [](const std::string &val) { return std::stod(val); });
-
-        // {0: don't link, 1: link}
-        std::vector<double> result = {1 - doubleVector[0], doubleVector[0]};
-
-        return result;
-    }
-
-    void Linking::addLinkingCost(person::PersonBase &person, std::string name,
-                                 double cost) {
-        Cost::Cost linkingCost = {this->costCategory, name, cost};
-        person->addCost(linkingCost, this->getCurrentTimestep());
+        impl->doEvent(person, dm, decider);
     }
 } // namespace event

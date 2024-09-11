@@ -17,41 +17,27 @@
 #ifndef EVENT_Linking_HPP_
 #define EVENT_Linking_HPP_
 
+#include "Decider.hpp"
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
 
     /// @brief Subclass of Event used to Link People to Treatment
-    class Linking : public ProbEvent {
+    class Linking : public Event {
     private:
-        double interventionCost = 0.0;
-        double falsePositiveCost = 0.0;
+        class LinkingIMPL;
+        std::unique_ptr<LinkingIMPL> impl;
+        std::shared_ptr<stats::Decider> decider;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(person::PersonBase &person) override;
-        std::vector<double> getTransitions(person::PersonBase &person,
-                                           std::string columnKey);
-
-        /// @brief
-        /// @param person
-        void addLinkingCost(person::PersonBase &person, std::string name,
-                            double cost);
 
     public:
-        Linking(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                Data::Config &config,
-                std::shared_ptr<spdlog::logger> logger =
-                    std::make_shared<spdlog::logger>("default"),
-                std::string name = std::string("Linking"))
-            : ProbEvent(generator, table, config, logger, name) {
-            this->costCategory = Cost::CostCategory::LINKING;
-            this->interventionCost = std::get<double>(
-                this->config.get("linking.intervention_cost", 0.0));
-            this->falsePositiveCost = std::get<double>(
-                this->config.get("linking.false_positive_test_cost", 0.0));
-        }
+        Linking(std::shared_ptr<stats::Decider> decider,
+                std::shared_ptr<datamanagement::DataManager> dm,
+                std::string name = std::string("Linking"));
         virtual ~Linking() = default;
     };
 } // namespace event
