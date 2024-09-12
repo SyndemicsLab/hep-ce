@@ -598,6 +598,9 @@ namespace person {
     bool PersonBase::IsBoomer() const { return pImplPERSON->IsBoomer(); }
     bool PersonBase::IsCirrhotic() { return pImplPERSON->IsCirrhotic(); }
     // Getters
+    int PersonBase::GetCurrentTimestep() const {
+        return pImplPERSON->GetCurrentTimestep();
+    }
     int PersonBase::GetAge() const { return pImplPERSON->GetAge(); }
     int PersonBase::GetTimesInfected() const {
         return pImplPERSON->GetTimesInfected();
@@ -613,6 +616,9 @@ namespace person {
     }
     int PersonBase::GetTimeOfLastScreening() const {
         return pImplPERSON->GetTimeOfLastScreening();
+    }
+    int PersonBase::GetTimeSinceScreened() const {
+        return pImplPERSON->GetCurrentTimestep() - GetTimeOfLastScreening();
     }
     bool PersonBase::GetCurrentlyOverdosing() const {
         return pImplPERSON->GetCurrentlyOverdosing();

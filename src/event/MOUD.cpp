@@ -15,41 +15,70 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "MOUD.hpp"
+#include "Person.hpp"
+#include "spdlog/spdlog.h"
 
 namespace event {
-    void MOUD::doEvent(person::PersonBase &person) {
-        person::Behavior bc = person->getBehavior();
+    class MOUD::MOUDIMPL {
+    private:
+        /// @brief Retrieve Transition Rates for MOUD for the
+        /// individual Person from the SQL Table
+        /// @param person Person to retrieve transition rates for
+        /// @return Vector of Transition Rates for each MOUD status
+        std::vector<double> getTransitions(person::PersonBase &person);
 
-        // Can only enter MOUD if in an active use state.
-        if (!(bc >= person::Behavior::NONINJECTION)) {
-            // 1. Check the person's current MOUD status
-            person::MOUD moud = person->getMoudState();
-            // 2. Draw probability of changing MOUD state.
-            // TODO: MAKE THIS A REAL TRANSITION RATE
-            std::vector<double> probs = {0.50, 0.25, 0.25};
-            // 3. Make a transition decision.
-            int res = this->getDecision(probs);
-            if (res >= (int)person::MOUD::COUNT) {
-                this->logger->error("MOUD Decision returned "
-                                    "value outside bounds");
-                return;
-            }
-            person::MOUD toMoud = (person::MOUD)res;
-            if (toMoud == person::MOUD::CURRENT) {
-                if (moud != toMoud) {
-                    // new treatment start
-                    person->setMoudState(toMoud);
-                    person->setTimeStartedMoud(this->getCurrentTimestep());
+        /// @brief Add cost based on person's current treatment status upon
+        /// "experiencing" this event
+        /// @param person Person accruing cost
+        void insertMOUDCost(person::PersonBase &person);
+
+    public:
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) {
+
+            person::Behavior bc = person.GetBehavior();
+
+            // Can only enter MOUD if in an active use state.
+            if (!(bc >= person::Behavior::NONINJECTION)) {
+                // 1. Check the person's current MOUD status
+                person::MOUD moud = person.GetMoudState();
+                // 2. Draw probability of changing MOUD state.
+                // TODO: MAKE THIS A REAL TRANSITION RATE
+                std::vector<double> probs = {0.50, 0.25, 0.25};
+                // 3. Make a transition decision.
+                int res = decider->GetDecision(probs);
+                if (res >= (int)person::MOUD::COUNT) {
+                    spdlog::get("main")->error("MOUD Decision returned "
+                                               "value outside bounds");
+                    return;
                 }
-                // person continuing treatment
-                // add treatment cost
-            } else {
-                // person discontinuing treatment
-                // or going from post-treatment to no treatment
-                person->setMoudState(toMoud);
-                // figure out if we want to update timestartedmoud to an
-                // impossible value, e.g. -1
+                person::MOUD toMoud = (person::MOUD)res;
+                if (toMoud == person::MOUD::CURRENT) {
+                    if (moud != toMoud) {
+                        // new treatment start
+                        person.SetMoudState(toMoud);
+                    }
+                    // person continuing treatment
+                    // add treatment cost
+                } else {
+                    // person discontinuing treatment
+                    // or going from post-treatment to no treatment
+                    person.SetMoudState(toMoud);
+                    // figure out if we want to update timestartedmoud to an
+                    // impossible value, e.g. -1
+                }
             }
         }
+    };
+    MOUD::MOUD(std::shared_ptr<stats::Decider> decider,
+               std::shared_ptr<datamanagement::DataManager> dm,
+               std::string name)
+        : Event(dm, name), decider(decider) {
+        impl = std::make_unique<MOUDIMPL>();
+    }
+
+    void MOUD::doEvent(person::PersonBase &person) {
+        impl->doEvent(person, dm, decider);
     }
 } // namespace event

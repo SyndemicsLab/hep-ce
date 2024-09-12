@@ -16,26 +16,45 @@
 //===----------------------------------------------------------------------===//
 
 #include "Overdose.hpp"
+#include "Person.hpp"
 
 namespace event {
-    void Overdose::doEvent(person::PersonBase &person) {
-        person::Behavior bc = person->getBehavior();
-        // return immediately if not in active use state
-        if (bc < person::Behavior::NONINJECTION) {
-            return;
+    class Overdose::OverdoseIMPL {
+    private:
+        double getProbability(person::PersonBase &person) {
+            // overdose probability is stratified by behavior classification and
+            // MOUD state
+            return 0.0;
         }
-        // check od probability
-        double overdoseProbability = this->getProbability(person);
-        // determine if person overdoses
-        if (this->getDecision(
-                {1.0 - overdoseProbability, overdoseProbability})) {
-            person->toggleOverdose();
+
+    public:
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) {
+            person::Behavior bc = person.GetBehavior();
+            // return immediately if not in active use state
+            if (bc < person::Behavior::NONINJECTION) {
+                return;
+            }
+            // check od probability
+            double overdoseProbability = this->getProbability(person);
+            // determine if person overdoses
+            if (decider->GetDecision(
+                    {1.0 - overdoseProbability, overdoseProbability})) {
+                person.ToggleOverdose();
+            }
         }
+    };
+
+    Overdose::Overdose(std::shared_ptr<stats::Decider> decider,
+                       std::shared_ptr<datamanagement::DataManager> dm,
+                       std::string name)
+        : Event(dm, name), decider(decider) {
+        impl = std::make_unique<OverdoseIMPL>();
     }
 
-    double Overdose::getProbability(person::PersonBase &person) {
-        // overdose probability is stratified by behavior classification and
-        // MOUD state
-        return 0.0;
+    void Overdose::doEvent(person::PersonBase &person) {
+        impl->doEvent(person, dm, decider);
     }
+
 } // namespace event

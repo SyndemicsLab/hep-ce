@@ -60,12 +60,14 @@ namespace person {
         bool IsBoomer() const;
         bool IsCirrhotic();
         // Getters
+        int GetCurrentTimestep() const;
         int GetAge() const;
         int GetTimesInfected() const;
         int GetClearances() const;
         int GetNumABTests() const;
         int GetNumRNATests() const;
         int GetTimeOfLastScreening() const;
+        int GetTimeSinceScreened() const;
         bool GetCurrentlyOverdosing() const;
         int GetNumberOfOverdoses() const;
         FibrosisState GetFibrosisState() const;

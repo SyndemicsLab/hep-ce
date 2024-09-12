@@ -17,37 +17,25 @@
 #ifndef EVENT_MOUD_HPP_
 #define EVENT_MOUD_HPP_
 
+#include "Decider.hpp"
 #include "Event.hpp"
 
 namespace event {
     /// @brief Subclass of Event used to process medication for opioid use
     /// disorder
-    class MOUD : public ProbEvent {
+    class MOUD : public Event {
     private:
+        class MOUDIMPL;
+        std::unique_ptr<MOUDIMPL> impl;
+        std::shared_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(person::PersonBase &person) override;
 
-        /// @brief Retrieve Transition Rates for MOUD for the
-        /// individual Person from the SQL Table
-        /// @param person Person to retrieve transition rates for
-        /// @return Vector of Transition Rates for each MOUD status
-        std::vector<double> getTransitions(person::PersonBase &person);
-
-        /// @brief Add cost based on person's current treatment status upon
-        /// "experiencing" this event
-        /// @param person Person accruing cost
-        void insertMOUDCost(person::PersonBase &person);
-
     public:
-        MOUD(std::mt19937_64 &generator, Data::IDataTablePtr table,
-             Data::Config &config,
-             std::shared_ptr<spdlog::logger> logger =
-                 std::make_shared<spdlog::logger>("default"),
-             std::string name = std::string("MOUD"))
-            : ProbEvent(generator, table, config, logger, name) {
-            this->costCategory = Cost::CostCategory::BEHAVIOR;
-        }
+        MOUD(std::shared_ptr<stats::Decider> decider,
+             std::shared_ptr<datamanagement::DataManager> dm,
+             std::string name = std::string("MOUD"));
         virtual ~MOUD() = default;
     };
 } // namespace event

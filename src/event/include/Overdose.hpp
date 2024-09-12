@@ -18,30 +18,25 @@
 #ifndef EVENT_OVERDOSE_HPP_
 #define EVENT_OVERDOSE_HPP_
 
+#include "Decider.hpp"
 #include "Event.hpp"
 
 namespace event {
     /// @brief Subclass of Event used to simulate overdoses among active drug
     /// users.
-    class Overdose : public ProbEvent {
+    class Overdose : public Event {
     private:
+        class OverdoseIMPL;
+        std::unique_ptr<OverdoseIMPL> impl;
+        std::shared_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual person undergoing Event
         void doEvent(person::PersonBase &person) override;
 
-        /// @brief Get the probability that a person will overdose.
-        /// @param person Pointer to the relevant person::Person object which
-        /// might overdose.
-        /// @return Overdose probability based on person attributes
-        double getProbability(person::PersonBase &person);
-
     public:
-        Overdose(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                 Data::Config &config,
-                 std::shared_ptr<spdlog::logger> logger =
-                     std::make_shared<spdlog::logger>("default"),
-                 std::string name = std::string("Overdose"))
-            : ProbEvent(generator, table, config, logger, name) {}
+        Overdose(std::shared_ptr<stats::Decider> decider,
+                 std::shared_ptr<datamanagement::DataManager> dm,
+                 std::string name = std::string("Overdose"));
         virtual ~Overdose() = default;
     };
 } // namespace event

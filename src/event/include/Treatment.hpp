@@ -29,7 +29,7 @@ namespace event {
     }
 
     /// @brief Subclass of Event used to Provide Treatment to People
-    class Treatment : public ProbEvent {
+    class Treatment : public Event {
     private:
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
