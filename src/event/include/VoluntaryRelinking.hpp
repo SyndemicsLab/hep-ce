@@ -17,6 +17,7 @@
 #ifndef EVENT_VOLUNTARYRELINK_HPP_
 #define EVENT_VOLUNTARYRELINK_HPP_
 
+#include "Decider.hpp"
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
@@ -24,31 +25,21 @@ namespace event {
 
     /// @brief Subclass of Event used to Create Voluntary Relinkage to Treatment
     /// for People
-    class VoluntaryRelinking : public ProbEvent {
+    class VoluntaryRelinking : public Event {
     private:
-        /// @brief Parameter used to set the Total Potential Relink Time
-        int voluntaryRelinkDuration = 1024; // we should set this
-
+        class VoluntaryRelinkingIMPL;
+        std::shared_ptr<VoluntaryRelinkingIMPL> impl;
+        std::shared_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(person::PersonBase &person) override;
 
     public:
-        VoluntaryRelinking(std::mt19937_64 &generator,
-                           Data::IDataTablePtr table, Data::Config &config,
-                           std::shared_ptr<spdlog::logger> logger =
-                               std::make_shared<spdlog::logger>("default"),
-                           std::string name = std::string("VoluntaryRelinking"))
-            : ProbEvent(generator, table, config, logger, name) {}
+        VoluntaryRelinking(
+            std::shared_ptr<stats::Decider> decider,
+            std::shared_ptr<datamanagement::DataManager> dm,
+            std::string name = std::string("VoluntaryRelinking"));
         virtual ~VoluntaryRelinking() = default;
-
-        void setVoluntaryRelinkDuration(int duration) {
-            this->voluntaryRelinkDuration = duration;
-        }
-
-        int getVoluntaryRelinkDuration() {
-            return this->voluntaryRelinkDuration;
-        }
     };
 
 } // namespace event

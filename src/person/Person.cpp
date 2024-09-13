@@ -10,11 +10,77 @@
 namespace person {
     class PersonBase::Person {
     private:
+        struct person_select {
+            Sex sex;
+            int age;
+            bool isAlive;
+            int identifiedHCV;
+            int timeInfectionIdentified;
+            HCV hcv;
+            FibrosisState fibrosisState;
+            bool isGenotypeThree;
+            bool seropositive;
+            int timeHCVChanged;
+            int timeFibrosisStateChanged;
+            Behavior drugBehavior;
+            int timeLastActiveDrugUse;
+            LinkageState linkageState;
+            int timeOfLinkChange;
+            LinkageType linkageType;
+            int linkCount;
+            MeasuredFibrosisState measuredFibrosisState;
+            int timeOfLastStaging;
+            int timeOfLastScreening;
+            int numABTests;
+            int numRNATests;
+            int timesInfected;
+            int timesCleared;
+            bool initiatedTreatment;
+            int timeOfTreatmentInitiation;
+            double minUtility;
+            double multUtility;
+        };
+        static int callback(void *storage, int count, char **data,
+                            char **columns) {
+            struct person_select *temp = (struct person_select *)storage;
+            temp->sex << data[0];
+            temp->age = std::stoi(data[1]);
+            temp->isAlive = std::stoi(data[2]);
+            temp->identifiedHCV = std::stoi(data[3]);
+            temp->timeInfectionIdentified = std::stoi(data[4]);
+            temp->hcv << data[5];
+            temp->fibrosisState << data[6];
+            temp->isGenotypeThree = std::stoi(data[7]);
+            temp->seropositive = std::stoi(data[8]);
+            temp->timeHCVChanged = std::stoi(data[9]);
+            temp->timeFibrosisStateChanged = std::stoi(data[10]);
+            temp->drugBehavior << data[11];
+            temp->timeLastActiveDrugUse = std::stoi(data[12]);
+            temp->linkageState << data[13];
+            temp->timeOfLinkChange = std::stoi(data[14]);
+            temp->linkageType << data[15];
+            temp->linkCount = std::stoi(data[16]);
+            temp->measuredFibrosisState << data[17];
+            temp->timeOfLastStaging = std::stoi(data[18]);
+            temp->timeOfLastScreening = std::stoi(data[19]);
+            temp->numABTests = std::stoi(data[20]);
+            temp->numRNATests = std::stoi(data[21]);
+            temp->timesInfected = std::stoi(data[22]);
+            temp->timesCleared = std::stoi(data[23]);
+            temp->initiatedTreatment = std::stoi(data[24]);
+            temp->timeOfTreatmentInitiation = std::stoi(data[25]);
+            temp->minUtility = std::stod(data[26]);
+            temp->multUtility = std::stod(data[27]);
+            return 0;
+        }
+        size_t id;
         size_t _currentTime = 0;
+
+        int age = 0;
         Sex sex = Sex::MALE;
         bool isAlive = true;
-        Health infectionStatus;
         BehaviorDetails behaviorDetails;
+        Health infectionStatus;
         LinkageDetails linkStatus;
         int numOverdoses = 0;
         bool currentlyOverdosing = false;
@@ -26,12 +92,51 @@ namespace person {
         UtilityTracker utilityTracker;
         cost::CostTracker costs;
         bool boomerClassification = false;
-        /// @brief Person Age in months
-        int age = 0;
 
     public:
-        /// @brief Default constructor for Person
-        Person() {}
+        Person(int id, std::shared_ptr<datamanagement::DataManager> dm)
+            : id(id) {
+            std::stringstream query;
+            query << "SELECT " << person::PersonBase::POPULATION_HEADERS;
+            query << "FROM init_cohort ";
+            query << "WHERE id = " << std::to_string(id);
+
+            struct person_select storage;
+            std::string error;
+            int rc = dm->SelectCustomCallback(query.str(), this->callback,
+                                              &storage, error);
+
+            sex = storage.sex;
+            SetAge(storage.age);
+            isAlive = storage.isAlive;
+            infectionStatus.identifiedHCV = storage.identifiedHCV;
+            infectionStatus.timeIdentified = storage.timeInfectionIdentified;
+            infectionStatus.hcv = storage.hcv;
+            infectionStatus.fibrosisState = storage.fibrosisState;
+            infectionStatus.isGenotypeThree = storage.isGenotypeThree;
+            infectionStatus.seropositive = storage.seropositive;
+            infectionStatus.timeHCVChanged = storage.timeHCVChanged;
+            infectionStatus.timeFibrosisStateChanged =
+                storage.timeFibrosisStateChanged;
+            behaviorDetails.behavior = storage.drugBehavior;
+            behaviorDetails.timeLastActive = storage.timeLastActiveDrugUse;
+            linkStatus.linkState = storage.linkageState;
+            linkStatus.timeOfLinkChange = storage.timeOfLinkChange;
+            linkStatus.linkType = storage.linkageType;
+            linkStatus.linkCount = storage.linkCount;
+            SetMeasuredFibrosisState(storage.measuredFibrosisState);
+            stagingDetails.timeOfLastStaging = storage.timeOfLastStaging;
+            screeningDetails.timeOfLastScreening = storage.timeOfLastScreening;
+            screeningDetails.numABTests = storage.numABTests;
+            screeningDetails.numRNATests = storage.numRNATests;
+            infectionStatus.timesInfected = storage.timesInfected;
+            infectionStatus.timesCleared = storage.timesCleared;
+            treatmentDetails.initiatedTreatment = storage.initiatedTreatment;
+            treatmentDetails.timeOfTreatmentInitiation =
+                storage.timeOfTreatmentInitiation;
+            utilityTracker.minUtil = storage.minUtility;
+            utilityTracker.multUtil = storage.multUtility;
+        }
 
         /// @brief Default destructor for Person
         virtual ~Person() {}
@@ -209,6 +314,7 @@ namespace person {
         }
         ////////////// CHECKS /////////////////
         ////////////// GETTERS ////////////////
+        int GetID() const { return this->id; }
 
         int GetCurrentTimestep() const { return this->_currentTime; }
 
@@ -509,10 +615,11 @@ namespace person {
     };
 
     /// Base Defined Pass Through Wrappers
-
-    PersonBase::PersonBase() {
-        pImplPERSON = std::make_shared<person::PersonBase::Person>();
+    PersonBase::PersonBase(int id,
+                           std::shared_ptr<datamanagement::DataManager> dm) {
+        pImplPERSON = std::make_shared<person::PersonBase::Person>(id, dm);
     }
+
     PersonBase::~PersonBase() = default;
 
     int PersonBase::Grow() {
@@ -598,6 +705,7 @@ namespace person {
     bool PersonBase::IsBoomer() const { return pImplPERSON->IsBoomer(); }
     bool PersonBase::IsCirrhotic() { return pImplPERSON->IsCirrhotic(); }
     // Getters
+    int PersonBase::GetID() const { return pImplPERSON->GetID(); }
     int PersonBase::GetCurrentTimestep() const {
         return pImplPERSON->GetCurrentTimestep();
     }
@@ -660,6 +768,9 @@ namespace person {
     int PersonBase::GetTimeOfLinkChange() const {
         return pImplPERSON->GetTimeOfLinkChange();
     }
+    int PersonBase::GetTimeSinceLinkChange() const {
+        return GetCurrentTimestep() - GetTimeOfLinkChange();
+    }
     int PersonBase::GetLinkCount() const { return pImplPERSON->GetLinkCount(); }
     LinkageType PersonBase::GetLinkageType() const {
         return pImplPERSON->GetLinkageType();
@@ -667,6 +778,10 @@ namespace person {
     int PersonBase::GetTimeOfTreatmentInitiation() const {
         return pImplPERSON->GetTimeOfTreatmentInitiation();
     }
+    int PersonBase::GetTimeSinceTreatmentInitiation() const {
+        return GetCurrentTimestep() - GetTimeOfTreatmentInitiation();
+    }
+
     PregnancyState PersonBase::GetPregnancyState() const {
         return pImplPERSON->GetPregnancyState();
     }

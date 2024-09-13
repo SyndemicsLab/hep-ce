@@ -5,54 +5,10 @@
 // #include "spdlog/sinks/basic_file_sink.h"
 #include "EventFactory.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement.hpp>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-/// @brief
-using sharedPerson = std::shared_ptr<person::Person>;
-
-/// @brief
-/// @return
-inline sharedPerson makePerson() { return std::make_shared<person::Person>(); }
-
-/// @brief
-/// @return
-inline sharedPerson makePerson(Data::IDataTablePtr rowData) {
-    return std::make_shared<person::Person>(rowData);
-}
-
-/// @brief
-/// @param argc
-/// @param argv
-/// @param rootInputDir
-/// @param taskStart
-/// @param taskEnd
-/// @return
-bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
-               int &taskEnd);
-
-/// @brief
-/// @param config
-/// @return
-bool configChecks(Data::Config &config);
-
-/// @brief Provide the pRNG seed passed to the simulation object
-/// @return User-defined seed, if provided. Otherwise, a seed based on the
-/// current millisecond.
-uint64_t getSimSeed(Data::Config &config);
-
-/// @brief
-/// @param personEvents
-/// @param tables
-/// @param sim
-int loadEvents(std::vector<Event::sharedEvent> &personEvents,
-               std::unordered_map<std::string, Data::IDataTablePtr> &tables,
-               Simulation::Simulation &sim, Data::Config &config,
-               std::shared_ptr<spdlog::logger> logger =
-                   std::make_shared<spdlog::logger>("default"));
 
 /// @brief
 /// @param personEvents
@@ -77,8 +33,4 @@ Data::IDataTablePtr personToDataTable(sharedPerson &person);
 
 void writePopulation(std::vector<sharedPerson> &population,
                      std::string dirpath);
-
-inline std::string const boolToString(bool b) {
-    return b ? std::string("true") : std::string("false");
-}
 #endif

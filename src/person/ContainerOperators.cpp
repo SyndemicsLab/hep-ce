@@ -15,6 +15,16 @@ namespace person {
         }
         return os;
     }
+    HCV &operator<<(HCV &inst, const std::string &str) {
+        if (str == "acute") {
+            inst = HCV::ACUTE;
+        } else if (str == "chronic") {
+            inst = HCV::CHRONIC;
+        } else {
+            inst = HCV::NONE;
+        }
+        return inst;
+    }
 
     std::ostream &operator<<(std::ostream &os, const Behavior &inst) {
         switch (inst) {
@@ -36,6 +46,20 @@ namespace person {
         }
         return os;
     }
+    Behavior &operator<<(Behavior &inst, const std::string &str) {
+        if (str == "former_injection") {
+            inst = Behavior::FORMER_INJECTION;
+        } else if (str == "former_noninjection") {
+            inst = Behavior::FORMER_NONINJECTION;
+        } else if (str == "injection") {
+            inst = Behavior::INJECTION;
+        } else if (str == "noninjection") {
+            inst = Behavior::NONINJECTION;
+        } else {
+            inst = Behavior::NEVER;
+        }
+        return inst;
+    }
 
     std::ostream &operator<<(std::ostream &os, const LinkageType &inst) {
         switch (inst) {
@@ -47,6 +71,14 @@ namespace person {
             break;
         }
         return os;
+    }
+    LinkageType &operator<<(LinkageType &inst, const std::string &str) {
+        if (str == "background") {
+            inst = LinkageType::BACKGROUND;
+        } else {
+            inst = LinkageType::INTERVENTION;
+        }
+        return inst;
     }
 
     std::ostream &operator<<(std::ostream &os, const LinkageState &inst) {
@@ -62,6 +94,16 @@ namespace person {
             break;
         }
         return os;
+    }
+    LinkageState &operator<<(LinkageState &inst, const std::string &str) {
+        if (str == "linked") {
+            inst = LinkageState::LINKED;
+        } else if (str == "unlinked") {
+            inst = LinkageState::UNLINKED;
+        } else {
+            inst == LinkageState::NEVER;
+        }
+        return inst;
     }
 
     std::ostream &operator<<(std::ostream &os, const FibrosisState &inst) {
@@ -90,6 +132,24 @@ namespace person {
         }
         return os;
     }
+    FibrosisState &operator<<(FibrosisState &inst, const std::string &str) {
+        if (str == "decomp") {
+            inst = FibrosisState::DECOMP;
+        } else if (str == "f0") {
+            inst = FibrosisState::F0;
+        } else if (str == "f1") {
+            inst = FibrosisState::F1;
+        } else if (str == "f2") {
+            inst = FibrosisState::F2;
+        } else if (str == "f3") {
+            inst = FibrosisState::F3;
+        } else if (str == "f4") {
+            inst = FibrosisState::F4;
+        } else {
+            inst = FibrosisState::NONE;
+        }
+        return inst;
+    }
 
     std::ostream &operator<<(std::ostream &os, const HCCState &inst) {
         switch (inst) {
@@ -104,6 +164,16 @@ namespace person {
             break;
         }
         return os;
+    }
+    HCCState &operator<<(HCCState &inst, const std::string &str) {
+        if (str == "early") {
+            inst = HCCState::EARLY;
+        } else if (str == "late") {
+            inst = HCCState::LATE;
+        } else {
+            inst = HCCState::NONE;
+        }
+        return inst;
     }
 
     std::ostream &operator<<(std::ostream &os,
@@ -127,6 +197,21 @@ namespace person {
         }
         return os;
     }
+    MeasuredFibrosisState &operator<<(MeasuredFibrosisState &inst,
+                                      const std::string &str) {
+        if (str == "decomp") {
+            inst = MeasuredFibrosisState::DECOMP;
+        } else if (str == "f01") {
+            inst = MeasuredFibrosisState::F01;
+        } else if (str == "f23") {
+            inst = MeasuredFibrosisState::F23;
+        } else if (str == "f4") {
+            inst = MeasuredFibrosisState::F4;
+        } else {
+            inst = MeasuredFibrosisState::NONE;
+        }
+        return inst;
+    }
 
     std::ostream &operator<<(std::ostream &os, const MOUD &inst) {
         switch (inst) {
@@ -141,6 +226,16 @@ namespace person {
             break;
         }
         return os;
+    }
+    MOUD &operator<<(MOUD &inst, const std::string &str) {
+        if (str == "current") {
+            inst = MOUD::CURRENT;
+        } else if (str == "post") {
+            inst = MOUD::POST;
+        } else {
+            inst = MOUD::NONE;
+        }
+        return inst;
     }
 
     std::ostream &operator<<(std::ostream &os, const Sex &inst) {
@@ -157,6 +252,14 @@ namespace person {
         }
         return os;
     }
+    Sex &operator<<(Sex &inst, const std::string &str) {
+        if (str == "male") {
+            inst = Sex::MALE;
+        } else {
+            inst = Sex::FEMALE;
+        }
+        return inst;
+    }
 
     std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
         switch (inst) {
@@ -171,6 +274,16 @@ namespace person {
             break;
         }
         return os;
+    }
+    PregnancyState &operator<<(PregnancyState &inst, const std::string &str) {
+        if (str == "postpartum") {
+            inst = PregnancyState::POSTPARTUM;
+        } else if (str == "pregnant") {
+            inst = PregnancyState::PREGNANT;
+        } else {
+            inst = PregnancyState::NONE;
+        }
+        return inst;
     }
 
     std::ostream &operator<<(std::ostream &os, Health const &inst) {

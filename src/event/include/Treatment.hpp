@@ -17,6 +17,7 @@
 #ifndef EVENT_TREATMENT_HPP_
 #define EVENT_TREATMENT_HPP_
 
+#include "Decider.hpp"
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
@@ -31,50 +32,18 @@ namespace event {
     /// @brief Subclass of Event used to Provide Treatment to People
     class Treatment : public Event {
     private:
+        class TreatmentIMPL;
+        std::shared_ptr<TreatmentIMPL> impl;
+        std::shared_ptr<stats::Decider> decider;
+
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(person::PersonBase &person) override;
-        bool isEligible(std::shared_ptr<person::Person> const person) const;
-        bool isEligibleFibrosisStage(person::FibrosisState fibrosisState) const;
-
-        std::vector<person::FibrosisState> eligibleFibrosisStates = {
-            person::FibrosisState::NONE};
-        int eligibleTimeSinceLinked = -1;
-        int eligibleTimeBehaviorChange = -1;
-
-        /// @brief Add the cost associated with a month of treatment
-        /// @param Person the person who accrues the cost
-        /// @param cost the cost associated with Person's treatment
-        void addTreatmentCostAndUtility(person::PersonBase &person, double cost,
-                                        double util);
-
-        /// @brief If Person is exposed to loss to follow-up, checks if they
-        /// unlink from care
-        /// @param Person the Person who may unlink due to loss to follow-up
-        bool isLostToFollowUp(person::PersonBase &person);
-
-        bool initiatesTreatment(person::PersonBase &person);
-
-        bool doesWithdraw(person::PersonBase &person,
-                          Data::IDataTablePtr course);
-
-        bool experiencedToxicity(person::PersonBase &person,
-                                 Data::IDataTablePtr course);
-
-        void chargeCostOfVisit(person::PersonBase &person);
-
-        void chargeCostOfCourse(person::PersonBase &person,
-                                Data::IDataTablePtr course);
-
-        void quitEngagement(person::PersonBase &person);
 
     public:
-        Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                  Data::Config &config,
-                  std::shared_ptr<spdlog::logger> logger =
-                      std::make_shared<spdlog::logger>("default"),
+        Treatment(std::shared_ptr<stats::Decider> decider,
+                  std::shared_ptr<datamanagement::DataManager> dm,
                   std::string name = std::string("Treatment"));
-
         virtual ~Treatment() = default;
     };
 } // namespace event

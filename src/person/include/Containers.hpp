@@ -16,6 +16,7 @@ namespace person {
         COUNT = 3
     };
     std::ostream &operator<<(std::ostream &os, const HCV &inst);
+    HCV &operator<<(HCV &inst, const std::string &str);
 
     /// @brief Opioid Usage Behavior Classification
     /// @details There are five possible possible usage classifications.
@@ -34,6 +35,7 @@ namespace person {
         COUNT = 5
     };
     std::ostream &operator<<(std::ostream &os, const Behavior &inst);
+    Behavior &operator<<(Behavior &inst, const std::string &str);
 
     /// @brief Screening type that led to linkage
     enum class LinkageType {
@@ -44,6 +46,7 @@ namespace person {
         COUNT = 2
     };
     std::ostream &operator<<(std::ostream &os, const LinkageType &inst);
+    LinkageType &operator<<(LinkageType &inst, const std::string &str);
 
     /// @brief Status of Linkage
     enum class LinkageState {
@@ -56,6 +59,7 @@ namespace person {
         COUNT = 3
     };
     std::ostream &operator<<(std::ostream &os, const LinkageState &inst);
+    LinkageState &operator<<(LinkageState &inst, const std::string &str);
 
     /// @brief Classification of Liver Fibrosis Stage
     /// @details HCV infection causes liver fibrosis and cirrhosis and increases
@@ -81,6 +85,7 @@ namespace person {
         COUNT = 7
     };
     std::ostream &operator<<(std::ostream &os, const FibrosisState &inst);
+    FibrosisState &operator<<(FibrosisState &inst, const std::string &str);
 
     /// @brief Classification of hepatocellular carcinoma (HCC) state
     /// @details Advanced liver fibrosis and cirrhosis significantly increase
@@ -98,6 +103,7 @@ namespace person {
         COUNT = 3
     };
     std::ostream &operator<<(std::ostream &os, const HCCState &inst);
+    HCCState &operator<<(HCCState &inst, const std::string &str);
 
     /// @brief Clinically staged liver fibrosis stage
     enum class MeasuredFibrosisState {
@@ -115,6 +121,8 @@ namespace person {
     };
     std::ostream &operator<<(std::ostream &os,
                              const MeasuredFibrosisState &inst);
+    MeasuredFibrosisState &operator<<(MeasuredFibrosisState &inst,
+                                      const std::string &str);
 
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
     enum class MOUD {
@@ -127,6 +135,7 @@ namespace person {
         COUNT = 3
     };
     std::ostream &operator<<(std::ostream &os, const MOUD &inst);
+    MOUD &operator<<(MOUD &inst, const std::string &str);
 
     /// @brief Biological Sex
     enum class Sex {
@@ -137,6 +146,7 @@ namespace person {
         COUNT = 2
     };
     std::ostream &operator<<(std::ostream &os, const Sex &inst);
+    Sex &operator<<(Sex &inst, const std::string &str);
 
     /// @brief Pregnancy Classification
     /// @details There are three possible pregnancy states.
@@ -150,6 +160,7 @@ namespace person {
         COUNT = 3
     };
     std::ostream &operator<<(std::ostream &os, const PregnancyState &inst);
+    PregnancyState &operator<<(PregnancyState &inst, const std::string &str);
 
     /// @brief Attributes describing an Infection
     struct Health {

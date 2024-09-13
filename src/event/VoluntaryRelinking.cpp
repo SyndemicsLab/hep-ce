@@ -16,24 +16,45 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "VoluntaryRelinking.hpp"
+#include "DataManager.hpp"
+#include "Person.hpp"
 #include <string>
 
 namespace event {
-    void VoluntaryRelinking::doEvent(person::PersonBase &person) {
-        double relinkProbability = std::get<double>(
-            this->config.get("linking.voluntary_relinkage_probability", 0.0));
+    class VoluntaryRelinking::VoluntaryRelinkingIMPL {
+    private:
+    public:
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) {
+            std::string data;
+            dm->GetFromConfig("linking.voluntary_relinkage_probability", data);
+            double relinkProbability = std::stod(data);
 
-        int relink = this->getDecision({relinkProbability});
+            int relink = decider->GetDecision({relinkProbability});
 
-        if (person->getLinkState() != person::LinkageState::UNLINKED ||
-            (this->getCurrentTimestep() - person->getTimeOfLinkChange()) >
-                this->voluntaryRelinkDuration ||
-            relink == 1) {
-            return; // if linked or never linked OR too long since last linked
-                    // OR relink draw is false
+            data.clear();
+            dm->GetFromConfig("linking.voluntaryRelinkDuration", data);
+            double voluntaryRelinkDuration = std::stod(data);
+
+            if (person.GetLinkState() != person::LinkageState::UNLINKED ||
+                (person.GetTimeSinceLinkChange()) > voluntaryRelinkDuration ||
+                relink == 1) {
+                return; // if linked or never linked OR too long since last
+                        // linked OR relink draw is false
+            }
+            person.Link(person::LinkageType::BACKGROUND);
         }
-        person->link(this->getCurrentTimestep(),
-                     person::LinkageType::BACKGROUND);
-        // This is sorta a place for a background screening?
+    };
+
+    VoluntaryRelinking::VoluntaryRelinking(
+        std::shared_ptr<stats::Decider> decider,
+        std::shared_ptr<datamanagement::DataManager> dm, std::string name)
+        : Event(dm, name), decider(decider) {
+        impl = std::make_shared<VoluntaryRelinkingIMPL>();
+    }
+
+    void VoluntaryRelinking::doEvent(person::PersonBase &person) {
+        impl->doEvent(person, dm, decider);
     }
 } // namespace event

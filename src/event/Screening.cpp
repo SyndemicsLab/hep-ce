@@ -67,16 +67,16 @@ namespace event {
             person::HCV infectionStatus = person.GetHCV();
             bool firstTest =
                 this->test(infectionStatus, testPrefix + "ab",
-                           [&person]() -> int { person.AddAbScreen(); });
+                           [&person]() -> int { return person.AddAbScreen(); });
             this->insertScreeningCost(person, "screening_background_ab.cost",
                                       "Background Antibody Screening");
 
             // if first test is negative, perform a second test
             bool secondTest = false;
             if (!firstTest) {
-                secondTest =
-                    this->test(infectionStatus, testPrefix + "ab",
-                               [&person]() -> int { person.AddAbScreen(); });
+                secondTest = this->test(
+                    infectionStatus, testPrefix + "ab",
+                    [&person]() -> int { return person.AddAbScreen(); });
                 this->insertScreeningCost(person,
                                           "screening_background_ab.cost",
                                           "Background Antibody Screening");
@@ -90,8 +90,9 @@ namespace event {
             this->insertScreeningCost(person, "screening_background_rna.cost",
                                       "Background RNA Screening");
 
-            if (this->test(infectionStatus, testPrefix + "rna",
-                           [&person]() -> int { person.AddRnaScreen(); })) {
+            if (this->test(
+                    infectionStatus, testPrefix + "rna",
+                    [&person]() -> int { return person.AddRnaScreen(); })) {
                 person.Link(person::LinkageType::BACKGROUND);
                 // what else needs to happen during a link?
             }
@@ -108,7 +109,7 @@ namespace event {
             person::HCV infectionStatus = person.GetHCV();
             bool firstTest =
                 this->test(infectionStatus, testPrefix + "ab",
-                           [&person]() -> int { person.AddAbScreen(); });
+                           [&person]() -> int { return person.AddAbScreen(); });
             this->insertScreeningCost(person, "screening_intervention_ab.cost",
                                       "Intervention Antibody Screening");
 
@@ -116,16 +117,17 @@ namespace event {
             bool secondTest = false;
             if (!firstTest) {
                 infectionStatus = person.GetHCV();
-                secondTest =
-                    this->test(infectionStatus, testPrefix + "ab",
-                               [&person]() -> int { person.AddAbScreen(); });
+                secondTest = this->test(
+                    infectionStatus, testPrefix + "ab",
+                    [&person]() -> int { return person.AddAbScreen(); });
             }
 
             this->insertScreeningCost(person, "screening_intervention_rna.cost",
                                       "Intervention RNA Screening");
             infectionStatus = person.GetHCV();
-            if (this->test(infectionStatus, testPrefix + "rna",
-                           [&person]() -> int { person.AddRnaScreen(); })) {
+            if (this->test(
+                    infectionStatus, testPrefix + "rna",
+                    [&person]() -> int { return person.AddRnaScreen(); })) {
                 person.Link(person::LinkageType::INTERVENTION);
                 // what else needs to happen during a link?
             } else {

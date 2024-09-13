@@ -31,7 +31,16 @@ namespace person {
         std::shared_ptr<Person> pImplPERSON;
 
     public:
-        PersonBase();
+        inline static const std::string POPULATION_HEADERS =
+            "sex,age,isAlive,identifiedHCV,timeInfectionIdentified,HCV,"
+            "fibrosisState,isGenotypeThree,seropositive,timeHCVChanged,"
+            "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,"
+            "linkageState,timeOfLinkChange,linkageType,"
+            "linkCount,measuredFibrosisState,"
+            "timeOfLastStaging,timeOfLastScreening,numABTests,"
+            "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
+            "timeOfTreatmentInitiation,minUtility,multUtility";
+        PersonBase(int id, std::shared_ptr<datamanagement::DataManager> dm);
         ~PersonBase();
         // Functionality
         int Grow();
@@ -60,6 +69,7 @@ namespace person {
         bool IsBoomer() const;
         bool IsCirrhotic();
         // Getters
+        int GetID() const;
         int GetCurrentTimestep() const;
         int GetAge() const;
         int GetTimesInfected() const;
@@ -83,9 +93,11 @@ namespace person {
         int GetTimeIdentified() const;
         LinkageState GetLinkState() const;
         int GetTimeOfLinkChange() const;
+        int GetTimeSinceLinkChange() const;
         int GetLinkCount() const;
         LinkageType GetLinkageType() const;
         int GetTimeOfTreatmentInitiation() const;
+        int GetTimeSinceTreatmentInitiation() const;
         PregnancyState GetPregnancyState() const;
         int GetTimeOfPregnancyChange() const;
         int GetNumInfants() const;

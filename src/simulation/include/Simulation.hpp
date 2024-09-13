@@ -31,14 +31,14 @@ namespace event {
 
 /// @brief Namespace containing Simulation Level Attributes
 namespace simulation {
-    class Environment {
+    class Simulation {
     private:
-        class Simulation;
-        std::unique_ptr<Simulation> pImplSIM;
+        class SimulationIMPL;
+        std::unique_ptr<SimulationIMPL> pImplSIM;
 
     public:
-        Environment(size_t seed = 1234, std::string const &logfile = "");
-        ~Environment();
+        Simulation(size_t seed = 1234, std::string const &logfile = "");
+        ~Simulation();
         int Run();
         int LoadData(std::string const &infile);
         int LoadTable(std::string const &infile);
