@@ -38,11 +38,14 @@ namespace simulation {
 
     public:
         Simulation(size_t seed = 1234, std::string const &logfile = "");
+        Simulation(std::string const &logfile = "");
         ~Simulation();
         int Run();
         int LoadData(std::string const &infile);
         int LoadTable(std::string const &infile);
         int LoadConfig(std::string const &infile);
+        int LoadEvents();
+        int CreateNPeople(size_t const N);
         int WriteResults(std::string const &outfile);
         int SaveSimulationState(std::string const &outfile);
         int LoadSimulationState(std::string const &infile);

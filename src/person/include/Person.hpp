@@ -22,6 +22,10 @@
 #include "Cost.hpp"
 #include <memory>
 
+namespace datamanagement {
+    class DataManager;
+}
+
 /// @brief Namespace containing all code pertaining to an individual Person
 namespace person {
     /// @brief Class describing a Person

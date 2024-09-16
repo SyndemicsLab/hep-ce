@@ -10,7 +10,6 @@ HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 
 add_library(${PROJECT_NAME} 
     Simulation.cpp 
-    run.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC data)

@@ -34,8 +34,9 @@ namespace simulation {
         std::shared_ptr<stats::Decider> decider;
         int tstep = 0;
         uint64_t _seed;
+        int defaultPopulationSize = 0;
         std::vector<person::PersonBase> population = {};
-        std::vector<event::Event> events = {};
+        std::vector<std::shared_ptr<event::Event>> events = {};
         static std::mt19937_64 generator;
 
         void trim(std::string &str) {
@@ -43,40 +44,6 @@ namespace simulation {
                 str.erase(str.begin());
             while (str[str.size() - 1] == ' ')
                 str.pop_back();
-        }
-
-        /// @brief
-        /// @param argc
-        /// @param argv
-        /// @param rootInputDir
-        /// @param taskStart
-        /// @param taskEnd
-        /// @return
-        bool argChecks(int argc, char **argv, std::string &rootInputDir,
-                       int &taskStart, int &taskEnd) {
-            if (argc > 1 && argc != 4) {
-                std::cerr << "Usage: " << argv[0]
-                          << "[INPUT FOLDER] [RUN START] [RUN END]\n\n"
-                          << "HEP-CE, a microsimulation studying individuals "
-                             "with HCV";
-                return false;
-            }
-
-            if (argc == 1) {
-                std::cout << "Please provide the input folder path: ";
-                std::cin >> rootInputDir;
-                std::cout << std::endl
-                          << "Please provide the first input folder number: ";
-                std::cin >> taskStart;
-                std::cout << std::endl
-                          << "Please provide the last input folder number: ";
-                std::cin >> taskEnd;
-            } else {
-                taskStart = std::stoi(argv[2]);
-                taskEnd = std::stoi(argv[3]);
-                rootInputDir = argv[1];
-            }
-            return true;
         }
 
         /// @brief Provide the pRNG seed passed to the simulation object
@@ -94,7 +61,184 @@ namespace simulation {
             return (uint64_t)seed;
         }
 
-        int loadEvents() {
+        uint64_t resetSimSeed() {
+            using namespace std::chrono;
+            milliseconds ms = duration_cast<milliseconds>(
+                steady_clock::now().time_since_epoch());
+            std::string data;
+            _dm->GetFromConfig("simulation.seed", data);
+            uint64_t seed =
+                (data.empty()) ? (uint64_t)ms.count() : std::stoi(data);
+            _seed = seed;
+            this->generator.seed(_seed);
+            spdlog::get("main")->info("Resetting Simulation Seed to {}",
+                                      std::to_string(seed));
+            return (uint64_t)seed;
+        }
+
+        int resetPopulationSize() {
+            std::string data;
+            _dm->GetFromConfig("simulation.population_size", data);
+            int size = (data.empty()) ? defaultPopulationSize : std::stoi(data);
+            spdlog::get("main")->info("Resetting Population Size to {}",
+                                      std::to_string(size));
+            return size;
+        }
+
+    public:
+        SimulationIMPL(size_t seed = 1234, std::string const &logfile = "")
+            : _seed(seed) {
+            this->generator.seed(_seed);
+            auto console_sink =
+                std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+
+            std::string logname = (logfile.empty()) ? "logfile.log" : logfile;
+            auto file_sink =
+                std::make_shared<spdlog::sinks::basic_file_sink_mt>(logname);
+            std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
+            auto logger = std::make_shared<spdlog::logger>(
+                "main", sinks.begin(), sinks.end());
+            spdlog::register_logger(logger);
+
+            spdlog::get("main")->info("Simulation seed: " +
+                                      std::to_string(this->_seed));
+        }
+
+        virtual ~SimulationIMPL() { spdlog::get("main")->flush(); }
+
+        int AddCSVTable(std::string const &filepath) {
+            return _dm->AddCSVTable(filepath);
+        }
+
+        int LoadConfig(std::string const &confpath) {
+            int rc = _dm->LoadConfig(confpath);
+            std::string data;
+            _dm->GetFromConfig("simulation.seed", data);
+            resetSimSeed();
+            resetPopulationSize();
+            return rc;
+        }
+
+        int GetPopulationSize() { return defaultPopulationSize; }
+
+        int BuildPersonTable() {
+            std::stringstream query;
+            query << "CREATE TABLE IF NOT EXISTS population (";
+            query
+                << "id, age, sex, drugBehaviorClassification, "
+                   "timeLastActiveDrugUse, seropositivity, isGenotypeThree, "
+                   "fibrosisState, identifiedAsPositiveInfection, linkageState";
+            query << "isAlive, timeInfectionIdentified, "
+                     "trueHCVstate, timeHCVStateChanged, "
+                     "timeFibrosisStateChanged, timeLastActiveDrugUse, "
+                     "timeOfLinkChange, linkageType, timesLinked, "
+                     "measuredFibrosisState, "
+                     "timeOfLastStaging, timeOfLastScreening, numABTests, "
+                     "numRNATests, timesInfected, timesCleared, "
+                     "initiatedTreatment, timeOfTreatmentInitiation, "
+                     "minUtility, multUtility";
+            query << ")";
+            datamanagement::Table table;
+            return _dm->Create(query.str(), table);
+        }
+
+        void CreatePerson(int id) {
+            person::PersonBase newperson(id, _dm);
+            std::stringstream query;
+            query << "INSERT INTO 'population' VALUES (";
+            query << newperson.GetPersonDataString();
+            query << ")";
+            datamanagement::Table table;
+            _dm->Update(query.str(), table);
+            this->population.push_back(newperson);
+        }
+
+        /// @brief Add an Event to the end of the Event List
+        /// @param event Event to add to the Simulation Event List
+        int AddEventToEnd(std::shared_ptr<event::Event> &event) {
+            spdlog::get("main")->info(
+                "Event being added to end of Event Queue");
+            this->events.push_back(event);
+            return 0;
+        }
+
+        /// @brief Add an Event to the beginning of the Event List
+        /// @param event Event to add to the Simulation Event List
+        int AddEventToBeginning(std::shared_ptr<event::Event> &event) {
+            spdlog::get("main")->info(
+                "Event being added to beginning of Event Queue.");
+            this->events.insert(this->events.begin(), event);
+            return 0;
+        }
+
+        /// @brief Add an Event to the provided index in the Event List
+        /// @param event Even to add to the Simulation Event List
+        /// @param idx Index of the location to add the Event
+        /// @return True if it succeeds, False if it fails
+        int AddEventAtIndex(std::shared_ptr<event::Event> &event, int idx) {
+            if (idx >= this->events.size() || idx < 0) {
+                spdlog::get("main")->warn(
+                    "Index {0} out of Event Queue Range of size {1}!",
+                    std::to_string(idx), std::to_string(this->events.size()));
+                return 1;
+            }
+            spdlog::get("main")->info(
+                "Event being added to index {0} of Event Queue.",
+                std::to_string(idx));
+            this->events.insert(this->events.begin() + idx, event);
+            return 0;
+        }
+
+        /// @brief Retrieve the Population Vector from the Simulation
+        /// @return List of People in the Simulation
+        std::vector<person::PersonBase> getPopulation() const {
+            return this->population;
+        }
+
+        /// @brief Retrieve the Events in the Simulation
+        /// @return List of Events in the Simulation
+        std::vector<std::shared_ptr<event::Event>> getEvents() const {
+            return this->events;
+        }
+
+        /// @brief Execute the Simulation
+        /// @return The Final State of the entire Population
+        int run() {
+            spdlog::get("main")->info("Simulation Run Started");
+            std::string data = "";
+            if (_dm->GetFromConfig("simulation.duration", data) != 0) {
+                spdlog::get("main")->error(
+                    "Simulation Found no Duration Parameter!\nExiting...");
+                exit(-1);
+            }
+            size_t duration = std::stol(data);
+            for (tstep; tstep < duration; ++tstep) {
+                for (std::shared_ptr<event::Event> &event : this->events) {
+#pragma omp parallel for
+                    for (person::PersonBase &person : this->population) {
+                        event->Execute(person);
+                    }
+                }
+#pragma omp parallel for
+                for (person::PersonBase &person : this->population) {
+                    person.Grow();
+                }
+                spdlog::get("main")->info("Simulation completed timestep {}",
+                                          tstep);
+            }
+            return 0;
+        }
+
+        /// @brief Access the random number generator, for events that need to
+        /// sample the pRNG
+        /// @return Reference to the simulation's pseudorandom number generator
+        std::mt19937_64 &getGenerator() { return generator; }
+
+        /// @brief A getter for the Current Timestep variable
+        /// @return tstep as a int
+        int getCurrentTimestep() { return this->tstep; }
+
+        int LoadEvents() {
             this->events.clear();
             std::string data;
             _dm->GetFromConfig("simulation.events", data);
@@ -117,167 +261,26 @@ namespace simulation {
             return 0;
         }
 
-    public:
-        SimulationIMPL(size_t seed = 1234, std::string const &logfile = "")
-            : _seed(seed) {
-            this->generator.seed(_seed);
-            auto console_sink =
-                std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-            auto file_sink =
-                std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-                    "logfile.log");
-            std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
-            auto logger = std::make_shared<spdlog::logger>(
-                "main", sinks.begin(), sinks.end());
-            spdlog::register_logger(logger);
-
-            spdlog::get("main")->info("Simulation seed: " +
-                                      std::to_string(this->_seed));
-        }
-
-        virtual ~SimulationIMPL() { spdlog::get("main")->flush(); }
-
-        int AddCSVTable(std::string const &filepath) {
-            return _dm->AddCSVTable(filepath);
-        }
-
-        int LoadConfig(std::string const &confpath) {
-            return _dm->LoadConfig(confpath);
-        }
-
-        int BuildPersonTable() { // std::vector<std::vector<std::string>> table
-            std::stringstream query;
-            query << "CREATE TABLE IF NOT EXISTS population (";
-            query
-                << "id, age, sex, drugBehaviorClassification, "
-                   "timeLastActiveDrugUse, seropositivity, isGenotypeThree, "
-                   "fibrosisState, identifiedAsPositiveInfection, linkageState";
-            query << "isAlive, timeInfectionIdentified, "
-                     "trueHCVstate, timeHCVStateChanged, "
-                     "timeFibrosisStateChanged, timeLastActiveDrugUse, "
-                     "timeOfLinkChange, linkageType, timesLinked, "
-                     "measuredFibrosisState, "
-                     "timeOfLastStaging, timeOfLastScreening, numABTests, "
-                     "numRNATests, timesInfected, timesCleared, "
-                     "initiatedTreatment, timeOfTreatmentInitiation, "
-                     "minUtility, multUtility";
-            query << ")";
-            datamanagement::Table table;
-            return _dm->Create(query.str(), table);
-        }
-
         /// @brief Function used to Create Population Set
         /// @param N Number of People to create in the Population
-        void CreateNPeople(size_t N) {
+        int CreateNPeople(size_t const N) {
             BuildPersonTable();
             this->population.clear();
             for (size_t i = 0; i < N; ++i) {
                 CreatePerson(i);
             }
-        }
-
-        void CreatePerson(int id) {
-            person::PersonBase newperson(id, _dm);
-            std::stringstream query;
-            query << "INSERT INTO 'population' VALUES (";
-            query << newperson.GetPersonDataString();
-            query << ")";
-            datamanagement::Table table;
-            _dm->Update(query.str(), table);
-            this->population.push_back(newperson);
-        }
-
-        /// @brief Add an Event to the end of the Event List
-        /// @param event Event to add to the Simulation Event List
-        int AddEventToEnd(event::Event &event) {
-            spdlog::get("main")->info(
-                "Event being added to end of Event Queue");
-            this->events.push_back(event);
             return 0;
         }
-
-        /// @brief Add an Event to the beginning of the Event List
-        /// @param event Event to add to the Simulation Event List
-        int AddEventToBeginning(event::Event &event) {
-            spdlog::get("main")->info(
-                "Event being added to beginning of Event Queue.");
-            this->events.insert(this->events.begin(), event);
-            return 0;
-        }
-
-        /// @brief Add an Event to the provided index in the Event List
-        /// @param event Even to add to the Simulation Event List
-        /// @param idx Index of the location to add the Event
-        /// @return True if it succeeds, False if it fails
-        int AddEventAtIndex(event::Event &event, int idx) {
-            if (idx >= this->events.size() || idx < 0) {
-                spdlog::get("main")->warn(
-                    "Index {0} out of Event Queue Range of size {1}!",
-                    std::to_string(idx), std::to_string(this->events.size()));
-                return 1;
-            }
-            spdlog::get("main")->info(
-                "Event being added to index {0} of Event Queue.",
-                std::to_string(idx));
-            this->events.insert(this->events.begin() + idx, event);
-            return 0;
-        }
-
-        /// @brief Retrieve the Population Vector from the Simulation
-        /// @return List of People in the Simulation
-        std::vector<person::PersonBase> getPopulation() const {
-            return this->population;
-        }
-
-        /// @brief Retrieve the Events in the Simulation
-        /// @return List of Events in the Simulation
-        std::vector<event::Event> getEvents() const { return this->events; }
-
-        /// @brief Execute the Simulation
-        /// @return The Final State of the entire Population
-        int run() {
-            spdlog::get("main")->info("Simulation Run Started");
-            std::string data = "";
-            if (_dm->GetFromConfig("simulation.duration", data) != 0) {
-                spdlog::get("main")->error(
-                    "Simulation Found no Duration Parameter!\nExiting...");
-                exit(-1);
-            }
-            size_t duration = std::stol(data);
-            for (tstep; tstep < duration; ++tstep) {
-                for (event::Event &event : this->events) {
-#pragma omp parallel for
-                    for (person::PersonBase &person : this->population) {
-                        event.Execute(person);
-                    }
-                }
-#pragma omp parallel for
-                for (person::PersonBase &person : this->population) {
-                    person.Grow();
-                }
-                spdlog::get("main")->info("Simulation completed timestep {}",
-                                          tstep);
-            }
-            return 0;
-        }
-
-        /// @brief Access the random number generator, for events that need to
-        /// sample the pRNG
-        /// @return Reference to the simulation's pseudorandom number generator
-        std::mt19937_64 &getGenerator() { return generator; }
-
-        /// @brief A getter for the Current Timestep variable
-        /// @return tstep as a int
-        int getCurrentTimestep() { return this->tstep; }
     };
     std::mt19937_64 Simulation::SimulationIMPL::generator;
 
-    Simulation::Simulation(size_t seed = 1234,
-                           std::string const &logfile = "") {
+    Simulation::Simulation(size_t seed, std::string const &logfile) {
         pImplSIM = std::make_unique<SimulationIMPL>(seed, logfile);
     }
+    Simulation::Simulation(std::string const &logfile)
+        : Simulation::Simulation(1234, logfile) {}
     Simulation::~Simulation() {}
-    int Simulation::Run() { pImplSIM->run(); }
+    int Simulation::Run() { return pImplSIM->run(); }
 
     /// @brief Load an entire directory to the DataManager
     /// @param indir Directory containing CSVs and Config file
@@ -298,6 +301,9 @@ namespace simulation {
                 rc += this->LoadConfig(p.string());
             }
         }
+        LoadEvents();
+        CreateNPeople(pImplSIM->GetPopulationSize());
+
         return rc;
     }
 
@@ -330,8 +336,17 @@ namespace simulation {
         return 0;
     }
 
-    int Simulation::WriteResults(std::string const &outfile) {}
-    int Simulation::SaveSimulationState(std::string const &outfile) {}
-    int Simulation::LoadSimulationState(std::string const &infile) {}
+    int Simulation::LoadEvents() { return pImplSIM->LoadEvents(); }
+    int Simulation::CreateNPeople(size_t const N) {
+        return pImplSIM->CreateNPeople(N);
+    }
+
+    int Simulation::WriteResults(std::string const &outfile) { return -1; }
+    int Simulation::SaveSimulationState(std::string const &outfile) {
+        return -1;
+    }
+    int Simulation::LoadSimulationState(std::string const &infile) {
+        return -1;
+    }
 
 } // namespace simulation

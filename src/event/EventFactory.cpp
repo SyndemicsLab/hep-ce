@@ -10,17 +10,19 @@ namespace event {
     /// @param table
     /// @return
     template <typename T>
-    Event &makeEvent(std::shared_ptr<stats::Decider> decider,
-                     std::shared_ptr<datamanagement::DataManager> dm,
-                     std::string name = "Event") {
-        return T(decider, dm, name);
+    std::shared_ptr<Event>
+    makeEvent(std::shared_ptr<stats::Decider> decider,
+              std::shared_ptr<datamanagement::DataManager> dm,
+              std::string name = "Event") {
+        return std::make_shared<T>(decider, dm, name);
     }
 
     class EventFactory {
     public:
-        Event &create(std::shared_ptr<stats::Decider> decider,
-                      std::shared_ptr<datamanagement::DataManager> dm,
-                      std::string const eventName) {
+        std::shared_ptr<Event>
+        create(std::shared_ptr<stats::Decider> decider,
+               std::shared_ptr<datamanagement::DataManager> dm,
+               std::string const eventName) {
             if (eventName == "Aging") {
                 return makeEvent<Aging>(decider, dm, "Aging");
             }

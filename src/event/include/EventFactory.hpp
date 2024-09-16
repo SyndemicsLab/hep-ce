@@ -13,9 +13,10 @@ namespace event {
 
     class EventFactory {
     public:
-        Event &create(std::shared_ptr<stats::Decider> decider,
-                      std::shared_ptr<datamanagement::DataManager> dm,
-                      std::string const eventName);
+        std::shared_ptr<Event> &
+        create(std::shared_ptr<stats::Decider> decider,
+               std::shared_ptr<datamanagement::DataManager> dm,
+               std::string const eventName);
     };
 } // namespace event
 
