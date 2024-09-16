@@ -17,6 +17,7 @@
 //===----------------------------------------------------------------------===//
 #include "FibrosisProgression.hpp"
 #include "DataManager.hpp"
+#include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
 #include <sstream>

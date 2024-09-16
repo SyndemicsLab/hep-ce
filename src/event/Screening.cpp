@@ -17,6 +17,7 @@
 #include "Screening.hpp"
 #include "Cost.hpp"
 #include "DataManager.hpp"
+#include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
 #include <functional>
@@ -258,5 +259,11 @@ namespace event {
 
     void Screening::doEvent(person::PersonBase &person) {
         impl->doEvent(person, dm, decider);
+    }
+    Screening::Screening(std::shared_ptr<stats::Decider> decider,
+                         std::shared_ptr<datamanagement::DataManager> dm,
+                         std::string name)
+        : Event(dm, name), decider(decider) {
+        impl = std::make_unique<ScreeningIMPL>();
     }
 } // namespace event

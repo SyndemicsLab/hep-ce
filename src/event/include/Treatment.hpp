@@ -17,7 +17,6 @@
 #ifndef EVENT_TREATMENT_HPP_
 #define EVENT_TREATMENT_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation

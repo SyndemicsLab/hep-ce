@@ -17,7 +17,6 @@
 #ifndef EVENT_VOLUNTARYRELINK_HPP_
 #define EVENT_VOLUNTARYRELINK_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation

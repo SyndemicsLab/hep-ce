@@ -18,7 +18,6 @@
 #ifndef EVENT_OVERDOSE_HPP_
 #define EVENT_OVERDOSE_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 
 namespace event {
@@ -27,7 +26,7 @@ namespace event {
     class Overdose : public Event {
     private:
         class OverdoseIMPL;
-        std::unique_ptr<OverdoseIMPL> impl;
+        std::shared_ptr<OverdoseIMPL> impl;
         std::shared_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual person undergoing Event

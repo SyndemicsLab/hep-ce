@@ -8,13 +8,20 @@ find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 )
 
+find_package(OpenMP REQUIRED)
+
 add_library(${PROJECT_NAME} 
     Simulation.cpp 
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC data)
-target_link_libraries(${PROJECT_NAME} PUBLIC event)
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE 
+        data
+        person
+        event
+        spdlog::spdlog
+        DataManagement::DataManagement
+        OpenMP::OpenMP_CXX
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "include/")

@@ -15,13 +15,13 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Simulation.hpp"
+#include "DataManager.hpp"
 #include "Event.hpp"
 #include "EventFactory.hpp"
 #include "Person.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
-#include <DataManager.hpp>
 #include <filesystem>
 #include <iostream>
 #include <random>
@@ -271,6 +271,10 @@ namespace simulation {
             }
             return 0;
         }
+
+        int SaveSimulationState(std::string const &outfile) {
+            return _dm->SaveDatabase(outfile);
+        }
     };
     std::mt19937_64 Simulation::SimulationIMPL::generator;
 
@@ -343,7 +347,7 @@ namespace simulation {
 
     int Simulation::WriteResults(std::string const &outfile) { return -1; }
     int Simulation::SaveSimulationState(std::string const &outfile) {
-        return -1;
+        return pImplSIM->SaveSimulationState(outfile);
     }
     int Simulation::LoadSimulationState(std::string const &infile) {
         return -1;

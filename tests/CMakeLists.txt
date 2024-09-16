@@ -1,36 +1,32 @@
 cmake_minimum_required(VERSION 3.24)
 project(hepceTest CXX)
 
-find_package(GTest REQUIRED CONFIG)
-
-find_package(spdlog REQUIRED)
+find_package(GTest REQUIRED)
 
 find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 )
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin)
+
+enable_testing()
+
 add_executable(${PROJECT_NAME}
-  PersonTest.cpp
-  SimTest.cpp
-  EventTest.cpp
-  CostTest.cpp
+  src/PersonTest.cpp
+  src/SimTest.cpp
+  src/EventTest.cpp
+  src/CostTest.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gtest)
-target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gtest_main)
-target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gmock)
-target_link_libraries(${PROJECT_NAME} PUBLIC GTest::gmock_main)
-target_link_libraries(${PROJECT_NAME} PUBLIC person)
-target_link_libraries(${PROJECT_NAME} PUBLIC simulation)
-target_link_libraries(${PROJECT_NAME} PUBLIC event)
-target_link_libraries(${PROJECT_NAME} PUBLIC cost)
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
-
-target_include_directories(${PROJECT_NAME} PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${Boost_INCLUDE_DIRS}
-  "mocks/"
+target_link_libraries(${PROJECT_NAME} 
+    PUBLIC 
+        GTest::gtest 
+        GTest::gtest_main
+        person
+        simulation
+        event
+        cost
+        DataManagement::DataManagement
 )
 
 # gtest_discover_tests(test)

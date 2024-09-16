@@ -17,7 +17,6 @@
 #ifndef EVENT_MOUD_HPP_
 #define EVENT_MOUD_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 
 namespace event {
@@ -26,7 +25,7 @@ namespace event {
     class MOUD : public Event {
     private:
         class MOUDIMPL;
-        std::unique_ptr<MOUDIMPL> impl;
+        std::shared_ptr<MOUDIMPL> impl;
         std::shared_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event

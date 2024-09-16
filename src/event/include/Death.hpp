@@ -17,7 +17,6 @@
 #ifndef EVENT_DEATH_HPP_
 #define EVENT_DEATH_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 #include <memory>
 
@@ -28,7 +27,7 @@ namespace event {
     class Death : public Event {
     private:
         class DeathIMPL;
-        std::unique_ptr<DeathIMPL> impl;
+        std::shared_ptr<DeathIMPL> impl;
         std::shared_ptr<stats::Decider> decider;
 
         /// @brief Implementation of Virtual Function doEvent

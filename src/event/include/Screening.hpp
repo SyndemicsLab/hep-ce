@@ -17,7 +17,6 @@
 #ifndef EVENT_SCREENING_HPP_
 #define EVENT_SCREENING_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 #include <memory>
 

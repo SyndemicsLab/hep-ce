@@ -17,7 +17,6 @@
 #ifndef EVENT_INFECTIONS_HPP_
 #define EVENT_INFECTIONS_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 #include <memory>
 
@@ -28,17 +27,11 @@ namespace event {
     class Infections : public Event {
     private:
         class InfectionsIMPL;
-        std::unique_ptr<InfectionsIMPL> impl;
+        std::shared_ptr<InfectionsIMPL> impl;
         std::shared_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(person::PersonBase &person) override;
-
-        /// @brief Retrieve Infection Probabilities for Infection Chances for
-        /// the individual Person from the SQL Table
-        /// @param person Person whom to retrieve Infection Probabilities for
-        /// @return Vector of Infection Probabilities
-        std::vector<double> getInfectProb(person::PersonBase &person);
 
     public:
         Infections(std::shared_ptr<stats::Decider> decider,

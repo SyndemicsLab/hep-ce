@@ -17,7 +17,6 @@
 #ifndef EVENT_Linking_HPP_
 #define EVENT_Linking_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
@@ -27,7 +26,7 @@ namespace event {
     class Linking : public Event {
     private:
         class LinkingIMPL;
-        std::unique_ptr<LinkingIMPL> impl;
+        std::shared_ptr<LinkingIMPL> impl;
         std::shared_ptr<stats::Decider> decider;
 
         /// @brief Implementation of Virtual Function doEvent

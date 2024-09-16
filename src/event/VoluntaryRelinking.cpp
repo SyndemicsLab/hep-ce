@@ -17,6 +17,7 @@
 //===----------------------------------------------------------------------===//
 #include "VoluntaryRelinking.hpp"
 #include "DataManager.hpp"
+#include "Decider.hpp"
 #include "Person.hpp"
 #include <string>
 

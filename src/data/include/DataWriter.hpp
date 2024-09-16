@@ -17,9 +17,12 @@
 #ifndef DATAWRITER_HPP_
 #define DATAWRITER_HPP_
 
-#include "Person.hpp"
 #include <memory>
+#include <vector>
 
+namespace person {
+    class PersonBase;
+}
 namespace datamanagement {
     class DataManager;
 }

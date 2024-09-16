@@ -10,9 +10,13 @@ HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 
 add_library(data DataWriter.cpp)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC cost)
-target_link_libraries(${PROJECT_NAME} PUBLIC person)
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE
+        cost
+        person
+        spdlog::spdlog
+        DataManagement::DataManagement
+        utils
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "include/")

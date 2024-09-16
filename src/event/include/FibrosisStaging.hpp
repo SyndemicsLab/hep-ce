@@ -18,7 +18,6 @@
 #ifndef EVENT_FIBROSIS_HPP_
 #define EVENT_FIBROSIS_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
@@ -28,7 +27,7 @@ namespace event {
     class FibrosisStaging : public Event {
     private:
         class FibrosisStagingIMPL;
-        std::unique_ptr<FibrosisStagingIMPL> impl;
+        std::shared_ptr<FibrosisStagingIMPL> impl;
         std::shared_ptr<stats::Decider> decider;
 
         double testOneCost = 0;

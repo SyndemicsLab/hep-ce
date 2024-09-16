@@ -12,9 +12,15 @@ add_library(${PROJECT_NAME}
     Person.cpp 
     ContainerOperators.cpp
 )
-target_link_libraries(${PROJECT_NAME} PUBLIC utils)
-target_link_libraries(${PROJECT_NAME} PUBLIC cost)
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
+
+target_link_libraries(${PROJECT_NAME} 
+    PUBLIC 
+        cost
+    PRIVATE
+        spdlog::spdlog
+        DataManagement::DataManagement
+        utils
+        stats
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "include/")

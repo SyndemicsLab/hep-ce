@@ -105,6 +105,9 @@ namespace person {
             std::string error;
             int rc = dm->SelectCustomCallback(query.str(), this->callback,
                                               &storage, error);
+            if (rc != 0) {
+                return;
+            }
 
             sex = storage.sex;
             SetAge(storage.age);
@@ -216,17 +219,17 @@ namespace person {
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
-        FibrosisState DiagnoseFibrosis() {
+        FibrosisState DiagnoseFibrosis(FibrosisState &data) {
             // need to add functionality here
-            this->infectionStatus.fibrosisState = FibrosisState::F0;
+            this->infectionStatus.fibrosisState = data;
             return this->infectionStatus.fibrosisState;
         }
 
         /// @brief Dignose somebody with HEPC
         /// @return HEPC state that was diagnosed
-        HCV DiagnoseHEPC() {
+        HCV DiagnoseHEPC(HCV &data) {
             // need to add functionality here
-            this->infectionStatus.hcv = HCV::ACUTE;
+            this->infectionStatus.hcv = data;
             return this->infectionStatus.hcv;
         }
 
@@ -682,11 +685,11 @@ namespace person {
         return 0;
     }
     int PersonBase::DiagnoseFibrosis(FibrosisState &data) {
-        data = pImplPERSON->DiagnoseFibrosis();
+        data = pImplPERSON->DiagnoseFibrosis(data);
         return 0;
     }
     int PersonBase::DiagnoseHEPC(HCV &data) {
-        data = pImplPERSON->DiagnoseHEPC();
+        data = pImplPERSON->DiagnoseHEPC(data);
         return 0;
     }
     int PersonBase::AddClearance() {

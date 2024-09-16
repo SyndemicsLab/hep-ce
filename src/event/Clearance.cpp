@@ -16,6 +16,7 @@
 //===----------------------------------------------------------------------===//
 #include "Clearance.hpp"
 #include "DataManager.hpp"
+#include "Decider.hpp"
 #include "Person.hpp"
 #include "Utils.hpp"
 

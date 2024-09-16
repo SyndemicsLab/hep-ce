@@ -18,7 +18,6 @@
 #ifndef EVENT_FIBROSISPROGRESSION_HPP_
 #define EVENT_FIBROSISPROGRESSION_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 #include <map>
 #include <memory>
@@ -30,7 +29,7 @@ namespace event {
     class FibrosisProgression : public Event {
     private:
         class FibrosisProgressionIMPL;
-        std::unique_ptr<FibrosisProgressionIMPL> impl;
+        std::shared_ptr<FibrosisProgressionIMPL> impl;
         std::shared_ptr<stats::Decider> decider;
 
         /// @brief Implementation of Virtual Function doEvent

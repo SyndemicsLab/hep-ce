@@ -15,6 +15,7 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "MOUD.hpp"
+#include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
 

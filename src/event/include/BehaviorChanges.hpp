@@ -17,7 +17,6 @@
 #ifndef EVENT_BEHAVIORCHANGES_HPP_
 #define EVENT_BEHAVIORCHANGES_HPP_
 
-#include "Decider.hpp"
 #include "Event.hpp"
 
 namespace event {

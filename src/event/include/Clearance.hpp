@@ -16,7 +16,6 @@
 //===----------------------------------------------------------------------===//
 #ifndef EVENT_CLEARANCE_HPP_
 #define EVENT_CLEARANCE_HPP_
-#include "Decider.hpp"
 #include "Event.hpp"
 #include <memory>
 
@@ -26,7 +25,7 @@ namespace event {
     class Clearance : public Event {
     private:
         class ClearanceIMPL;
-        std::unique_ptr<ClearanceIMPL> impl;
+        std::shared_ptr<ClearanceIMPL> impl;
         std::shared_ptr<stats::Decider> decider;
 
         /// @brief Implementation of Virtual Function doEvent

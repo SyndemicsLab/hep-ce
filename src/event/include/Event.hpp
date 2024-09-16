@@ -33,6 +33,11 @@ namespace datamanagement {
     class DataManager;
 }
 
+// Forward Defining Decider from stats project
+namespace stats {
+    class Decider;
+}
+
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
     class Event {
@@ -46,7 +51,7 @@ namespace event {
               std::string name = std::string("Event"))
             : dm(dm), EVENT_NAME(name) {}
         ~Event() = default;
-        virtual int Execute(person::PersonBase &person);
+        int Execute(person::PersonBase &person);
     };
 } // namespace event
 #endif

@@ -17,6 +17,7 @@
 #include "Aging.hpp"
 #include "Cost.hpp"
 #include "DataManager.hpp"
+#include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
 #include <sstream>
@@ -86,7 +87,8 @@ namespace event {
         }
     };
 
-    Aging::Aging(std::shared_ptr<datamanagement::DataManager> dm,
+    Aging::Aging(std::shared_ptr<stats::Decider> decider,
+                 std::shared_ptr<datamanagement::DataManager> dm,
                  std::string name)
         : Event(dm, name) {
         impl = std::make_unique<AgingIMPL>();

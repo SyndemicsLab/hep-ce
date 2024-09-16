@@ -25,13 +25,14 @@ namespace event {
     class Aging : public Event {
     private:
         class AgingIMPL;
-        std::unique_ptr<AgingIMPL> impl;
+        std::shared_ptr<AgingIMPL> impl;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
         void doEvent(person::PersonBase &person) override;
 
     public:
-        Aging(std::shared_ptr<datamanagement::DataManager> dm,
+        Aging(std::shared_ptr<stats::Decider> decider,
+              std::shared_ptr<datamanagement::DataManager> dm,
               std::string name = std::string("Aging"));
         virtual ~Aging() = default;
     };

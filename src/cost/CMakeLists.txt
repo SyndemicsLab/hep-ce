@@ -8,6 +8,6 @@ add_library(cost
   Cost.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "include/")

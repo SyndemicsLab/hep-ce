@@ -16,6 +16,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "Overdose.hpp"
+#include "Decider.hpp"
 #include "Person.hpp"
 
 namespace event {
