@@ -19,8 +19,8 @@
 #include <memory>
 #include <vector>
 
-#include "DataManager.hpp"
 #include "Person.hpp"
+#include <DataManagement/DataManager.hpp>
 
 class PersonTest : public ::testing::Test {
 protected:

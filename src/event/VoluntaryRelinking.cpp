@@ -16,9 +16,9 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "VoluntaryRelinking.hpp"
-#include "DataManager.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include <DataManagement/DataManager.hpp>
 #include <string>
 
 namespace event {

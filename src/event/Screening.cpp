@@ -16,10 +16,10 @@
 //===----------------------------------------------------------------------===//
 #include "Screening.hpp"
 #include "Cost.hpp"
-#include "DataManager.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
+#include <DataManagement/DataManager.hpp>
 #include <functional>
 #include <sstream>
 #include <string>

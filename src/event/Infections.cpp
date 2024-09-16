@@ -15,9 +15,9 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Infections.hpp"
-#include "DataManager.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include <DataManagement/DataManager.hpp>
 #include <sstream>
 namespace event {
     class Infections::InfectionsIMPL {

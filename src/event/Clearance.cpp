@@ -15,10 +15,10 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Clearance.hpp"
-#include "DataManager.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "Utils.hpp"
+#include <DataManagement/DataManager.hpp>
 
 namespace event {
     class Clearance::ClearanceIMPL {

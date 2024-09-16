@@ -1,7 +1,7 @@
 #include "EventFactory.hpp"
 #include "AllEvents.hpp"
-#include "DataManager.hpp"
 #include "spdlog/spdlog.h"
+#include <DataManagement/DataManager.hpp>
 
 namespace event {
     std::shared_ptr<Event>

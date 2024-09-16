@@ -28,22 +28,23 @@ dminstall () {
     # subshell needed to avoid changing working directory unnecessarily
     (
 	cd "DataManagement" || return 1
-	scripts/build.sh -l "$TOPLEVEL/lib/dminstall"
-	if [[ ! -e "lib/libDataManagement.so" ]]; then
-	    (
-		cd "$TOPLEVEL" || return
-		rm -rf lib/* DataManagement
-	    )
-	    return 1
-	fi
+	scripts/build.sh -pi "$TOPLEVEL/lib/dminstall"
+	# if [[ ! -e "lib/dminstall/lib/libDataManagement.so" ]]; then
+	#     (
+    #     echo "Removing Because shared library is not found!"
+	# 	cd "$TOPLEVEL" || return
+	# 	rm -rf lib/* DataManagement
+	#     )
+	#     return 1
+	# fi
 	# shared object installation is still not like it was before, so these
 	# lines accomplish the same purpose. Will require more CMakeFile
 	# troubleshooting in DataManagement in the future.
-	mkdir -p "$TOPLEVEL/lib/dminstall"
-	cp -r "include" "lib" "$TOPLEVEL/lib/dminstall"
-	mkdir -p "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
-	cp "build/"*".cmake" "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
-	cp "build/CMakeFiles/Export/"*"/DataManagementTargets"*".cmake" "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
+	# mkdir -p "$TOPLEVEL/lib/dminstall"
+	# cp -r "include" "lib" "$TOPLEVEL/lib/dminstall"
+	# mkdir -p "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
+	# cp "build/"*".cmake" "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
+	# cp "build/CMakeFiles/Export/"*"/DataManagementTargets"*".cmake" "$TOPLEVEL/lib/dminstall/lib/cmake/DataManagement"
     )
     rm -rf DataManagement
 }
