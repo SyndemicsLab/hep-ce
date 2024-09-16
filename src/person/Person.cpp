@@ -505,6 +505,41 @@ namespace person {
             return this->treatmentDetails;
         }
 
+        // query << "id, age, sex, drugBehaviorClassification, "
+        //          "timeLastActiveDrugUse, seropositivity, isGenotypeThree, "
+        //          "fibrosisState, identifiedAsPositiveInfection,
+        //          linkageState";
+        // query << "isAlive, timeInfectionIdentified, "
+        //          "trueHCVstate, timeHCVStateChanged, "
+        //          "timeFibrosisStateChanged, timeLastActiveDrugUse, "
+        //          "timeOfLinkChange, linkageType, timesLinked, "
+        //          "measuredFibrosisState, "
+        //          "timeOfLastStaging, timeOfLastScreening, numABTests, "
+        //          "numRNATests, timesInfected, timesCleared, "
+        //          "initiatedTreatment, timeOfTreatmentInitiation, "
+        //          "minUtility, multUtility"
+        std::string GetPersonDataString() const {
+            std::stringstream data;
+            data << GetAge() << "," << GetSex() << "," << GetBehavior() << ","
+                 << GetTimeBehaviorChange() << "," << GetSeropositive() << ","
+                 << IsGenotypeThree() << "," << GetFibrosisState() << ","
+                 << IsIdentifiedAsInfected() << "," << GetLinkState() << ","
+                 << GetIsAlive() << "," << GetTimeIdentified() << ","
+                 << GetHCV() << "," << GetTimeHCVChanged() << ","
+                 << GetTimeFibrosisStateChanged() << ","
+                 << GetTimeBehaviorChange() << "," << GetTimeOfLinkChange()
+                 << "," << GetLinkageType() << "," << GetLinkCount() << ","
+                 << GetMeasuredFibrosisState() << "," << GetTimeOfLastStaging()
+                 << "," << GetTimeOfLastScreening() << "," << GetNumABTests()
+                 << "," << GetNumRNATests() << "," << GetTimesInfected() << ","
+                 << GetClearances() << "," << std::boolalpha
+                 << GetTreatmentDetails().initiatedTreatment << ","
+                 << GetTimeOfTreatmentInitiation() << ","
+                 << std::to_string(GetUtility().minUtil) << ","
+                 << std::to_string(GetUtility().multUtil);
+            return data.str();
+        }
+
         //////////////////// GETTERS ////////////////////
         //////////////////// SETTERS ////////////////////
 
@@ -838,6 +873,9 @@ namespace person {
     }
     TreatmentDetails PersonBase::GetTreatmentDetails() const {
         return pImplPERSON->GetTreatmentDetails();
+    }
+    std::string PersonBase::GetPersonDataString() const {
+        return pImplPERSON->GetPersonDataString();
     }
     // Setters
     void PersonBase::SetAge(int age) { pImplPERSON->SetAge(age); }

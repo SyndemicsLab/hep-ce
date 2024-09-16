@@ -25,6 +25,7 @@
 #include <filesystem>
 #include <iostream>
 #include <random>
+#include <sstream>
 
 namespace simulation {
     class Simulation::SimulationIMPL {
@@ -144,7 +145,26 @@ namespace simulation {
             return _dm->LoadConfig(confpath);
         }
 
-        int BuildPersonTable() { return -1; }
+        int BuildPersonTable() { // std::vector<std::vector<std::string>> table
+            std::stringstream query;
+            query << "CREATE TABLE IF NOT EXISTS population (";
+            query
+                << "id, age, sex, drugBehaviorClassification, "
+                   "timeLastActiveDrugUse, seropositivity, isGenotypeThree, "
+                   "fibrosisState, identifiedAsPositiveInfection, linkageState";
+            query << "isAlive, timeInfectionIdentified, "
+                     "trueHCVstate, timeHCVStateChanged, "
+                     "timeFibrosisStateChanged, timeLastActiveDrugUse, "
+                     "timeOfLinkChange, linkageType, timesLinked, "
+                     "measuredFibrosisState, "
+                     "timeOfLastStaging, timeOfLastScreening, numABTests, "
+                     "numRNATests, timesInfected, timesCleared, "
+                     "initiatedTreatment, timeOfTreatmentInitiation, "
+                     "minUtility, multUtility";
+            query << ")";
+            datamanagement::Table table;
+            return _dm->Create(query.str(), table);
+        }
 
         /// @brief Function used to Create Population Set
         /// @param N Number of People to create in the Population
@@ -158,6 +178,12 @@ namespace simulation {
 
         void CreatePerson(int id) {
             person::PersonBase newperson(id, _dm);
+            std::stringstream query;
+            query << "INSERT INTO 'population' VALUES (";
+            query << newperson.GetPersonDataString();
+            query << ")";
+            datamanagement::Table table;
+            _dm->Update(query.str(), table);
             this->population.push_back(newperson);
         }
 

@@ -117,6 +117,7 @@ namespace person {
         StagingDetails GetStagingDetails() const;
         ScreeningDetails GetScreeningDetails() const;
         TreatmentDetails GetTreatmentDetails() const;
+        std::string GetPersonDataString() const;
         // Setters
         void SetAge(int age);
         void SetHadSecondTest(bool state);
