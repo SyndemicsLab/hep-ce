@@ -65,6 +65,10 @@ namespace event {
             std::string query = this->buildSQL(person);
             std::vector<struct cost_util> storage;
             std::string error;
+            if (dm == nullptr) {
+                // Let default values stay
+                return;
+            }
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
             if (!rc) {

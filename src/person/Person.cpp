@@ -96,6 +96,10 @@ namespace person {
     public:
         Person(int id, std::shared_ptr<datamanagement::DataManager> dm)
             : id(id) {
+            if (dm == nullptr) {
+                // Let default values stay
+                return;
+            }
             std::stringstream query;
             query << "SELECT " << person::PersonBase::POPULATION_HEADERS;
             query << "FROM init_cohort ";
