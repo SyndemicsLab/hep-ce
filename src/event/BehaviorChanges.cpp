@@ -69,28 +69,29 @@ namespace event {
             sql << "SELECT never, former_noninjection, former_injection, "
                    "noninjection, injection ";
             sql << "FROM behavior_transitions ";
-            sql << "WHERE age_years = " << std::to_string(person.GetAge());
-            sql << "AND gender = " << person.GetSex();
-            sql << "AND moud = " << person.GetMoudState();
-            sql << "AND drug_behavior = " << person.GetBehavior();
+            sql << "WHERE age_years = '" << std::to_string(person.GetAge())
+                << "'";
+            sql << "AND gender = '" << person.GetSex() << "'";
+            sql << "AND moud = '" << person.GetMoudState() << "'";
+            sql << "AND drug_behavior = '" << person.GetBehavior() << "';";
 
             return sql.str();
         }
 
         std::string buildCostSQL(person::PersonBase const person) const {
             std::stringstream sql;
-            sql << "SELECT cost, utility FROM behavior_costs";
+            sql << "SELECT cost, utility FROM behavior_costs ";
             sql << "INNER JOIN behavior_utilities ON "
                    "((behavior_costs.age_years = "
                    "behavior_utilities.age_years) AND "
                    "(behavior_costs.gender = behavior_utilities.gender) "
                    "AND (behavior_costs.drug_behavior = "
                    "behavior_utilities.drug_behavior)) ";
-            sql << "WHERE behavior_costs.age_years = "
-                << std::to_string(person.GetAge());
-            sql << " AND behavior_costs.gender = " << person.GetSex();
-            sql << " AND behavior_costs.drug_behavior = "
-                << person.GetBehavior();
+            sql << "WHERE behavior_costs.age_years = '"
+                << std::to_string(person.GetAge()) << "'";
+            sql << " AND behavior_costs.gender = '" << person.GetSex() << "'";
+            sql << " AND behavior_costs.drug_behavior = '"
+                << person.GetBehavior() << "';";
             return sql.str();
         }
 
@@ -104,7 +105,10 @@ namespace event {
                                               &storage, error);
             if (rc != 0) {
                 spdlog::get("main")->error(
-                    "No cost avaliable for Behavior Changes");
+                    "No cost avaliable for Behavior Changes! Error Message: "
+                    "{}",
+                    error);
+                return;
             }
 
             cost::Cost behaviorCost = {this->costCategory, "Drug Behavior",
@@ -132,6 +136,15 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback_trans,
                                               &storage, error);
+
+            if (rc != 0) {
+                spdlog::get("main")->error("No Transitions Avaliable for "
+                                           "Behavior Change! Error Message: "
+                                           "{}",
+                                           error);
+                spdlog::get("main")->info("Query: {}", query);
+                return;
+            }
 
             std::vector<double> probs = {storage[0].never, storage[0].fni,
                                          storage[0].fi, storage[0].ni,

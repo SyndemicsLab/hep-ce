@@ -102,6 +102,7 @@ namespace simulation {
 
             spdlog::get("main")->info("Simulation seed: " +
                                       std::to_string(this->_seed));
+            _dm = std::make_shared<datamanagement::DataManager>();
         }
 
         virtual ~SimulationIMPL() { spdlog::get("main")->flush(); }
@@ -293,16 +294,17 @@ namespace simulation {
         int rc = 0;
         if (!std::filesystem::is_directory(indir)) {
             spdlog::get("main")->error("{} is not a valid directory!", indir);
-            rc = 1;
+            return 1;
         }
+        std::string temp = indir;
         for (const auto &dirEntry :
-             std::filesystem::recursive_directory_iterator(indir)) {
+             std::filesystem::recursive_directory_iterator(temp)) {
             std::filesystem::path p = dirEntry.path();
             if (p.extension() == ".csv") {
                 // SQLITE_OK == 0, anything evaluating to "True" is SQLite Error
-                rc += this->LoadData(p.string());
+                rc += LoadTable(p.string());
             } else if (p.extension() == ".conf") {
-                rc += this->LoadConfig(p.string());
+                rc += LoadConfig(p.string());
             }
         }
         LoadEvents();
@@ -320,7 +322,7 @@ namespace simulation {
                 "File {} not found when attempting to load table!", infile);
             return 1;
         }
-        if (pImplSIM->AddCSVTable(infile)) {
+        if (pImplSIM->AddCSVTable(infile) != 0) {
             spdlog::get("main")->warn("Failed to add {} to the Database!",
                                       infile);
             return 1;
@@ -333,7 +335,7 @@ namespace simulation {
                 "File {} not found when attempting to load config!", infile);
             return 1;
         }
-        if (pImplSIM->LoadConfig(infile)) {
+        if (pImplSIM->LoadConfig(infile) != 0) {
             spdlog::get("main")->warn("Failed to add config file {}!", infile);
             return 1;
         }
