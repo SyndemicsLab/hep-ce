@@ -15,6 +15,7 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Simulation.hpp"
+#include "DataWriter.hpp"
 #include "Decider.hpp"
 #include "Event.hpp"
 #include "EventFactory.hpp"
@@ -230,7 +231,6 @@ namespace simulation {
                     for (std::shared_ptr<event::Event> &event : this->events) {
                         event->Execute(person);
                     }
-                    person.Grow();
                 }
 
                 spdlog::get("main")->info("Simulation completed timestep {}",
@@ -279,6 +279,15 @@ namespace simulation {
             for (size_t i = 0; i < N; ++i) {
                 CreatePerson(i);
             }
+            return 0;
+        }
+
+        int WriteResults(std::string const &outfile) {
+            writer::DataWriter writer(_dm);
+            std::filesystem::path popFile =
+                std::filesystem::path(outfile) / "population.csv";
+            std::string popFileString = popFile.string();
+            writer.WritePopulationToFile(this->population, popFileString);
             return 0;
         }
 
@@ -356,7 +365,9 @@ namespace simulation {
         return pImplSIM->CreateNPeople(N);
     }
 
-    int Simulation::WriteResults(std::string const &outfile) { return -1; }
+    int Simulation::WriteResults(std::string const &outfile) {
+        return pImplSIM->WriteResults(outfile);
+    }
     int Simulation::SaveSimulationState(std::string const &outfile) {
         return pImplSIM->SaveSimulationState(outfile);
     }

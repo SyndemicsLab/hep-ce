@@ -32,22 +32,28 @@ namespace writer {
         GrabPersonDetailsAsStringInHeaderOrder(person::PersonBase &person) {
             std::stringstream compiled_attributes;
             compiled_attributes
-                << person.GetID() << std::boolalpha << person.GetSex()
-                << person.GetAge() << person.GetIsAlive()
-                << person.IdentifyAsInfected() << person.GetTimeIdentified()
-                << person.GetHCV() << person.GetFibrosisState()
-                << person.IsGenotypeThree() << person.GetSeropositive()
-                << person.GetTimeHCVChanged()
-                << person.GetTimeFibrosisStateChanged() << person.GetBehavior()
-                << person.GetTimeBehaviorChange() << person.GetLinkState()
-                << person.GetTimeOfLinkChange() << person.GetLinkageType()
-                << person.GetLinkCount() << person.GetMeasuredFibrosisState()
-                << person.GetTimeOfLastStaging()
-                << person.GetTimeOfLastScreening() << person.GetNumABTests()
-                << person.GetNumRNATests() << person.GetTimesInfected()
-                << person.GetClearances() << person.HasInitiatedTreatment()
-                << person.GetTimeOfTreatmentInitiation()
-                << person.GetUtility().minUtil << person.GetUtility().multUtil;
+                << person.GetID() << "," << std::boolalpha << person.GetSex()
+                << "," << person.GetAge() << "," << person.GetIsAlive() << ","
+                << person.IdentifyAsInfected() << ","
+                << person.GetTimeIdentified() << "," << person.GetHCV() << ","
+                << person.GetFibrosisState() << "," << person.IsGenotypeThree()
+                << "," << person.GetSeropositive() << ","
+                << person.GetTimeHCVChanged() << ","
+                << person.GetTimeFibrosisStateChanged() << ","
+                << person.GetBehavior() << "," << person.GetTimeBehaviorChange()
+                << "," << person.GetLinkState() << ","
+                << person.GetTimeOfLinkChange() << ","
+                << person.GetLinkageType() << "," << person.GetLinkCount()
+                << "," << person.GetMeasuredFibrosisState() << ","
+                << person.GetTimeOfLastStaging() << ","
+                << person.GetTimeOfLastScreening() << ","
+                << person.GetNumABTests() << "," << person.GetNumRNATests()
+                << "," << person.GetTimesInfected() << ","
+                << person.GetClearances() << ","
+                << person.HasInitiatedTreatment() << ","
+                << person.GetTimeOfTreatmentInitiation() << ","
+                << person.GetUtility().minUtil << ","
+                << person.GetUtility().multUtil;
             return compiled_attributes.str();
         }
 
