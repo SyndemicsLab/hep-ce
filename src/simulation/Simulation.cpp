@@ -25,6 +25,7 @@
 #include <DataManagement/DataManager.hpp>
 #include <filesystem>
 #include <iostream>
+#include <omp.h>
 #include <random>
 #include <sstream>
 
@@ -83,7 +84,8 @@ namespace simulation {
             int size = (data.empty()) ? defaultPopulationSize : std::stoi(data);
             spdlog::get("main")->info("Resetting Population Size to {}",
                                       std::to_string(size));
-            return size;
+            defaultPopulationSize = size;
+            return 0;
         }
 
     public:
@@ -106,6 +108,7 @@ namespace simulation {
             auto logger = std::make_shared<spdlog::logger>(
                 "main", sinks.begin(), sinks.end());
             spdlog::register_logger(logger);
+            spdlog::flush_every(std::chrono::seconds(3));
 
             spdlog::get("main")->info("Simulation seed: " +
                                       std::to_string(this->_seed));
@@ -221,16 +224,15 @@ namespace simulation {
             }
             size_t duration = std::stol(data);
             for (tstep; tstep < duration; ++tstep) {
-                for (std::shared_ptr<event::Event> &event : this->events) {
-#pragma omp parallel for
-                    for (person::PersonBase &person : this->population) {
-                        event->Execute(person);
-                    }
-                }
+
 #pragma omp parallel for
                 for (person::PersonBase &person : this->population) {
+                    for (std::shared_ptr<event::Event> &event : this->events) {
+                        event->Execute(person);
+                    }
                     person.Grow();
                 }
+
                 spdlog::get("main")->info("Simulation completed timestep {}",
                                           tstep);
             }

@@ -28,9 +28,6 @@ int main(int argc, char *argv[]) {
         std::filesystem::path logfile = outputSet / "log.txt";
         simulation::Simulation sim(logfile.string());
         sim.LoadData(inputSet.string());
-        sim.LoadEvents();
-        sim.CreateNPeople(100);
-        // sim.SaveSimulationState("practicedb.db");
         sim.Run();
         sim.WriteResults(outputSet.string());
     }
