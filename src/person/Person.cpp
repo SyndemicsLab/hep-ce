@@ -14,6 +14,7 @@ namespace person {
             Sex sex;
             int age;
             bool isAlive;
+            DeathReason deathReason;
             int identifiedHCV;
             int timeInfectionIdentified;
             HCV hcv;
@@ -46,31 +47,32 @@ namespace person {
             temp->sex << data[0];
             temp->age = std::stoi(data[1]);
             temp->isAlive = std::stoi(data[2]);
-            temp->identifiedHCV = std::stoi(data[3]);
-            temp->timeInfectionIdentified = std::stoi(data[4]);
-            temp->hcv << data[5];
-            temp->fibrosisState << data[6];
-            temp->isGenotypeThree = std::stoi(data[7]);
-            temp->seropositive = std::stoi(data[8]);
-            temp->timeHCVChanged = std::stoi(data[9]);
-            temp->timeFibrosisStateChanged = std::stoi(data[10]);
-            temp->drugBehavior << data[11];
-            temp->timeLastActiveDrugUse = std::stoi(data[12]);
-            temp->linkageState << data[13];
-            temp->timeOfLinkChange = std::stoi(data[14]);
-            temp->linkageType << data[15];
-            temp->linkCount = std::stoi(data[16]);
-            temp->measuredFibrosisState << data[17];
-            temp->timeOfLastStaging = std::stoi(data[18]);
-            temp->timeOfLastScreening = std::stoi(data[19]);
-            temp->numABTests = std::stoi(data[20]);
-            temp->numRNATests = std::stoi(data[21]);
-            temp->timesInfected = std::stoi(data[22]);
-            temp->timesCleared = std::stoi(data[23]);
-            temp->initiatedTreatment = std::stoi(data[24]);
-            temp->timeOfTreatmentInitiation = std::stoi(data[25]);
-            temp->minUtility = std::stod(data[26]);
-            temp->multUtility = std::stod(data[27]);
+            temp->deathReason << data[3];
+            temp->identifiedHCV = std::stoi(data[4]);
+            temp->timeInfectionIdentified = std::stoi(data[5]);
+            temp->hcv << data[6];
+            temp->fibrosisState << data[7];
+            temp->isGenotypeThree = std::stoi(data[8]);
+            temp->seropositive = std::stoi(data[9]);
+            temp->timeHCVChanged = std::stoi(data[10]);
+            temp->timeFibrosisStateChanged = std::stoi(data[11]);
+            temp->drugBehavior << data[12];
+            temp->timeLastActiveDrugUse = std::stoi(data[13]);
+            temp->linkageState << data[14];
+            temp->timeOfLinkChange = std::stoi(data[15]);
+            temp->linkageType << data[16];
+            temp->linkCount = std::stoi(data[17]);
+            temp->measuredFibrosisState << data[18];
+            temp->timeOfLastStaging = std::stoi(data[19]);
+            temp->timeOfLastScreening = std::stoi(data[20]);
+            temp->numABTests = std::stoi(data[21]);
+            temp->numRNATests = std::stoi(data[22]);
+            temp->timesInfected = std::stoi(data[23]);
+            temp->timesCleared = std::stoi(data[24]);
+            temp->initiatedTreatment = std::stoi(data[25]);
+            temp->timeOfTreatmentInitiation = std::stoi(data[26]);
+            temp->minUtility = std::stod(data[27]);
+            temp->multUtility = std::stod(data[28]);
             return 0;
         }
         size_t id;
@@ -79,6 +81,7 @@ namespace person {
         int age = 0;
         Sex sex = Sex::MALE;
         bool isAlive = true;
+        DeathReason deathReason = DeathReason::NA;
         BehaviorDetails behaviorDetails;
         Health infectionStatus;
         LinkageDetails linkStatus;
@@ -149,7 +152,10 @@ namespace person {
         virtual ~Person() {}
 
         /// @brief End a Person's life and set final Age
-        void Die() { this->isAlive = false; }
+        void Die(DeathReason deathReason) {
+            this->isAlive = false;
+            SetDeathReason(deathReason);
+        }
 
         /// @brief increase a person's Age
         void Grow() {
@@ -360,6 +366,8 @@ namespace person {
 
         int GetNumberOfOverdoses() const { return this->numOverdoses; }
 
+        DeathReason GetDeathReason() const { return this->deathReason; }
+
         /// @brief Getter for the Fibrosis State
         /// @return The Current Fibrosis State
         FibrosisState GetFibrosisState() const {
@@ -512,36 +520,23 @@ namespace person {
             return this->treatmentDetails;
         }
 
-        // query << "id, age, sex, drugBehaviorClassification, "
-        //          "timeLastActiveDrugUse, seropositivity, isGenotypeThree, "
-        //          "fibrosisState, identifiedAsPositiveInfection,
-        //          linkageState";
-        // query << "isAlive, timeInfectionIdentified, "
-        //          "trueHCVstate, timeHCVStateChanged, "
-        //          "timeFibrosisStateChanged, timeLastActiveDrugUse, "
-        //          "timeOfLinkChange, linkageType, timesLinked, "
-        //          "measuredFibrosisState, "
-        //          "timeOfLastStaging, timeOfLastScreening, numABTests, "
-        //          "numRNATests, timesInfected, timesCleared, "
-        //          "initiatedTreatment, timeOfTreatmentInitiation, "
-        //          "minUtility, multUtility"
         std::string GetPersonDataString() const {
             std::stringstream data;
             data << GetAge() << "," << GetSex() << "," << GetBehavior() << ","
                  << GetTimeBehaviorChange() << "," << GetSeropositive() << ","
                  << IsGenotypeThree() << "," << GetFibrosisState() << ","
                  << IsIdentifiedAsInfected() << "," << GetLinkState() << ","
-                 << GetIsAlive() << "," << GetTimeIdentified() << ","
-                 << GetHCV() << "," << GetTimeHCVChanged() << ","
-                 << GetTimeFibrosisStateChanged() << ","
-                 << GetTimeBehaviorChange() << "," << GetTimeOfLinkChange()
-                 << "," << GetLinkageType() << "," << GetLinkCount() << ","
-                 << GetMeasuredFibrosisState() << "," << GetTimeOfLastStaging()
-                 << "," << GetTimeOfLastScreening() << "," << GetNumABTests()
-                 << "," << GetNumRNATests() << "," << GetTimesInfected() << ","
-                 << GetClearances() << "," << std::boolalpha
-                 << GetTreatmentDetails().initiatedTreatment << ","
-                 << GetTimeOfTreatmentInitiation() << ","
+                 << GetIsAlive() << "," << GetDeathReason() << ","
+                 << GetTimeIdentified() << "," << GetHCV() << ","
+                 << GetTimeHCVChanged() << "," << GetTimeFibrosisStateChanged()
+                 << "," << GetTimeBehaviorChange() << ","
+                 << GetTimeOfLinkChange() << "," << GetLinkageType() << ","
+                 << GetLinkCount() << "," << GetMeasuredFibrosisState() << ","
+                 << GetTimeOfLastStaging() << "," << GetTimeOfLastScreening()
+                 << "," << GetNumABTests() << "," << GetNumRNATests() << ","
+                 << GetTimesInfected() << "," << GetClearances() << ","
+                 << std::boolalpha << GetTreatmentDetails().initiatedTreatment
+                 << "," << GetTimeOfTreatmentInitiation() << ","
                  << std::to_string(GetUtility().minUtil) << ","
                  << std::to_string(GetUtility().multUtil);
             return data.str();
@@ -562,6 +557,10 @@ namespace person {
         /// @param seropositive Seropositive status to set
         void SetSeropositive(bool seropositive) {
             this->infectionStatus.seropositive = seropositive;
+        }
+
+        void SetDeathReason(DeathReason deathReason) {
+            this->deathReason = deathReason;
         }
 
         /// @brief Set HEPC State -- used to change to chronic infection
@@ -638,7 +637,8 @@ namespace person {
     std::string sqlQuery = "";
     std::ostream &operator<<(std::ostream &os, const PersonBase &person) {
         os << "sex: " << person.GetSex() << std::endl;
-        os << "alive: " << std::boolalpha << person.GetIsAlive() << std::endl;
+        os << "alive: " << std::boolalpha << person.GetIsAlive()
+           << "from: " << person.GetDeathReason() << std::endl;
         os << person.GetHealth() << std::endl;
         os << person.GetBehaviorDetails() << std::endl;
         os << person.GetLinkStatus() << std::endl;
@@ -668,8 +668,8 @@ namespace person {
         pImplPERSON->Grow();
         return 0;
     }
-    int PersonBase::Die() {
-        pImplPERSON->Die();
+    int PersonBase::Die(DeathReason deathReason) {
+        pImplPERSON->Die(deathReason);
         return 0;
     }
     int PersonBase::Infect() {
@@ -779,6 +779,9 @@ namespace person {
     FibrosisState PersonBase::GetFibrosisState() const {
         return pImplPERSON->GetFibrosisState();
     }
+    DeathReason PersonBase::GetDeathReason() const {
+        return pImplPERSON->GetDeathReason();
+    }
     HCV PersonBase::GetHCV() const { return pImplPERSON->GetHCV(); }
     bool PersonBase::GetIsAlive() const { return pImplPERSON->GetIsAlive(); }
     Behavior PersonBase::GetBehavior() const {
@@ -885,6 +888,9 @@ namespace person {
         return pImplPERSON->GetPersonDataString();
     }
     // Setters
+    void PersonBase::SetDeathReason(DeathReason deathReason) {
+        pImplPERSON->SetDeathReason(deathReason);
+    }
     void PersonBase::SetAge(int age) { pImplPERSON->SetAge(age); }
     void PersonBase::SetHadSecondTest(bool state) {
         pImplPERSON->SetHadSecondTest(state);

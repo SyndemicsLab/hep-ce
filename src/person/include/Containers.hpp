@@ -18,6 +18,18 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const HCV &inst);
     HCV &operator<<(HCV &inst, const std::string &str);
 
+    enum class DeathReason {
+        /// @brief Not applicable, usually not dead
+        NA = 0,
+        BACKGROUND = 1,
+        LIVER = 2,
+        INFECTION = 3,
+        AGE = 4,
+        COUNT = 5
+    };
+    std::ostream &operator<<(std::ostream &os, const DeathReason &inst);
+    DeathReason &operator<<(DeathReason &inst, const std::string &str);
+
     /// @brief Opioid Usage Behavior Classification
     /// @details There are five possible possible usage classifications.
     enum class Behavior {

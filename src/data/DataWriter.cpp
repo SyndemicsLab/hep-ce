@@ -34,11 +34,11 @@ namespace writer {
             compiled_attributes
                 << person.GetID() << "," << std::boolalpha << person.GetSex()
                 << "," << person.GetAge() << "," << person.GetIsAlive() << ","
-                << person.IdentifyAsInfected() << ","
-                << person.GetTimeIdentified() << "," << person.GetHCV() << ","
-                << person.GetFibrosisState() << "," << person.IsGenotypeThree()
-                << "," << person.GetSeropositive() << ","
-                << person.GetTimeHCVChanged() << ","
+                << person.GetDeathReason() << "," << person.IdentifyAsInfected()
+                << "," << person.GetTimeIdentified() << "," << person.GetHCV()
+                << "," << person.GetFibrosisState() << ","
+                << person.IsGenotypeThree() << "," << person.GetSeropositive()
+                << "," << person.GetTimeHCVChanged() << ","
                 << person.GetTimeFibrosisStateChanged() << ","
                 << person.GetBehavior() << "," << person.GetTimeBehaviorChange()
                 << "," << person.GetLinkState() << ","

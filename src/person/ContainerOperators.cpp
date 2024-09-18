@@ -26,6 +26,41 @@ namespace person {
         return inst;
     }
 
+    std::ostream &operator<<(std::ostream &os, const DeathReason &inst) {
+        switch (inst) {
+        case DeathReason::BACKGROUND:
+            os << "background";
+            break;
+        case DeathReason::LIVER:
+            os << "liver";
+            break;
+        case DeathReason::INFECTION:
+            os << "infection";
+            break;
+        case DeathReason::AGE:
+            os << "age";
+            break;
+        default:
+            os << "N/A";
+            break;
+        }
+        return os;
+    }
+    DeathReason &operator<<(DeathReason &inst, const std::string &str) {
+        if (str == "background") {
+            inst = DeathReason::BACKGROUND;
+        } else if (str == "liver") {
+            inst = DeathReason::LIVER;
+        } else if (str == "infection") {
+            inst = DeathReason::INFECTION;
+        } else if (str == "age") {
+            inst = DeathReason::AGE;
+        } else {
+            inst = DeathReason::NA;
+        }
+        return inst;
+    }
+
     std::ostream &operator<<(std::ostream &os, const Behavior &inst) {
         switch (inst) {
         case Behavior::FORMER_INJECTION:

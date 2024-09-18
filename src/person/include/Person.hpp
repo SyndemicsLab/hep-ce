@@ -36,7 +36,8 @@ namespace person {
 
     public:
         inline static const std::string POPULATION_HEADERS =
-            "sex,age,isAlive,identifiedHCV,timeInfectionIdentified,HCV,"
+            "sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,"
+            "HCV,"
             "fibrosisState,isGenotypeThree,seropositive,timeHCVChanged,"
             "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,"
             "linkageState,timeOfLinkChange,linkageType,"
@@ -48,7 +49,7 @@ namespace person {
         ~PersonBase();
         // Functionality
         int Grow();
-        int Die();
+        int Die(DeathReason deathReason = DeathReason::BACKGROUND);
         int Infect();
         int ClearHCV();
         int UpdateFibrosis(const FibrosisState &ls);
@@ -84,6 +85,7 @@ namespace person {
         int GetTimeSinceScreened() const;
         bool GetCurrentlyOverdosing() const;
         int GetNumberOfOverdoses() const;
+        DeathReason GetDeathReason() const;
         FibrosisState GetFibrosisState() const;
         HCV GetHCV() const;
         bool GetIsAlive() const;
@@ -126,6 +128,7 @@ namespace person {
         void SetAge(int age);
         void SetHadSecondTest(bool state);
         void SetSeropositive(bool seropositive);
+        void SetDeathReason(DeathReason deathReason);
         void SetHCV(HCV hcvs);
         void SetInitiatedTreatment(bool initiatedTreatment);
         void SetPregnancyState(PregnancyState state);

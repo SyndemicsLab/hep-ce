@@ -55,7 +55,9 @@ namespace event {
         }
         /// @brief The actual death of a person
         /// @param person Person who dies
-        void die(person::PersonBase &person) { person.Die(); }
+        void die(person::PersonBase &person, person::DeathReason deathReason) {
+            person.Die(deathReason);
+        }
 
         void getFibrosisMortalityProb(
             person::PersonBase const &person,
@@ -106,7 +108,7 @@ namespace event {
 
         bool ReachedMaxAge(person::PersonBase &person) {
             if (person.GetAge() >= 1200) {
-                this->die(person);
+                this->die(person, person::DeathReason::AGE);
                 return true;
             }
             return false;
@@ -122,7 +124,6 @@ namespace event {
 
             // "Calculate background mortality rate based on age, gender, and
             // IDU"
-
             double fibrosisDeathProb = 0.0;
             getFibrosisMortalityProb(person, dm, fibrosisDeathProb);
 
@@ -139,8 +140,10 @@ namespace event {
                                            fibrosisDeathProb, 1 - totalProb};
 
             int retIdx = decider->GetDecision(probVec);
-            if (retIdx != 2) {
-                this->die(person);
+            if (retIdx == 0) {
+                this->die(person, person::DeathReason::BACKGROUND);
+            } else if (retIdx == 1) {
+                this->die(person, person::DeathReason::LIVER);
             }
         }
     };
