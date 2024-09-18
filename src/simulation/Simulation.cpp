@@ -15,6 +15,7 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Simulation.hpp"
+#include "Decider.hpp"
 #include "Event.hpp"
 #include "EventFactory.hpp"
 #include "Person.hpp"
@@ -89,13 +90,19 @@ namespace simulation {
         SimulationIMPL(size_t seed = 1234, std::string const &logfile = "")
             : _seed(seed) {
             this->generator.seed(_seed);
-            auto console_sink =
-                std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+            this->decider = std::make_shared<stats::Decider>(this->generator);
 
             std::string logname = (logfile.empty()) ? "logfile.log" : logfile;
             auto file_sink =
                 std::make_shared<spdlog::sinks::basic_file_sink_mt>(logname);
-            std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
+            std::vector<spdlog::sink_ptr> sinks{file_sink};
+
+#ifndef NDEBUG
+            auto console_sink =
+                std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+            sinks.push_back(console_sink);
+#endif
+
             auto logger = std::make_shared<spdlog::logger>(
                 "main", sinks.begin(), sinks.end());
             spdlog::register_logger(logger);

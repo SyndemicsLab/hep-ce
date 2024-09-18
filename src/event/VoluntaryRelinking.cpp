@@ -18,6 +18,7 @@
 #include "VoluntaryRelinking.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "spdlog/spdlog.h"
 #include <DataManagement/DataManager.hpp>
 #include <string>
 
@@ -35,8 +36,8 @@ namespace event {
             int relink = decider->GetDecision({relinkProbability});
 
             data.clear();
-            dm->GetFromConfig("linking.voluntaryRelinkDuration", data);
-            double voluntaryRelinkDuration = std::stod(data);
+            dm->GetFromConfig("linking.voluntary_relink_duration", data);
+            int voluntaryRelinkDuration = std::stoi(data);
 
             if (person.GetLinkState() != person::LinkageState::UNLINKED ||
                 (person.GetTimeSinceLinkChange()) > voluntaryRelinkDuration ||

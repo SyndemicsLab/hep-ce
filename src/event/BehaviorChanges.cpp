@@ -65,15 +65,15 @@ namespace event {
         }
 
         std::string buildTransitionSQL(person::PersonBase const person) const {
+            int age_years = person.GetAge() / 12.0;
             std::stringstream sql;
             sql << "SELECT never, former_noninjection, former_injection, "
                    "noninjection, injection ";
             sql << "FROM behavior_transitions ";
-            sql << "WHERE age_years = '" << std::to_string(person.GetAge())
-                << "'";
-            sql << "AND gender = '" << person.GetSex() << "'";
-            sql << "AND moud = '" << person.GetMoudState() << "'";
-            sql << "AND drug_behavior = '" << person.GetBehavior() << "';";
+            sql << "WHERE age_years = '" << std::to_string(age_years) << "'";
+            sql << " AND gender = '" << person.GetSex() << "'";
+            sql << " AND moud = '" << person.GetMoudState() << "'";
+            sql << " AND drug_behavior = '" << person.GetBehavior() << "';";
 
             return sql.str();
         }
@@ -82,16 +82,13 @@ namespace event {
             std::stringstream sql;
             sql << "SELECT cost, utility FROM behavior_costs ";
             sql << "INNER JOIN behavior_utilities ON "
-                   "((behavior_costs.age_years = "
-                   "behavior_utilities.age_years) AND "
-                   "(behavior_costs.gender = behavior_utilities.gender) "
+                   "((behavior_costs.gender = behavior_utilities.gender) "
                    "AND (behavior_costs.drug_behavior = "
                    "behavior_utilities.drug_behavior)) ";
-            sql << "WHERE behavior_costs.age_years = '"
-                << std::to_string(person.GetAge()) << "'";
-            sql << " AND behavior_costs.gender = '" << person.GetSex() << "'";
-            sql << " AND behavior_costs.drug_behavior = '"
-                << person.GetBehavior() << "';";
+            sql << "WHERE ((behavior_costs.gender = '" << person.GetSex()
+                << "')";
+            sql << " AND (behavior_costs.drug_behavior = '"
+                << person.GetBehavior() << "'));";
             return sql.str();
         }
 
@@ -142,13 +139,19 @@ namespace event {
                                            "Behavior Change! Error Message: "
                                            "{}",
                                            error);
-                spdlog::get("main")->info("Query: {}", query);
-                return;
+            }
+            std::vector<double> probs;
+            if (storage.empty()) {
+                spdlog::get("main")->warn(
+                    "Callback Function Returned Empty Dataset From Query: "
+                    "{}",
+                    query);
+                probs = {0.0, 0.0, 0.0, 0.0, 0.0};
+            } else {
+                probs = {storage[0].never, storage[0].fni, storage[0].fi,
+                         storage[0].ni, storage[0].in};
             }
 
-            std::vector<double> probs = {storage[0].never, storage[0].fni,
-                                         storage[0].fi, storage[0].ni,
-                                         storage[0].in};
             // currently using placeholders to test compiling
             // std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
             // 2. Draw a behavior state to be transitioned to

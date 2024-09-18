@@ -41,18 +41,21 @@ namespace event {
 
         std::string buildSQL(person::PersonBase &person,
                              std::string column) const {
+            int age_years = person.GetAge() / 12.0; // intentional truncation
             std::stringstream sql;
             sql << "SELECT " + column;
             sql << " FROM antibody_testing ";
-            sql << "INNER JOIN screening_and_linkage ";
-            sql << "ON ((antibody_testing.age_years = "
+            sql << " INNER JOIN screening_and_linkage ";
+            sql << " ON ((antibody_testing.age_years = "
                    "screening_and_linkage.age_years) ";
-            sql << "AND (antibody_testing.drug_behavior = "
+            sql << " AND (antibody_testing.drug_behavior = "
                    "screening_and_linkage.drug_behavior)) ";
-            sql << "WHERE age_years = " << std::to_string(person.GetAge());
-            sql << " AND behavior_costs.gender = " << person.GetSex();
-            sql << " AND behavior_costs.drug_behavior = "
-                << person.GetBehavior();
+            sql << " WHERE antibody_testing.age_years = '"
+                << std::to_string(age_years) << "'";
+            sql << " AND screening_and_linkage.gender = '" << person.GetSex()
+                << "'";
+            sql << " AND screening_and_linkage.drug_behavior = '"
+                << person.GetBehavior() << "';";
             return sql.str();
         }
 
@@ -164,6 +167,14 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting background_screen_probability "
+                    "Screening Data from antibody_testing and "
+                    "screening_and_linkage! Error Message: {}",
+                    error);
+                return {};
+            }
             double prob = storage[0];
 
             std::string configStr =
@@ -189,7 +200,24 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
-            std::vector<double> result = {storage[0], 1 - storage[0]};
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting intervention_screen_probability "
+                    "Screening Data from antibody_testing and "
+                    "screening_and_linkage! Error Message: {}",
+                    error);
+                return {};
+            }
+            std::vector<double> result;
+            if (storage.empty()) {
+                spdlog::get("main")->warn(
+                    "Callback Function Returned Empty Dataset From Query: "
+                    "{}",
+                    query);
+                result = {0.0, 0.0};
+            } else {
+                result = {storage[0], 1 - storage[0]};
+            }
             return result;
         }
 
@@ -237,11 +265,15 @@ namespace event {
             if (interventionType == "one-time" &&
                 person.GetCurrentTimestep() == 1) {
                 this->interventionDecision(person);
-            } else if (interventionType == "periodic" &&
-                       (person.GetTimeSinceScreened() > interventionPeriod)) {
-                { this->interventionDecision(person); }
+            } else if (interventionType == "periodic") {
+                if (person.GetTimeSinceScreened() > interventionPeriod) {
+                    this->interventionDecision(person);
+                } else {
+                    return; // Do not screen this time
+                }
+
             } else {
-                spdlog::get("main")->error(
+                spdlog::get("main")->warn(
                     "Intervention Type not valid During Screening "
                     "Event");
                 return;

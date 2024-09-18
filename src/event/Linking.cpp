@@ -18,6 +18,7 @@
 #include "Linking.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "spdlog/spdlog.h"
 #include <DataManagement/DataManager.hpp>
 #include <sstream>
 
@@ -38,9 +39,9 @@ namespace event {
                 std::to_string((int)(person.GetAge() / 12.0));
             sql << "SELECT " << column;
             sql << " FROM screening_and_linkage ";
-            sql << "WHERE age_years = " << age_years;
-            sql << " AND gender = " << person.GetSex();
-            sql << " AND drug_behavior = " << person.GetBehavior();
+            sql << "WHERE ((age_years = '" << age_years << "')";
+            sql << " AND (gender = '" << person.GetSex() << "')";
+            sql << " AND (drug_behavior = '" << person.GetBehavior() << "'));";
             return sql.str();
         }
 
@@ -55,6 +56,13 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Linking Data from screening_and_linkage! "
+                    "Error Message: {}",
+                    error);
+                return {};
+            }
             // {0: don't link, 1: link}
             std::vector<double> result = {1 - storage[0], storage[0]};
             return result;

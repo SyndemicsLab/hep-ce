@@ -38,7 +38,7 @@ namespace event {
         std::string buildSQL(person::PersonBase &person, std::string columns) {
             std::stringstream sql;
             sql << "SELECT " << columns << " FROM fibrosis ";
-            sql << "WHERE true_fib = " << person.GetFibrosisState();
+            sql << "WHERE true_fib = '" << person.GetFibrosisState() << "';";
             return sql.str();
         }
 
@@ -77,6 +77,14 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Fibrosis Data from fibrosis table! Error "
+                    "Message: {}",
+                    error);
+                spdlog::get("main")->info("Query: {}", query);
+                return {};
+            }
 
             return storage[0];
         }
@@ -84,15 +92,16 @@ namespace event {
         void addStagingCost(person::PersonBase &person,
                             std::shared_ptr<datamanagement::DataManager> dm,
                             const bool testTwo = false) {
-            std::string t1;
-            t1.clear();
-            dm->GetFromConfig("fibrosis_staging.test_one_cost", t1);
+            std::string data;
+            data.clear();
+            dm->GetFromConfig("fibrosis_staging.test_one_cost", data);
+            double t1 = (!data.empty()) ? std::stod(data) : 0.0;
 
-            std::string t2;
-            t2.clear();
-            dm->GetFromConfig("fibrosis_staging.test_two_cost", t2);
+            data.clear();
+            dm->GetFromConfig("fibrosis_staging.test_two_cost", data);
+            double t2 = (!data.empty()) ? std::stod(data) : 0.0;
 
-            double cost = testTwo ? std::stod(t1) : std::stod(t2);
+            double cost = testTwo ? t1 : t2;
 
             std::string costName = "Fibrosis Staging Cost (Test" +
                                    ((std::string)(testTwo ? "1" : "2")) + ")";
@@ -105,6 +114,12 @@ namespace event {
         void doEvent(person::PersonBase &person,
                      std::shared_ptr<datamanagement::DataManager> dm,
                      std::shared_ptr<stats::Decider> decider) {
+
+            // 0. Check if Person even has Fibrosis, exit if they are none
+            if (person.GetFibrosisState() == person::FibrosisState::NONE) {
+                return;
+            }
+
             // 1. Check the time since the person's last fibrosis staging test.
             // If the person's last test is more recent than the limit, exit
             // event.
@@ -123,8 +138,10 @@ namespace event {
 
             // 3. Get a vector of the probabilities of each of the possible
             // fibrosis outcomes (test one).
-            std::vector<double> probs = getTransitionProbabilities(
-                person, dm, "fibrosis_staging.test_one");
+            data.clear();
+            dm->GetFromConfig("fibrosis_staging.test_one", data);
+            std::vector<double> probs =
+                getTransitionProbabilities(person, dm, data);
 
             // 4. Decide which stage is assigned to the person.
             int res = decider->GetDecision(probs);
@@ -143,8 +160,14 @@ namespace event {
 
             // 6. Get a vector of the probabilities of each of the possible
             // fibrosis outcomes (test two) provided there is a second test.
-            probs = getTransitionProbabilities(person, dm,
-                                               "fibrosis_staging.test_two");
+            data.clear();
+            dm->GetFromConfig("fibrosis_staging.test_two", data);
+
+            // If No Second Test Specified, End
+            if (data.empty()) {
+                return;
+            }
+            probs = getTransitionProbabilities(person, dm, data);
 
             // 7. Decide which stage is assigned to the person.
             if (probs.empty()) {

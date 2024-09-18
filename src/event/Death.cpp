@@ -17,6 +17,7 @@
 #include "Death.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "spdlog/spdlog.h"
 #include <DataManagement/DataManager.hpp>
 #include <sstream>
 
@@ -41,12 +42,14 @@ namespace event {
         std::string buildSQL(person::PersonBase const person) const {
             std::stringstream sql;
             sql << "SELECT background_mortality, SMR";
-            sql << "FROM SMR ";
-            sql << "INNER JOIN background_mortality ON "
+            sql << " FROM SMR ";
+            sql << " INNER JOIN background_mortality ON "
                    "(SMR.gender = background_mortality.gender) ";
-            sql << "WHERE age_years = " << std::to_string(person.GetAge());
-            sql << "AND gender = " << person.GetSex();
-            sql << "AND drug_behavior = " << person.GetBehavior();
+            sql << " WHERE background_mortality.age_years = '"
+                << std::to_string(person.GetAge()) << "'";
+            sql << " AND background_mortality.gender = '" << person.GetSex()
+                << "'";
+            sql << " AND SMR.drug_behavior = '" << person.GetBehavior() << "';";
 
             return sql.str();
         }
@@ -83,6 +86,14 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Death Data from background_mortality and "
+                    "SMR! Error Message: {}",
+                    error);
+                spdlog::get("main")->info("Query: {}", query);
+                return;
+            }
             if (!rc) {
                 // error
                 backgroundMortProb = 0;

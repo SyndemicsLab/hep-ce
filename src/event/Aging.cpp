@@ -32,10 +32,6 @@ namespace event {
         static int callback(void *storage, int count, char **data,
                             char **columns) {
             struct cost_util temp;
-            for (int idx = 0; idx < count; idx++) {
-                spdlog::get("main")->info("The data in column {} is: {}",
-                                          columns[idx], data[idx]);
-            }
             temp.cost = std::stod(data[0]); // First Column Selected
             temp.util = std::stod(data[1]); // Second Column Selected
             ((std::vector<struct cost_util> *)storage)->push_back(temp);
@@ -78,7 +74,6 @@ namespace event {
                     "Error extracting Aging Data from background costs and "
                     "background behaviors! Error Message: {}",
                     error);
-                // spdlog::get("main")->info("Query: {}", query);
                 return;
             }
             cost::Cost backgroundCost = {cost::CostCategory::MISC,

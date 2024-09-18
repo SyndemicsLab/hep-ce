@@ -92,24 +92,13 @@ fi
     ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
     ([[ -d "lib/" ]] && rm -rf lib/*.a && rm -rf lib/*.so && rm -rf lib/dminstall)
 
-    # load conda environment
-    # if [[ -f "$(conda info --base)/etc/profile.d/conda.sh" ]]; then
-    #     # shellcheck source=/dev/null
-    #     source "$(conda info --base)/etc/profile.d/conda.sh"
-    # fi
-
     # detect or install DataManagement
     if [[ ! -d "lib/dminstall" ]]; then
-	if ! dminstall; then
-	    echo "Installing \`DataManagement\` failed."
-	    exit 1
-	fi
+        if ! dminstall; then
+            echo "Installing \`DataManagement\` failed."
+            exit 1
+        fi
     fi
-
-    # if ! conda info --envs | grep '^hepce' >/dev/null; then
-	# conda env create -f "environment.yml" -p "$(conda config --show envs_dirs | awk '/-/{printf $NF;exit;}')/hepce"
-    # fi
-    # conda activate hepce
 
     (
 	cd "build" || exit

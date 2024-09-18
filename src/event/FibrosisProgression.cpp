@@ -42,9 +42,10 @@ namespace event {
             std::string hcv_status = (person.GetHCV() == person::HCV::NONE)
                                          ? "negative"
                                          : "positive";
-            sql << "SELECT cost FROM hcv_costs ";
-            sql << "WHERE hcv_status = " << hcv_status;
-            sql << " AND metavir_stage = " << person.GetFibrosisState();
+            sql << "SELECT cost FROM hcv_costs";
+            sql << " WHERE hcv_status = '" << hcv_status << "'";
+            sql << " AND metavir_stage = '" << person.GetFibrosisState()
+                << "';";
             return sql.str();
         }
 

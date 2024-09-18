@@ -26,6 +26,7 @@ target_link_libraries(${PROJECT_NAME}
         data
         person
         event
+        stats
         spdlog::spdlog
         DataManagement::DataManagement
         OpenMP::OpenMP_CXX

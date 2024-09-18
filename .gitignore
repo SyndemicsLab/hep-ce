@@ -20,3 +20,6 @@ lib/dminstall/
 functionality-testing
 bin
 lib/*.a
+
+*.db
+*.out

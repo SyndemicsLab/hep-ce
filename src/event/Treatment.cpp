@@ -18,6 +18,7 @@
 #include "Cost.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "spdlog/spdlog.h"
 #include <DataManagement/DataManager.hpp>
 #include <sstream>
 
@@ -57,8 +58,8 @@ namespace event {
             std::stringstream sql;
 
             sql << "SELECT " << column << " FROM treatments ";
-            sql << "WHERE is_genotype3 = " << geno3;
-            sql << " AND is_cirrhotic = " << cirr;
+            sql << "WHERE is_genotype3 = '" << geno3 << "'";
+            sql << " AND is_cirrhotic = '" << cirr << "';";
 
             return sql.str();
         }
@@ -124,6 +125,12 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback_double,
                                               &storage, error);
+            if (rc != 0) {
+                spdlog::get("main")->error("Error extracting Treatment Data "
+                                           "from treatments! Error Message: {}",
+                                           error);
+                return;
+            }
             cost::Cost courseCost = {cost::CostCategory::TREATMENT,
                                      "Cost of Treatment Course", storage[0]};
             person.AddCost(courseCost);
