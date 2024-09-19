@@ -44,7 +44,10 @@ namespace person {
             "linkCount,measuredFibrosisState,"
             "timeOfLastStaging,timeOfLastScreening,numABTests,"
             "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
-            "timeOfTreatmentInitiation,minUtility,multUtility";
+            "timeOfTreatmentInitiation,minUtility,multUtility,"
+            "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,"
+            "svrs";
+
         PersonBase(int id, std::shared_ptr<datamanagement::DataManager> dm);
         ~PersonBase();
         // Functionality
@@ -57,6 +60,10 @@ namespace person {
         int DiagnoseFibrosis(FibrosisState &data);
         int DiagnoseHEPC(HCV &data);
         int AddClearance();
+        int AddWithdrawal();
+        int AddToxicReaction();
+        int AddCompletedTreatment();
+        int AddSVR();
         int MarkScreened();
         int AddAbScreen();
         int AddRnaScreen();
@@ -65,6 +72,7 @@ namespace person {
         int IdentifyAsInfected();
         int AddCost(cost::Cost cost);
         int ToggleOverdose();
+        int LoadICValues(std::string icValues);
         // Checks
         bool IsAlive();
         bool HadSecondTest();
@@ -79,6 +87,10 @@ namespace person {
         int GetAge() const;
         int GetTimesInfected() const;
         int GetClearances() const;
+        int GetWithdrawals() const;
+        int GetToxicReactions() const;
+        int GetCompletedTreatments() const;
+        int GetSVRs() const;
         int GetNumABTests() const;
         int GetNumRNATests() const;
         int GetTimeOfLastScreening() const;

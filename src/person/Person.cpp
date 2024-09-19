@@ -40,6 +40,10 @@ namespace person {
             int timeOfTreatmentInitiation;
             double minUtility;
             double multUtility;
+            int treatmentWithdrawals;
+            int treatmentToxicReactions;
+            int completedTreatments;
+            int svrs;
         };
         static int callback(void *storage, int count, char **data,
                             char **columns) {
@@ -73,6 +77,10 @@ namespace person {
             temp->timeOfTreatmentInitiation = std::stoi(data[26]);
             temp->minUtility = std::stod(data[27]);
             temp->multUtility = std::stod(data[28]);
+            temp->treatmentWithdrawals = std::stoi(data[29]);
+            temp->treatmentToxicReactions = std::stoi(data[30]);
+            temp->completedTreatments = std::stoi(data[31]);
+            temp->svrs = std::stoi(data[32]);
             return 0;
         }
         size_t id;
@@ -86,6 +94,10 @@ namespace person {
         Health infectionStatus;
         LinkageDetails linkStatus;
         int numOverdoses = 0;
+        int treatmentWithdrawals = 0;
+        int treatmentToxicReactions = 0;
+        int completedTreatments = 0;
+        int svrs = 0;
         bool currentlyOverdosing = false;
         MOUDDetails moudDetails;
         PregnancyDetails pregnancyDetails;
@@ -105,7 +117,7 @@ namespace person {
             }
             std::stringstream query;
             query << "SELECT " << person::PersonBase::POPULATION_HEADERS;
-            query << "FROM init_cohort ";
+            query << "FROM population ";
             query << "WHERE id = " << std::to_string(id);
 
             struct person_select storage;
@@ -197,6 +209,36 @@ namespace person {
             this->AddClearance();
         }
 
+        int LoadICValues(std::string icValues) {
+            std::stringstream ss(icValues);
+            std::vector<std::string> vec;
+            while (ss.good()) {
+                std::string substr;
+                getline(ss, substr, ',');
+                vec.push_back(substr);
+            }
+            SetAge(std::stoi(vec[1]));
+            this->sex << vec[2];
+            person::Behavior behav;
+            behav << vec[3];
+            UpdateBehavior(behav);
+            behaviorDetails.timeLastActive = std::stoi(vec[4]);
+            bool sero = (vec[5] == "True") ? true : false;
+            SetSeropositive(sero);
+            bool geno = (vec[6] == "True") ? true : false;
+            SetGenotype(geno);
+            person::FibrosisState fib;
+            fib << vec[7];
+            UpdateFibrosis(fib);
+            if (vec[8] == "1") {
+                IdentifyAsInfected();
+            }
+            if (vec[9] == "linked") {
+                linkStatus.linkState = person::LinkageState::LINKED;
+            }
+            return 0;
+        }
+
         /// @brief Update the Liver State
         /// @param ls Current Liver State
         /// @param timestep Current simulation timestep
@@ -246,14 +288,30 @@ namespace person {
         /// @brief Add an acute clearance to the running count
         void AddClearance() { this->infectionStatus.timesCleared++; };
 
+        void AddWithdrawal() { this->treatmentWithdrawals++; }
+
+        void AddToxicReaction() { this->treatmentToxicReactions++; }
+
+        void AddCompletedTreatment() { this->completedTreatments++; }
+
+        void AddSVR() { this->svrs++; }
+
         /// @brief Mark somebody as having been screened this timestep
-        void MarkScreened() { this->screeningDetails.timeOfLastScreening = 0; }
+        void MarkScreened() {
+            this->screeningDetails.timeOfLastScreening = this->_currentTime;
+        }
 
         /// @brief
-        void AddAbScreen() { this->screeningDetails.numABTests++; }
+        void AddAbScreen() {
+            this->screeningDetails.timeOfLastScreening = this->_currentTime;
+            this->screeningDetails.numABTests++;
+        }
 
         /// @brief
-        void AddRnaScreen() { this->screeningDetails.numRNATests++; }
+        void AddRnaScreen() {
+            this->screeningDetails.timeOfLastScreening = this->_currentTime;
+            this->screeningDetails.numRNATests++;
+        }
 
         /// @brief Reset a Person's Link State to Unlinked
         /// @param timestep Timestep during which the Person is Unlinked
@@ -343,6 +401,14 @@ namespace person {
         int GetClearances() const {
             return this->infectionStatus.timesCleared;
         };
+
+        int GetWithdrawals() const { return this->treatmentWithdrawals; }
+
+        int GetToxicReactions() const { return this->treatmentToxicReactions; }
+
+        int GetCompletedTreatments() const { return this->completedTreatments; }
+
+        int GetSVRs() const { return this->svrs; }
 
         /// @brief
         int GetNumABTests() const { return this->screeningDetails.numRNATests; }
@@ -696,8 +762,28 @@ namespace person {
         data = pImplPERSON->DiagnoseHEPC(data);
         return 0;
     }
+    int PersonBase::LoadICValues(std::string icValues) {
+        pImplPERSON->LoadICValues(icValues);
+        return 0;
+    }
     int PersonBase::AddClearance() {
         pImplPERSON->AddClearance();
+        return 0;
+    }
+    int PersonBase::AddWithdrawal() {
+        pImplPERSON->AddWithdrawal();
+        return 0;
+    }
+    int PersonBase::AddToxicReaction() {
+        pImplPERSON->AddToxicReaction();
+        return 0;
+    }
+    int PersonBase::AddCompletedTreatment() {
+        pImplPERSON->AddCompletedTreatment();
+        return 0;
+    }
+    int PersonBase::AddSVR() {
+        pImplPERSON->AddSVR();
         return 0;
     }
     int PersonBase::MarkScreened() {
@@ -758,6 +844,16 @@ namespace person {
     int PersonBase::GetClearances() const {
         return pImplPERSON->GetClearances();
     }
+    int PersonBase::GetWithdrawals() const {
+        return pImplPERSON->GetWithdrawals();
+    }
+    int PersonBase::GetToxicReactions() const {
+        return pImplPERSON->GetToxicReactions();
+    }
+    int PersonBase::GetCompletedTreatments() const {
+        return pImplPERSON->GetCompletedTreatments();
+    }
+    int PersonBase::GetSVRs() const { return pImplPERSON->GetSVRs(); }
     int PersonBase::GetNumABTests() const {
         return pImplPERSON->GetNumABTests();
     }

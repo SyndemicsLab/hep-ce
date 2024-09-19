@@ -104,34 +104,42 @@ namespace event {
             person.Unlink();
         }
 
+        bool runABTest(person::PersonBase &person, std::string prefix) {
+            bool firstTest =
+                this->test(person.GetHCV(), prefix + "_ab",
+                           [&person]() -> int { return person.AddAbScreen(); });
+            this->insertScreeningCost(person, prefix + "_ab.cost",
+                                      "Intervention Antibody Screening");
+            return firstTest;
+        }
+
+        bool runRNATest(person::PersonBase &person, std::string prefix) {
+            bool firstTest = this->test(
+                person.GetHCV(), prefix + "_rna",
+                [&person]() -> int { return person.AddRnaScreen(); });
+            this->insertScreeningCost(person, prefix + "_rna.cost",
+                                      "Intervention RNA Screening");
+            return firstTest;
+        }
+
         /// @brief The Intervention Screening Event Undertaken on a Person
         /// @param person The Person undergoing an Intervention Screening
         void interventionScreen(person::PersonBase &person) {
             person.MarkScreened();
-
-            std::string testPrefix = "screening_intervention_";
-            person::HCV infectionStatus = person.GetHCV();
-            bool firstTest =
-                this->test(infectionStatus, testPrefix + "ab",
-                           [&person]() -> int { return person.AddAbScreen(); });
-            this->insertScreeningCost(person, "screening_intervention_ab.cost",
-                                      "Intervention Antibody Screening");
-
-            // if first test is negative, perform a second test
-            bool secondTest = false;
-            if (!firstTest) {
-                infectionStatus = person.GetHCV();
-                secondTest = this->test(
-                    infectionStatus, testPrefix + "ab",
-                    [&person]() -> int { return person.AddAbScreen(); });
+            if (!person.IsIdentifiedAsInfected()) {
+                bool firstTest = runABTest(person, "screening_intervention");
+                // if first test is negative, perform a second test
+                if (!firstTest) {
+                    bool secondTest =
+                        runABTest(person, "screening_intervention");
+                    if (!secondTest) {
+                        return; // two negatives
+                    }
+                }
             }
 
-            this->insertScreeningCost(person, "screening_intervention_rna.cost",
-                                      "Intervention RNA Screening");
-            infectionStatus = person.GetHCV();
-            if (this->test(
-                    infectionStatus, testPrefix + "rna",
-                    [&person]() -> int { return person.AddRnaScreen(); })) {
+            bool rna_test = runRNATest(person, "screening_intervention");
+            if (rna_test) {
                 person.Link(person::LinkageType::INTERVENTION);
                 // what else needs to happen during a link?
             } else {
@@ -258,8 +266,9 @@ namespace event {
                 std::string temp;
                 dm->GetFromConfig("screening.period", temp);
                 interventionPeriod = std::stoi(temp);
-                if (interventionPeriod <= 0) {
-                    // log error
+                if (person.GetTimeSinceScreened() >= interventionPeriod ||
+                    person.GetTimeOfLastScreening() == -1) {
+                    this->interventionDecision(person);
                 }
             }
             if (interventionType == "one-time" &&

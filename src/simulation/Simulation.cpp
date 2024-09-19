@@ -25,6 +25,7 @@
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManager.hpp>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <omp.h>
 #include <random>
@@ -154,8 +155,11 @@ namespace simulation {
             return _dm->Create(query.str(), table);
         }
 
-        void CreatePerson(int id) {
+        void CreatePerson(int id, std::string icValues) {
             person::PersonBase newperson(id, _dm);
+            if (!icValues.empty()) {
+                newperson.LoadICValues(icValues);
+            }
             std::stringstream query;
             query << "INSERT INTO 'population' VALUES (";
             query << newperson.GetPersonDataString();
@@ -226,9 +230,9 @@ namespace simulation {
             size_t duration = std::stol(data);
             for (tstep; tstep < duration; ++tstep) {
 
+                for (std::shared_ptr<event::Event> &event : this->events) {
 #pragma omp parallel for
-                for (person::PersonBase &person : this->population) {
-                    for (std::shared_ptr<event::Event> &event : this->events) {
+                    for (person::PersonBase &person : this->population) {
                         event->Execute(person);
                     }
                 }
@@ -273,11 +277,26 @@ namespace simulation {
 
         /// @brief Function used to Create Population Set
         /// @param N Number of People to create in the Population
-        int CreateNPeople(size_t const N) {
+        int CreateNPeople(size_t const N, std::string const &icFile) {
             BuildPersonTable();
             this->population.clear();
-            for (size_t i = 0; i < N; ++i) {
-                CreatePerson(i);
+
+            std::ifstream csv;
+            int j = 0;
+            csv.open(icFile, std::ios::in);
+            if (csv) {
+                std::string line;
+                std::getline(csv, line); // grab header line
+                while (std::getline(csv, line) && j < N) {
+                    ++j;
+                    CreatePerson(j, line);
+                }
+            }
+            csv.close();
+
+            // Fill up Remaining Space to reach N people
+            for (size_t i = j; i < N; ++i) {
+                CreatePerson(i, {});
             }
             return 0;
         }
@@ -315,10 +334,13 @@ namespace simulation {
             return 1;
         }
         std::string temp = indir;
+        std::string ic_file = "";
         for (const auto &dirEntry :
              std::filesystem::recursive_directory_iterator(temp)) {
             std::filesystem::path p = dirEntry.path();
-            if (p.extension() == ".csv") {
+            if (p.filename() == "init_cohort.csv") {
+                ic_file = p;
+            } else if (p.extension() == ".csv") {
                 // SQLITE_OK == 0, anything evaluating to "True" is SQLite Error
                 rc += LoadTable(p.string());
             } else if (p.extension() == ".conf") {
@@ -326,7 +348,7 @@ namespace simulation {
             }
         }
         LoadEvents();
-        CreateNPeople(pImplSIM->GetPopulationSize());
+        CreateNPeople(pImplSIM->GetPopulationSize(), ic_file);
 
         return rc;
     }
@@ -361,8 +383,8 @@ namespace simulation {
     }
 
     int Simulation::LoadEvents() { return pImplSIM->LoadEvents(); }
-    int Simulation::CreateNPeople(size_t const N) {
-        return pImplSIM->CreateNPeople(N);
+    int Simulation::CreateNPeople(size_t const N, std::string const &icFile) {
+        return pImplSIM->CreateNPeople(N, icFile);
     }
 
     int Simulation::WriteResults(std::string const &outfile) {

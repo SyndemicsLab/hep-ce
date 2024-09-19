@@ -40,13 +40,14 @@ namespace event {
         }
 
         std::string buildSQL(person::PersonBase const person) const {
+            int age_years = person.GetAge() / 12.0; // intentional truncation
             std::stringstream sql;
             sql << "SELECT background_mortality, SMR";
             sql << " FROM SMR ";
             sql << " INNER JOIN background_mortality ON "
                    "(SMR.gender = background_mortality.gender) ";
             sql << " WHERE background_mortality.age_years = '"
-                << std::to_string(person.GetAge()) << "'";
+                << std::to_string(age_years) << "'";
             sql << " AND background_mortality.gender = '" << person.GetSex()
                 << "'";
             sql << " AND SMR.drug_behavior = '" << person.GetBehavior() << "';";
@@ -96,8 +97,13 @@ namespace event {
                 spdlog::get("main")->info("Query: {}", query);
                 return;
             }
-            if (!rc) {
+            if (storage.empty()) {
                 // error
+                spdlog::get("main")->warn(
+                    "Setting background death probability to zero. No Data "
+                    "Found for background_mortality and "
+                    "SMR with the query: {}",
+                    query);
                 backgroundMortProb = 0;
                 smr = 0;
             } else {
@@ -131,9 +137,9 @@ namespace event {
             double backgroundMortProb = 0.0;
             double smr = 0.0;
             getSMRandBackgroundProb(person, dm, backgroundMortProb, smr);
+
             // 3. Decide whether the person dies. If not, unset their overdose
             // property.
-
             double totalProb = (backgroundMortProb * smr) + fibrosisDeathProb;
 
             std::vector<double> probVec = {(backgroundMortProb * smr),
@@ -144,6 +150,8 @@ namespace event {
                 this->die(person, person::DeathReason::BACKGROUND);
             } else if (retIdx == 1) {
                 this->die(person, person::DeathReason::LIVER);
+            } else {
+                // person.ToggleOverdose();
             }
         }
     };

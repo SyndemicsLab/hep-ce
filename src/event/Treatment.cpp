@@ -222,12 +222,14 @@ namespace event {
 
             // 6. Determine if the person withdraws from the treatment
             if (this->doesWithdraw(person)) {
+                person.AddWithdrawal();
                 this->quitEngagement(person);
                 return;
             }
 
             // 7. Determine if the person has a toxic reaction
             if (this->experiencedToxicity(person)) {
+                person.AddToxicReaction();
                 this->quitEngagement(person);
                 std::string data;
                 dm->GetFromConfig("treatment.tox_cost", data);
@@ -254,9 +256,11 @@ namespace event {
                                               &storage, error);
 
             if (decider->GetDecision({storage[0].svr}) == 1) {
+                person.AddSVR();
                 person.ClearHCV();
             }
             if (timeSinceInitiation >= storage[0].time) {
+                person.AddCompletedTreatment();
                 this->quitEngagement(person);
             }
         }

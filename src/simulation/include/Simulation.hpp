@@ -45,7 +45,7 @@ namespace simulation {
         int LoadTable(std::string const &infile);
         int LoadConfig(std::string const &infile);
         int LoadEvents();
-        int CreateNPeople(size_t const N);
+        int CreateNPeople(size_t const N, std::string const &icFile = "");
         int WriteResults(std::string const &outfile);
         int SaveSimulationState(std::string const &outfile);
         int LoadSimulationState(std::string const &infile);

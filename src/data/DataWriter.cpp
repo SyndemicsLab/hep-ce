@@ -34,11 +34,12 @@ namespace writer {
             compiled_attributes
                 << person.GetID() << "," << std::boolalpha << person.GetSex()
                 << "," << person.GetAge() << "," << person.GetIsAlive() << ","
-                << person.GetDeathReason() << "," << person.IdentifyAsInfected()
-                << "," << person.GetTimeIdentified() << "," << person.GetHCV()
-                << "," << person.GetFibrosisState() << ","
-                << person.IsGenotypeThree() << "," << person.GetSeropositive()
-                << "," << person.GetTimeHCVChanged() << ","
+                << person.GetDeathReason() << ","
+                << person.IsIdentifiedAsInfected() << ","
+                << person.GetTimeIdentified() << "," << person.GetHCV() << ","
+                << person.GetFibrosisState() << "," << person.IsGenotypeThree()
+                << "," << person.GetSeropositive() << ","
+                << person.GetTimeHCVChanged() << ","
                 << person.GetTimeFibrosisStateChanged() << ","
                 << person.GetBehavior() << "," << person.GetTimeBehaviorChange()
                 << "," << person.GetLinkState() << ","
@@ -53,7 +54,10 @@ namespace writer {
                 << person.HasInitiatedTreatment() << ","
                 << person.GetTimeOfTreatmentInitiation() << ","
                 << person.GetUtility().minUtil << ","
-                << person.GetUtility().multUtil;
+                << person.GetUtility().multUtil << ","
+                << person.GetWithdrawals() << "," << person.GetToxicReactions()
+                << "," << person.GetCompletedTreatments() << ","
+                << person.GetSVRs();
             return compiled_attributes.str();
         }
 
