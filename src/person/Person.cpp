@@ -411,7 +411,7 @@ namespace person {
         int GetSVRs() const { return this->svrs; }
 
         /// @brief
-        int GetNumABTests() const { return this->screeningDetails.numRNATests; }
+        int GetNumABTests() const { return this->screeningDetails.numABTests; }
 
         /// @brief
         int GetNumRNATests() const {
@@ -665,6 +665,7 @@ namespace person {
         /// @param state
         void SetMeasuredFibrosisState(MeasuredFibrosisState state) {
             this->stagingDetails.measuredFibrosisState = state;
+            this->stagingDetails.timeOfLastStaging = this->_currentTime;
         }
 
         /// @brief Setter for whether Person is genotype three

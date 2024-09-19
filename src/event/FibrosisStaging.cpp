@@ -26,19 +26,15 @@ namespace event {
     private:
         static int callback(void *storage, int count, char **data,
                             char **columns) {
-            std::vector<std::vector<double>> *d =
-                (std::vector<std::vector<double>> *)storage;
-            std::vector<double> probs;
-            for (int i = 0; i < count; ++i) {
-                probs.push_back(std::stod(data[i]));
-            }
-            d->push_back(probs);
+            std::vector<double> *d = (std::vector<double> *)storage;
+            d->push_back(std::stod(data[0]));
             return 0;
         }
         std::string buildSQL(person::PersonBase &person, std::string columns) {
             std::stringstream sql;
             sql << "SELECT " << columns << " FROM fibrosis ";
-            sql << "WHERE true_fib = '" << person.GetFibrosisState() << "';";
+            sql << "WHERE true_fib = '" << person.GetFibrosisState() << "'";
+            sql << " LIMIT 4;"; // weird issue with returning a bunch hits
             return sql.str();
         }
 
@@ -73,7 +69,7 @@ namespace event {
             std::shared_ptr<datamanagement::DataManager> dm,
             std::string column) {
             std::string query = buildSQL(person, column);
-            std::vector<std::vector<double>> storage;
+            std::vector<double> storage;
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
@@ -86,7 +82,7 @@ namespace event {
                 return {};
             }
 
-            return storage[0];
+            return storage;
         }
 
         void addStagingCost(person::PersonBase &person,
@@ -123,12 +119,10 @@ namespace event {
             // 1. Check the time since the person's last fibrosis staging test.
             // If the person's last test is more recent than the limit, exit
             // event.
-            int timeSinceStaging = person.GetTimeSinceStaging();
-
             std::string data;
             dm->GetFromConfig("fibrosis_staging.period", data);
             int period = std::stoi(data);
-            if (((int)timeSinceStaging) < period) {
+            if (person.GetTimeSinceStaging() < period) {
                 return;
             }
 
