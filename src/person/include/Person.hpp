@@ -23,7 +23,7 @@
 #include <memory>
 
 namespace datamanagement {
-    class DataManager;
+    class DataManagerBase;
 }
 
 /// @brief Namespace containing all code pertaining to an individual Person
@@ -45,108 +45,130 @@ namespace person {
         PersonBase &operator=(PersonBase &&) noexcept;
 
         // Functionality
-        int
-        CreatePersonFromTable(int id,
-                              std::shared_ptr<datamanagement::DataManager> dm);
+        int CreatePersonFromTable(
+            int id, std::shared_ptr<datamanagement::DataManagerBase> dm);
         int Grow();
         int Die(DeathReason deathReason = DeathReason::BACKGROUND);
-        int Infect();
+
+        // HCV
+        int InfectHCV();
         int ClearHCV();
-        int UpdateBehavior(const Behavior &bc);
-        int DiagnoseFibrosis(MeasuredFibrosisState &data);
-        int DiagnoseHEPC(HCV &data);
-        int AddClearance();
-        int AddWithdrawal();
-        int AddToxicReaction();
-        int AddCompletedTreatment();
-        int AddSVR();
+        HCV GetHCV() const;
+        void SetHCV(HCV hcv);
+        int AddHCVClearance();
+        int GetHCVClearances() const;
+        bool GetSeropositivity() const;
+        void SetSeropositivity(bool seropositive);
+
+        int DiagnoseHCV();
+        bool IsIdentifiedAsHCVInfected() const;
+
+        int GetTimeHCVIdentified() const;
+        int GetTimesHCVInfected() const;
+        int GetTimeHCVChanged() const;
+        int GetTimeSinceHCVChanged() const;
+
+        // Screening
         int MarkScreened();
         int AddAbScreen();
         int AddRnaScreen();
+        bool HadSecondScreeningTest() const;
+        int GetNumberOfABTests() const;
+        int GetNumberOfRNATests() const;
+        int GetTimeOfLastScreening() const;
+        int GetTimeSinceLastScreening() const;
+        ScreeningDetails GetScreeningDetails() const;
+        void GiveSecondScreeningTest(bool state);
+
+        // Linking
         int Unlink();
         int Link(LinkageType linkType);
-        int IdentifyAsInfected();
-        int AddCost(cost::Cost cost);
-        int ToggleOverdose();
-        int LoadICValues(std::string icValues);
-        // Checks
-        bool IsAlive();
-        bool HadSecondTest();
-        bool IsIdentifiedAsInfected() const;
-        bool HasInitiatedTreatment() const;
-        bool IsGenotypeThree() const;
-        bool IsBoomer() const;
-        bool IsCirrhotic();
-        // Getters
-        int GetID() const;
-        int GetCurrentTimestep() const;
-        int GetAge() const;
-        int GetTimesInfected() const;
-        int GetClearances() const;
-        int GetWithdrawals() const;
-        int GetToxicReactions() const;
-        int GetCompletedTreatments() const;
-        int GetSVRs() const;
-        int GetNumABTests() const;
-        int GetNumRNATests() const;
-        int GetTimeOfLastScreening() const;
-        int GetTimeSinceScreened() const;
-        bool GetCurrentlyOverdosing() const;
-        int GetNumberOfOverdoses() const;
-        DeathReason GetDeathReason() const;
-        FibrosisState GetFibrosisState() const;
-        HCV GetHCV() const;
-        bool GetIsAlive() const;
-        Behavior GetBehavior() const;
-        int GetTimeBehaviorChange() const;
-        int GetTimeHCVChanged() const;
-        int GetTimeSinceHCVChanged() const;
-        int GetTimeFibrosisStateChanged() const;
-        int GetTimeSinceStaging() const;
-        bool GetSeropositive() const;
-        int GetTimeIdentified() const;
         LinkageState GetLinkState() const;
         int GetTimeOfLinkChange() const;
         int GetTimeSinceLinkChange() const;
         int GetLinkCount() const;
         LinkageType GetLinkageType() const;
+        LinkageDetails GetLinkStatus() const;
+
+        // Treatment
+        int AddWithdrawal();
+        int GetWithdrawals() const;
+        int AddToxicReaction();
+        int GetToxicReactions() const;
+        int AddCompletedTreatment();
+        int GetCompletedTreatments() const;
+        int AddSVR();
+        int GetSVRs() const;
+        TreatmentDetails GetTreatmentDetails() const;
+        void InitiateTreatment();
+
+        bool HasInitiatedTreatment() const;
+
         int GetTimeOfTreatmentInitiation() const;
         int GetTimeSinceTreatmentInitiation() const;
-        PregnancyState GetPregnancyState() const;
-        int GetTimeOfPregnancyChange() const;
-        int GetNumInfants() const;
-        int GetNumMiscarriages() const;
-        int GetTimeOfLastStaging() const;
-        MOUD GetMoudState() const;
+
+        // Drug Use Behavior
+        int SetBehavior(const Behavior &bc);
+        Behavior GetBehavior() const;
+        BehaviorDetails GetBehaviorDetails() const;
+
+        int ToggleOverdose();
+        bool GetCurrentlyOverdosing() const;
+
+        int GetNumberOfOverdoses() const;
+        int GetTimeBehaviorChange() const;
+
+        // Fibrosis
         MeasuredFibrosisState GetMeasuredFibrosisState() const;
-        int GetTimeStartedMoud() const;
+        int DiagnoseFibrosis(MeasuredFibrosisState &data);
+        FibrosisState GetTrueFibrosisState() const;
+        void SetTrueFibrosisState(FibrosisState state);
+
+        StagingDetails GetFibrosisStagingDetails() const;
+
+        int GetTimeTrueFibrosisStateChanged() const;
+        int GetTimeOfFibrosisStaging() const;
+        int GetTimeSinceFibrosisStaging() const;
+
+        // Cost Effectiveness
+        int AddCost(cost::Cost cost);
+        void SetUtility(double util);
+
+        // General Data Handling
+        int LoadICValues(std::string icValues);
+        bool IsAlive() const;
+        bool IsGenotypeThree() const;
+        void SetGenotypeThree(bool genotype);
+        bool IsBoomer() const;
+        void SetBoomer(bool status);
+        void SetDeathReason(DeathReason deathReason);
+        DeathReason GetDeathReason() const;
+        int GetAge() const;
+        void SetAge(int age);
+
+        bool IsCirrhotic();
+
+        std::string GetPersonDataString() const;
+        int GetID() const;
+        int GetCurrentTimestep() const;
         Sex GetSex() const;
         UtilityTracker GetUtility() const;
         cost::CostTracker GetCosts() const;
         Health GetHealth() const;
-        BehaviorDetails GetBehaviorDetails() const;
-        LinkageDetails GetLinkStatus() const;
+
+        // TODO
+        PregnancyState GetPregnancyState() const;
+        int GetTimeOfPregnancyChange() const;
+        int GetNumInfants() const;
+        int GetNumMiscarriages() const;
+        MOUD GetMoudState() const;
+        int GetTimeStartedMoud() const;
         MOUDDetails GetMOUDDetails() const;
         PregnancyDetails GetPregnancyDetails() const;
-        StagingDetails GetStagingDetails() const;
-        ScreeningDetails GetScreeningDetails() const;
-        TreatmentDetails GetTreatmentDetails() const;
-        std::string GetPersonDataString() const;
-        // Setters
-        void SetAge(int age);
-        void SetHadSecondTest(bool state);
-        void SetSeropositive(bool seropositive);
-        void SetDeathReason(DeathReason deathReason);
-        void SetHCV(HCV hcvs);
-        void SetInitiatedTreatment(bool initiatedTreatment);
         void SetPregnancyState(PregnancyState state);
         void SetNumInfants(int infants);
         void SetNumMiscarriages(int miscarriages);
-        void SetTrueFibrosisState(FibrosisState state);
-        void SetGenotype(bool genotype);
         void SetMoudState(MOUD moud);
-        void SetUtility(double util);
-        void SetBoomerClassification(bool status);
     };
 } // namespace person
 #endif

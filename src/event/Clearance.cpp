@@ -18,14 +18,14 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "Utils.hpp"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 
 namespace event {
     class Clearance::ClearanceIMPL {
     private:
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
             std::string data;
             int rc = dm->GetFromConfig("infection.clearance_prob", data);
@@ -65,7 +65,7 @@ namespace event {
     Clearance &Clearance::operator=(Clearance &&) noexcept = default;
 
     void Clearance::doEvent(person::PersonBase &person,
-                            std::shared_ptr<datamanagement::DataManager> dm,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }

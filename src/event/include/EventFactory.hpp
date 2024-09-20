@@ -6,7 +6,7 @@
 #include <string>
 
 namespace datamanagement {
-    class DataManager;
+    class DataManagerBase;
 }
 namespace event {
 

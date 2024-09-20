@@ -24,7 +24,7 @@ namespace person {
     class PersonBase;
 }
 namespace datamanagement {
-    class DataManager;
+    class DataManagerBase;
 }
 
 /// @brief Namespace containing functions for writing simulation output
@@ -39,7 +39,7 @@ namespace writer {
         ~DataWriter();
         int UpdatePopulation(
             std::vector<std::shared_ptr<person::PersonBase>> new_population,
-            std::shared_ptr<datamanagement::DataManager> dm);
+            std::shared_ptr<datamanagement::DataManagerBase> dm);
         int WritePopulationToFile(
             std::vector<std::shared_ptr<person::PersonBase>> new_population,
             std::string &filepath);

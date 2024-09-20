@@ -35,7 +35,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
 
             person::Behavior bc = person.GetBehavior();
@@ -79,7 +79,7 @@ namespace event {
     MOUD &MOUD::operator=(MOUD &&) noexcept = default;
 
     void MOUD::doEvent(person::PersonBase &person,
-                       std::shared_ptr<datamanagement::DataManager> dm,
+                       std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }

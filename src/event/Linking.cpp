@@ -19,7 +19,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 
 namespace event {
@@ -47,7 +47,7 @@ namespace event {
 
         std::vector<double>
         getTransitions(person::PersonBase &person,
-                       std::shared_ptr<datamanagement::DataManager> dm,
+                       std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::string columnKey) {
             std::unordered_map<std::string, std::string> selectCriteria;
 
@@ -76,7 +76,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
             person::HCV state = person.GetHCV();
             if (state == person::HCV::NONE) {
@@ -91,8 +91,8 @@ namespace event {
                 return;
             }
 
-            if (!person.IsIdentifiedAsInfected()) {
-                person.IdentifyAsInfected();
+            if (!person.IsIdentifiedAsHCVInfected()) {
+                person.DiagnoseHCV();
             }
 
             std::vector<double> probs;
@@ -141,7 +141,7 @@ namespace event {
     Linking &Linking::operator=(Linking &&) noexcept = default;
 
     void Linking::doEvent(person::PersonBase &person,
-                          std::shared_ptr<datamanagement::DataManager> dm,
+                          std::shared_ptr<datamanagement::DataManagerBase> dm,
                           std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }

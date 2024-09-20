@@ -18,7 +18,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 namespace event {
     class Infections::InfectionsIMPL {
@@ -44,7 +44,7 @@ namespace event {
 
         std::vector<double>
         getInfectProb(person::PersonBase &person,
-                      std::shared_ptr<datamanagement::DataManager> dm) {
+                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
             std::vector<double> storage;
             std::string error;
@@ -64,7 +64,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
             // only those who aren't infected go to the rest of the event.
             // those who are infected transition from acute to chronic after 6
@@ -88,7 +88,7 @@ namespace event {
             if (value != 0) {
                 return;
             }
-            person.Infect();
+            person.InfectHCV();
         }
     };
     Infections::Infections() { impl = std::make_unique<InfectionsIMPL>(); }
@@ -97,9 +97,10 @@ namespace event {
     Infections::Infections(Infections &&) noexcept = default;
     Infections &Infections::operator=(Infections &&) noexcept = default;
 
-    void Infections::doEvent(person::PersonBase &person,
-                             std::shared_ptr<datamanagement::DataManager> dm,
-                             std::shared_ptr<stats::Decider> decider) {
+    void
+    Infections::doEvent(person::PersonBase &person,
+                        std::shared_ptr<datamanagement::DataManagerBase> dm,
+                        std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 

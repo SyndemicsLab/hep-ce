@@ -21,7 +21,7 @@
 #include "Utils.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <filesystem>
 #include <fstream>
 
@@ -33,24 +33,25 @@ namespace writer {
             std::stringstream compiled_attributes;
             compiled_attributes
                 << person.GetID() << "," << std::boolalpha << person.GetSex()
-                << "," << person.GetAge() << "," << person.GetIsAlive() << ","
+                << "," << person.GetAge() << "," << person.IsAlive() << ","
                 << person.GetDeathReason() << ","
-                << person.IsIdentifiedAsInfected() << ","
-                << person.GetTimeIdentified() << "," << person.GetHCV() << ","
-                << person.GetFibrosisState() << "," << person.IsGenotypeThree()
-                << "," << person.GetSeropositive() << ","
-                << person.GetTimeHCVChanged() << ","
-                << person.GetTimeFibrosisStateChanged() << ","
+                << person.IsIdentifiedAsHCVInfected() << ","
+                << person.GetTimeHCVIdentified() << "," << person.GetHCV()
+                << "," << person.GetTrueFibrosisState() << ","
+                << person.IsGenotypeThree() << "," << person.GetSeropositivity()
+                << "," << person.GetTimeHCVChanged() << ","
+                << person.GetTimeTrueFibrosisStateChanged() << ","
                 << person.GetBehavior() << "," << person.GetTimeBehaviorChange()
                 << "," << person.GetLinkState() << ","
                 << person.GetTimeOfLinkChange() << ","
                 << person.GetLinkageType() << "," << person.GetLinkCount()
                 << "," << person.GetMeasuredFibrosisState() << ","
-                << person.GetTimeOfLastStaging() << ","
+                << person.GetTimeOfFibrosisStaging() << ","
                 << person.GetTimeOfLastScreening() << ","
-                << person.GetNumABTests() << "," << person.GetNumRNATests()
-                << "," << person.GetTimesInfected() << ","
-                << person.GetClearances() << ","
+                << person.GetNumberOfABTests() << ","
+                << person.GetNumberOfRNATests() << ","
+                << person.GetTimesHCVInfected() << ","
+                << person.GetHCVClearances() << ","
                 << person.HasInitiatedTreatment() << ","
                 << person.GetTimeOfTreatmentInitiation() << ","
                 << person.GetUtility().minUtil << ","
@@ -64,12 +65,12 @@ namespace writer {
     public:
         int UpdatePopulation(
             std::vector<std::shared_ptr<person::PersonBase>> new_population,
-            std::shared_ptr<datamanagement::DataManager> dm) {
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
             return -1;
         }
         int WriteOutputPopulationToTable(
             std::vector<std::shared_ptr<person::PersonBase>> new_population,
-            std::shared_ptr<datamanagement::DataManager> dm) {
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
             return -1;
         }
         int WriteOutputPopulationToFile(
@@ -97,7 +98,7 @@ namespace writer {
 
     int DataWriter::UpdatePopulation(
         std::vector<std::shared_ptr<person::PersonBase>> new_population,
-        std::shared_ptr<datamanagement::DataManager> dm) {
+        std::shared_ptr<datamanagement::DataManagerBase> dm) {
         return impl->UpdatePopulation(new_population, dm);
     }
     int DataWriter::WritePopulationToFile(

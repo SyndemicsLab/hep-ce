@@ -30,7 +30,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
             person::Behavior bc = person.GetBehavior();
             // return immediately if not in active use state
@@ -54,7 +54,7 @@ namespace event {
     Overdose &Overdose::operator=(Overdose &&) noexcept = default;
 
     void Overdose::doEvent(person::PersonBase &person,
-                           std::shared_ptr<datamanagement::DataManager> dm,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                            std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }

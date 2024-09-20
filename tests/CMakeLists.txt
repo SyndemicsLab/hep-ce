@@ -1,7 +1,16 @@
 cmake_minimum_required(VERSION 3.24)
+set(CMAKE_CXX_STANDARD 17)
 project(hepceTest CXX)
 
-find_package(GTest REQUIRED)
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 
 find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
@@ -18,10 +27,12 @@ add_executable(${PROJECT_NAME}
   src/CostTest.cpp
 )
 
+# BE VERY CAREFUL WITH GTEST AS ITS A PAIN IN THE BUTT
 target_link_libraries(${PROJECT_NAME} 
     PUBLIC 
-        GTest::gtest 
         GTest::gtest_main
+        GTest::gmock_main
+        fmt # Required for GTest
         person
         simulation
         event
@@ -29,4 +40,10 @@ target_link_libraries(${PROJECT_NAME}
         DataManagement::DataManagement
 )
 
-# gtest_discover_tests(test)
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+        "mocks/"
+)
+
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME})

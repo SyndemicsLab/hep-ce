@@ -19,13 +19,13 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 
 namespace event {
     class Treatment::TreatmentIMPL {
     private:
-        std::shared_ptr<datamanagement::DataManager> dm;
+        std::shared_ptr<datamanagement::DataManagerBase> dm;
         std::shared_ptr<stats::Decider> decider;
 
         struct cost_svr_select {
@@ -65,7 +65,7 @@ namespace event {
         }
 
         bool isEligible(person::PersonBase const &person) const {
-            person::FibrosisState fibrosisState = person.GetFibrosisState();
+            person::FibrosisState fibrosisState = person.GetTrueFibrosisState();
             person::Behavior behavior = person.GetBehavior();
             int timeBehaviorChange = person.GetTimeBehaviorChange();
             person::PregnancyState pregnancyState = person.GetPregnancyState();
@@ -183,7 +183,7 @@ namespace event {
                 return false;
             }
             // person initiates treatment -- set treatment initiation values
-            person.SetInitiatedTreatment(true);
+            person.InitiateTreatment();
             return true;
         }
 
@@ -196,7 +196,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
             this->dm = dm;
             this->decider = decider;
@@ -272,7 +272,7 @@ namespace event {
     Treatment &Treatment::operator=(Treatment &&) noexcept = default;
 
     void Treatment::doEvent(person::PersonBase &person,
-                            std::shared_ptr<datamanagement::DataManager> dm,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }

@@ -19,7 +19,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 
 namespace event {
@@ -44,14 +44,14 @@ namespace event {
                                          : "positive";
             sql << "SELECT cost FROM hcv_costs";
             sql << " WHERE hcv_status = '" << hcv_status << "'";
-            sql << " AND metavir_stage = '" << person.GetFibrosisState()
+            sql << " AND metavir_stage = '" << person.GetTrueFibrosisState()
                 << "';";
             return sql.str();
         }
 
         std::vector<double>
         getTransition(person::FibrosisState fs,
-                      std::shared_ptr<datamanagement::DataManager> dm) {
+                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
             // get the probability of transitioning to the next fibrosis state
             std::string data;
 
@@ -82,9 +82,9 @@ namespace event {
             return {1 - std::stod(data)};
         }
 
-        void
-        addLiverDiseaseCost(person::PersonBase &person,
-                            std::shared_ptr<datamanagement::DataManager> dm) {
+        void addLiverDiseaseCost(
+            person::PersonBase &person,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
             std::vector<struct fib_prog_select> storage;
             std::string error;
@@ -103,7 +103,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
             std::string data;
             dm->GetFromConfig("fibrosis.add_cost_only_if_identified", data);
@@ -116,7 +116,7 @@ namespace event {
                 return;
             }
             // 1. Get current fibrosis status
-            person::FibrosisState fs = person.GetFibrosisState();
+            person::FibrosisState fs = person.GetTrueFibrosisState();
             // 2. Get the transition probability
             std::vector<double> prob = getTransition(fs, dm);
             // 3. Draw whether the person's fibrosis state progresses
@@ -133,7 +133,7 @@ namespace event {
 
             // insert Person's liver-related disease cost (taking the highest
             // fibrosis state)
-            if (costFlag && !person.IsIdentifiedAsInfected()) {
+            if (costFlag && !person.IsIdentifiedAsHCVInfected()) {
                 return;
             }
             this->addLiverDiseaseCost(person, dm);
@@ -152,7 +152,7 @@ namespace event {
 
     void FibrosisProgression::doEvent(
         person::PersonBase &person,
-        std::shared_ptr<datamanagement::DataManager> dm,
+        std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }

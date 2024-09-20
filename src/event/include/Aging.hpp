@@ -30,7 +30,7 @@ namespace event {
         /// @param person Individual Person undergoing Event
         void
         doEvent(person::PersonBase &person,
-                std::shared_ptr<datamanagement::DataManager> dm,
+                std::shared_ptr<datamanagement::DataManagerBase> dm,
                 std::shared_ptr<stats::Decider> decider = nullptr) override;
 
     public:

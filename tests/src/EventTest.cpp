@@ -19,28 +19,60 @@
 #include <memory>
 
 #include "Aging.hpp"
+#include "DataManagerMock.hpp"
 #include "Event.hpp"
 #include "EventFactory.hpp"
 #include "Person.hpp"
 #include "PersonFactory.hpp"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
+
+using ::testing::_;
+using ::testing::Return;
 
 class EventTest : public ::testing::Test {
+private:
+    void RegisterLogger() {
+        auto console_sink =
+            std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        std::vector<spdlog::sink_ptr> sinks{console_sink};
+        auto logger = std::make_shared<spdlog::logger>("main", sinks.begin(),
+                                                       sinks.end());
+        spdlog::register_logger(logger);
+        spdlog::flush_every(std::chrono::seconds(3));
+    }
+
 protected:
-    void SetUp() override {}
-    void TearDown() override {}
+    std::shared_ptr<person::PersonBase> testPerson;
+    void SetUp() override {
+        RegisterLogger();
+        std::shared_ptr<datamanagement::MOCKDataManager> dm =
+            std::make_unique<datamanagement::MOCKDataManager>();
+        EXPECT_CALL(*dm, SelectCustomCallback(_, _, _, _))
+            .WillRepeatedly(Return(0));
+        person::PersonFactory pfactory;
+        testPerson = pfactory.create();
+        testPerson->CreatePersonFromTable(4321, dm);
+    }
+    void TearDown() override { spdlog::drop("main"); }
 };
 
-TEST_F(EventTest, TestExecution) {
+TEST_F(EventTest, Aging) {
     event::EventFactory efactory;
     std::shared_ptr<stats::Decider> decider;
     std::shared_ptr<event::Event> event = efactory.create("Aging");
 
-    // This will cause an error in the Person constructor but we don't care
-    person::PersonFactory pfactory;
-    std::shared_ptr<person::PersonBase> person = pfactory.create();
-    person->CreatePersonFromTable(1234, NULL);
-    person->SetAge(0);
-    int before = person->GetAge();
-    event->Execute(*person, NULL, decider);
-    EXPECT_EQ(before + 1, person->GetAge());
+    int before = testPerson->GetAge();
+    event->Execute(*testPerson, NULL, decider);
+    EXPECT_EQ(before + 1, testPerson->GetAge());
+}
+
+TEST_F(EventTest, BehaviorChanges) {
+    event::EventFactory efactory;
+    std::shared_ptr<stats::Decider> decider;
+    std::shared_ptr<event::Event> event = efactory.create("BehaviorChanges");
+
+    int before = testPerson->GetAge();
+    event->Execute(*testPerson, NULL, decider);
+    EXPECT_EQ(before + 1, testPerson->GetAge());
 }

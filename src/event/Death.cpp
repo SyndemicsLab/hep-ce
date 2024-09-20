@@ -18,7 +18,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 
 namespace event {
@@ -62,9 +62,9 @@ namespace event {
 
         void getFibrosisMortalityProb(
             person::PersonBase const &person,
-            std::shared_ptr<datamanagement::DataManager> dm, double &prob) {
+            std::shared_ptr<datamanagement::DataManagerBase> dm, double &prob) {
             std::string data;
-            switch (person.GetFibrosisState()) {
+            switch (person.GetTrueFibrosisState()) {
             case person::FibrosisState::F4:
                 data.clear();
                 dm->GetFromConfig("mortality.f4", data);
@@ -80,10 +80,10 @@ namespace event {
             }
         }
 
-        void
-        getSMRandBackgroundProb(person::PersonBase const &person,
-                                std::shared_ptr<datamanagement::DataManager> dm,
-                                double &backgroundMortProb, double &smr) {
+        void getSMRandBackgroundProb(
+            person::PersonBase const &person,
+            std::shared_ptr<datamanagement::DataManagerBase> dm,
+            double &backgroundMortProb, double &smr) {
             std::string query = this->buildSQL(person);
             std::vector<struct death_select> storage;
             std::string error;
@@ -122,7 +122,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
             if (ReachedMaxAge(person)) {
                 return;
@@ -163,7 +163,7 @@ namespace event {
     Death &Death::operator=(Death &&) noexcept = default;
 
     void Death::doEvent(person::PersonBase &person,
-                        std::shared_ptr<datamanagement::DataManager> dm,
+                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }

@@ -18,7 +18,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 
 namespace event {
@@ -94,7 +94,7 @@ namespace event {
 
         void calculateCostAndUtility(
             person::PersonBase &person,
-            std::shared_ptr<datamanagement::DataManager> dm) const {
+            std::shared_ptr<datamanagement::DataManagerBase> dm) const {
             std::string query = this->buildCostSQL(person);
             std::vector<struct behavior_costs_select> storage;
             std::string error;
@@ -116,7 +116,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
 
             // Determine person's current behavior classification
@@ -135,10 +135,12 @@ namespace event {
                                               &storage, error);
 
             if (rc != 0) {
+#ifdef NDEBUG
                 spdlog::get("main")->error("No Transitions Avaliable for "
                                            "Behavior Change! Error Message: "
                                            "{}",
                                            error);
+#endif
             }
             std::vector<double> probs;
             if (storage.empty()) {
@@ -166,7 +168,7 @@ namespace event {
 
             // 3. If the drawn state differs from the current state, change the
             // bools in BehaviorState to match
-            person.UpdateBehavior(toBC);
+            person.SetBehavior(toBC);
         }
     };
 
@@ -179,10 +181,10 @@ namespace event {
     BehaviorChanges &
     BehaviorChanges::operator=(BehaviorChanges &&) noexcept = default;
 
-    void
-    BehaviorChanges::doEvent(person::PersonBase &person,
-                             std::shared_ptr<datamanagement::DataManager> dm,
-                             std::shared_ptr<stats::Decider> decider) {
+    void BehaviorChanges::doEvent(
+        person::PersonBase &person,
+        std::shared_ptr<datamanagement::DataManagerBase> dm,
+        std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

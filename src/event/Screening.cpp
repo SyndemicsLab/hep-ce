@@ -19,7 +19,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <functional>
 #include <sstream>
 #include <string>
@@ -28,7 +28,7 @@
 namespace event {
     class Screening::ScreeningIMPL {
     private:
-        std::shared_ptr<datamanagement::DataManager> dm;
+        std::shared_ptr<datamanagement::DataManagerBase> dm;
         std::shared_ptr<stats::Decider> decider;
 
         static int callback(void *storage, int count, char **data,
@@ -62,7 +62,7 @@ namespace event {
         /// @brief The Background Screening Event Undertaken on a Person
         /// @param person The Person undergoing a background Screening
         void backgroundScreen(person::PersonBase &person) {
-            if (!person.GetTimeSinceScreened()) {
+            if (!person.GetTimeSinceLastScreening()) {
                 return;
             }
             person.MarkScreened();
@@ -126,7 +126,7 @@ namespace event {
         /// @param person The Person undergoing an Intervention Screening
         void interventionScreen(person::PersonBase &person) {
             person.MarkScreened();
-            if (!person.IsIdentifiedAsInfected()) {
+            if (!person.IsIdentifiedAsHCVInfected()) {
                 bool firstTest = runABTest(person, "screening_intervention");
                 // if first test is negative, perform a second test
                 if (!firstTest) {
@@ -255,7 +255,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
             this->dm = dm;
             this->decider = decider;
@@ -266,7 +266,7 @@ namespace event {
                 std::string temp;
                 dm->GetFromConfig("screening.period", temp);
                 interventionPeriod = std::stoi(temp);
-                if (person.GetTimeSinceScreened() >= interventionPeriod ||
+                if (person.GetTimeSinceLastScreening() >= interventionPeriod ||
                     person.GetTimeOfLastScreening() == -1) {
                     this->interventionDecision(person);
                 }
@@ -275,7 +275,7 @@ namespace event {
                 person.GetCurrentTimestep() == 1) {
                 this->interventionDecision(person);
             } else if (interventionType == "periodic") {
-                if (person.GetTimeSinceScreened() > interventionPeriod) {
+                if (person.GetTimeSinceLastScreening() > interventionPeriod) {
                     this->interventionDecision(person);
                 } else {
                     return; // Do not screen this time
@@ -305,7 +305,7 @@ namespace event {
     Screening &Screening::operator=(Screening &&) noexcept = default;
 
     void Screening::doEvent(person::PersonBase &person,
-                            std::shared_ptr<datamanagement::DataManager> dm,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }

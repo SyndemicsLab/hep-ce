@@ -19,7 +19,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <string>
 
 namespace event {
@@ -27,7 +27,7 @@ namespace event {
     private:
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
             std::string data;
             dm->GetFromConfig("linking.voluntary_relinkage_probability", data);
@@ -60,10 +60,10 @@ namespace event {
     VoluntaryRelinking &
     VoluntaryRelinking::operator=(VoluntaryRelinking &&) noexcept = default;
 
-    void
-    VoluntaryRelinking::doEvent(person::PersonBase &person,
-                                std::shared_ptr<datamanagement::DataManager> dm,
-                                std::shared_ptr<stats::Decider> decider) {
+    void VoluntaryRelinking::doEvent(
+        person::PersonBase &person,
+        std::shared_ptr<datamanagement::DataManagerBase> dm,
+        std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

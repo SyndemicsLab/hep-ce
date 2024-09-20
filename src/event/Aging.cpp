@@ -19,7 +19,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 
 namespace event {
@@ -59,7 +59,7 @@ namespace event {
         /// @param person The person to whom cost will be added
         void addBackgroundCostAndUtility(
             person::PersonBase &person,
-            std::shared_ptr<datamanagement::DataManager> dm) {
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
             std::vector<struct cost_util> storage = {};
             std::string error;
@@ -84,7 +84,7 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm) {
+                     std::shared_ptr<datamanagement::DataManagerBase> dm) {
             person.Grow();
             this->addBackgroundCostAndUtility(person, dm);
         }
@@ -97,7 +97,7 @@ namespace event {
     Aging &Aging::operator=(Aging &&) noexcept = default;
 
     void Aging::doEvent(person::PersonBase &person,
-                        std::shared_ptr<datamanagement::DataManager> dm,
+                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm);
     }

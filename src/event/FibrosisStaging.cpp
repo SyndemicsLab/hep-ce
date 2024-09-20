@@ -18,7 +18,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManager.hpp>
+#include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 
 namespace event {
@@ -33,14 +33,14 @@ namespace event {
         std::string buildSQL(person::PersonBase &person, std::string columns) {
             std::stringstream sql;
             sql << "SELECT " << columns << " FROM fibrosis ";
-            sql << "WHERE true_fib = '" << person.GetFibrosisState() << "'";
+            sql << "WHERE true_fib = '" << person.GetTrueFibrosisState() << "'";
             sql << " LIMIT 4;"; // weird issue with returning a bunch hits
             return sql.str();
         }
 
-        std::string
-        getColumnNameFromConfig(std::shared_ptr<datamanagement::DataManager> dm,
-                                std::string configLookupKey) {
+        std::string getColumnNameFromConfig(
+            std::shared_ptr<datamanagement::DataManagerBase> dm,
+            std::string configLookupKey) {
             std::string column;
             column.clear();
             dm->GetFromConfig(configLookupKey, column);
@@ -66,7 +66,7 @@ namespace event {
         /// @return Vector of fibrosis staging outcome probabilities
         std::vector<double> getTransitionProbabilities(
             person::PersonBase &person,
-            std::shared_ptr<datamanagement::DataManager> dm,
+            std::shared_ptr<datamanagement::DataManagerBase> dm,
             std::string column) {
             std::string query = buildSQL(person, column);
             std::vector<double> storage;
@@ -86,7 +86,7 @@ namespace event {
         }
 
         void addStagingCost(person::PersonBase &person,
-                            std::shared_ptr<datamanagement::DataManager> dm,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
                             const bool testTwo = false) {
             std::string data;
             data.clear();
@@ -108,11 +108,11 @@ namespace event {
 
     public:
         void doEvent(person::PersonBase &person,
-                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::Decider> decider) {
 
             // 0. Check if Person even has Fibrosis, exit if they are none
-            if (person.GetFibrosisState() == person::FibrosisState::NONE) {
+            if (person.GetTrueFibrosisState() == person::FibrosisState::NONE) {
                 return;
             }
 
@@ -122,7 +122,7 @@ namespace event {
             std::string data;
             dm->GetFromConfig("fibrosis_staging.period", data);
             int period = std::stoi(data);
-            if (person.GetTimeSinceStaging() < period) {
+            if (person.GetTimeSinceFibrosisStaging() < period) {
                 return;
             }
 
@@ -168,7 +168,7 @@ namespace event {
                 return;
             }
 
-            person.SetHadSecondTest(true);
+            person.GiveSecondScreeningTest(true);
 
             person::MeasuredFibrosisState stateTwo =
                 (person::MeasuredFibrosisState)decider->GetDecision(probs);
@@ -202,10 +202,10 @@ namespace event {
     FibrosisStaging &
     FibrosisStaging::operator=(FibrosisStaging &&) noexcept = default;
 
-    void
-    FibrosisStaging::doEvent(person::PersonBase &person,
-                             std::shared_ptr<datamanagement::DataManager> dm,
-                             std::shared_ptr<stats::Decider> decider) {
+    void FibrosisStaging::doEvent(
+        person::PersonBase &person,
+        std::shared_ptr<datamanagement::DataManagerBase> dm,
+        std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 

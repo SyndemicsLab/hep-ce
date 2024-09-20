@@ -28,9 +28,9 @@ namespace person {
     class PersonBase;
 }
 
-// Forward Defining DataManager to require in constructor
+// Forward Defining DataManagerBase to require in constructor
 namespace datamanagement {
-    class DataManager;
+    class DataManagerBase;
 }
 
 // Forward Defining Decider from stats project
@@ -42,9 +42,10 @@ namespace stats {
 namespace event {
     class Event {
     protected:
-        virtual void doEvent(person::PersonBase &person,
-                             std::shared_ptr<datamanagement::DataManager> dm,
-                             std::shared_ptr<stats::Decider> decider) = 0;
+        virtual void
+        doEvent(person::PersonBase &person,
+                std::shared_ptr<datamanagement::DataManagerBase> dm,
+                std::shared_ptr<stats::Decider> decider) = 0;
 
     public:
         Event();
@@ -57,7 +58,7 @@ namespace event {
         Event &operator=(Event &&) noexcept;
 
         int Execute(person::PersonBase &person,
-                    std::shared_ptr<datamanagement::DataManager> dm,
+                    std::shared_ptr<datamanagement::DataManagerBase> dm,
                     std::shared_ptr<stats::Decider> decider);
     };
 } // namespace event
