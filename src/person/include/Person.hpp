@@ -32,32 +32,28 @@ namespace person {
     class PersonBase {
     private:
         class Person;
-        std::shared_ptr<Person> pImplPERSON;
+        std::unique_ptr<Person> pImplPERSON;
 
     public:
-        inline static const std::string POPULATION_HEADERS =
-            "sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,"
-            "HCV,"
-            "fibrosisState,isGenotypeThree,seropositive,timeHCVChanged,"
-            "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,"
-            "linkageState,timeOfLinkChange,linkageType,"
-            "linkCount,measuredFibrosisState,"
-            "timeOfLastStaging,timeOfLastScreening,numABTests,"
-            "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
-            "timeOfTreatmentInitiation,minUtility,multUtility,"
-            "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,"
-            "svrs";
-
-        PersonBase(int id, std::shared_ptr<datamanagement::DataManager> dm);
+        PersonBase();
         ~PersonBase();
+
+        // Copy Operations
+        PersonBase(PersonBase const &) = delete;
+        PersonBase &operator=(PersonBase const &) = delete;
+        PersonBase(PersonBase &&) noexcept;
+        PersonBase &operator=(PersonBase &&) noexcept;
+
         // Functionality
+        int
+        CreatePersonFromTable(int id,
+                              std::shared_ptr<datamanagement::DataManager> dm);
         int Grow();
         int Die(DeathReason deathReason = DeathReason::BACKGROUND);
         int Infect();
         int ClearHCV();
-        int UpdateFibrosis(const FibrosisState &ls);
         int UpdateBehavior(const Behavior &bc);
-        int DiagnoseFibrosis(FibrosisState &data);
+        int DiagnoseFibrosis(MeasuredFibrosisState &data);
         int DiagnoseHEPC(HCV &data);
         int AddClearance();
         int AddWithdrawal();
@@ -146,7 +142,7 @@ namespace person {
         void SetPregnancyState(PregnancyState state);
         void SetNumInfants(int infants);
         void SetNumMiscarriages(int miscarriages);
-        void SetMeasuredFibrosisState(MeasuredFibrosisState state);
+        void SetTrueFibrosisState(FibrosisState state);
         void SetGenotype(bool genotype);
         void SetMoudState(MOUD moud);
         void SetUtility(double util);

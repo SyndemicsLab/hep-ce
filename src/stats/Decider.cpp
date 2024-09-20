@@ -4,9 +4,12 @@
 
 namespace stats {
     class Decider::DeciderIMPL {
+    private:
+        std::mutex m;
+        std::mt19937_64 g;
+
     public:
-        int getDecision(std::vector<double> probs, std::mt19937_64 &g,
-                        std::mutex &m) {
+        int getDecision(std::vector<double> probs) {
             if (std::accumulate(probs.begin(), probs.end(), 0.0) > 1.00001) {
                 return -1;
             }
@@ -23,13 +26,21 @@ namespace stats {
             }
             return (int)probs.size();
         }
+        int LoadGenerator(std::mt19937_64 const generator) {
+            g = generator;
+            return 0;
+        }
     };
 
-    Decider::Decider(std::mt19937_64 generator) : g(generator) {
-        impl = std::make_shared<DeciderIMPL>();
+    Decider::Decider() { impl = std::make_unique<DeciderIMPL>(); }
+
+    Decider::~Decider() = default;
+
+    int Decider::LoadGenerator(std::mt19937_64 const generator) {
+        return impl->LoadGenerator(generator);
     }
 
     int Decider::GetDecision(std::vector<double> probs) {
-        return impl->getDecision(probs, this->g, this->m);
+        return impl->getDecision(probs);
     }
 } // namespace stats

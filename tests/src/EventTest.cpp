@@ -22,6 +22,7 @@
 #include "Event.hpp"
 #include "EventFactory.hpp"
 #include "Person.hpp"
+#include "PersonFactory.hpp"
 
 class EventTest : public ::testing::Test {
 protected:
@@ -30,15 +31,16 @@ protected:
 };
 
 TEST_F(EventTest, TestExecution) {
-    event::EventFactory factory;
+    event::EventFactory efactory;
     std::shared_ptr<stats::Decider> decider;
-    std::shared_ptr<event::Event> event =
-        factory.create(decider, NULL, "Aging");
+    std::shared_ptr<event::Event> event = efactory.create("Aging");
 
     // This will cause an error in the Person constructor but we don't care
-    person::PersonBase person(1234, NULL);
-    person.SetAge(0);
-    int before = person.GetAge();
-    event->Execute(person);
-    EXPECT_EQ(before + 1, person.GetAge());
+    person::PersonFactory pfactory;
+    std::shared_ptr<person::PersonBase> person = pfactory.create();
+    person->CreatePersonFromTable(1234, NULL);
+    person->SetAge(0);
+    int before = person->GetAge();
+    event->Execute(*person, NULL, decider);
+    EXPECT_EQ(before + 1, person->GetAge());
 }

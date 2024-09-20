@@ -25,18 +25,23 @@ namespace event {
     class Clearance : public Event {
     private:
         class ClearanceIMPL;
-        std::shared_ptr<ClearanceIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<ClearanceIMPL> impl;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        Clearance(std::shared_ptr<stats::Decider> decider,
-                  std::shared_ptr<datamanagement::DataManager> dm,
-                  std::string name = std::string("Clearance"));
-        virtual ~Clearance() = default;
+        Clearance();
+        ~Clearance();
+
+        // Copy Operations
+        Clearance(Clearance const &) = delete;
+        Clearance &operator=(Clearance const &) = delete;
+        Clearance(Clearance &&) noexcept;
+        Clearance &operator=(Clearance &&) noexcept;
     };
 } // namespace event
 #endif // EVENT_CLEARANCE_HPP_

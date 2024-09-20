@@ -64,7 +64,7 @@ namespace event {
             return 0;
         }
 
-        std::string buildTransitionSQL(person::PersonBase const person) const {
+        std::string buildTransitionSQL(person::PersonBase const &person) const {
             int age_years = person.GetAge() / 12.0;
             std::stringstream sql;
             sql << "SELECT never, former_noninjection, former_injection, "
@@ -78,7 +78,7 @@ namespace event {
             return sql.str();
         }
 
-        std::string buildCostSQL(person::PersonBase const person) const {
+        std::string buildCostSQL(person::PersonBase const &person) const {
             std::stringstream sql;
             sql << "SELECT cost, utility FROM behavior_costs ";
             sql << "INNER JOIN behavior_utilities ON "
@@ -170,14 +170,19 @@ namespace event {
         }
     };
 
-    BehaviorChanges::BehaviorChanges(
-        std::shared_ptr<stats::Decider> decider,
-        std::shared_ptr<datamanagement::DataManager> dm, std::string name)
-        : Event(dm, name), decider(decider) {
+    BehaviorChanges::BehaviorChanges() {
         impl = std::make_unique<BehaviorChangesIMPL>();
     }
 
-    void BehaviorChanges::doEvent(person::PersonBase &person) {
+    BehaviorChanges::~BehaviorChanges() = default;
+    BehaviorChanges::BehaviorChanges(BehaviorChanges &&) noexcept = default;
+    BehaviorChanges &
+    BehaviorChanges::operator=(BehaviorChanges &&) noexcept = default;
+
+    void
+    BehaviorChanges::doEvent(person::PersonBase &person,
+                             std::shared_ptr<datamanagement::DataManager> dm,
+                             std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

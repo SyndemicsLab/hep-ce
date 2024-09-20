@@ -26,18 +26,23 @@ namespace event {
     class Linking : public Event {
     private:
         class LinkingIMPL;
-        std::shared_ptr<LinkingIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<LinkingIMPL> impl;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        Linking(std::shared_ptr<stats::Decider> decider,
-                std::shared_ptr<datamanagement::DataManager> dm,
-                std::string name = std::string("Linking"));
-        virtual ~Linking() = default;
+        Linking();
+        ~Linking();
+
+        // Copy Operations
+        Linking(Linking const &) = delete;
+        Linking &operator=(Linking const &) = delete;
+        Linking(Linking &&) noexcept;
+        Linking &operator=(Linking &&) noexcept;
     };
 } // namespace event
 #endif

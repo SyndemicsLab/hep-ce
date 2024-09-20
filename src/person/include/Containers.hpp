@@ -4,6 +4,20 @@
 #include <ostream>
 
 namespace person {
+
+    inline static const std::string POPULATION_HEADERS =
+        "sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,"
+        "HCV,"
+        "fibrosisState,isGenotypeThree,seropositive,timeHCVChanged,"
+        "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,"
+        "linkageState,timeOfLinkChange,linkageType,"
+        "linkCount,measuredFibrosisState,"
+        "timeOfLastStaging,timeOfLastScreening,numABTests,"
+        "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
+        "timeOfTreatmentInitiation,minUtility,multUtility,"
+        "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,"
+        "svrs";
+
     /// @brief HEP-C Infection States
     enum class HCV {
         /// No HCV infection
@@ -234,7 +248,7 @@ namespace person {
     /// @brief Attributes describing screening status
     struct ScreeningDetails {
         // -1 if never screened, otherwise [0, currentTimestep-1)
-        int timeOfLastScreening = 0;
+        int timeOfLastScreening = -1;
         int numABTests = 0;
         int numRNATests = 0;
     };

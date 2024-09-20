@@ -18,6 +18,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         Person.cpp 
         ContainerOperators.cpp
+        PersonFactory.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} 

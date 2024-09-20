@@ -58,14 +58,15 @@ namespace event {
             person.ClearHCV();
         }
     };
-    Clearance::Clearance(std::shared_ptr<stats::Decider> decider,
-                         std::shared_ptr<datamanagement::DataManager> dm,
-                         std::string name)
-        : Event(dm, name), decider(decider) {
-        impl = std::make_unique<ClearanceIMPL>();
-    }
+    Clearance::Clearance() { impl = std::make_unique<ClearanceIMPL>(); }
 
-    void Clearance::doEvent(person::PersonBase &person) {
+    Clearance::~Clearance() = default;
+    Clearance::Clearance(Clearance &&) noexcept = default;
+    Clearance &Clearance::operator=(Clearance &&) noexcept = default;
+
+    void Clearance::doEvent(person::PersonBase &person,
+                            std::shared_ptr<datamanagement::DataManager> dm,
+                            std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

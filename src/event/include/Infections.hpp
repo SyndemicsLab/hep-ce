@@ -27,17 +27,22 @@ namespace event {
     class Infections : public Event {
     private:
         class InfectionsIMPL;
-        std::shared_ptr<InfectionsIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<InfectionsIMPL> impl;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        Infections(std::shared_ptr<stats::Decider> decider,
-                   std::shared_ptr<datamanagement::DataManager> dm,
-                   std::string name = std::string("Infections"));
-        virtual ~Infections() = default;
+        Infections();
+        ~Infections();
+
+        // Copy Operations
+        Infections(Infections const &) = delete;
+        Infections &operator=(Infections const &) = delete;
+        Infections(Infections &&) noexcept;
+        Infections &operator=(Infections &&) noexcept;
     };
 } // namespace event
 

@@ -24,17 +24,22 @@ namespace event {
     class BehaviorChanges : public Event {
     private:
         class BehaviorChangesIMPL;
-        std::shared_ptr<BehaviorChangesIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<BehaviorChangesIMPL> impl;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        BehaviorChanges(std::shared_ptr<stats::Decider> decider,
-                        std::shared_ptr<datamanagement::DataManager> dm,
-                        std::string name = std::string("BehaviorChanges"));
-        virtual ~BehaviorChanges() = default;
+        BehaviorChanges();
+        ~BehaviorChanges();
+
+        // Copy Operations
+        BehaviorChanges(BehaviorChanges const &) = delete;
+        BehaviorChanges &operator=(BehaviorChanges const &) = delete;
+        BehaviorChanges(BehaviorChanges &&) noexcept;
+        BehaviorChanges &operator=(BehaviorChanges &&) noexcept;
     };
 } // namespace event
 #endif // EVENT_BEHAVIORCHANGES_HPP_

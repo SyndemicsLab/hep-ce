@@ -26,18 +26,23 @@ namespace event {
     class Screening : public Event {
     private:
         class ScreeningIMPL;
-        std::shared_ptr<ScreeningIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<ScreeningIMPL> impl;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        Screening(std::shared_ptr<stats::Decider> decider,
-                  std::shared_ptr<datamanagement::DataManager> dm,
-                  std::string name = std::string("Screening"));
-        virtual ~Screening() = default;
+        Screening();
+        ~Screening();
+
+        // Copy Operations
+        Screening(Screening const &) = delete;
+        Screening &operator=(Screening const &) = delete;
+        Screening(Screening &&) noexcept;
+        Screening &operator=(Screening &&) noexcept;
     };
 } // namespace event
 

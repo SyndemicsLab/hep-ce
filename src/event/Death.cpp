@@ -39,7 +39,7 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::PersonBase const person) const {
+        std::string buildSQL(person::PersonBase const &person) const {
             int age_years = person.GetAge() / 12.0; // intentional truncation
             std::stringstream sql;
             sql << "SELECT background_mortality, SMR";
@@ -156,14 +156,15 @@ namespace event {
         }
     };
 
-    Death::Death(std::shared_ptr<stats::Decider> decider,
-                 std::shared_ptr<datamanagement::DataManager> dm,
-                 std::string name)
-        : Event(dm, name), decider(decider) {
-        impl = std::make_unique<DeathIMPL>();
-    }
+    Death::Death() { impl = std::make_unique<DeathIMPL>(); }
 
-    void Death::doEvent(person::PersonBase &person) {
+    Death::~Death() = default;
+    Death::Death(Death &&) noexcept = default;
+    Death &Death::operator=(Death &&) noexcept = default;
+
+    void Death::doEvent(person::PersonBase &person,
+                        std::shared_ptr<datamanagement::DataManager> dm,
+                        std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

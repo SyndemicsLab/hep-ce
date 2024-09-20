@@ -27,18 +27,22 @@ namespace event {
     class VoluntaryRelinking : public Event {
     private:
         class VoluntaryRelinkingIMPL;
-        std::shared_ptr<VoluntaryRelinkingIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<VoluntaryRelinkingIMPL> impl;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        VoluntaryRelinking(
-            std::shared_ptr<stats::Decider> decider,
-            std::shared_ptr<datamanagement::DataManager> dm,
-            std::string name = std::string("VoluntaryRelinking"));
-        virtual ~VoluntaryRelinking() = default;
+        VoluntaryRelinking();
+        ~VoluntaryRelinking();
+
+        // Copy Operations
+        VoluntaryRelinking(VoluntaryRelinking const &) = delete;
+        VoluntaryRelinking &operator=(VoluntaryRelinking const &) = delete;
+        VoluntaryRelinking(VoluntaryRelinking &&) noexcept;
+        VoluntaryRelinking &operator=(VoluntaryRelinking &&) noexcept;
     };
 
 } // namespace event

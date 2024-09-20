@@ -27,20 +27,25 @@ namespace event {
     class FibrosisStaging : public Event {
     private:
         class FibrosisStagingIMPL;
-        std::shared_ptr<FibrosisStagingIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<FibrosisStagingIMPL> impl;
 
         double testOneCost = 0;
         double testTwoCost = 0;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        FibrosisStaging(std::shared_ptr<stats::Decider> decider,
-                        std::shared_ptr<datamanagement::DataManager> dm,
-                        std::string name = std::string("FibrosisStaging"));
-        virtual ~FibrosisStaging() = default;
+        FibrosisStaging();
+        ~FibrosisStaging();
+
+        // Copy Operations
+        FibrosisStaging(FibrosisStaging const &) = delete;
+        FibrosisStaging &operator=(FibrosisStaging const &) = delete;
+        FibrosisStaging(FibrosisStaging &&) noexcept;
+        FibrosisStaging &operator=(FibrosisStaging &&) noexcept;
     };
 } // namespace event
 

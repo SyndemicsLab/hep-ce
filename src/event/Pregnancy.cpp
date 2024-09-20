@@ -82,7 +82,9 @@ namespace event {
         }
 
     public:
-        void doEvent(person::PersonBase &person) {
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) {
             // If a person is dead, male, younger than 15, older than 45, or
             // been in postpartum for less than 3 months then skip
 
@@ -143,11 +145,10 @@ namespace event {
     //         "pregnancy.infant_hcv_tested_probability", (double)-1.0);
     // }
 
-    Pregnancy::Pregnancy(std::shared_ptr<stats::Decider> decider,
-                         std::shared_ptr<datamanagement::DataManager> dm,
-                         std::string name)
-        : Event(dm, name), decider(decider) {
-        impl = std::make_unique<PregnancyIMPL>();
-    }
+    Pregnancy::Pregnancy() { impl = std::make_unique<PregnancyIMPL>(); }
+
+    Pregnancy::~Pregnancy() = default;
+    Pregnancy::Pregnancy(Pregnancy &&) noexcept = default;
+    Pregnancy &Pregnancy::operator=(Pregnancy &&) noexcept = default;
 
 } // namespace event

@@ -26,17 +26,23 @@ namespace event {
     class Overdose : public Event {
     private:
         class OverdoseIMPL;
-        std::shared_ptr<OverdoseIMPL> impl;
+        std::unique_ptr<OverdoseIMPL> impl;
         std::shared_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        Overdose(std::shared_ptr<stats::Decider> decider,
-                 std::shared_ptr<datamanagement::DataManager> dm,
-                 std::string name = std::string("Overdose"));
-        virtual ~Overdose() = default;
+        Overdose();
+        ~Overdose();
+
+        // Copy Operations
+        Overdose(Overdose const &) = delete;
+        Overdose &operator=(Overdose const &) = delete;
+        Overdose(Overdose &&) noexcept;
+        Overdose &operator=(Overdose &&) noexcept;
     };
 } // namespace event
 #endif // EVENT_OVERDOSE_HPP_

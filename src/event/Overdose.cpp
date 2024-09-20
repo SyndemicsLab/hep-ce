@@ -47,14 +47,15 @@ namespace event {
         }
     };
 
-    Overdose::Overdose(std::shared_ptr<stats::Decider> decider,
-                       std::shared_ptr<datamanagement::DataManager> dm,
-                       std::string name)
-        : Event(dm, name), decider(decider) {
-        impl = std::make_unique<OverdoseIMPL>();
-    }
+    Overdose::Overdose() { impl = std::make_unique<OverdoseIMPL>(); }
 
-    void Overdose::doEvent(person::PersonBase &person) {
+    Overdose::~Overdose() = default;
+    Overdose::Overdose(Overdose &&) noexcept = default;
+    Overdose &Overdose::operator=(Overdose &&) noexcept = default;
+
+    void Overdose::doEvent(person::PersonBase &person,
+                           std::shared_ptr<datamanagement::DataManager> dm,
+                           std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 

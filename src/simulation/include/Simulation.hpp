@@ -34,7 +34,7 @@ namespace simulation {
     class Simulation {
     private:
         class SimulationIMPL;
-        std::shared_ptr<SimulationIMPL> pImplSIM;
+        std::unique_ptr<SimulationIMPL> pImplSIM;
 
     public:
         Simulation(size_t seed = 1234, std::string const &logfile = "");

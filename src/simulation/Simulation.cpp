@@ -20,6 +20,7 @@
 #include "Event.hpp"
 #include "EventFactory.hpp"
 #include "Person.hpp"
+#include "PersonFactory.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
@@ -39,7 +40,7 @@ namespace simulation {
         int tstep = 0;
         uint64_t _seed;
         int defaultPopulationSize = 0;
-        std::vector<person::PersonBase> population = {};
+        std::vector<std::shared_ptr<person::PersonBase>> population = {};
         std::vector<std::shared_ptr<event::Event>> events = {};
         static std::mt19937_64 generator;
 
@@ -94,7 +95,8 @@ namespace simulation {
         SimulationIMPL(size_t seed = 1234, std::string const &logfile = "")
             : _seed(seed) {
             this->generator.seed(_seed);
-            this->decider = std::make_shared<stats::Decider>(this->generator);
+            this->decider = std::make_shared<stats::Decider>();
+            this->decider->LoadGenerator(this->generator);
 
             std::string logname = (logfile.empty()) ? "logfile.log" : logfile;
             auto file_sink =
@@ -156,13 +158,15 @@ namespace simulation {
         }
 
         void CreatePerson(int id, std::string icValues) {
-            person::PersonBase newperson(id, _dm);
+            person::PersonFactory factory;
+            std::shared_ptr<person::PersonBase> newperson = factory.create();
+            newperson->CreatePersonFromTable(id, _dm);
             if (!icValues.empty()) {
-                newperson.LoadICValues(icValues);
+                newperson->LoadICValues(icValues);
             }
             std::stringstream query;
             query << "INSERT INTO 'population' VALUES (";
-            query << newperson.GetPersonDataString();
+            query << newperson->GetPersonDataString();
             query << ")";
             datamanagement::Table table;
             _dm->Update(query.str(), table);
@@ -207,7 +211,7 @@ namespace simulation {
 
         /// @brief Retrieve the Population Vector from the Simulation
         /// @return List of People in the Simulation
-        std::vector<person::PersonBase> getPopulation() const {
+        std::vector<std::shared_ptr<person::PersonBase>> getPopulation() const {
             return this->population;
         }
 
@@ -232,8 +236,9 @@ namespace simulation {
 
                 for (std::shared_ptr<event::Event> &event : this->events) {
 #pragma omp parallel for
-                    for (person::PersonBase &person : this->population) {
-                        event->Execute(person);
+                    for (std::shared_ptr<person::PersonBase> &person :
+                         this->population) {
+                        event->Execute(*person, _dm, decider);
                     }
                 }
 
@@ -268,7 +273,7 @@ namespace simulation {
             event::EventFactory factory;
             for (std::string eventObj : eventList) {
 
-                auto ev = factory.create(decider, _dm, eventObj);
+                auto ev = factory.create(eventObj);
                 this->events.push_back(ev);
                 spdlog::get("main")->info("{} Event Created", eventObj);
             }
@@ -302,7 +307,7 @@ namespace simulation {
         }
 
         int WriteResults(std::string const &outfile) {
-            writer::DataWriter writer(_dm);
+            writer::DataWriter writer;
             std::filesystem::path popFile =
                 std::filesystem::path(outfile) / "population.csv";
             std::string popFileString = popFile.string();

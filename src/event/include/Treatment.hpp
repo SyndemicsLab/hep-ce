@@ -21,29 +21,27 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-    static std::vector<std::string>
-    setupTreatmentSections(std::vector<std::string> vector1,
-                           const std::vector<std::string> &vector2) {
-        vector1.insert(vector1.end(), vector2.begin(), vector2.end());
-        return vector1;
-    }
-
     /// @brief Subclass of Event used to Provide Treatment to People
     class Treatment : public Event {
     private:
         class TreatmentIMPL;
-        std::shared_ptr<TreatmentIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<TreatmentIMPL> impl;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        Treatment(std::shared_ptr<stats::Decider> decider,
-                  std::shared_ptr<datamanagement::DataManager> dm,
-                  std::string name = std::string("Treatment"));
-        virtual ~Treatment() = default;
+        Treatment();
+        ~Treatment();
+
+        // Copy Operations
+        Treatment(Treatment const &) = delete;
+        Treatment &operator=(Treatment const &) = delete;
+        Treatment(Treatment &&) noexcept;
+        Treatment &operator=(Treatment &&) noexcept;
     };
 } // namespace event
 #endif

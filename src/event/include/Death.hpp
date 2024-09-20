@@ -23,22 +23,27 @@
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
 
-    /// @brief Subclass of Event used to End the Aging Process of Individuals
+    /// @brief Subclass of Event used to End the Death Process of Individuals
     class Death : public Event {
     private:
         class DeathIMPL;
-        std::shared_ptr<DeathIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<DeathIMPL> impl;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        Death(std::shared_ptr<stats::Decider> decider,
-              std::shared_ptr<datamanagement::DataManager> dm,
-              std::string name);
-        virtual ~Death() = default;
+        Death();
+        ~Death();
+
+        // Copy Operations
+        Death(Death const &) = delete;
+        Death &operator=(Death const &) = delete;
+        Death(Death &&) noexcept;
+        Death &operator=(Death &&) noexcept;
     };
 } // namespace event
 

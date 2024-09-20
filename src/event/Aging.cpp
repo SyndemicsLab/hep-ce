@@ -38,7 +38,7 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::PersonBase const person) const {
+        std::string buildSQL(person::PersonBase const &person) const {
             std::string a = std::to_string((int)(person.GetAge() / 12.0));
             std::stringstream sql;
             sql << "SELECT cost, utility FROM background_costs ";
@@ -90,14 +90,15 @@ namespace event {
         }
     };
 
-    Aging::Aging(std::shared_ptr<stats::Decider> decider,
-                 std::shared_ptr<datamanagement::DataManager> dm,
-                 std::string name)
-        : Event(dm, name) {
-        impl = std::make_unique<AgingIMPL>();
-    }
+    Aging::Aging() { impl = std::make_unique<AgingIMPL>(); }
 
-    void Aging::doEvent(person::PersonBase &person) {
+    Aging::~Aging() = default;
+    Aging::Aging(Aging &&) noexcept = default;
+    Aging &Aging::operator=(Aging &&) noexcept = default;
+
+    void Aging::doEvent(person::PersonBase &person,
+                        std::shared_ptr<datamanagement::DataManager> dm,
+                        std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm);
     }
 

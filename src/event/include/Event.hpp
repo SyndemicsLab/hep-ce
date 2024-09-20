@@ -42,16 +42,23 @@ namespace stats {
 namespace event {
     class Event {
     protected:
-        std::shared_ptr<datamanagement::DataManager> dm;
-        virtual void doEvent(person::PersonBase &person) = 0;
+        virtual void doEvent(person::PersonBase &person,
+                             std::shared_ptr<datamanagement::DataManager> dm,
+                             std::shared_ptr<stats::Decider> decider) = 0;
 
     public:
-        const std::string EVENT_NAME;
-        Event(std::shared_ptr<datamanagement::DataManager> dm,
-              std::string name = std::string("Event"))
-            : dm(dm), EVENT_NAME(name) {}
-        ~Event() = default;
-        int Execute(person::PersonBase &person);
+        Event();
+        ~Event();
+
+        // Copy Operations
+        Event(Event const &) = delete;
+        Event &operator=(Event const &) = delete;
+        Event(Event &&) noexcept;
+        Event &operator=(Event &&) noexcept;
+
+        int Execute(person::PersonBase &person,
+                    std::shared_ptr<datamanagement::DataManager> dm,
+                    std::shared_ptr<stats::Decider> decider);
     };
 } // namespace event
 #endif

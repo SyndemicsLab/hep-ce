@@ -149,7 +149,7 @@ namespace event {
                 (person::MeasuredFibrosisState)res;
 
             // 5. Assign this value as the person's measured state.
-            person.SetMeasuredFibrosisState(stateOne);
+            person.DiagnoseFibrosis(stateOne);
             this->addStagingCost(person, dm);
 
             // 6. Get a vector of the probabilities of each of the possible
@@ -188,19 +188,24 @@ namespace event {
                 return;
             }
             // 8. Assign this state to the person.
-            person.SetMeasuredFibrosisState(measured);
+            person.DiagnoseFibrosis(measured);
             this->addStagingCost(person, dm, true);
         }
     };
 
-    FibrosisStaging::FibrosisStaging(
-        std::shared_ptr<stats::Decider> decider,
-        std::shared_ptr<datamanagement::DataManager> dm, std::string name)
-        : Event(dm, name), decider(decider) {
+    FibrosisStaging::FibrosisStaging() {
         impl = std::make_unique<FibrosisStagingIMPL>();
     }
 
-    void FibrosisStaging::doEvent(person::PersonBase &person) {
+    FibrosisStaging::~FibrosisStaging() = default;
+    FibrosisStaging::FibrosisStaging(FibrosisStaging &&) noexcept = default;
+    FibrosisStaging &
+    FibrosisStaging::operator=(FibrosisStaging &&) noexcept = default;
+
+    void
+    FibrosisStaging::doEvent(person::PersonBase &person,
+                             std::shared_ptr<datamanagement::DataManager> dm,
+                             std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 

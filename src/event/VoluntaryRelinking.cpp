@@ -49,14 +49,21 @@ namespace event {
         }
     };
 
-    VoluntaryRelinking::VoluntaryRelinking(
-        std::shared_ptr<stats::Decider> decider,
-        std::shared_ptr<datamanagement::DataManager> dm, std::string name)
-        : Event(dm, name), decider(decider) {
-        impl = std::make_shared<VoluntaryRelinkingIMPL>();
+    VoluntaryRelinking::VoluntaryRelinking() {
+        impl = std::make_unique<VoluntaryRelinkingIMPL>();
     }
 
-    void VoluntaryRelinking::doEvent(person::PersonBase &person) {
+    VoluntaryRelinking::~VoluntaryRelinking() = default;
+
+    VoluntaryRelinking::VoluntaryRelinking(VoluntaryRelinking &&) noexcept =
+        default;
+    VoluntaryRelinking &
+    VoluntaryRelinking::operator=(VoluntaryRelinking &&) noexcept = default;
+
+    void
+    VoluntaryRelinking::doEvent(person::PersonBase &person,
+                                std::shared_ptr<datamanagement::DataManager> dm,
+                                std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

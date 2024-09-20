@@ -20,114 +20,145 @@
 #include <vector>
 
 #include "Person.hpp"
+#include "PersonFactory.hpp"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
 #include <DataManagement/DataManager.hpp>
 
 class PersonTest : public ::testing::Test {
-protected:
-    person::PersonBase testPerson;
-    void SetUp() override {
-        std::shared_ptr<datamanagement::DataManager> dm =
-            std::make_shared<datamanagement::DataManager>();
-        person::PersonBase person(4321, dm);
-        testPerson = person;
+private:
+    void RegisterLogger() {
+        auto console_sink =
+            std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        std::vector<spdlog::sink_ptr> sinks{console_sink};
+        auto logger = std::make_shared<spdlog::logger>("main", sinks.begin(),
+                                                       sinks.end());
+        spdlog::register_logger(logger);
+        spdlog::flush_every(std::chrono::seconds(3));
     }
-    void TearDown() override {}
+
+protected:
+    std::shared_ptr<person::PersonBase> testPerson;
+    void SetUp() override {
+        RegisterLogger();
+        std::shared_ptr<datamanagement::DataManager> dm =
+            std::make_unique<datamanagement::DataManager>();
+        person::PersonFactory pfactory;
+        testPerson = pfactory.create();
+        testPerson->CreatePersonFromTable(4321, dm);
+    }
+    void TearDown() override { spdlog::drop("main"); }
 };
 
-// TEST_F(PersonTest, Grow) {
-//     testPerson.SetAge(10);
-//     testPerson.Grow();
-//     int result = testPerson.GetAge();
-//     EXPECT_EQ(11, result);
-// }
+// Functionality Tests
 
-// TEST_F(PersonTest, Die) {
-//     EXPECT_TRUE(testPerson.GetIsAlive());
-//     testPerson.Die();
-//     EXPECT_TRUE(!testPerson.GetIsAlive());
-// }
+// Getters and Setters Tests
+TEST_F(PersonTest, ID) { EXPECT_EQ(4321, testPerson->GetID()); }
 
-// TEST_F(PersonTest, Infect) {
-//     int timesInfected = testPerson.GetTimesInfected();
-//     testPerson.Infect();
-//     EXPECT_EQ(timesInfected + 1, testPerson.GetTimesInfected());
-// }
+TEST_F(PersonTest, CurrentTimestep) {
+    EXPECT_EQ(0, testPerson->GetCurrentTimestep());
+    testPerson->Grow();
+    EXPECT_EQ(1, testPerson->GetCurrentTimestep());
+}
 
-// TEST_F(PersonTest, ClearHCV) {
-//     testPerson.SetHCV(person::HCV::ACUTE);
-//     testPerson.ClearHCV();
-//     EXPECT_EQ(person::HCV::NONE, testPerson.GetHCV());
-// }
+TEST_F(PersonTest, Age) {
+    int age = 28;
+    testPerson->SetAge(age);
+    EXPECT_EQ(age, testPerson->GetAge());
+}
 
-// TEST_F(PersonTest, UpdateFibrosis) {
-//     testPerson.UpdateFibrosis(person::FibrosisState::F4);
-//     EXPECT_EQ(person::FibrosisState::F4, testPerson.GetFibrosisState());
-// }
+TEST_F(PersonTest, TimesInfected) {
+    EXPECT_EQ(0, testPerson->GetTimesInfected());
+    testPerson->Infect();
+    EXPECT_EQ(1, testPerson->GetTimesInfected());
+}
 
-// TEST_F(PersonTest, UpdateBehavior) {
-//     testPerson.UpdateBehavior(person::Behavior::FORMER_INJECTION);
-//     EXPECT_EQ(person::Behavior::FORMER_INJECTION, testPerson.GetBehavior());
-// }
+TEST_F(PersonTest, Clearances) {
+    EXPECT_EQ(0, testPerson->GetClearances());
+    testPerson->AddClearance();
+    EXPECT_EQ(1, testPerson->GetClearances());
+}
 
-// TEST_F(PersonTest, DiagnoseFibrosis) {
-//     person::FibrosisState data = person::FibrosisState::F3;
-//     testPerson.DiagnoseFibrosis(data);
-//     EXPECT_EQ(person::FibrosisState::F3, testPerson.GetFibrosisState());
-// }
+TEST_F(PersonTest, Withdrawals) {
+    EXPECT_EQ(0, testPerson->GetWithdrawals());
+    testPerson->AddWithdrawal();
+    EXPECT_EQ(1, testPerson->GetWithdrawals());
+}
 
-// TEST_F(PersonTest, DiagnoseHEPC) {
-//     person::HCV data = person::HCV::CHRONIC;
-//     testPerson.DiagnoseHEPC(data);
-//     EXPECT_EQ(person::HCV::CHRONIC, testPerson.GetHCV());
-// }
+TEST_F(PersonTest, Toxicities) {
+    EXPECT_EQ(0, testPerson->GetToxicReactions());
+    testPerson->AddToxicReaction();
+    EXPECT_EQ(1, testPerson->GetToxicReactions());
+}
 
-// TEST_F(PersonTest, AddClearance) {
-//     int before = testPerson.GetClearances();
-//     testPerson.AddClearance();
-//     EXPECT_EQ(before + 1, testPerson.GetClearances());
-// }
+TEST_F(PersonTest, CompletedTreatments) {
+    EXPECT_EQ(0, testPerson->GetCompletedTreatments());
+    testPerson->AddCompletedTreatment();
+    EXPECT_EQ(1, testPerson->GetCompletedTreatments());
+}
 
-// TEST_F(PersonTest, MarkScreened) {
-//     testPerson.MarkScreened();
-//     EXPECT_EQ(0, testPerson.GetTimeSinceScreened());
-// }
+TEST_F(PersonTest, SVRs) {
+    EXPECT_EQ(0, testPerson->GetSVRs());
+    testPerson->AddSVR();
+    EXPECT_EQ(1, testPerson->GetSVRs());
+}
 
-// TEST_F(PersonTest, AddAbScreen) {
-//     int before = testPerson.GetNumABTests();
-//     testPerson.AddAbScreen();
-//     EXPECT_EQ(before + 1, testPerson.GetNumABTests());
-// }
+TEST_F(PersonTest, ABTests) {
+    EXPECT_EQ(0, testPerson->GetNumABTests());
+    testPerson->AddAbScreen();
+    EXPECT_EQ(1, testPerson->GetNumABTests());
+}
 
-// TEST_F(PersonTest, AddRNAScreen) {
-//     int before = testPerson.GetNumRNATests();
-//     testPerson.AddRnaScreen();
-//     EXPECT_EQ(before + 1, testPerson.GetNumRNATests());
-// }
+TEST_F(PersonTest, RNATests) {
+    EXPECT_EQ(0, testPerson->GetNumRNATests());
+    testPerson->AddRnaScreen();
+    EXPECT_EQ(1, testPerson->GetNumRNATests());
+}
 
-// TEST_F(PersonTest, LinkAndUnlink) {
-//     testPerson.Link(person::LinkageType::INTERVENTION);
-//     EXPECT_EQ(person::LinkageState::LINKED, testPerson.GetLinkState());
-//     testPerson.Unlink();
-//     EXPECT_EQ(person::LinkageState::UNLINKED, testPerson.GetLinkState());
-// }
+TEST_F(PersonTest, TimeOfLastScreening) {
+    EXPECT_EQ(-1, testPerson->GetTimeOfLastScreening());
+    testPerson->Grow();
+    testPerson->Grow();
+    testPerson->Grow();
+    testPerson->MarkScreened();
+    EXPECT_EQ(3, testPerson->GetTimeOfLastScreening());
+}
 
-// TEST_F(PersonTest, IdentifyAsInfected) {
-//     testPerson.IdentifyAsInfected();
-//     EXPECT_TRUE(testPerson.IsIdentifiedAsInfected());
-// }
+TEST_F(PersonTest, TimeOfSinceScreened) {
+    testPerson->MarkScreened();
+    EXPECT_EQ(0, testPerson->GetTimeOfLastScreening());
+    testPerson->Grow();
+    testPerson->Grow();
+    testPerson->Grow();
+    EXPECT_EQ(3, testPerson->GetTimeSinceScreened());
+}
 
-// TEST_F(PersonTest, AddCost) {
-//     cost::Cost cost = {cost::CostCategory::MISC, "testCost", 12.34};
-//     testPerson.AddCost(cost);
-//     cost::CostTracker tracker = testPerson.GetCosts();
-//     cost::Cost result =
-//     tracker.getCosts()[testPerson.GetCurrentTimestep()][0];
-//     EXPECT_EQ(result.name, "testCost");
-// }
+TEST_F(PersonTest, Overdose) {
+    EXPECT_EQ(false, testPerson->GetCurrentlyOverdosing());
+    testPerson->ToggleOverdose();
+    EXPECT_EQ(true, testPerson->GetCurrentlyOverdosing());
+    testPerson->ToggleOverdose();
+    EXPECT_EQ(false, testPerson->GetCurrentlyOverdosing());
+}
 
-// TEST_F(PersonTest, ToggleOverdose) {
-//     bool before = testPerson.GetCurrentlyOverdosing();
-//     testPerson.ToggleOverdose();
-//     bool after = testPerson.GetCurrentlyOverdosing();
-//     EXPECT_FALSE(before == after);
-// }
+TEST_F(PersonTest, NumOverdoses) {
+    EXPECT_EQ(0, testPerson->GetNumberOfOverdoses());
+    testPerson->ToggleOverdose();
+    EXPECT_EQ(1, testPerson->GetNumberOfOverdoses());
+    testPerson->ToggleOverdose();
+    EXPECT_EQ(1, testPerson->GetNumberOfOverdoses());
+    testPerson->ToggleOverdose();
+    EXPECT_EQ(2, testPerson->GetNumberOfOverdoses());
+}
+
+TEST_F(PersonTest, DeathReason) {
+    person::DeathReason reason = person::DeathReason::LIVER;
+    testPerson->SetDeathReason(reason);
+    EXPECT_EQ(reason, testPerson->GetDeathReason());
+}
+
+TEST_F(PersonTest, FibrosisState) {
+    person::FibrosisState state = person::FibrosisState::F3;
+    testPerson->SetTrueFibrosisState(state);
+    EXPECT_EQ(state, testPerson->GetFibrosisState());
+}

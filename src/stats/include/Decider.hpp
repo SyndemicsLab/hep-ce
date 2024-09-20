@@ -9,13 +9,12 @@ namespace stats {
     class Decider {
     private:
         class DeciderIMPL;
-        std::shared_ptr<DeciderIMPL> impl;
-        std::mutex m;
-        std::mt19937_64 g;
+        std::unique_ptr<DeciderIMPL> impl;
 
     public:
-        Decider(std::mt19937_64 generator);
-        ~Decider() = default;
+        Decider();
+        ~Decider();
+        int LoadGenerator(std::mt19937_64 const generator);
         int GetDecision(std::vector<double> probs);
     };
 } // namespace stats

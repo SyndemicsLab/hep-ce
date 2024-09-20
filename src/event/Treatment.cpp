@@ -178,7 +178,7 @@ namespace event {
             int initiation = decider->GetDecision({initProb});
             // if the randomly-drawn value from getDecision is 0, person
             // does not initiate treatment
-            if (initiation == 0) {
+            if (initiation == 1) {
 
                 return false;
             }
@@ -265,14 +265,15 @@ namespace event {
             }
         }
     };
-    Treatment::Treatment(std::shared_ptr<stats::Decider> decider,
-                         std::shared_ptr<datamanagement::DataManager> dm,
-                         std::string name)
-        : Event(dm, name), decider(decider) {
-        impl = std::make_unique<TreatmentIMPL>();
-    }
+    Treatment::Treatment() { impl = std::make_unique<TreatmentIMPL>(); }
 
-    void Treatment::doEvent(person::PersonBase &person) {
+    Treatment::~Treatment() = default;
+    Treatment::Treatment(Treatment &&) noexcept = default;
+    Treatment &Treatment::operator=(Treatment &&) noexcept = default;
+
+    void Treatment::doEvent(person::PersonBase &person,
+                            std::shared_ptr<datamanagement::DataManager> dm,
+                            std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 

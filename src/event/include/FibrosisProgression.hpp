@@ -29,19 +29,23 @@ namespace event {
     class FibrosisProgression : public Event {
     private:
         class FibrosisProgressionIMPL;
-        std::shared_ptr<FibrosisProgressionIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<FibrosisProgressionIMPL> impl;
 
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        FibrosisProgression(
-            std::shared_ptr<stats::Decider> decider,
-            std::shared_ptr<datamanagement::DataManager> dm,
-            std::string name = std::string("FibrosisProgression"));
-        virtual ~FibrosisProgression() = default;
+        FibrosisProgression();
+        ~FibrosisProgression();
+
+        // Copy Operations
+        FibrosisProgression(FibrosisProgression const &) = delete;
+        FibrosisProgression &operator=(FibrosisProgression const &) = delete;
+        FibrosisProgression(FibrosisProgression &&) noexcept;
+        FibrosisProgression &operator=(FibrosisProgression &&) noexcept;
     };
 } // namespace event
 #endif

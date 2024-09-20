@@ -1,5 +1,6 @@
 #include "Person.hpp"
 #include "Utils.hpp"
+#include "spdlog/spdlog.h"
 #include <DataManagement/DataManager.hpp>
 #include <algorithm>
 #include <cstdint>
@@ -83,7 +84,7 @@ namespace person {
             temp->svrs = std::stoi(data[32]);
             return 0;
         }
-        size_t id;
+        size_t id = 0;
         size_t _currentTime = 0;
 
         int age = 0;
@@ -109,14 +110,17 @@ namespace person {
         bool boomerClassification = false;
 
     public:
-        Person(int id, std::shared_ptr<datamanagement::DataManager> dm)
-            : id(id) {
+        Person() {}
+        int
+        CreatePersonFromTable(int id,
+                              std::shared_ptr<datamanagement::DataManager> dm) {
+            this->id = id;
             if (dm == nullptr) {
                 // Let default values stay
-                return;
+                return 0;
             }
             std::stringstream query;
-            query << "SELECT " << person::PersonBase::POPULATION_HEADERS;
+            query << "SELECT " << person::POPULATION_HEADERS;
             query << "FROM population ";
             query << "WHERE id = " << std::to_string(id);
 
@@ -125,7 +129,14 @@ namespace person {
             int rc = dm->SelectCustomCallback(query.str(), this->callback,
                                               &storage, error);
             if (rc != 0) {
-                return;
+// only log on main because during debug we don't always expect tables
+#ifdef NDEBUG
+                spdlog::get("main")->error(
+                    "Issue Selecting person from population table! Error "
+                    "Message: {}",
+                    error);
+#endif
+                return rc;
             }
 
             sex = storage.sex;
@@ -146,7 +157,8 @@ namespace person {
             linkStatus.timeOfLinkChange = storage.timeOfLinkChange;
             linkStatus.linkType = storage.linkageType;
             linkStatus.linkCount = storage.linkCount;
-            SetMeasuredFibrosisState(storage.measuredFibrosisState);
+            stagingDetails.measuredFibrosisState =
+                storage.measuredFibrosisState;
             stagingDetails.timeOfLastStaging = storage.timeOfLastStaging;
             screeningDetails.timeOfLastScreening = storage.timeOfLastScreening;
             screeningDetails.numABTests = storage.numABTests;
@@ -158,10 +170,8 @@ namespace person {
                 storage.timeOfTreatmentInitiation;
             utilityTracker.minUtil = storage.minUtility;
             utilityTracker.multUtil = storage.multUtility;
+            return 0;
         }
-
-        /// @brief Default destructor for Person
-        virtual ~Person() {}
 
         /// @brief End a Person's life and set final Age
         void Die(DeathReason deathReason) {
@@ -229,7 +239,7 @@ namespace person {
             SetGenotype(geno);
             person::FibrosisState fib;
             fib << vec[7];
-            UpdateFibrosis(fib);
+            SetTrueFibrosisState(fib);
             if (vec[8] == "1") {
                 IdentifyAsInfected();
             }
@@ -237,18 +247,6 @@ namespace person {
                 linkStatus.linkState = person::LinkageState::LINKED;
             }
             return 0;
-        }
-
-        /// @brief Update the Liver State
-        /// @param ls Current Liver State
-        /// @param timestep Current simulation timestep
-        void UpdateFibrosis(const FibrosisState &ls) {
-            // nothing to do -- can only advance fibrosis state
-            if (ls <= this->infectionStatus.fibrosisState) {
-                return;
-            }
-            this->infectionStatus.fibrosisState = ls;
-            this->infectionStatus.timeFibrosisStateChanged = this->_currentTime;
         }
 
         /// @brief Update Opioid Use Behavior Classification
@@ -271,10 +269,11 @@ namespace person {
 
         /// @brief Diagnose somebody's fibrosis
         /// @return Fibrosis state that is diagnosed
-        FibrosisState DiagnoseFibrosis(FibrosisState &data) {
+        MeasuredFibrosisState DiagnoseFibrosis(MeasuredFibrosisState &data) {
             // need to add functionality here
-            this->infectionStatus.fibrosisState = data;
-            return this->infectionStatus.fibrosisState;
+            this->stagingDetails.measuredFibrosisState = data;
+            this->stagingDetails.timeOfLastStaging = this->_currentTime;
+            return this->stagingDetails.measuredFibrosisState;
         }
 
         /// @brief Dignose somebody with HEPC
@@ -349,6 +348,9 @@ namespace person {
         /// @brief Flips the person's overdose state
         void ToggleOverdose() {
             this->currentlyOverdosing = !this->currentlyOverdosing;
+            if (this->currentlyOverdosing) {
+                this->numOverdoses++;
+            }
         }
 
         ////////////// CHECKS /////////////////
@@ -663,9 +665,9 @@ namespace person {
 
         /// @brief Set Person's measured fibrosis state
         /// @param state
-        void SetMeasuredFibrosisState(MeasuredFibrosisState state) {
-            this->stagingDetails.measuredFibrosisState = state;
-            this->stagingDetails.timeOfLastStaging = this->_currentTime;
+        void SetTrueFibrosisState(FibrosisState state) {
+            this->infectionStatus.timeFibrosisStateChanged = this->_currentTime;
+            this->infectionStatus.fibrosisState = state;
         }
 
         /// @brief Setter for whether Person is genotype three
@@ -724,12 +726,19 @@ namespace person {
     };
 
     /// Base Defined Pass Through Wrappers
-    PersonBase::PersonBase(int id,
-                           std::shared_ptr<datamanagement::DataManager> dm) {
-        pImplPERSON = std::make_shared<person::PersonBase::Person>(id, dm);
+    PersonBase::PersonBase() {
+        pImplPERSON = std::make_unique<person::PersonBase::Person>();
     }
 
     PersonBase::~PersonBase() = default;
+
+    PersonBase::PersonBase(PersonBase &&p) noexcept = default;
+    PersonBase &PersonBase::operator=(PersonBase &&) noexcept = default;
+
+    int PersonBase::CreatePersonFromTable(
+        int id, std::shared_ptr<datamanagement::DataManager> dm) {
+        return pImplPERSON->CreatePersonFromTable(id, dm);
+    }
 
     int PersonBase::Grow() {
         pImplPERSON->Grow();
@@ -747,15 +756,11 @@ namespace person {
         pImplPERSON->ClearHCV();
         return 0;
     }
-    int PersonBase::UpdateFibrosis(const FibrosisState &ls) {
-        pImplPERSON->UpdateFibrosis(ls);
-        return 0;
-    }
     int PersonBase::UpdateBehavior(const Behavior &bc) {
         pImplPERSON->UpdateBehavior(bc);
         return 0;
     }
-    int PersonBase::DiagnoseFibrosis(FibrosisState &data) {
+    int PersonBase::DiagnoseFibrosis(MeasuredFibrosisState &data) {
         data = pImplPERSON->DiagnoseFibrosis(data);
         return 0;
     }
@@ -1008,8 +1013,8 @@ namespace person {
     void PersonBase::SetNumMiscarriages(int miscarriages) {
         pImplPERSON->SetNumMiscarriages(miscarriages);
     }
-    void PersonBase::SetMeasuredFibrosisState(MeasuredFibrosisState state) {
-        pImplPERSON->SetMeasuredFibrosisState(state);
+    void PersonBase::SetTrueFibrosisState(FibrosisState state) {
+        pImplPERSON->SetTrueFibrosisState(state);
     }
     void PersonBase::SetGenotype(bool genotype) {
         pImplPERSON->SetGenotype(genotype);

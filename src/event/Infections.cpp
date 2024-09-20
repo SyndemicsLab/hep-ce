@@ -91,14 +91,15 @@ namespace event {
             person.Infect();
         }
     };
-    Infections::Infections(std::shared_ptr<stats::Decider> decider,
-                           std::shared_ptr<datamanagement::DataManager> dm,
-                           std::string name)
-        : Event(dm, name), decider(decider) {
-        impl = std::make_unique<InfectionsIMPL>();
-    }
+    Infections::Infections() { impl = std::make_unique<InfectionsIMPL>(); }
 
-    void Infections::doEvent(person::PersonBase &person) {
+    Infections::~Infections() = default;
+    Infections::Infections(Infections &&) noexcept = default;
+    Infections &Infections::operator=(Infections &&) noexcept = default;
+
+    void Infections::doEvent(person::PersonBase &person,
+                             std::shared_ptr<datamanagement::DataManager> dm,
+                             std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 

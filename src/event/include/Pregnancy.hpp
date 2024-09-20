@@ -10,17 +10,22 @@ namespace event {
     class Pregnancy : public Event {
     private:
         class PregnancyIMPL;
-        std::shared_ptr<PregnancyIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<PregnancyIMPL> impl;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        Pregnancy(std::shared_ptr<stats::Decider> decider,
-                  std::shared_ptr<datamanagement::DataManager> dm,
-                  std::string name = std::string("Pregnancy"));
-        virtual ~Pregnancy() = default;
+        Pregnancy();
+        ~Pregnancy();
+
+        // Copy Operations
+        Pregnancy(Pregnancy const &) = delete;
+        Pregnancy &operator=(Pregnancy const &) = delete;
+        Pregnancy(Pregnancy &&) noexcept;
+        Pregnancy &operator=(Pregnancy &&) noexcept;
     };
 } // namespace event
 #endif // EVENT_PREGNANCY_HPP_

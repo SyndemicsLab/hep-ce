@@ -17,19 +17,12 @@ namespace event {
         /// @param generator
         /// @param table
         /// @return
-        template <typename T>
-        std::shared_ptr<Event>
-        makeEvent(std::shared_ptr<stats::Decider> decider,
-                  std::shared_ptr<datamanagement::DataManager> dm,
-                  std::string name = "Event") {
-            return std::make_shared<T>(decider, dm, name);
+        template <typename T> std::shared_ptr<Event> makeEvent() {
+            return std::make_shared<T>();
         }
 
     public:
-        std::shared_ptr<Event>
-        create(std::shared_ptr<stats::Decider> decider,
-               std::shared_ptr<datamanagement::DataManager> dm,
-               std::string const eventName);
+        std::shared_ptr<Event> create(std::string eventName);
     };
 } // namespace event
 

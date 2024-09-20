@@ -72,14 +72,15 @@ namespace event {
             }
         }
     };
-    MOUD::MOUD(std::shared_ptr<stats::Decider> decider,
-               std::shared_ptr<datamanagement::DataManager> dm,
-               std::string name)
-        : Event(dm, name), decider(decider) {
-        impl = std::make_unique<MOUDIMPL>();
-    }
+    MOUD::MOUD() { impl = std::make_unique<MOUDIMPL>(); }
 
-    void MOUD::doEvent(person::PersonBase &person) {
+    MOUD::~MOUD() = default;
+    MOUD::MOUD(MOUD &&) noexcept = default;
+    MOUD &MOUD::operator=(MOUD &&) noexcept = default;
+
+    void MOUD::doEvent(person::PersonBase &person,
+                       std::shared_ptr<datamanagement::DataManager> dm,
+                       std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

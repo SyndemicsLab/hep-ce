@@ -31,17 +31,18 @@ namespace datamanagement {
 namespace writer {
     class DataWriter {
     private:
-        std::shared_ptr<datamanagement::DataManager> dm;
         class DataWriterIMPL;
-        std::shared_ptr<DataWriterIMPL> impl;
+        std::unique_ptr<DataWriterIMPL> impl;
 
     public:
-        DataWriter(std::shared_ptr<datamanagement::DataManager> dm);
-        virtual ~DataWriter() = default;
-        int UpdatePopulation(std::vector<person::PersonBase> new_population);
-        int
-        WritePopulationToFile(std::vector<person::PersonBase> new_population,
-                              std::string &filepath);
+        DataWriter();
+        ~DataWriter();
+        int UpdatePopulation(
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::shared_ptr<datamanagement::DataManager> dm);
+        int WritePopulationToFile(
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::string &filepath);
     };
 } // namespace writer
 #endif

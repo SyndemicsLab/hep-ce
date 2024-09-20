@@ -4,47 +4,42 @@
 #include <DataManagement/DataManager.hpp>
 
 namespace event {
-    std::shared_ptr<Event>
-    EventFactory::create(std::shared_ptr<stats::Decider> decider,
-                         std::shared_ptr<datamanagement::DataManager> dm,
-                         std::string const eventName) {
+    std::shared_ptr<Event> EventFactory::create(std::string eventName) {
         if (eventName == "Aging") {
-            return makeEvent<Aging>(decider, dm, "Aging");
+            return makeEvent<Aging>();
         }
         if (eventName == "BehaviorChanges") {
-            return makeEvent<BehaviorChanges>(decider, dm, "BehaviorChanges");
+            return makeEvent<BehaviorChanges>();
         }
         if (eventName == "Clearance") {
-            return makeEvent<Clearance>(decider, dm, "Clearance");
+            return makeEvent<Clearance>();
         }
         if (eventName == "Death") {
-            return makeEvent<Death>(decider, dm, "Death");
+            return makeEvent<Death>();
         }
         if (eventName == "FibrosisProgression") {
-            return makeEvent<FibrosisProgression>(decider, dm,
-                                                  "FibrosisProgression");
+            return makeEvent<FibrosisProgression>();
         }
         if (eventName == "FibrosisStaging") {
-            return makeEvent<FibrosisStaging>(decider, dm, "FibrosisStaging");
+            return makeEvent<FibrosisStaging>();
         }
         if (eventName == "Infections") {
-            return makeEvent<Infections>(decider, dm, "Infections");
+            return makeEvent<Infections>();
         }
         if (eventName == "Linking") {
-            return makeEvent<Linking>(decider, dm, "Linking");
+            return makeEvent<Linking>();
         }
         if (eventName == "Overdose") {
-            return makeEvent<Overdose>(decider, dm, "Overdose");
+            return makeEvent<Overdose>();
         }
         if (eventName == "Screening") {
-            return makeEvent<Screening>(decider, dm, "Screening");
+            return makeEvent<Screening>();
         }
         if (eventName == "Treatment") {
-            return makeEvent<Treatment>(decider, dm, "Treatment");
+            return makeEvent<Treatment>();
         }
         if (eventName == "VoluntaryRelinking") {
-            return makeEvent<VoluntaryRelinking>(decider, dm,
-                                                 "VoluntaryRelinking");
+            return makeEvent<VoluntaryRelinking>();
         }
         spdlog::get("main")->error("Unknown Event! Exiting...");
         exit(-1);

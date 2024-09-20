@@ -129,7 +129,7 @@ namespace event {
             }
             person::FibrosisState toFS = (person::FibrosisState)res;
             // 4. Apply the result state
-            person.UpdateFibrosis(toFS);
+            person.SetTrueFibrosisState(toFS);
 
             // insert Person's liver-related disease cost (taking the highest
             // fibrosis state)
@@ -139,14 +139,21 @@ namespace event {
             this->addLiverDiseaseCost(person, dm);
         }
     };
-    FibrosisProgression::FibrosisProgression(
-        std::shared_ptr<stats::Decider> decider,
-        std::shared_ptr<datamanagement::DataManager> dm, std::string name)
-        : Event(dm, name), decider(decider) {
+
+    FibrosisProgression::FibrosisProgression() {
         impl = std::make_unique<FibrosisProgressionIMPL>();
     }
 
-    void FibrosisProgression::doEvent(person::PersonBase &person) {
+    FibrosisProgression::~FibrosisProgression() = default;
+    FibrosisProgression::FibrosisProgression(FibrosisProgression &&) noexcept =
+        default;
+    FibrosisProgression &
+    FibrosisProgression::operator=(FibrosisProgression &&) noexcept = default;
+
+    void FibrosisProgression::doEvent(
+        person::PersonBase &person,
+        std::shared_ptr<datamanagement::DataManager> dm,
+        std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

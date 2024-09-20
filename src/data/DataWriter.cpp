@@ -62,29 +62,28 @@ namespace writer {
         }
 
     public:
-        int UpdatePopulation(std::vector<person::PersonBase> new_population,
-                             std::shared_ptr<datamanagement::DataManager> dm) {
+        int UpdatePopulation(
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::shared_ptr<datamanagement::DataManager> dm) {
             return -1;
         }
         int WriteOutputPopulationToTable(
-            std::vector<person::PersonBase> new_population,
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
             std::shared_ptr<datamanagement::DataManager> dm) {
             return -1;
         }
         int WriteOutputPopulationToFile(
-            std::vector<person::PersonBase> new_population,
-            std::string &filepath,
-            std::shared_ptr<datamanagement::DataManager> dm) {
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::string &filepath) {
             std::filesystem::path path = filepath;
             std::ofstream csvStream;
             csvStream.open(path, std::ofstream::out);
             if (!csvStream) {
                 return -1;
             }
-            csvStream << "id," << person::PersonBase::POPULATION_HEADERS
-                      << std::endl;
-            for (person::PersonBase &person : new_population) {
-                csvStream << GrabPersonDetailsAsStringInHeaderOrder(person)
+            csvStream << "id," << person::POPULATION_HEADERS << std::endl;
+            for (std::shared_ptr<person::PersonBase> &person : new_population) {
+                csvStream << GrabPersonDetailsAsStringInHeaderOrder(*person)
                           << std::endl;
             }
             csvStream.close();
@@ -92,16 +91,18 @@ namespace writer {
         }
     };
 
-    DataWriter::DataWriter(std::shared_ptr<datamanagement::DataManager> dm)
-        : dm(dm) {
-        impl = std::make_shared<DataWriterIMPL>();
-    }
+    DataWriter::DataWriter() { impl = std::make_unique<DataWriterIMPL>(); }
+
+    DataWriter::~DataWriter() = default;
+
     int DataWriter::UpdatePopulation(
-        std::vector<person::PersonBase> new_population) {
+        std::vector<std::shared_ptr<person::PersonBase>> new_population,
+        std::shared_ptr<datamanagement::DataManager> dm) {
         return impl->UpdatePopulation(new_population, dm);
     }
     int DataWriter::WritePopulationToFile(
-        std::vector<person::PersonBase> new_population, std::string &filepath) {
-        return impl->WriteOutputPopulationToFile(new_population, filepath, dm);
+        std::vector<std::shared_ptr<person::PersonBase>> new_population,
+        std::string &filepath) {
+        return impl->WriteOutputPopulationToFile(new_population, filepath);
     }
 } // namespace writer

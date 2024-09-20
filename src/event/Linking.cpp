@@ -134,14 +134,15 @@ namespace event {
             }
         }
     };
-    Linking::Linking(std::shared_ptr<stats::Decider> decider,
-                     std::shared_ptr<datamanagement::DataManager> dm,
-                     std::string name)
-        : Event(dm, name), decider(decider) {
-        impl = std::make_unique<LinkingIMPL>();
-    }
+    Linking::Linking() { impl = std::make_unique<LinkingIMPL>(); }
 
-    void Linking::doEvent(person::PersonBase &person) {
+    Linking::~Linking() = default;
+    Linking::Linking(Linking &&) noexcept = default;
+    Linking &Linking::operator=(Linking &&) noexcept = default;
+
+    void Linking::doEvent(person::PersonBase &person,
+                          std::shared_ptr<datamanagement::DataManager> dm,
+                          std::shared_ptr<stats::Decider> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

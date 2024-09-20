@@ -25,17 +25,22 @@ namespace event {
     class MOUD : public Event {
     private:
         class MOUDIMPL;
-        std::shared_ptr<MOUDIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<MOUDIMPL> impl;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(person::PersonBase &person) override;
+        void doEvent(person::PersonBase &person,
+                     std::shared_ptr<datamanagement::DataManager> dm,
+                     std::shared_ptr<stats::Decider> decider) override;
 
     public:
-        MOUD(std::shared_ptr<stats::Decider> decider,
-             std::shared_ptr<datamanagement::DataManager> dm,
-             std::string name = std::string("MOUD"));
-        virtual ~MOUD() = default;
+        MOUD();
+        ~MOUD();
+
+        // Copy Operations
+        MOUD(MOUD const &) = delete;
+        MOUD &operator=(MOUD const &) = delete;
+        MOUD(MOUD &&) noexcept;
+        MOUD &operator=(MOUD &&) noexcept;
     };
 } // namespace event
 #endif // EVENT_MOUD_HPP_
