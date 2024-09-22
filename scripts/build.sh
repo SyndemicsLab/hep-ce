@@ -5,7 +5,6 @@ if command -v module &>/dev/null; then
     module load gcc/12.2.0
     module load openmpi/4.1.5
     module load cmake/3.22.2
-    module load spdlog
 fi
 
 # help message to be output either with the -h flag or when using invalid syntax
