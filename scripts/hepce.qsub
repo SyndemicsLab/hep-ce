@@ -44,8 +44,7 @@ echo "Current job name : $JOB_NAME"
 echo "Task index number : $SGE_TASK_ID"
 echo "=========================================================="
 
-DATA_PATH = /projectnb/hep-ce/data
-cd ..
+DATA_PATH=/projectnb/hep-ce/data
 ./scripts/build.sh
 ./bin/hepce "${DATA_PATH}" "1" "1"
 
