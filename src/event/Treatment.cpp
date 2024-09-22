@@ -26,7 +26,6 @@ namespace event {
     class Treatment::TreatmentIMPL {
     private:
         std::shared_ptr<datamanagement::DataManagerBase> dm;
-        std::shared_ptr<stats::Decider> decider;
 
         struct cost_svr_select {
             int time;
@@ -95,7 +94,8 @@ namespace event {
             person.SetUtility(util);
         }
 
-        bool isLostToFollowUp(person::PersonBase &person) {
+        bool isLostToFollowUp(person::PersonBase &person,
+                              std::unique_ptr<stats::Decider> &decider) {
             if (person.HasInitiatedTreatment() || isEligible(person)) {
                 return false;
             }
@@ -141,7 +141,8 @@ namespace event {
             person.SetUtility(util);
         }
 
-        bool doesWithdraw(person::PersonBase &person) {
+        bool doesWithdraw(person::PersonBase &person,
+                          std::unique_ptr<stats::Decider> &decider) {
             std::string query = buildSQL(person, "withdrawal_probability");
 
             std::vector<double> storage;
@@ -156,7 +157,8 @@ namespace event {
             return false;
         }
 
-        bool experiencedToxicity(person::PersonBase &person) {
+        bool experiencedToxicity(person::PersonBase &person,
+                                 std::unique_ptr<stats::Decider> &decider) {
             std::string query = buildSQL(person, "toxicity");
             std::vector<double> storage;
             std::string error;
@@ -166,7 +168,8 @@ namespace event {
             return (toxicity == 1) ? true : false;
         }
 
-        bool initiatesTreatment(person::PersonBase &person) {
+        bool initiatesTreatment(person::PersonBase &person,
+                                std::unique_ptr<stats::Decider> &decider) {
             // if person hasn't initialized draw, if they have, continue
             // treatment
             if (person.HasInitiatedTreatment()) {
@@ -197,12 +200,11 @@ namespace event {
     public:
         void doEvent(person::PersonBase &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::Decider> decider) {
+                     std::unique_ptr<stats::Decider> &decider) {
             this->dm = dm;
-            this->decider = decider;
 
             // 1. Check if the Person is Lost To Follow Up (LTFU)
-            if (this->isLostToFollowUp(person)) {
+            if (this->isLostToFollowUp(person, decider)) {
                 this->quitEngagement(person);
                 return;
             }
@@ -212,7 +214,7 @@ namespace event {
 
             // 3. Determine if the Person Engages and Initiates Treatment (i.e.
             // picks up medicine)
-            if (!this->initiatesTreatment(person)) {
+            if (!this->initiatesTreatment(person, decider)) {
                 this->quitEngagement(person);
                 return;
             }
@@ -221,14 +223,14 @@ namespace event {
             chargeCostOfCourse(person);
 
             // 6. Determine if the person withdraws from the treatment
-            if (this->doesWithdraw(person)) {
+            if (this->doesWithdraw(person, decider)) {
                 person.AddWithdrawal();
                 this->quitEngagement(person);
                 return;
             }
 
             // 7. Determine if the person has a toxic reaction
-            if (this->experiencedToxicity(person)) {
+            if (this->experiencedToxicity(person, decider)) {
                 person.AddToxicReaction();
                 this->quitEngagement(person);
                 std::string data;
@@ -273,7 +275,7 @@ namespace event {
 
     void Treatment::doEvent(person::PersonBase &person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
-                            std::shared_ptr<stats::Decider> decider) {
+                            std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);
     }
 

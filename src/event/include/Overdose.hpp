@@ -27,12 +27,12 @@ namespace event {
     private:
         class OverdoseIMPL;
         std::unique_ptr<OverdoseIMPL> impl;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual person undergoing Event
         void doEvent(person::PersonBase &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::Decider> decider) override;
+                     std::unique_ptr<stats::Decider> &decider) override;
 
     public:
         Overdose();

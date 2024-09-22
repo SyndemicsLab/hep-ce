@@ -12,39 +12,40 @@ namespace person {
     class PersonBase::Person {
     private:
         struct person_select {
-            Sex sex;
-            int age;
-            bool isAlive;
-            DeathReason deathReason;
-            int identifiedHCV;
-            int timeInfectionIdentified;
-            HCV hcv;
-            FibrosisState fibrosisState;
-            bool isGenotypeThree;
-            bool seropositive;
-            int timeHCVChanged;
-            int timeFibrosisStateChanged;
-            Behavior drugBehavior;
-            int timeLastActiveDrugUse;
-            LinkageState linkageState;
-            int timeOfLinkChange;
-            LinkageType linkageType;
-            int linkCount;
-            MeasuredFibrosisState measuredFibrosisState;
-            int timeOfLastStaging;
-            int timeOfLastScreening;
-            int numABTests;
-            int numRNATests;
-            int timesInfected;
-            int timesCleared;
-            bool initiatedTreatment;
-            int timeOfTreatmentInitiation;
-            double minUtility;
-            double multUtility;
-            int treatmentWithdrawals;
-            int treatmentToxicReactions;
-            int completedTreatments;
-            int svrs;
+            Sex sex = Sex::MALE;
+            int age = 0;
+            bool isAlive = true;
+            DeathReason deathReason = DeathReason::NA;
+            int identifiedHCV = false;
+            int timeInfectionIdentified = -1;
+            HCV hcv = HCV::NONE;
+            FibrosisState fibrosisState = FibrosisState::NONE;
+            bool isGenotypeThree = false;
+            bool seropositive = false;
+            int timeHCVChanged = -1;
+            int timeFibrosisStateChanged = -1;
+            Behavior drugBehavior = Behavior::NEVER;
+            int timeLastActiveDrugUse = -1;
+            LinkageState linkageState = LinkageState::NEVER;
+            int timeOfLinkChange = -1;
+            LinkageType linkageType = LinkageType::BACKGROUND;
+            int linkCount = 0;
+            MeasuredFibrosisState measuredFibrosisState =
+                MeasuredFibrosisState::NONE;
+            int timeOfLastStaging = -1;
+            int timeOfLastScreening = -1;
+            int numABTests = 0;
+            int numRNATests = 0;
+            int timesInfected = 0;
+            int timesCleared = 0;
+            bool initiatedTreatment = false;
+            int timeOfTreatmentInitiation = -1;
+            double minUtility = 1.0;
+            double multUtility = 1.0;
+            int treatmentWithdrawals = 0;
+            int treatmentToxicReactions = 0;
+            int completedTreatments = 0;
+            int svrs = 0;
         };
         static int callback(void *storage, int count, char **data,
                             char **columns) {

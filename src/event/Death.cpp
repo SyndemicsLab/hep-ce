@@ -123,7 +123,7 @@ namespace event {
     public:
         void doEvent(person::PersonBase &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::Decider> decider) {
+                     std::unique_ptr<stats::Decider> &decider) {
             if (ReachedMaxAge(person)) {
                 return;
             }
@@ -164,7 +164,7 @@ namespace event {
 
     void Death::doEvent(person::PersonBase &person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        std::shared_ptr<stats::Decider> decider) {
+                        std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

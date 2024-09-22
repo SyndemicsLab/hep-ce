@@ -107,6 +107,15 @@ namespace event {
                     error);
                 return;
             }
+            if (storage.empty()) {
+                spdlog::get("main")->warn("Cost and Utility Not Found for "
+                                          "Behavior Changes! Query: {}",
+                                          query);
+                struct behavior_costs_select s;
+                s.cost = 0.0;
+                s.util = 0.0;
+                storage.push_back(s);
+            }
 
             cost::Cost behaviorCost = {this->costCategory, "Drug Behavior",
                                        storage[0].cost};
@@ -117,7 +126,7 @@ namespace event {
     public:
         void doEvent(person::PersonBase &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::Decider> decider) {
+                     std::unique_ptr<stats::Decider> &decider) {
 
             // Determine person's current behavior classification
             person::Behavior bc = person.GetBehavior();
@@ -145,10 +154,11 @@ namespace event {
             std::vector<double> probs;
             if (storage.empty()) {
                 spdlog::get("main")->warn(
-                    "Callback Function Returned Empty Dataset From Query: "
+                    "Callback Function Returned Empty Dataset, setting even "
+                    "random transition probability. Query: "
                     "{}",
                     query);
-                probs = {0.0, 0.0, 0.0, 0.0, 0.0};
+                probs = {0.2, 0.2, 0.2, 0.2, 0.2};
             } else {
                 probs = {storage[0].never, storage[0].fni, storage[0].fi,
                          storage[0].ni, storage[0].in};
@@ -184,7 +194,7 @@ namespace event {
     void BehaviorChanges::doEvent(
         person::PersonBase &person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
-        std::shared_ptr<stats::Decider> decider) {
+        std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

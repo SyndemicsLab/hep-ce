@@ -45,7 +45,7 @@ namespace event {
         virtual void
         doEvent(person::PersonBase &person,
                 std::shared_ptr<datamanagement::DataManagerBase> dm,
-                std::shared_ptr<stats::Decider> decider) = 0;
+                std::unique_ptr<stats::Decider> &decider) = 0;
 
     public:
         Event();
@@ -59,7 +59,7 @@ namespace event {
 
         int Execute(person::PersonBase &person,
                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                    std::shared_ptr<stats::Decider> decider);
+                    std::unique_ptr<stats::Decider> &decider);
     };
 } // namespace event
 #endif

@@ -26,7 +26,7 @@ namespace event {
     public:
         void doEvent(person::PersonBase &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::Decider> decider) {
+                     std::unique_ptr<stats::Decider> &decider) {
             std::string data;
             int rc = dm->GetFromConfig("infection.clearance_prob", data);
             double clearanceProbability = 0.0;
@@ -66,7 +66,7 @@ namespace event {
 
     void Clearance::doEvent(person::PersonBase &person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
-                            std::shared_ptr<stats::Decider> decider) {
+                            std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

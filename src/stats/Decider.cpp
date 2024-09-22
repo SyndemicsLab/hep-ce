@@ -32,9 +32,12 @@ namespace stats {
         }
     };
 
-    Decider::Decider() { impl = std::make_unique<DeciderIMPL>(); }
+    Decider::Decider() : impl(std::make_unique<DeciderIMPL>()) {}
 
     Decider::~Decider() = default;
+
+    Decider::Decider(Decider &&) noexcept = default;
+    Decider &Decider::operator=(Decider &&) noexcept = default;
 
     int Decider::LoadGenerator(std::mt19937_64 const generator) {
         return impl->LoadGenerator(generator);

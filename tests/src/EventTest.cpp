@@ -20,6 +20,7 @@
 
 #include "Aging.hpp"
 #include "DataManagerMock.hpp"
+#include "Decider.hpp"
 #include "Event.hpp"
 #include "EventFactory.hpp"
 #include "Person.hpp"
@@ -29,6 +30,15 @@
 
 using ::testing::_;
 using ::testing::Return;
+using ::testing::SetArgPointee;
+
+struct behavior_trans_select {
+    double never = 0.0;
+    double fni = 0.0;
+    double fi = 0.0;
+    double ni = 0.0;
+    double in = 1.0;
+};
 
 class EventTest : public ::testing::Test {
 private:
@@ -44,22 +54,23 @@ private:
 
 protected:
     std::shared_ptr<person::PersonBase> testPerson;
+    std::shared_ptr<datamanagement::MOCKDataManager> person_dm;
     void SetUp() override {
         RegisterLogger();
-        std::shared_ptr<datamanagement::MOCKDataManager> dm =
-            std::make_unique<datamanagement::MOCKDataManager>();
-        EXPECT_CALL(*dm, SelectCustomCallback(_, _, _, _))
-            .WillRepeatedly(testing::Return(0));
+        person_dm = std::make_unique<datamanagement::MOCKDataManager>();
         person::PersonFactory pfactory;
         testPerson = pfactory.create();
-        testPerson->CreatePersonFromTable(4321, NULL);
     }
     void TearDown() override { spdlog::drop("main"); }
 };
 
 TEST_F(EventTest, Aging) {
+    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(testing::Return(0));
+    testPerson->CreatePersonFromTable(4321, NULL);
     event::EventFactory efactory;
-    std::shared_ptr<stats::Decider> decider;
+    std::unique_ptr<stats::Decider> decider =
+        std::make_unique<stats::Decider>();
     std::shared_ptr<event::Event> event = efactory.create("Aging");
     int first_age = 25;
     testPerson->SetAge(first_age);
@@ -68,11 +79,21 @@ TEST_F(EventTest, Aging) {
 }
 
 TEST_F(EventTest, BehaviorChanges) {
+    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(testing::Return(0));
+    testPerson->CreatePersonFromTable(4321, person_dm);
     event::EventFactory efactory;
-    std::shared_ptr<stats::Decider> decider;
+    std::unique_ptr<stats::Decider> decider =
+        std::make_unique<stats::Decider>();
     std::shared_ptr<event::Event> event = efactory.create("BehaviorChanges");
 
-    int before = testPerson->GetAge();
-    event->Execute(*testPerson, NULL, decider);
-    EXPECT_EQ(before + 1, testPerson->GetAge());
+    struct behavior_trans_select storage;
+
+    std::shared_ptr<datamanagement::MOCKDataManager> event_dm;
+    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, &storage, _))
+        .WillRepeatedly(testing::Return(0));
+    // .WillRepeatedly(SetArgPointee<2>(SetBehaviorTransition(storage)));
+
+    event->Execute(*testPerson, event_dm, decider);
+    EXPECT_EQ(person::Behavior::INJECTION, testPerson->GetBehavior());
 }

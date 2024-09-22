@@ -16,6 +16,12 @@ namespace stats {
         ~Decider();
         int LoadGenerator(std::mt19937_64 const generator);
         int GetDecision(std::vector<double> probs);
+
+        Decider(Decider const &) = delete;
+        Decider &operator=(Decider const &) = delete;
+
+        Decider(Decider &&) noexcept;
+        Decider &operator=(Decider &&) noexcept;
     };
 } // namespace stats
 

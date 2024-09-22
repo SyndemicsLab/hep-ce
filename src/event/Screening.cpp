@@ -29,7 +29,6 @@ namespace event {
     class Screening::ScreeningIMPL {
     private:
         std::shared_ptr<datamanagement::DataManagerBase> dm;
-        std::shared_ptr<stats::Decider> decider;
 
         static int callback(void *storage, int count, char **data,
                             char **columns) {
@@ -61,7 +60,8 @@ namespace event {
 
         /// @brief The Background Screening Event Undertaken on a Person
         /// @param person The Person undergoing a background Screening
-        void backgroundScreen(person::PersonBase &person) {
+        void backgroundScreen(person::PersonBase &person,
+                              std::unique_ptr<stats::Decider> &decider) {
             if (!person.GetTimeSinceLastScreening()) {
                 return;
             }
@@ -70,7 +70,7 @@ namespace event {
             std::string testPrefix = "screening_background_";
             person::HCV infectionStatus = person.GetHCV();
             bool firstTest =
-                this->test(infectionStatus, testPrefix + "ab",
+                this->test(infectionStatus, testPrefix + "ab", decider,
                            [&person]() -> int { return person.AddAbScreen(); });
             this->insertScreeningCost(person, "screening_background_ab.cost",
                                       "Background Antibody Screening");
@@ -79,7 +79,7 @@ namespace event {
             bool secondTest = false;
             if (!firstTest) {
                 secondTest = this->test(
-                    infectionStatus, testPrefix + "ab",
+                    infectionStatus, testPrefix + "ab", decider,
                     [&person]() -> int { return person.AddAbScreen(); });
                 this->insertScreeningCost(person,
                                           "screening_background_ab.cost",
@@ -95,7 +95,7 @@ namespace event {
                                       "Background RNA Screening");
 
             if (this->test(
-                    infectionStatus, testPrefix + "rna",
+                    infectionStatus, testPrefix + "rna", decider,
                     [&person]() -> int { return person.AddRnaScreen(); })) {
                 person.Link(person::LinkageType::BACKGROUND);
                 // what else needs to happen during a link?
@@ -104,18 +104,20 @@ namespace event {
             person.Unlink();
         }
 
-        bool runABTest(person::PersonBase &person, std::string prefix) {
+        bool runABTest(person::PersonBase &person, std::string prefix,
+                       std::unique_ptr<stats::Decider> &decider) {
             bool firstTest =
-                this->test(person.GetHCV(), prefix + "_ab",
+                this->test(person.GetHCV(), prefix + "_ab", decider,
                            [&person]() -> int { return person.AddAbScreen(); });
             this->insertScreeningCost(person, prefix + "_ab.cost",
                                       "Intervention Antibody Screening");
             return firstTest;
         }
 
-        bool runRNATest(person::PersonBase &person, std::string prefix) {
+        bool runRNATest(person::PersonBase &person, std::string prefix,
+                        std::unique_ptr<stats::Decider> &decider) {
             bool firstTest = this->test(
-                person.GetHCV(), prefix + "_rna",
+                person.GetHCV(), prefix + "_rna", decider,
                 [&person]() -> int { return person.AddRnaScreen(); });
             this->insertScreeningCost(person, prefix + "_rna.cost",
                                       "Intervention RNA Screening");
@@ -124,21 +126,24 @@ namespace event {
 
         /// @brief The Intervention Screening Event Undertaken on a Person
         /// @param person The Person undergoing an Intervention Screening
-        void interventionScreen(person::PersonBase &person) {
+        void interventionScreen(person::PersonBase &person,
+                                std::unique_ptr<stats::Decider> &decider) {
             person.MarkScreened();
             if (!person.IsIdentifiedAsHCVInfected()) {
-                bool firstTest = runABTest(person, "screening_intervention");
+                bool firstTest =
+                    runABTest(person, "screening_intervention", decider);
                 // if first test is negative, perform a second test
                 if (!firstTest) {
                     bool secondTest =
-                        runABTest(person, "screening_intervention");
+                        runABTest(person, "screening_intervention", decider);
                     if (!secondTest) {
                         return; // two negatives
                     }
                 }
             }
 
-            bool rna_test = runRNATest(person, "screening_intervention");
+            bool rna_test =
+                runRNATest(person, "screening_intervention", decider);
             if (rna_test) {
                 person.Link(person::LinkageType::INTERVENTION);
                 // what else needs to happen during a link?
@@ -148,6 +153,7 @@ namespace event {
         }
 
         bool test(person::HCV infectionStatus, std::string configKey,
+                  std::unique_ptr<stats::Decider> &decider,
                   std::function<int(void)> testFunc) {
             double probability = 0.5;
             std::string data;
@@ -229,11 +235,12 @@ namespace event {
             return result;
         }
 
-        void interventionDecision(person::PersonBase &person) {
+        void interventionDecision(person::PersonBase &person,
+                                  std::unique_ptr<stats::Decider> &decider) {
             std::vector<double> interventionProbability =
                 this->getInterventionScreeningProbability(person);
             if (decider->GetDecision(interventionProbability) == 0) {
-                this->interventionScreen(person);
+                this->interventionScreen(person, decider);
             }
         }
 
@@ -256,9 +263,8 @@ namespace event {
     public:
         void doEvent(person::PersonBase &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::Decider> decider) {
+                     std::unique_ptr<stats::Decider> &decider) {
             this->dm = dm;
-            this->decider = decider;
             std::string interventionType;
             dm->GetFromConfig("screening.intervention_type", interventionType);
             int interventionPeriod = 0;
@@ -268,15 +274,15 @@ namespace event {
                 interventionPeriod = std::stoi(temp);
                 if (person.GetTimeSinceLastScreening() >= interventionPeriod ||
                     person.GetTimeOfLastScreening() == -1) {
-                    this->interventionDecision(person);
+                    this->interventionDecision(person, decider);
                 }
             }
             if (interventionType == "one-time" &&
                 person.GetCurrentTimestep() == 1) {
-                this->interventionDecision(person);
+                this->interventionDecision(person, decider);
             } else if (interventionType == "periodic") {
                 if (person.GetTimeSinceLastScreening() > interventionPeriod) {
-                    this->interventionDecision(person);
+                    this->interventionDecision(person, decider);
                 } else {
                     return; // Do not screen this time
                 }
@@ -293,7 +299,7 @@ namespace event {
                 this->getBackgroundScreeningProbability(person);
             int choice = decider->GetDecision(backgroundProbability);
             if (choice == 0) {
-                this->backgroundScreen(person);
+                this->backgroundScreen(person, decider);
             }
         }
     };
@@ -306,7 +312,7 @@ namespace event {
 
     void Screening::doEvent(person::PersonBase &person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
-                            std::shared_ptr<stats::Decider> decider) {
+                            std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);
     }
 

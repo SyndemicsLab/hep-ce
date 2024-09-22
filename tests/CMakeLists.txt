@@ -58,6 +58,7 @@ target_link_libraries(${PROJECT_NAME}
         simulation
         event
         cost
+        stats
         DataManagement::DataManagement
         spdlog::spdlog
 )

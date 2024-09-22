@@ -36,7 +36,7 @@ namespace simulation {
     class Simulation::SimulationIMPL {
     private:
         std::shared_ptr<datamanagement::DataManager> _dm;
-        std::shared_ptr<stats::Decider> decider;
+        std::unique_ptr<stats::Decider> decider;
         int tstep = 0;
         uint64_t _seed;
         int defaultPopulationSize = 0;
@@ -95,7 +95,7 @@ namespace simulation {
         SimulationIMPL(size_t seed = 1234, std::string const &logfile = "")
             : _seed(seed) {
             this->generator.seed(_seed);
-            this->decider = std::make_shared<stats::Decider>();
+            this->decider = std::make_unique<stats::Decider>();
             this->decider->LoadGenerator(this->generator);
 
             std::string logname = (logfile.empty()) ? "logfile.log" : logfile;

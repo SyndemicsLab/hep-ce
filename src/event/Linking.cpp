@@ -77,7 +77,7 @@ namespace event {
     public:
         void doEvent(person::PersonBase &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::Decider> decider) {
+                     std::unique_ptr<stats::Decider> &decider) {
             person::HCV state = person.GetHCV();
             if (state == person::HCV::NONE) {
                 // add false positive cost
@@ -142,7 +142,7 @@ namespace event {
 
     void Linking::doEvent(person::PersonBase &person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm,
-                          std::shared_ptr<stats::Decider> decider) {
+                          std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

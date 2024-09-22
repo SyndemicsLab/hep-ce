@@ -84,7 +84,7 @@ namespace event {
     public:
         void doEvent(person::PersonBase &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::Decider> decider) {
+                     std::unique_ptr<stats::Decider> &decider) {
             // If a person is dead, male, younger than 15, older than 45, or
             // been in postpartum for less than 3 months then skip
 
