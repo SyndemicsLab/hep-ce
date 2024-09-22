@@ -4,11 +4,11 @@ project(simulation)
 
 find_package(spdlog REQUIRED)
 
+find_package(OpenMP REQUIRED)
+
 find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 )
-
-find_package(OpenMP REQUIRED)
 
 if(BUILD_SHARED_LIBS)
   add_library(${PROJECT_NAME} SHARED)

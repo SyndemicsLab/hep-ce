@@ -49,10 +49,10 @@ protected:
         std::shared_ptr<datamanagement::MOCKDataManager> dm =
             std::make_unique<datamanagement::MOCKDataManager>();
         EXPECT_CALL(*dm, SelectCustomCallback(_, _, _, _))
-            .WillRepeatedly(Return(0));
+            .WillRepeatedly(testing::Return(0));
         person::PersonFactory pfactory;
         testPerson = pfactory.create();
-        testPerson->CreatePersonFromTable(4321, dm);
+        testPerson->CreatePersonFromTable(4321, NULL);
     }
     void TearDown() override { spdlog::drop("main"); }
 };
@@ -61,10 +61,10 @@ TEST_F(EventTest, Aging) {
     event::EventFactory efactory;
     std::shared_ptr<stats::Decider> decider;
     std::shared_ptr<event::Event> event = efactory.create("Aging");
-
-    int before = testPerson->GetAge();
+    int first_age = 25;
+    testPerson->SetAge(first_age);
     event->Execute(*testPerson, NULL, decider);
-    EXPECT_EQ(before + 1, testPerson->GetAge());
+    EXPECT_EQ(first_age + 1, testPerson->GetAge());
 }
 
 TEST_F(EventTest, BehaviorChanges) {

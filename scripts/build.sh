@@ -1,11 +1,12 @@
 #!/usr/bin/bash -l
 # only execute these lines if the `module` command is present in the environment
 # used for the BU SCC
-# if command -v module &>/dev/null; then
-    # module load gcc/12.2.0
-    # module load openmpi/4.1.5
-    # module load miniconda
-# fi
+if command -v module &>/dev/null; then
+    module load gcc/12.2.0
+    module load openmpi/4.1.5
+    module load cmake/3.22.2
+    module load spdlog
+fi
 
 # help message to be output either with the -h flag or when using invalid syntax
 showhelp () {
@@ -72,16 +73,6 @@ while getopts ":hplt:" option; do
     esac
 done
 
-# load conda environment
-echo "Checking if \`conda\` is found..."
-# ensure conda is present on the system
-if ! command -v conda &>/dev/null; then
-    echo "\`conda\` not present on the system! Exiting..."
-    exit 1
-else
-    echo "\`conda\` found!"
-fi
-
 (
     # change to the top-level git folder
     TOPLEVEL="$(git rev-parse --show-toplevel)"
@@ -108,6 +99,7 @@ fi
 	# build tests, if specified
 	if [[ -n "$BUILD_TESTS" ]]; then
 	    CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_TESTS=$BUILD_TESTS"
+        rm -rf ../bin/hepceTest
 	fi
 
     # build static library if BUILD_STATIC_LIBRARY is on, otherwise build
@@ -126,6 +118,6 @@ fi
     )
     # run tests, if they built properly
     if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then
-	bin/hepceTest
+	    bin/hepceTest
     fi
 )
