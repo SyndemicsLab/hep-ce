@@ -236,6 +236,12 @@ namespace person {
     };
     std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
 
+    struct Child {
+        HCV hcv = HCV::NONE;
+        bool tested = false;
+    };
+    std::ostream &operator<<(std::ostream &os, Child const &inst);
+
     /// @brief Person attributes describing clinically assessed liver stage
     struct StagingDetails {
         MeasuredFibrosisState measuredFibrosisState =

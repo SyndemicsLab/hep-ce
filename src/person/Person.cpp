@@ -109,6 +109,7 @@ namespace person {
         UtilityTracker utilityTracker;
         cost::CostTracker costs;
         bool boomerClassification = false;
+        std::vector<Child> children = {};
 
         int UpdateTimers() {
             this->_currentTime++;
@@ -355,6 +356,45 @@ namespace person {
             }
         }
 
+        void Miscarry() {
+            this->pregnancyDetails.numMiscarriages++;
+            this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
+            this->pregnancyDetails.pregnancyState =
+                person::PregnancyState::NONE;
+        }
+
+        void EndPostpartum() {
+            this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
+            this->pregnancyDetails.pregnancyState =
+                person::PregnancyState::NONE;
+        }
+
+        void Impregnate() {
+            if (GetSex() == person::Sex::MALE) {
+                return;
+            }
+            this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
+            this->pregnancyDetails.pregnancyState =
+                person::PregnancyState::PREGNANT;
+        }
+
+        void Stillbirth() {
+            if (GetSex() == person::Sex::MALE) {
+                return;
+            }
+            this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
+            this->pregnancyDetails.pregnancyState =
+                person::PregnancyState::POSTPARTUM;
+            this->pregnancyDetails.numMiscarriages++;
+        }
+
+        void AddChild(HCV hcv, bool test) {
+            person::Child child;
+            child.hcv = hcv;
+            child.tested = test;
+            this->children.push_back(child);
+        }
+
         ////////////// CHECKS /////////////////
 
         bool IsAlive() const { return this->isAlive; }
@@ -523,9 +563,11 @@ namespace person {
             return this->pregnancyDetails.timeOfPregnancyChange;
         }
 
-        /// @brief Getter for number of infants
-        /// @return Number of infants born to this person
-        int GetNumInfants() const { return this->pregnancyDetails.numInfants; }
+        int GetTimeSincePregnancyChange() const {
+            return this->_currentTime - GetTimeOfPregnancyChange();
+        }
+
+        std::vector<Child> GetChildren() const { return this->children; }
 
         /// @brief Getter for number of miscarriages
         /// @return Number of miscarriages this person has experienced
@@ -658,12 +700,6 @@ namespace person {
         void SetPregnancyState(PregnancyState state) {
             this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
             this->pregnancyDetails.pregnancyState = state;
-        }
-
-        /// @brief Add infants to the count
-        /// @param infants Number infants to add
-        void SetNumInfants(int infants) {
-            this->pregnancyDetails.numInfants += infants;
         }
 
         /// @brief Add miscarriages to the count
@@ -827,6 +863,26 @@ namespace person {
         pImplPERSON->ToggleOverdose();
         return 0;
     }
+    int PersonBase::Miscarry() {
+        pImplPERSON->Miscarry();
+        return 0;
+    }
+    int PersonBase::EndPostpartum() {
+        pImplPERSON->EndPostpartum();
+        return 0;
+    }
+    int PersonBase::Impregnate() {
+        pImplPERSON->Impregnate();
+        return 0;
+    }
+    int PersonBase::Stillbirth() {
+        pImplPERSON->Stillbirth();
+        return 0;
+    }
+    int PersonBase::AddChild(HCV hcv, bool test) {
+        pImplPERSON->AddChild(hcv, test);
+        return 0;
+    }
     // Checks
     bool PersonBase::IsAlive() const { return pImplPERSON->IsAlive(); }
     bool PersonBase::HadSecondScreeningTest() const {
@@ -939,8 +995,11 @@ namespace person {
     int PersonBase::GetTimeOfPregnancyChange() const {
         return pImplPERSON->GetTimeOfPregnancyChange();
     }
-    int PersonBase::GetNumInfants() const {
-        return pImplPERSON->GetNumInfants();
+    int PersonBase::GetTimeSincePregnancyChange() const {
+        return pImplPERSON->GetTimeSincePregnancyChange();
+    }
+    std::vector<Child> PersonBase::GetChildren() const {
+        return pImplPERSON->GetChildren();
     }
     int PersonBase::GetNumMiscarriages() const {
         return pImplPERSON->GetNumMiscarriages();
@@ -1008,9 +1067,6 @@ namespace person {
     void PersonBase::InitiateTreatment() { pImplPERSON->InitiateTreatment(); }
     void PersonBase::SetPregnancyState(PregnancyState state) {
         pImplPERSON->SetPregnancyState(state);
-    }
-    void PersonBase::SetNumInfants(int infants) {
-        pImplPERSON->SetNumInfants(infants);
     }
     void PersonBase::SetNumMiscarriages(int miscarriages) {
         pImplPERSON->SetNumMiscarriages(miscarriages);

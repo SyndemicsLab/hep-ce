@@ -368,6 +368,12 @@ namespace person {
         return os;
     }
 
+    std::ostream &operator<<(std::ostream &os, Child const &inst) {
+        os << "HCV State: " << inst.hcv << std::endl;
+        os << "Tested for HCV: " << inst.tested << std::endl;
+        return os;
+    }
+
     std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet) {
         os << "Fibrosis State: " << sdet.measuredFibrosisState << std::endl;
         os << "Has a Second Fibrosis Test: " << sdet.hadSecondTest << std::endl;

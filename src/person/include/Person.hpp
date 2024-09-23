@@ -159,16 +159,22 @@ namespace person {
         // TODO
         PregnancyState GetPregnancyState() const;
         int GetTimeOfPregnancyChange() const;
-        int GetNumInfants() const;
+        int GetTimeSincePregnancyChange() const;
         int GetNumMiscarriages() const;
+        int Miscarry();
+        int Stillbirth();
+        int AddChild(HCV hcv, bool test);
+        int EndPostpartum();
+        int Impregnate();
+        PregnancyDetails GetPregnancyDetails() const;
+        void SetPregnancyState(PregnancyState state);
+        void SetNumMiscarriages(int miscarriages);
+
+        void SetMoudState(MOUD moud);
         MOUD GetMoudState() const;
         int GetTimeStartedMoud() const;
         MOUDDetails GetMOUDDetails() const;
-        PregnancyDetails GetPregnancyDetails() const;
-        void SetPregnancyState(PregnancyState state);
-        void SetNumInfants(int infants);
-        void SetNumMiscarriages(int miscarriages);
-        void SetMoudState(MOUD moud);
+        std::vector<Child> GetChildren() const;
     };
 } // namespace person
 #endif

@@ -25,8 +25,8 @@ namespace event {
     class Death::DeathIMPL {
     private:
         struct death_select {
-            double back_mort;
-            double smr;
+            double back_mort = 0.0;
+            double smr = 0.0;
         };
         static int callback(void *storage, int count, char **data,
                             char **columns) {

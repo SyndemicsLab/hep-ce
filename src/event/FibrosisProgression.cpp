@@ -133,10 +133,9 @@ namespace event {
 
             // insert Person's liver-related disease cost (taking the highest
             // fibrosis state)
-            if (costFlag && !person.IsIdentifiedAsHCVInfected()) {
-                return;
+            if (costFlag && person.IsIdentifiedAsHCVInfected()) {
+                this->addLiverDiseaseCost(person, dm);
             }
-            this->addLiverDiseaseCost(person, dm);
         }
     };
 

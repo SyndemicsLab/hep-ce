@@ -1,6 +1,8 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include <DataManagement/DataManagerBase.hpp>
+#include <string>
+#include <vector>
 
 namespace datamanagement {
     class MOCKDataManager : public DataManagerBase {
