@@ -27,16 +27,16 @@ namespace event {
         cost::CostCategory costCategory = cost::CostCategory::BEHAVIOR;
 
         struct behavior_trans_select {
-            double never;
-            double fni;
-            double fi;
-            double ni;
-            double in;
+            double never = 0.0;
+            double fni = 0.25;
+            double fi = 0.25;
+            double ni = 0.25;
+            double in = 0.25;
         };
 
         struct behavior_costs_select {
-            double cost;
-            double util;
+            double cost = 0.0;
+            double util = 0.0;
         };
 
         static int callback_trans(void *storage, int count, char **data,

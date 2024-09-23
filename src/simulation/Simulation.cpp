@@ -160,7 +160,6 @@ namespace simulation {
         void CreatePerson(int id, std::string icValues) {
             person::PersonFactory factory;
             std::shared_ptr<person::PersonBase> newperson = factory.create();
-            newperson->CreatePersonFromTable(id, _dm);
             if (!icValues.empty()) {
                 newperson->LoadICValues(icValues);
             }

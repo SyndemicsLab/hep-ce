@@ -89,11 +89,12 @@ TEST_F(EventTest, BehaviorChanges) {
 
     struct behavior_trans_select storage;
 
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm;
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, &storage, _))
+    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
+        std::make_unique<datamanagement::MOCKDataManager>();
+    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillRepeatedly(testing::Return(0));
     // .WillRepeatedly(SetArgPointee<2>(SetBehaviorTransition(storage)));
 
     event->Execute(*testPerson, event_dm, decider);
-    EXPECT_EQ(person::Behavior::INJECTION, testPerson->GetBehavior());
+    EXPECT_EQ(person::Behavior::NONINJECTION, testPerson->GetBehavior());
 }

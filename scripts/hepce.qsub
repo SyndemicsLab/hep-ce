@@ -19,7 +19,7 @@
 #$ -o hepce.qlog
 
 #  Request time needed for job to run (default: 12 hours)
-#$ -l h_rt=12:00:00
+#$ -l h_rt=24:00:00
 
 #  Send an email when the job begins and when it ends running
 #  (b = when job begins, a = if job aborts, e = when job ends)
