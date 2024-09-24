@@ -21,20 +21,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Load the conda environment
-    - name: Load Conda
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        environment-file: environment.yml
-        auto-activate-base: false
-        activate-environment: hepce
-
-    - name: Check Conda Environment
-      run: |
-        conda info
-        # ensure the packages are installed in the env
-        conda env export
-
     - name: Clone and Build DataManagement
       working-directory: ${{ github.workspace }}
       run: |
@@ -51,4 +37,4 @@ jobs:
 
     - name: Build and Test
       working-directory: ${{ github.workspace }}
-      run: scripts/build.sh -pt "$BUILD_TYPE"
+      run: scripts/build.sh -plt "$BUILD_TYPE"
