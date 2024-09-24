@@ -30,7 +30,7 @@ namespace event {
             d->push_back(std::stod(data[0]));
             return 0;
         }
-        std::string buildSQL(person::PersonBase &person, std::string columns) {
+        std::string buildSQL(person::Person &person, std::string columns) {
             std::stringstream sql;
             sql << "SELECT " << columns << " FROM fibrosis ";
             sql << "WHERE true_fib = '" << person.GetTrueFibrosisState() << "'";
@@ -65,7 +65,7 @@ namespace event {
         /// @param configLookupKey
         /// @return Vector of fibrosis staging outcome probabilities
         std::vector<double> getTransitionProbabilities(
-            person::PersonBase &person,
+            person::Person &person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             std::string column) {
             std::string query = buildSQL(person, column);
@@ -85,7 +85,7 @@ namespace event {
             return storage;
         }
 
-        void addStagingCost(person::PersonBase &person,
+        void addStagingCost(person::Person &person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             const bool testTwo = false) {
             std::string data;
@@ -107,7 +107,7 @@ namespace event {
         }
 
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
 
@@ -118,11 +118,12 @@ namespace event {
 
             // 1. Check the time since the person's last fibrosis staging test.
             // If the person's last test is more recent than the limit, exit
-            // event.
+            // event. If they've never been staged they have a -1
             std::string data;
             dm->GetFromConfig("fibrosis_staging.period", data);
             int period = std::stoi(data);
-            if (person.GetTimeSinceFibrosisStaging() < period) {
+            if (person.GetTimeSinceFibrosisStaging() < period &&
+                person.GetTimeOfFibrosisStaging() != -1) {
                 return;
             }
 
@@ -138,7 +139,7 @@ namespace event {
                 getTransitionProbabilities(person, dm, data);
 
             // 4. Decide which stage is assigned to the person.
-            int res = decider->GetDecision(probs);
+            int res = decider->GetDecision(probs) + 1;
             if (res >= (int)person::MeasuredFibrosisState::COUNT) {
                 spdlog::get("main")->error(
                     "Measured Fibrosis State Decision returned "
@@ -203,7 +204,7 @@ namespace event {
     FibrosisStaging::operator=(FibrosisStaging &&) noexcept = default;
 
     void FibrosisStaging::doEvent(
-        person::PersonBase &person,
+        person::Person &person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

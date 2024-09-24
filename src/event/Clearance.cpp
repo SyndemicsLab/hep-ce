@@ -24,7 +24,7 @@ namespace event {
     class Clearance::ClearanceIMPL {
     private:
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             std::string data;
@@ -64,7 +64,7 @@ namespace event {
     Clearance::Clearance(Clearance &&) noexcept = default;
     Clearance &Clearance::operator=(Clearance &&) noexcept = default;
 
-    void Clearance::doEvent(person::PersonBase &person,
+    void Clearance::doEvent(person::Person &person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

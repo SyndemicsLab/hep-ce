@@ -39,7 +39,7 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::PersonBase const &person) const {
+        std::string buildSQL(person::Person const &person) const {
             int age_years = person.GetAge() / 12.0; // intentional truncation
             std::stringstream sql;
             sql << "SELECT background_mortality, SMR";
@@ -56,12 +56,12 @@ namespace event {
         }
         /// @brief The actual death of a person
         /// @param person Person who dies
-        void die(person::PersonBase &person, person::DeathReason deathReason) {
+        void die(person::Person &person, person::DeathReason deathReason) {
             person.Die(deathReason);
         }
 
         void getFibrosisMortalityProb(
-            person::PersonBase const &person,
+            person::Person const &person,
             std::shared_ptr<datamanagement::DataManagerBase> dm, double &prob) {
             std::string data;
             switch (person.GetTrueFibrosisState()) {
@@ -81,7 +81,7 @@ namespace event {
         }
 
         void getSMRandBackgroundProb(
-            person::PersonBase const &person,
+            person::Person const &person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             double &backgroundMortProb, double &smr) {
             std::string query = this->buildSQL(person);
@@ -112,7 +112,7 @@ namespace event {
             }
         }
 
-        bool ReachedMaxAge(person::PersonBase &person) {
+        bool ReachedMaxAge(person::Person &person) {
             if (person.GetAge() >= 1200) {
                 this->die(person, person::DeathReason::AGE);
                 return true;
@@ -121,7 +121,7 @@ namespace event {
         }
 
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             if (ReachedMaxAge(person)) {
@@ -162,7 +162,7 @@ namespace event {
     Death::Death(Death &&) noexcept = default;
     Death &Death::operator=(Death &&) noexcept = default;
 
-    void Death::doEvent(person::PersonBase &person,
+    void Death::doEvent(person::Person &person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

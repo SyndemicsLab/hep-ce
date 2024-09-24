@@ -51,7 +51,7 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::PersonBase &person, std::string column) {
+        std::string buildSQL(person::Person &person, std::string column) {
             std::string geno3 = (person.IsGenotypeThree()) ? "TRUE" : "FALSE";
             std::string cirr = (person.IsCirrhotic()) ? "TRUE" : "FALSE";
             std::stringstream sql;
@@ -63,7 +63,7 @@ namespace event {
             return sql.str();
         }
 
-        bool isEligible(person::PersonBase const &person) const {
+        bool isEligible(person::Person const &person) const {
             person::FibrosisState fibrosisState = person.GetTrueFibrosisState();
             person::Behavior behavior = person.GetBehavior();
             int timeBehaviorChange = person.GetTimeBehaviorChange();
@@ -86,7 +86,7 @@ namespace event {
             return (fibrosisState < person::FibrosisState::NONE) ? true : false;
         }
 
-        void addTreatmentCostAndUtility(person::PersonBase &person, double cost,
+        void addTreatmentCostAndUtility(person::Person &person, double cost,
                                         double util) {
             cost::Cost treatmentCost = {cost::CostCategory::TREATMENT,
                                         "Treatment Cost", cost};
@@ -94,7 +94,7 @@ namespace event {
             person.SetUtility(util);
         }
 
-        bool isLostToFollowUp(person::PersonBase &person,
+        bool isLostToFollowUp(person::Person &person,
                               std::unique_ptr<stats::Decider> &decider) {
             if (person.HasInitiatedTreatment() || isEligible(person)) {
                 return false;
@@ -110,7 +110,7 @@ namespace event {
             return true;
         }
 
-        void chargeCostOfVisit(person::PersonBase &person) {
+        void chargeCostOfVisit(person::Person &person) {
             std::string data;
             dm->GetFromConfig("treatment.treatment_cost", data);
             double cost = std::stod(data);
@@ -119,7 +119,7 @@ namespace event {
             person.AddCost(visitCost);
         }
 
-        void chargeCostOfCourse(person::PersonBase &person) {
+        void chargeCostOfCourse(person::Person &person) {
             std::string query = buildSQL(person, "treatment_cost");
             std::vector<double> storage;
             std::string error;
@@ -141,7 +141,7 @@ namespace event {
             person.SetUtility(util);
         }
 
-        bool doesWithdraw(person::PersonBase &person,
+        bool doesWithdraw(person::Person &person,
                           std::unique_ptr<stats::Decider> &decider) {
             std::string query = buildSQL(person, "withdrawal_probability");
 
@@ -157,7 +157,7 @@ namespace event {
             return false;
         }
 
-        bool experiencedToxicity(person::PersonBase &person,
+        bool experiencedToxicity(person::Person &person,
                                  std::unique_ptr<stats::Decider> &decider) {
             std::string query = buildSQL(person, "toxicity");
             std::vector<double> storage;
@@ -168,7 +168,7 @@ namespace event {
             return (toxicity == 1) ? true : false;
         }
 
-        bool initiatesTreatment(person::PersonBase &person,
+        bool initiatesTreatment(person::Person &person,
                                 std::unique_ptr<stats::Decider> &decider) {
             // if person hasn't initialized draw, if they have, continue
             // treatment
@@ -190,7 +190,7 @@ namespace event {
             return true;
         }
 
-        void quitEngagement(person::PersonBase &person) {
+        void quitEngagement(person::Person &person) {
             // unlink from care
             person.Unlink();
             // reset utility
@@ -198,7 +198,7 @@ namespace event {
         }
 
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             this->dm = dm;
@@ -273,7 +273,7 @@ namespace event {
     Treatment::Treatment(Treatment &&) noexcept = default;
     Treatment &Treatment::operator=(Treatment &&) noexcept = default;
 
-    void Treatment::doEvent(person::PersonBase &person,
+    void Treatment::doEvent(person::Person &person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

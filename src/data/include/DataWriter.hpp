@@ -21,7 +21,7 @@
 #include <vector>
 
 namespace person {
-    class PersonBase;
+    class Person;
 }
 namespace datamanagement {
     class DataManagerBase;
@@ -38,10 +38,10 @@ namespace writer {
         DataWriter();
         ~DataWriter();
         int UpdatePopulation(
-            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::vector<std::shared_ptr<person::Person>> new_population,
             std::shared_ptr<datamanagement::DataManagerBase> dm);
         int WritePopulationToFile(
-            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::vector<std::shared_ptr<person::Person>> new_population,
             std::string &filepath);
     };
 } // namespace writer

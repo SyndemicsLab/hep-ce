@@ -26,7 +26,7 @@ namespace event {
     class VoluntaryRelinking::VoluntaryRelinkingIMPL {
     private:
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             std::string data;
@@ -61,7 +61,7 @@ namespace event {
     VoluntaryRelinking::operator=(VoluntaryRelinking &&) noexcept = default;
 
     void VoluntaryRelinking::doEvent(
-        person::PersonBase &person,
+        person::Person &person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

@@ -2,7 +2,7 @@
 #include "Person.hpp"
 
 namespace event {
-    int Event::Execute(person::PersonBase &person,
+    int Event::Execute(person::Person &person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::unique_ptr<stats::Decider> &decider) {
         if (person.IsAlive()) {

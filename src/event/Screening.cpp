@@ -38,8 +38,7 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::PersonBase &person,
-                             std::string column) const {
+        std::string buildSQL(person::Person &person, std::string column) const {
             int age_years = person.GetAge() / 12.0; // intentional truncation
             std::stringstream sql;
             sql << "SELECT " + column;
@@ -60,7 +59,7 @@ namespace event {
 
         /// @brief The Background Screening Event Undertaken on a Person
         /// @param person The Person undergoing a background Screening
-        void backgroundScreen(person::PersonBase &person,
+        void backgroundScreen(person::Person &person,
                               std::unique_ptr<stats::Decider> &decider) {
             if (!person.GetTimeSinceLastScreening()) {
                 return;
@@ -104,7 +103,7 @@ namespace event {
             person.Unlink();
         }
 
-        bool runABTest(person::PersonBase &person, std::string prefix,
+        bool runABTest(person::Person &person, std::string prefix,
                        std::unique_ptr<stats::Decider> &decider) {
             bool firstTest =
                 this->test(person.GetHCV(), prefix + "_ab", decider,
@@ -114,7 +113,7 @@ namespace event {
             return firstTest;
         }
 
-        bool runRNATest(person::PersonBase &person, std::string prefix,
+        bool runRNATest(person::Person &person, std::string prefix,
                         std::unique_ptr<stats::Decider> &decider) {
             bool firstTest = this->test(
                 person.GetHCV(), prefix + "_rna", decider,
@@ -126,7 +125,7 @@ namespace event {
 
         /// @brief The Intervention Screening Event Undertaken on a Person
         /// @param person The Person undergoing an Intervention Screening
-        void interventionScreen(person::PersonBase &person,
+        void interventionScreen(person::Person &person,
                                 std::unique_ptr<stats::Decider> &decider) {
             person.MarkScreened();
             if (!person.IsIdentifiedAsHCVInfected()) {
@@ -174,7 +173,7 @@ namespace event {
         }
 
         std::vector<double>
-        getBackgroundScreeningProbability(person::PersonBase &person) {
+        getBackgroundScreeningProbability(person::Person &person) {
             std::string query =
                 this->buildSQL(person, "background_screen_probability");
             std::vector<double> storage;
@@ -207,7 +206,7 @@ namespace event {
         }
 
         std::vector<double>
-        getInterventionScreeningProbability(person::PersonBase &person) {
+        getInterventionScreeningProbability(person::Person &person) {
             std::string query =
                 this->buildSQL(person, "intervention_screen_probability");
             std::vector<double> storage;
@@ -235,7 +234,7 @@ namespace event {
             return result;
         }
 
-        void interventionDecision(person::PersonBase &person,
+        void interventionDecision(person::Person &person,
                                   std::unique_ptr<stats::Decider> &decider) {
             std::vector<double> interventionProbability =
                 this->getInterventionScreeningProbability(person);
@@ -247,8 +246,7 @@ namespace event {
         /// @brief Insert cost for screening of type \code{type}
         /// @param person The person who is accruing cost
         /// @param type The screening type, used to discern the cost to add
-        void insertScreeningCost(person::PersonBase &person,
-                                 std::string configKey,
+        void insertScreeningCost(person::Person &person, std::string configKey,
                                  std::string screeningName) {
             double screeningCost;
             std::string data;
@@ -261,44 +259,38 @@ namespace event {
         }
 
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             this->dm = dm;
             std::string interventionType;
             dm->GetFromConfig("screening.intervention_type", interventionType);
-            int interventionPeriod = 0;
-            if (interventionType == "periodic") {
-                std::string temp;
-                dm->GetFromConfig("screening.period", temp);
-                interventionPeriod = std::stoi(temp);
-                if (person.GetTimeSinceLastScreening() >= interventionPeriod ||
-                    person.GetTimeOfLastScreening() == -1) {
-                    this->interventionDecision(person, decider);
-                }
-            }
-            if (interventionType == "one-time" &&
-                person.GetCurrentTimestep() == 1) {
-                this->interventionDecision(person, decider);
-            } else if (interventionType == "periodic") {
-                if (person.GetTimeSinceLastScreening() > interventionPeriod) {
-                    this->interventionDecision(person, decider);
-                } else {
-                    return; // Do not screen this time
-                }
 
-            } else {
-                spdlog::get("main")->warn(
-                    "Intervention Type not valid During Screening "
-                    "Event");
+            std::string temp;
+            dm->GetFromConfig("screening.period", temp);
+            int interventionPeriod = (temp.empty()) ? 0 : std::stoi(temp);
+
+            /// Skip Screening Conditions:
+            /// 1. Cannot have InterventionType is One-Time and CurrentTimestep
+            ///         is 1
+            /// 2. Cannot have Intervention Type is Periodic and the person
+            ///         hasn't screened
+            ///         or the period has been reached since their last
+            ///         screening
+            if (!(interventionType == "one-time" &&
+                  person.GetCurrentTimestep() == 1) &&
+                !(interventionType == "periodic" &&
+                  (person.GetTimeSinceLastScreening() >= interventionPeriod ||
+                   person.GetTimeOfLastScreening() == -1))) {
                 return;
             }
+            this->interventionDecision(person, decider);
 
             // [screen, don't screen]
             std::vector<double> backgroundProbability =
                 this->getBackgroundScreeningProbability(person);
-            int choice = decider->GetDecision(backgroundProbability);
-            if (choice == 0) {
+
+            if (decider->GetDecision(backgroundProbability) == 0) {
                 this->backgroundScreen(person, decider);
             }
         }
@@ -310,7 +302,7 @@ namespace event {
     Screening::Screening(Screening &&) noexcept = default;
     Screening &Screening::operator=(Screening &&) noexcept = default;
 
-    void Screening::doEvent(person::PersonBase &person,
+    void Screening::doEvent(person::Person &person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

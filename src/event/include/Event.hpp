@@ -25,7 +25,7 @@
 
 // Forward Defining Person to use in Execute
 namespace person {
-    class PersonBase;
+    class Person;
 }
 
 // Forward Defining DataManagerBase to require in constructor
@@ -43,7 +43,7 @@ namespace event {
     class Event {
     protected:
         virtual void
-        doEvent(person::PersonBase &person,
+        doEvent(person::Person &person,
                 std::shared_ptr<datamanagement::DataManagerBase> dm,
                 std::unique_ptr<stats::Decider> &decider) = 0;
 
@@ -57,7 +57,7 @@ namespace event {
         Event(Event &&) noexcept;
         Event &operator=(Event &&) noexcept;
 
-        int Execute(person::PersonBase &person,
+        int Execute(person::Person &person,
                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                     std::unique_ptr<stats::Decider> &decider);
     };

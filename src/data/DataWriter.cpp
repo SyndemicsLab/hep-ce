@@ -29,7 +29,7 @@ namespace writer {
     class DataWriter::DataWriterIMPL {
     private:
         std::string
-        GrabPersonDetailsAsStringInHeaderOrder(person::PersonBase &person) {
+        GrabPersonDetailsAsStringInHeaderOrder(person::Person &person) {
             std::stringstream compiled_attributes;
             compiled_attributes
                 << person.GetID() << "," << std::boolalpha << person.GetSex()
@@ -64,17 +64,17 @@ namespace writer {
 
     public:
         int UpdatePopulation(
-            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::vector<std::shared_ptr<person::Person>> new_population,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             return -1;
         }
         int WriteOutputPopulationToTable(
-            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::vector<std::shared_ptr<person::Person>> new_population,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             return -1;
         }
         int WriteOutputPopulationToFile(
-            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::vector<std::shared_ptr<person::Person>> new_population,
             std::string &filepath) {
             std::filesystem::path path = filepath;
             std::ofstream csvStream;
@@ -83,7 +83,7 @@ namespace writer {
                 return -1;
             }
             csvStream << "id," << person::POPULATION_HEADERS << std::endl;
-            for (std::shared_ptr<person::PersonBase> &person : new_population) {
+            for (std::shared_ptr<person::Person> &person : new_population) {
                 csvStream << GrabPersonDetailsAsStringInHeaderOrder(*person)
                           << std::endl;
             }
@@ -97,12 +97,12 @@ namespace writer {
     DataWriter::~DataWriter() = default;
 
     int DataWriter::UpdatePopulation(
-        std::vector<std::shared_ptr<person::PersonBase>> new_population,
+        std::vector<std::shared_ptr<person::Person>> new_population,
         std::shared_ptr<datamanagement::DataManagerBase> dm) {
         return impl->UpdatePopulation(new_population, dm);
     }
     int DataWriter::WritePopulationToFile(
-        std::vector<std::shared_ptr<person::PersonBase>> new_population,
+        std::vector<std::shared_ptr<person::Person>> new_population,
         std::string &filepath) {
         return impl->WriteOutputPopulationToFile(new_population, filepath);
     }

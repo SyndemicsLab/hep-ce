@@ -186,6 +186,37 @@ namespace person {
         return inst;
     }
 
+    FibrosisState &operator++(FibrosisState &inst) {
+        switch (inst) {
+        case FibrosisState::F0:
+            inst = FibrosisState::F1;
+            break;
+        case FibrosisState::F1:
+            inst = FibrosisState::F2;
+            break;
+        case FibrosisState::F2:
+            inst = FibrosisState::F3;
+            break;
+        case FibrosisState::F3:
+            inst = FibrosisState::F4;
+            break;
+        case FibrosisState::F4:
+            inst = FibrosisState::DECOMP;
+            break;
+        case FibrosisState::DECOMP:
+            inst = FibrosisState::DECOMP;
+            break;
+        default:
+            break;
+        }
+        return inst;
+    }
+    FibrosisState operator++(FibrosisState &inst, int) {
+        FibrosisState rValue = inst;
+        ++inst;
+        return rValue;
+    }
+
     std::ostream &operator<<(std::ostream &os, const HCCState &inst) {
         switch (inst) {
         case HCCState::EARLY:
@@ -246,6 +277,31 @@ namespace person {
             inst = MeasuredFibrosisState::NONE;
         }
         return inst;
+    }
+
+    MeasuredFibrosisState &operator++(MeasuredFibrosisState &inst) {
+        switch (inst) {
+        case MeasuredFibrosisState::F01:
+            inst = MeasuredFibrosisState::F23;
+            break;
+        case MeasuredFibrosisState::F23:
+            inst = MeasuredFibrosisState::F4;
+            break;
+        case MeasuredFibrosisState::F4:
+            inst = MeasuredFibrosisState::DECOMP;
+            break;
+        case MeasuredFibrosisState::DECOMP:
+            inst = MeasuredFibrosisState::DECOMP;
+            break;
+        default:
+            break;
+        }
+        return inst;
+    }
+    MeasuredFibrosisState operator++(MeasuredFibrosisState &inst, int) {
+        MeasuredFibrosisState rValue = inst;
+        ++inst;
+        return rValue;
     }
 
     std::ostream &operator<<(std::ostream &os, const MOUD &inst) {

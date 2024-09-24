@@ -32,7 +32,7 @@ namespace event {
             d->push_back(temp);
             return 0;
         }
-        std::string buildSQL(person::PersonBase &person,
+        std::string buildSQL(person::Person &person,
                              std::string const column) const {
             std::stringstream sql;
             std::string age_years =
@@ -46,7 +46,7 @@ namespace event {
         }
 
         std::vector<double>
-        getTransitions(person::PersonBase &person,
+        getTransitions(person::Person &person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::string columnKey) {
             std::unordered_map<std::string, std::string> selectCriteria;
@@ -63,26 +63,24 @@ namespace event {
                     error);
                 return {};
             }
-            // {0: don't link, 1: link}
-            std::vector<double> result = {1 - storage[0], storage[0]};
+            // {0: link, 1: don't link}
+            std::vector<double> result = {storage[0], 1 - storage[0]};
             return result;
         }
 
-        void addLinkingCost(person::PersonBase &person, std::string name,
+        void addLinkingCost(person::Person &person, std::string name,
                             double cost) {
             cost::Cost linkingCost = {cost::CostCategory::LINKING, name, cost};
             person.AddCost(linkingCost);
         }
 
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
-            person::HCV state = person.GetHCV();
-            if (state == person::HCV::NONE) {
+            if (person.GetHCV() == person::HCV::NONE) {
                 // add false positive cost
                 person.Unlink();
-
                 std::string data;
                 dm->GetFromConfig("linking.false_positive_test_cost", data);
                 double falsePositiveCost = std::stod(data);
@@ -122,7 +120,7 @@ namespace event {
             }
 
             // draw from link probability
-            bool doLink = (bool)decider->GetDecision(probs);
+            bool doLink = (decider->GetDecision(probs) == 0) ? true : false;
 
             if (doLink) {
                 // need to figure out how to pass in the LinkageType to the
@@ -140,7 +138,7 @@ namespace event {
     Linking::Linking(Linking &&) noexcept = default;
     Linking &Linking::operator=(Linking &&) noexcept = default;
 
-    void Linking::doEvent(person::PersonBase &person,
+    void Linking::doEvent(person::Person &person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                           std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

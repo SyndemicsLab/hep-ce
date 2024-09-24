@@ -37,7 +37,7 @@ namespace event {
             d->push_back(temp);
             return 0;
         }
-        std::string buildSQL(person::PersonBase &person) {
+        std::string buildSQL(person::Person &person) {
             std::stringstream sql;
             std::string hcv_status = (person.GetHCV() == person::HCV::NONE)
                                          ? "negative"
@@ -79,11 +79,11 @@ namespace event {
 
             // to work with getDecision, return the complement to the transition
             // probability
-            return {1 - std::stod(data)};
+            return {std::stod(data), 1 - std::stod(data)};
         }
 
         void addLiverDiseaseCost(
-            person::PersonBase &person,
+            person::Person &person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
             std::vector<struct fib_prog_select> storage;
@@ -102,7 +102,7 @@ namespace event {
         }
 
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             std::string data;
@@ -119,17 +119,15 @@ namespace event {
             person::FibrosisState fs = person.GetTrueFibrosisState();
             // 2. Get the transition probability
             std::vector<double> prob = getTransition(fs, dm);
-            // 3. Draw whether the person's fibrosis state progresses
-            int res = ((int)fs + decider->GetDecision(prob));
-            if (res >= (int)person::FibrosisState::COUNT) {
-                spdlog::get("main")->error(
-                    "Fibrosis Progression Decision returned "
-                    "value outside bounds");
-                return;
-            }
-            person::FibrosisState toFS = (person::FibrosisState)res;
+            // 3. Draw whether the person's fibrosis state progresses (0
+            // progresses)
+            person::FibrosisState newFibrosis =
+                (decider->GetDecision(prob) == 0) ? ++fs : fs;
+
             // 4. Apply the result state
-            person.SetTrueFibrosisState(toFS);
+            if (newFibrosis != person.GetTrueFibrosisState()) {
+                person.UpdateTrueFibrosis(newFibrosis);
+            }
 
             // insert Person's liver-related disease cost (taking the highest
             // fibrosis state)
@@ -150,7 +148,7 @@ namespace event {
     FibrosisProgression::operator=(FibrosisProgression &&) noexcept = default;
 
     void FibrosisProgression::doEvent(
-        person::PersonBase &person,
+        person::Person &person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace person {
-    class PersonBase::Person {
+    class Person::PersonIMPL {
     private:
         struct person_select {
             Sex sex = Sex::MALE;
@@ -121,7 +121,7 @@ namespace person {
         }
 
     public:
-        Person() {}
+        PersonIMPL() {}
         int CreatePersonFromTable(
             int id, std::shared_ptr<datamanagement::DataManagerBase> dm) {
             this->id = id;
@@ -183,7 +183,7 @@ namespace person {
             return 0;
         }
 
-        /// @brief End a Person's life and set final Age
+        /// @brief End a PersonIMPL's life and set final Age
         void Die(DeathReason deathReason) {
             this->isAlive = false;
             SetDeathReason(deathReason);
@@ -249,7 +249,7 @@ namespace person {
             SetGenotypeThree(geno);
             person::FibrosisState fib;
             fib << vec[7];
-            SetTrueFibrosisState(fib);
+            this->infectionStatus.fibrosisState = fib;
             if (vec[8] == "1") {
                 DiagnoseHCV();
             }
@@ -315,8 +315,8 @@ namespace person {
             this->screeningDetails.numRNATests++;
         }
 
-        /// @brief Reset a Person's Link State to Unlinked
-        /// @param timestep Timestep during which the Person is Unlinked
+        /// @brief Reset a PersonIMPL's Link State to Unlinked
+        /// @param timestep Timestep during which the PersonIMPL is Unlinked
         void Unlink() {
             if (this->linkStatus.linkState == LinkageState::LINKED) {
                 this->linkStatus.linkState = LinkageState::UNLINKED;
@@ -324,9 +324,9 @@ namespace person {
             }
         }
 
-        /// @brief Reset a Person's Link State to Linked
-        /// @param timestep Timestep during which the Person is Linked
-        /// @param linkType The linkage type the Person recieves
+        /// @brief Reset a PersonIMPL's Link State to Linked
+        /// @param timestep Timestep during which the PersonIMPL is Linked
+        /// @param linkType The linkage type the PersonIMPL recieves
         void Link(LinkageType linkType) {
             this->linkStatus.linkState = LinkageState::LINKED;
             this->linkStatus.timeOfLinkChange = this->_currentTime;
@@ -334,7 +334,7 @@ namespace person {
             this->linkStatus.linkCount++;
         }
 
-        /// @brief Mark a Person as Identified as Infected
+        /// @brief Mark a PersonIMPL as Identified as Infected
         /// @param timestep Timestep during which Identification Occurs
         void DiagnoseHCV() {
             this->infectionStatus.identifiedHCV = true;
@@ -399,7 +399,8 @@ namespace person {
 
         bool IsAlive() const { return this->isAlive; }
 
-        /// @brief Getter for whether Person experienced fibtest two this cycle
+        /// @brief Getter for whether PersonIMPL experienced fibtest two this
+        /// cycle
         /// @return value of hadSecondTest
         bool HadSecondScreeningTest() const {
             return this->stagingDetails.hadSecondTest;
@@ -411,13 +412,13 @@ namespace person {
             return this->infectionStatus.identifiedHCV;
         }
 
-        /// @brief Getter for whether Person has initiated treatment
-        /// @return Boolean true if Person has initiated treatment, false
+        /// @brief Getter for whether PersonIMPL has initiated treatment
+        /// @return Boolean true if PersonIMPL has initiated treatment, false
         /// otherwise
         bool HasInitiatedTreatment() const {
             return this->treatmentDetails.initiatedTreatment;
         }
-        /// @brief Getter for whether Person is genotype three
+        /// @brief Getter for whether PersonIMPL is genotype three
         /// @return True if genotype three, false otherwise
         bool IsGenotypeThree() const {
             return this->infectionStatus.isGenotypeThree;
@@ -439,13 +440,14 @@ namespace person {
 
         int GetAge() const { return this->age; }
 
-        /// @brief Getter for the number of HCV infections experienced by Person
-        /// @return Number of HCV infections experienced by Person
+        /// @brief Getter for the number of HCV infections experienced by
+        /// PersonIMPL
+        /// @return Number of HCV infections experienced by PersonIMPL
         int GetTimesHCVInfected() const {
             return this->infectionStatus.timesInfected;
         }
 
-        /// @brief Get the running total of clearances for Person
+        /// @brief Get the running total of clearances for PersonIMPL
         int GetHCVClearances() const {
             return this->infectionStatus.timesCleared;
         };
@@ -537,14 +539,14 @@ namespace person {
         }
 
         /// @brief Getter for link count
-        /// @return Number of times Person has linked to care
+        /// @return Number of times PersonIMPL has linked to care
         int GetLinkCount() const { return this->linkStatus.linkCount; }
 
         /// @brief Getter for Linkage Type
         /// @return Linkage Type
         LinkageType GetLinkageType() const { return this->linkStatus.linkType; }
 
-        /// @brief Getter for the number of timesteps Person has been in
+        /// @brief Getter for the number of timesteps PersonIMPL has been in
         /// treatment
         /// @return Integer number of timesteps spent in treatment
         int GetTimeOfTreatmentInitiation() const {
@@ -598,13 +600,13 @@ namespace person {
         }
 
         /// @brief Getter for the person's sex
-        /// @return Person's sex
+        /// @return PersonIMPL's sex
         Sex GetSex() const { return this->sex; }
         /// @brief Getter for the person's stratified utilities
-        /// @return Person's stratified utilities
+        /// @return PersonIMPL's stratified utilities
         UtilityTracker GetUtility() const { return this->utilityTracker; }
 
-        /// @brief Getter for the Person's costs
+        /// @brief Getter for the PersonIMPL's costs
         /// @return cost::CostTracker containing this person's costs
         cost::CostTracker GetCosts() const { return this->costs; }
 
@@ -686,7 +688,7 @@ namespace person {
             this->infectionStatus.timeHCVChanged = this->_currentTime;
         }
 
-        /// @brief Setter for Person's treatment initiation state
+        /// @brief Setter for PersonIMPL's treatment initiation state
         /// @param incompleteTreatment Boolean value for initiated treatment
         /// state to be set
         void InitiateTreatment() {
@@ -696,7 +698,7 @@ namespace person {
         }
 
         /// @brief Setter for Pregnancy State
-        /// @param state Person's pregnancy State
+        /// @param state PersonIMPL's pregnancy State
         void SetPregnancyState(PregnancyState state) {
             this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
             this->pregnancyDetails.pregnancyState = state;
@@ -708,14 +710,14 @@ namespace person {
             this->pregnancyDetails.numMiscarriages += miscarriages;
         }
 
-        /// @brief Set Person's measured fibrosis state
+        /// @brief Set PersonIMPL's measured fibrosis state
         /// @param state
-        void SetTrueFibrosisState(FibrosisState state) {
+        void UpdateTrueFibrosis(FibrosisState state) {
             this->infectionStatus.timeFibrosisStateChanged = this->_currentTime;
             this->infectionStatus.fibrosisState = state;
         }
 
-        /// @brief Setter for whether Person is genotype three
+        /// @brief Setter for whether PersonIMPL is genotype three
         /// @param genotype True if infection is genotype three, false
         /// otherwise
         void SetGenotypeThree(bool genotype) {
@@ -723,7 +725,7 @@ namespace person {
         }
 
         /// @brief Setter for MOUD State
-        /// @param moud Person's new MOUD state
+        /// @param moud PersonIMPL's new MOUD state
         void SetMoudState(MOUD moud) {
             this->moudDetails.timeStartedMoud = this->_currentTime;
             this->moudDetails.moudState = moud;
@@ -747,7 +749,7 @@ namespace person {
     int count = 0;
 
     std::string sqlQuery = "";
-    std::ostream &operator<<(std::ostream &os, const PersonBase &person) {
+    std::ostream &operator<<(std::ostream &os, const Person &person) {
         os << "sex: " << person.GetSex() << std::endl;
         os << "alive: " << std::boolalpha << person.IsAlive()
            << "from: " << person.GetDeathReason() << std::endl;
@@ -769,318 +771,310 @@ namespace person {
     };
 
     /// Base Defined Pass Through Wrappers
-    PersonBase::PersonBase() {
-        pImplPERSON = std::make_unique<person::PersonBase::Person>();
+    Person::Person() {
+        pImplPERSON = std::make_unique<person::Person::PersonIMPL>();
     }
 
-    PersonBase::~PersonBase() = default;
+    Person::~Person() = default;
 
-    PersonBase::PersonBase(PersonBase &&p) noexcept = default;
-    PersonBase &PersonBase::operator=(PersonBase &&) noexcept = default;
+    Person::Person(Person &&p) noexcept = default;
+    Person &Person::operator=(Person &&) noexcept = default;
 
-    int PersonBase::CreatePersonFromTable(
+    int Person::CreatePersonFromTable(
         int id, std::shared_ptr<datamanagement::DataManagerBase> dm) {
         return pImplPERSON->CreatePersonFromTable(id, dm);
     }
 
-    int PersonBase::Grow() {
+    int Person::Grow() {
         pImplPERSON->Grow();
         return 0;
     }
-    int PersonBase::Die(DeathReason deathReason) {
+    int Person::Die(DeathReason deathReason) {
         pImplPERSON->Die(deathReason);
         return 0;
     }
-    int PersonBase::InfectHCV() {
+    int Person::InfectHCV() {
         pImplPERSON->InfectHCV();
         return 0;
     }
-    int PersonBase::ClearHCV() {
+    int Person::ClearHCV() {
         pImplPERSON->ClearHCV();
         return 0;
     }
-    int PersonBase::SetBehavior(const Behavior &bc) {
+    int Person::SetBehavior(const Behavior &bc) {
         pImplPERSON->SetBehavior(bc);
         return 0;
     }
-    int PersonBase::DiagnoseFibrosis(MeasuredFibrosisState &data) {
+    int Person::DiagnoseFibrosis(MeasuredFibrosisState &data) {
         data = pImplPERSON->DiagnoseFibrosis(data);
         return 0;
     }
-    int PersonBase::LoadICValues(std::string icValues) {
+    int Person::LoadICValues(std::string icValues) {
         pImplPERSON->LoadICValues(icValues);
         return 0;
     }
-    int PersonBase::AddHCVClearance() {
+    int Person::AddHCVClearance() {
         pImplPERSON->AddHCVClearance();
         return 0;
     }
-    int PersonBase::AddWithdrawal() {
+    int Person::AddWithdrawal() {
         pImplPERSON->AddWithdrawal();
         return 0;
     }
-    int PersonBase::AddToxicReaction() {
+    int Person::AddToxicReaction() {
         pImplPERSON->AddToxicReaction();
         return 0;
     }
-    int PersonBase::AddCompletedTreatment() {
+    int Person::AddCompletedTreatment() {
         pImplPERSON->AddCompletedTreatment();
         return 0;
     }
-    int PersonBase::AddSVR() {
+    int Person::AddSVR() {
         pImplPERSON->AddSVR();
         return 0;
     }
-    int PersonBase::MarkScreened() {
+    int Person::MarkScreened() {
         pImplPERSON->MarkScreened();
         return 0;
     }
-    int PersonBase::AddAbScreen() {
+    int Person::AddAbScreen() {
         pImplPERSON->AddAbScreen();
         return 0;
     }
-    int PersonBase::AddRnaScreen() {
+    int Person::AddRnaScreen() {
         pImplPERSON->AddRnaScreen();
         return 0;
     }
-    int PersonBase::Unlink() {
+    int Person::Unlink() {
         pImplPERSON->Unlink();
         return 0;
     }
-    int PersonBase::Link(LinkageType linkType) {
+    int Person::Link(LinkageType linkType) {
         pImplPERSON->Link(linkType);
         return 0;
     }
-    int PersonBase::DiagnoseHCV() {
+    int Person::DiagnoseHCV() {
         pImplPERSON->DiagnoseHCV();
         return 0;
     }
-    int PersonBase::AddCost(cost::Cost cost) {
+    int Person::AddCost(cost::Cost cost) {
         pImplPERSON->AddCost(cost);
         return 0;
     }
-    int PersonBase::ToggleOverdose() {
+    int Person::ToggleOverdose() {
         pImplPERSON->ToggleOverdose();
         return 0;
     }
-    int PersonBase::Miscarry() {
+    int Person::Miscarry() {
         pImplPERSON->Miscarry();
         return 0;
     }
-    int PersonBase::EndPostpartum() {
+    int Person::EndPostpartum() {
         pImplPERSON->EndPostpartum();
         return 0;
     }
-    int PersonBase::Impregnate() {
+    int Person::Impregnate() {
         pImplPERSON->Impregnate();
         return 0;
     }
-    int PersonBase::Stillbirth() {
+    int Person::Stillbirth() {
         pImplPERSON->Stillbirth();
         return 0;
     }
-    int PersonBase::AddChild(HCV hcv, bool test) {
+    int Person::AddChild(HCV hcv, bool test) {
         pImplPERSON->AddChild(hcv, test);
         return 0;
     }
     // Checks
-    bool PersonBase::IsAlive() const { return pImplPERSON->IsAlive(); }
-    bool PersonBase::HadSecondScreeningTest() const {
+    bool Person::IsAlive() const { return pImplPERSON->IsAlive(); }
+    bool Person::HadSecondScreeningTest() const {
         return pImplPERSON->HadSecondScreeningTest();
     }
-    bool PersonBase::IsIdentifiedAsHCVInfected() const {
+    bool Person::IsIdentifiedAsHCVInfected() const {
         return pImplPERSON->IsIdentifiedAsHCVInfected();
     }
-    bool PersonBase::HasInitiatedTreatment() const {
+    bool Person::HasInitiatedTreatment() const {
         return pImplPERSON->HasInitiatedTreatment();
     }
-    bool PersonBase::IsGenotypeThree() const {
+    bool Person::IsGenotypeThree() const {
         return pImplPERSON->IsGenotypeThree();
     }
-    bool PersonBase::IsBoomer() const { return pImplPERSON->IsBoomer(); }
-    bool PersonBase::IsCirrhotic() { return pImplPERSON->IsCirrhotic(); }
+    bool Person::IsBoomer() const { return pImplPERSON->IsBoomer(); }
+    bool Person::IsCirrhotic() { return pImplPERSON->IsCirrhotic(); }
     // Getters
-    int PersonBase::GetID() const { return pImplPERSON->GetID(); }
-    int PersonBase::GetCurrentTimestep() const {
+    int Person::GetID() const { return pImplPERSON->GetID(); }
+    int Person::GetCurrentTimestep() const {
         return pImplPERSON->GetCurrentTimestep();
     }
-    int PersonBase::GetAge() const { return pImplPERSON->GetAge(); }
-    int PersonBase::GetTimesHCVInfected() const {
+    int Person::GetAge() const { return pImplPERSON->GetAge(); }
+    int Person::GetTimesHCVInfected() const {
         return pImplPERSON->GetTimesHCVInfected();
     }
-    int PersonBase::GetHCVClearances() const {
+    int Person::GetHCVClearances() const {
         return pImplPERSON->GetHCVClearances();
     }
-    int PersonBase::GetWithdrawals() const {
-        return pImplPERSON->GetWithdrawals();
-    }
-    int PersonBase::GetToxicReactions() const {
+    int Person::GetWithdrawals() const { return pImplPERSON->GetWithdrawals(); }
+    int Person::GetToxicReactions() const {
         return pImplPERSON->GetToxicReactions();
     }
-    int PersonBase::GetCompletedTreatments() const {
+    int Person::GetCompletedTreatments() const {
         return pImplPERSON->GetCompletedTreatments();
     }
-    int PersonBase::GetSVRs() const { return pImplPERSON->GetSVRs(); }
-    int PersonBase::GetNumberOfABTests() const {
+    int Person::GetSVRs() const { return pImplPERSON->GetSVRs(); }
+    int Person::GetNumberOfABTests() const {
         return pImplPERSON->GetNumberOfABTests();
     }
-    int PersonBase::GetNumberOfRNATests() const {
+    int Person::GetNumberOfRNATests() const {
         return pImplPERSON->GetNumberOfRNATests();
     }
-    int PersonBase::GetTimeOfLastScreening() const {
+    int Person::GetTimeOfLastScreening() const {
         return pImplPERSON->GetTimeOfLastScreening();
     }
-    int PersonBase::GetTimeSinceLastScreening() const {
+    int Person::GetTimeSinceLastScreening() const {
         return pImplPERSON->GetCurrentTimestep() - GetTimeOfLastScreening();
     }
-    bool PersonBase::GetCurrentlyOverdosing() const {
+    bool Person::GetCurrentlyOverdosing() const {
         return pImplPERSON->GetCurrentlyOverdosing();
     }
-    int PersonBase::GetNumberOfOverdoses() const {
+    int Person::GetNumberOfOverdoses() const {
         return pImplPERSON->GetNumberOfOverdoses();
     }
-    FibrosisState PersonBase::GetTrueFibrosisState() const {
+    FibrosisState Person::GetTrueFibrosisState() const {
         return pImplPERSON->GetTrueFibrosisState();
     }
-    DeathReason PersonBase::GetDeathReason() const {
+    DeathReason Person::GetDeathReason() const {
         return pImplPERSON->GetDeathReason();
     }
-    HCV PersonBase::GetHCV() const { return pImplPERSON->GetHCV(); }
-    Behavior PersonBase::GetBehavior() const {
-        return pImplPERSON->GetBehavior();
-    }
-    int PersonBase::GetTimeBehaviorChange() const {
+    HCV Person::GetHCV() const { return pImplPERSON->GetHCV(); }
+    Behavior Person::GetBehavior() const { return pImplPERSON->GetBehavior(); }
+    int Person::GetTimeBehaviorChange() const {
         return pImplPERSON->GetTimeBehaviorChange();
     }
-    int PersonBase::GetTimeHCVChanged() const {
+    int Person::GetTimeHCVChanged() const {
         return pImplPERSON->GetTimeHCVChanged();
     }
 
-    int PersonBase::GetTimeSinceHCVChanged() const {
+    int Person::GetTimeSinceHCVChanged() const {
         return pImplPERSON->GetCurrentTimestep() - GetTimeHCVChanged();
     }
 
-    int PersonBase::GetTimeTrueFibrosisStateChanged() const {
+    int Person::GetTimeTrueFibrosisStateChanged() const {
         return pImplPERSON->GetTimeTrueFibrosisStateChanged();
     }
-    bool PersonBase::GetSeropositivity() const {
+    bool Person::GetSeropositivity() const {
         return pImplPERSON->GetSeropositivity();
     }
-    int PersonBase::GetTimeHCVIdentified() const {
+    int Person::GetTimeHCVIdentified() const {
         return pImplPERSON->GetTimeHCVIdentified();
     }
-    LinkageState PersonBase::GetLinkState() const {
+    LinkageState Person::GetLinkState() const {
         return pImplPERSON->GetLinkState();
     }
-    int PersonBase::GetTimeOfLinkChange() const {
+    int Person::GetTimeOfLinkChange() const {
         return pImplPERSON->GetTimeOfLinkChange();
     }
-    int PersonBase::GetTimeSinceLinkChange() const {
+    int Person::GetTimeSinceLinkChange() const {
         return GetCurrentTimestep() - GetTimeOfLinkChange();
     }
-    int PersonBase::GetLinkCount() const { return pImplPERSON->GetLinkCount(); }
-    LinkageType PersonBase::GetLinkageType() const {
+    int Person::GetLinkCount() const { return pImplPERSON->GetLinkCount(); }
+    LinkageType Person::GetLinkageType() const {
         return pImplPERSON->GetLinkageType();
     }
-    int PersonBase::GetTimeOfTreatmentInitiation() const {
+    int Person::GetTimeOfTreatmentInitiation() const {
         return pImplPERSON->GetTimeOfTreatmentInitiation();
     }
-    int PersonBase::GetTimeSinceTreatmentInitiation() const {
+    int Person::GetTimeSinceTreatmentInitiation() const {
         return GetCurrentTimestep() - GetTimeOfTreatmentInitiation();
     }
 
-    PregnancyState PersonBase::GetPregnancyState() const {
+    PregnancyState Person::GetPregnancyState() const {
         return pImplPERSON->GetPregnancyState();
     }
-    int PersonBase::GetTimeOfPregnancyChange() const {
+    int Person::GetTimeOfPregnancyChange() const {
         return pImplPERSON->GetTimeOfPregnancyChange();
     }
-    int PersonBase::GetTimeSincePregnancyChange() const {
+    int Person::GetTimeSincePregnancyChange() const {
         return pImplPERSON->GetTimeSincePregnancyChange();
     }
-    std::vector<Child> PersonBase::GetChildren() const {
+    std::vector<Child> Person::GetChildren() const {
         return pImplPERSON->GetChildren();
     }
-    int PersonBase::GetNumMiscarriages() const {
+    int Person::GetNumMiscarriages() const {
         return pImplPERSON->GetNumMiscarriages();
     }
-    int PersonBase::GetTimeOfFibrosisStaging() const {
+    int Person::GetTimeOfFibrosisStaging() const {
         return pImplPERSON->GetTimeOfFibrosisStaging();
     }
-    int PersonBase::GetTimeSinceFibrosisStaging() const {
+    int Person::GetTimeSinceFibrosisStaging() const {
         return pImplPERSON->GetCurrentTimestep() -
                pImplPERSON->GetTimeOfFibrosisStaging();
     }
-    MOUD PersonBase::GetMoudState() const {
-        return pImplPERSON->GetMoudState();
-    }
-    MeasuredFibrosisState PersonBase::GetMeasuredFibrosisState() const {
+    MOUD Person::GetMoudState() const { return pImplPERSON->GetMoudState(); }
+    MeasuredFibrosisState Person::GetMeasuredFibrosisState() const {
         return pImplPERSON->GetMeasuredFibrosisState();
     }
-    int PersonBase::GetTimeStartedMoud() const {
+    int Person::GetTimeStartedMoud() const {
         return pImplPERSON->GetTimeStartedMoud();
     }
-    Sex PersonBase::GetSex() const { return pImplPERSON->GetSex(); }
-    UtilityTracker PersonBase::GetUtility() const {
+    Sex Person::GetSex() const { return pImplPERSON->GetSex(); }
+    UtilityTracker Person::GetUtility() const {
         return pImplPERSON->GetUtility();
     }
-    cost::CostTracker PersonBase::GetCosts() const {
+    cost::CostTracker Person::GetCosts() const {
         return pImplPERSON->GetCosts();
     }
-    Health PersonBase::GetHealth() const { return pImplPERSON->GetHealth(); }
-    BehaviorDetails PersonBase::GetBehaviorDetails() const {
+    Health Person::GetHealth() const { return pImplPERSON->GetHealth(); }
+    BehaviorDetails Person::GetBehaviorDetails() const {
         return pImplPERSON->GetBehaviorDetails();
     }
-    LinkageDetails PersonBase::GetLinkStatus() const {
+    LinkageDetails Person::GetLinkStatus() const {
         return pImplPERSON->GetLinkStatus();
     }
-    MOUDDetails PersonBase::GetMOUDDetails() const {
+    MOUDDetails Person::GetMOUDDetails() const {
         return pImplPERSON->GetMOUDDetails();
     }
-    PregnancyDetails PersonBase::GetPregnancyDetails() const {
+    PregnancyDetails Person::GetPregnancyDetails() const {
         return pImplPERSON->GetPregnancyDetails();
     }
-    StagingDetails PersonBase::GetFibrosisStagingDetails() const {
+    StagingDetails Person::GetFibrosisStagingDetails() const {
         return pImplPERSON->GetFibrosisStagingDetails();
     }
-    ScreeningDetails PersonBase::GetScreeningDetails() const {
+    ScreeningDetails Person::GetScreeningDetails() const {
         return pImplPERSON->GetScreeningDetails();
     }
-    TreatmentDetails PersonBase::GetTreatmentDetails() const {
+    TreatmentDetails Person::GetTreatmentDetails() const {
         return pImplPERSON->GetTreatmentDetails();
     }
-    std::string PersonBase::GetPersonDataString() const {
+    std::string Person::GetPersonDataString() const {
         return pImplPERSON->GetPersonDataString();
     }
     // Setters
-    void PersonBase::SetDeathReason(DeathReason deathReason) {
+    void Person::SetDeathReason(DeathReason deathReason) {
         pImplPERSON->SetDeathReason(deathReason);
     }
-    void PersonBase::SetAge(int age) { pImplPERSON->SetAge(age); }
-    void PersonBase::GiveSecondScreeningTest(bool state) {
+    void Person::SetAge(int age) { pImplPERSON->SetAge(age); }
+    void Person::GiveSecondScreeningTest(bool state) {
         pImplPERSON->GiveSecondScreeningTest(state);
     }
-    void PersonBase::SetSeropositivity(bool seropositive) {
+    void Person::SetSeropositivity(bool seropositive) {
         pImplPERSON->SetSeropositivity(seropositive);
     }
-    void PersonBase::SetHCV(HCV hcv) { pImplPERSON->SetHCV(hcv); }
-    void PersonBase::InitiateTreatment() { pImplPERSON->InitiateTreatment(); }
-    void PersonBase::SetPregnancyState(PregnancyState state) {
+    void Person::SetHCV(HCV hcv) { pImplPERSON->SetHCV(hcv); }
+    void Person::InitiateTreatment() { pImplPERSON->InitiateTreatment(); }
+    void Person::SetPregnancyState(PregnancyState state) {
         pImplPERSON->SetPregnancyState(state);
     }
-    void PersonBase::SetNumMiscarriages(int miscarriages) {
+    void Person::SetNumMiscarriages(int miscarriages) {
         pImplPERSON->SetNumMiscarriages(miscarriages);
     }
-    void PersonBase::SetTrueFibrosisState(FibrosisState state) {
-        pImplPERSON->SetTrueFibrosisState(state);
+    void Person::UpdateTrueFibrosis(FibrosisState state) {
+        pImplPERSON->UpdateTrueFibrosis(state);
     }
-    void PersonBase::SetGenotypeThree(bool genotype) {
+    void Person::SetGenotypeThree(bool genotype) {
         pImplPERSON->SetGenotypeThree(genotype);
     }
-    void PersonBase::SetMoudState(MOUD moud) {
-        pImplPERSON->SetMoudState(moud);
-    }
-    void PersonBase::SetUtility(double util) { pImplPERSON->SetUtility(util); }
-    void PersonBase::SetBoomer(bool status) { pImplPERSON->SetBoomer(status); }
+    void Person::SetMoudState(MOUD moud) { pImplPERSON->SetMoudState(moud); }
+    void Person::SetUtility(double util) { pImplPERSON->SetUtility(util); }
+    void Person::SetBoomer(bool status) { pImplPERSON->SetBoomer(status); }
 
 } // namespace person

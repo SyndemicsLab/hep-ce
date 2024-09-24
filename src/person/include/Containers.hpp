@@ -112,6 +112,8 @@ namespace person {
     };
     std::ostream &operator<<(std::ostream &os, const FibrosisState &inst);
     FibrosisState &operator<<(FibrosisState &inst, const std::string &str);
+    FibrosisState &operator++(FibrosisState &inst);
+    FibrosisState operator++(FibrosisState &inst, int);
 
     /// @brief Classification of hepatocellular carcinoma (HCC) state
     /// @details Advanced liver fibrosis and cirrhosis significantly increase
@@ -149,6 +151,8 @@ namespace person {
                              const MeasuredFibrosisState &inst);
     MeasuredFibrosisState &operator<<(MeasuredFibrosisState &inst,
                                       const std::string &str);
+    MeasuredFibrosisState &operator++(MeasuredFibrosisState &inst);
+    MeasuredFibrosisState operator++(MeasuredFibrosisState &inst, int);
 
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
     enum class MOUD {

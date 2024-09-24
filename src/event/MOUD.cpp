@@ -26,15 +26,15 @@ namespace event {
         /// individual Person from the SQL Table
         /// @param person Person to retrieve transition rates for
         /// @return Vector of Transition Rates for each MOUD status
-        std::vector<double> getTransitions(person::PersonBase &person);
+        std::vector<double> getTransitions(person::Person &person);
 
         /// @brief Add cost based on person's current treatment status upon
         /// "experiencing" this event
         /// @param person Person accruing cost
-        void insertMOUDCost(person::PersonBase &person);
+        void insertMOUDCost(person::Person &person);
 
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
 
@@ -78,7 +78,7 @@ namespace event {
     MOUD::MOUD(MOUD &&) noexcept = default;
     MOUD &MOUD::operator=(MOUD &&) noexcept = default;
 
-    void MOUD::doEvent(person::PersonBase &person,
+    void MOUD::doEvent(person::Person &person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

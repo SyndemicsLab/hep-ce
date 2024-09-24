@@ -31,7 +31,7 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::PersonBase &person) {
+        std::string buildSQL(person::Person &person) {
             std::stringstream sql;
             std::string age_years =
                 std::to_string((int)(person.GetAge() / 12.0));
@@ -43,7 +43,7 @@ namespace event {
         }
 
         std::vector<double>
-        getInfectProb(person::PersonBase &person,
+        getInfectProb(person::Person &person,
                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
             std::vector<double> storage;
@@ -63,7 +63,7 @@ namespace event {
         }
 
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             // only those who aren't infected go to the rest of the event.
@@ -98,7 +98,7 @@ namespace event {
     Infections &Infections::operator=(Infections &&) noexcept = default;
 
     void
-    Infections::doEvent(person::PersonBase &person,
+    Infections::doEvent(person::Person &person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

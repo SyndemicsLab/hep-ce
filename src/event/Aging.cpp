@@ -38,7 +38,7 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::PersonBase const &person) const {
+        std::string buildSQL(person::Person const &person) const {
             std::string a = std::to_string((int)(person.GetAge() / 12.0));
             std::stringstream sql;
             sql << "SELECT cost, utility FROM background_costs ";
@@ -58,7 +58,7 @@ namespace event {
         /// @brief Adds person's background cost
         /// @param person The person to whom cost will be added
         void addBackgroundCostAndUtility(
-            person::PersonBase &person,
+            person::Person &person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
             std::vector<struct cost_util> storage = {};
@@ -83,7 +83,7 @@ namespace event {
         }
 
     public:
-        void doEvent(person::PersonBase &person,
+        void doEvent(person::Person &person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
             person.Grow();
             this->addBackgroundCostAndUtility(person, dm);
@@ -96,7 +96,7 @@ namespace event {
     Aging::Aging(Aging &&) noexcept = default;
     Aging &Aging::operator=(Aging &&) noexcept = default;
 
-    void Aging::doEvent(person::PersonBase &person,
+    void Aging::doEvent(person::Person &person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm);

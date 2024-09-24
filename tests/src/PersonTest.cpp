@@ -41,7 +41,7 @@ private:
     }
 
 protected:
-    std::shared_ptr<person::PersonBase> testPerson;
+    std::shared_ptr<person::Person> testPerson;
     void SetUp() override {
         RegisterLogger();
         std::shared_ptr<datamanagement::MOCKDataManager> dm =
@@ -164,7 +164,7 @@ TEST_F(PersonTest, DeathReason) {
 
 TEST_F(PersonTest, FibrosisState) {
     person::FibrosisState state = person::FibrosisState::F3;
-    testPerson->SetTrueFibrosisState(state);
+    testPerson->UpdateTrueFibrosis(state);
     EXPECT_EQ(state, testPerson->GetTrueFibrosisState());
 }
 
@@ -229,7 +229,7 @@ TEST_F(PersonTest, TimeFibrosisChanged) {
     testPerson->Grow();
     EXPECT_EQ(0, testPerson->GetTimeTrueFibrosisStateChanged());
     person::FibrosisState state = person::FibrosisState::F3;
-    testPerson->SetTrueFibrosisState(state);
+    testPerson->UpdateTrueFibrosis(state);
     testPerson->Grow();
     EXPECT_EQ(3, testPerson->GetTimeTrueFibrosisStateChanged());
 }

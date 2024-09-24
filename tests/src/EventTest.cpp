@@ -34,14 +34,42 @@ using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
 
-struct behavior_trans_select {
-    double never = 0.0;
-    double fni = 0.0;
-    double fi = 0.0;
-    double ni = 0.0;
-    double in = 1.0;
+struct person_select {
+    person::Sex sex = person::Sex::MALE;
+    int age = 25;
+    bool isAlive = true;
+    person::DeathReason deathReason = person::DeathReason::NA;
+    int identifiedHCV = false;
+    int timeInfectionIdentified = -1;
+    person::HCV hcv = person::HCV::NONE;
+    person::FibrosisState fibrosisState = person::FibrosisState::NONE;
+    bool isGenotypeThree = false;
+    bool seropositive = false;
+    int timeHCVChanged = -1;
+    int timeFibrosisStateChanged = -1;
+    person::Behavior drugBehavior = person::Behavior::NEVER;
+    int timeLastActiveDrugUse = -1;
+    person::LinkageState linkageState = person::LinkageState::NEVER;
+    int timeOfLinkChange = -1;
+    person::LinkageType linkageType = person::LinkageType::BACKGROUND;
+    int linkCount = 0;
+    person::MeasuredFibrosisState measuredFibrosisState =
+        person::MeasuredFibrosisState::NONE;
+    int timeOfLastStaging = -1;
+    int timeOfLastScreening = -1;
+    int numABTests = 0;
+    int numRNATests = 0;
+    int timesInfected = 0;
+    int timesCleared = 0;
+    bool initiatedTreatment = false;
+    int timeOfTreatmentInitiation = -1;
+    double minUtility = 1.0;
+    double multUtility = 1.0;
+    int treatmentWithdrawals = 0;
+    int treatmentToxicReactions = 0;
+    int completedTreatments = 0;
+    int svrs = 0;
 };
-
 class EventTest : public ::testing::Test {
 private:
     void RegisterLogger() {
@@ -55,7 +83,7 @@ private:
     }
 
 protected:
-    std::shared_ptr<person::PersonBase> testPerson;
+    std::shared_ptr<person::Person> testPerson;
     std::shared_ptr<datamanagement::MOCKDataManager> person_dm;
     event::EventFactory efactory;
     std::unique_ptr<stats::Decider> decider;
@@ -70,24 +98,29 @@ protected:
     void TearDown() override { spdlog::drop("main"); }
 };
 
+ACTION_P(SetArg2ToPersonCallbackValue, value) {
+    *reinterpret_cast<struct person_select *>(arg2) = *value;
+}
+
 TEST_F(EventTest, Aging) {
+    struct person_select person;
     EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(testing::Return(0));
-    testPerson->CreatePersonFromTable(4321, NULL);
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
+    testPerson->CreatePersonFromTable(4321, person_dm);
     std::shared_ptr<event::Event> event = efactory.create("Aging");
-    int first_age = 25;
-    testPerson->SetAge(first_age);
+    int first_age = testPerson->GetAge();
     event->Execute(*testPerson, NULL, decider);
     EXPECT_EQ(first_age + 1, testPerson->GetAge());
 }
 
 TEST_F(EventTest, BehaviorChanges) {
+    struct person_select person;
     EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(testing::Return(0));
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
     testPerson->CreatePersonFromTable(4321, person_dm);
     std::shared_ptr<event::Event> event = efactory.create("BehaviorChanges");
-
-    struct behavior_trans_select storage;
 
     // I want to add storage as the argument from SelectCustomCallback but GMock
     // is being a pain
@@ -95,15 +128,16 @@ TEST_F(EventTest, BehaviorChanges) {
         std::make_unique<datamanagement::MOCKDataManager>();
     EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillRepeatedly(testing::Return(0));
-    // .WillRepeatedly(SetArgPointee<2>(SetBehaviorTransition(storage)));
 
     event->Execute(*testPerson, event_dm, decider);
     EXPECT_EQ(person::Behavior::NONINJECTION, testPerson->GetBehavior());
 }
 
 TEST_F(EventTest, Clearance) {
+    struct person_select person;
     EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(testing::Return(0));
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
     testPerson->CreatePersonFromTable(4321, person_dm);
     std::shared_ptr<event::Event> event = efactory.create("Clearance");
 
@@ -122,8 +156,10 @@ TEST_F(EventTest, Clearance) {
 }
 
 TEST_F(EventTest, Death) {
+    struct person_select person;
     EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(testing::Return(0));
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
     testPerson->CreatePersonFromTable(4321, person_dm);
     std::shared_ptr<event::Event> event = efactory.create("Death");
 
@@ -136,15 +172,17 @@ TEST_F(EventTest, Death) {
     EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4", _))
         .WillRepeatedly(DoAll(SetArgReferee<1>(f4_mort), Return(0)));
 
-    testPerson->SetTrueFibrosisState(person::FibrosisState::F4);
+    testPerson->UpdateTrueFibrosis(person::FibrosisState::F4);
     EXPECT_EQ(true, testPerson->IsAlive());
     event->Execute(*testPerson, event_dm, decider);
     EXPECT_EQ(false, testPerson->IsAlive());
 }
 
 TEST_F(EventTest, FibrosisProgression) {
+    struct person_select person;
     EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(testing::Return(0));
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
     testPerson->CreatePersonFromTable(4321, person_dm);
     std::shared_ptr<event::Event> event =
         efactory.create("FibrosisProgression");
@@ -165,7 +203,161 @@ TEST_F(EventTest, FibrosisProgression) {
         .WillRepeatedly(DoAll(SetArgReferee<1>(fib_1), Return(0)));
 
     testPerson->SetHCV(person::HCV::CHRONIC);
-    testPerson->SetTrueFibrosisState(person::FibrosisState::F0);
+    testPerson->UpdateTrueFibrosis(person::FibrosisState::F0);
     event->Execute(*testPerson, event_dm, decider);
     EXPECT_EQ(person::FibrosisState::F1, testPerson->GetTrueFibrosisState());
+}
+
+ACTION_P(SetArg2ToCallbackValue, value) {
+    *reinterpret_cast<std::vector<double> *>(arg2) = *value;
+}
+
+TEST_F(EventTest, FibrosisStaging) {
+    struct person_select person;
+    person.fibrosisState = person::FibrosisState::F4;
+    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
+    testPerson->CreatePersonFromTable(4321, person_dm);
+
+    std::shared_ptr<event::Event> event = efactory.create("FibrosisStaging");
+
+    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
+        std::make_unique<datamanagement::MOCKDataManager>();
+
+    std::vector<double> storage = {0.0, 0.0, 1.0, 0.0};
+    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
+
+    std::string t1 = std::string("0.0");
+    EXPECT_CALL(*event_dm, GetFromConfig(_, _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(t1), Return(0)));
+
+    std::string period = std::string("12");
+    EXPECT_CALL(*event_dm, GetFromConfig("fibrosis_staging.period", _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(period), Return(0)));
+
+    std::string col = std::string("colname");
+    EXPECT_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one", _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(col), Return(0)));
+
+    event->Execute(*testPerson, event_dm, decider);
+    EXPECT_EQ(person::MeasuredFibrosisState::F4,
+              testPerson->GetMeasuredFibrosisState());
+}
+
+TEST_F(EventTest, Infections) {
+    struct person_select person;
+    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
+    testPerson->CreatePersonFromTable(4321, person_dm);
+
+    std::shared_ptr<event::Event> event = efactory.create("Infections");
+
+    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
+        std::make_unique<datamanagement::MOCKDataManager>();
+
+    std::vector<double> storage = {1.0};
+    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
+
+    testPerson->SetHCV(person::HCV::NONE);
+    event->Execute(*testPerson, event_dm, decider);
+    EXPECT_EQ(person::HCV::ACUTE, testPerson->GetHCV());
+}
+
+TEST_F(EventTest, Linking) {
+    struct person_select person;
+    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
+    testPerson->CreatePersonFromTable(4321, person_dm);
+
+    std::shared_ptr<event::Event> event = efactory.create("Linking");
+
+    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
+        std::make_unique<datamanagement::MOCKDataManager>();
+
+    std::vector<double> storage = {1.0};
+    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
+
+    std::string cost = std::string("20.25");
+    EXPECT_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(cost), Return(0)));
+
+    std::string relink = std::string("1.0");
+    EXPECT_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(relink), Return(0)));
+
+    testPerson->SetHCV(person::HCV::ACUTE);
+    int numLinks = testPerson->GetLinkCount();
+    event->Execute(*testPerson, event_dm, decider);
+    EXPECT_EQ(person::LinkageState::LINKED, testPerson->GetLinkState());
+    EXPECT_EQ(numLinks + 1, testPerson->GetLinkCount());
+}
+
+TEST_F(EventTest, Screening) {
+    struct person_select person;
+    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
+    testPerson->CreatePersonFromTable(4321, person_dm);
+
+    std::shared_ptr<event::Event> event = efactory.create("Screening");
+
+    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
+        std::make_unique<datamanagement::MOCKDataManager>();
+
+    std::vector<double> storage = {1.0};
+    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
+
+    std::string specificity = std::string("1.0");
+    EXPECT_CALL(*event_dm, GetFromConfig(_, _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(specificity), Return(0)));
+
+    std::string intervention = std::string("periodic");
+    EXPECT_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(intervention), Return(0)));
+
+    std::string period = std::string("6");
+    EXPECT_CALL(*event_dm, GetFromConfig("screening.period", _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(period), Return(0)));
+
+    event->Execute(*testPerson, event_dm, decider);
+    EXPECT_EQ(0, testPerson->GetTimeSinceLastScreening());
+}
+
+TEST_F(EventTest, Treatment) {
+    struct person_select person;
+    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(
+            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
+    testPerson->CreatePersonFromTable(4321, person_dm);
+
+    std::shared_ptr<event::Event> event = efactory.create("Treatment");
+
+    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
+        std::make_unique<datamanagement::MOCKDataManager>();
+
+    std::vector<double> storage = {1.0};
+    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
+        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
+
+    std::string specificity = std::string("1.0");
+    EXPECT_CALL(*event_dm, GetFromConfig(_, _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(specificity), Return(0)));
+
+    std::string intervention = std::string("periodic");
+    EXPECT_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(intervention), Return(0)));
+
+    std::string period = std::string("6");
+    EXPECT_CALL(*event_dm, GetFromConfig("screening.period", _))
+        .WillRepeatedly(DoAll(SetArgReferee<1>(period), Return(0)));
+
+    event->Execute(*testPerson, event_dm, decider);
+    EXPECT_EQ(0, testPerson->GetTimeSinceLastScreening());
 }
