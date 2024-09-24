@@ -38,7 +38,7 @@ dminstall () {
 # set default build type
 BUILDTYPE="Debug"
 BUILD_TESTS=""
-BUILD_SHARED_LIBS="ON"
+BUILD_SHARED_LIBS="OFF"
 
 # process optional command line flags
 while getopts ":hplt:" option; do
@@ -59,7 +59,7 @@ while getopts ":hplt:" option; do
 	    esac
 	    ;;
 	l)
-        BUILD_SHARED_LIBS="OFF"
+        BUILD_SHARED_LIBS="ON"
         ;;
     p)
 	    BUILD_TESTS="ON"
