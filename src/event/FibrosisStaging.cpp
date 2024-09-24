@@ -30,10 +30,12 @@ namespace event {
             d->push_back(std::stod(data[0]));
             return 0;
         }
-        std::string buildSQL(person::Person &person, std::string columns) {
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person,
+                             std::string columns) {
             std::stringstream sql;
             sql << "SELECT " << columns << " FROM fibrosis ";
-            sql << "WHERE true_fib = '" << person.GetTrueFibrosisState() << "'";
+            sql << "WHERE true_fib = '" << person->GetTrueFibrosisState()
+                << "'";
             sql << " LIMIT 4;"; // weird issue with returning a bunch hits
             return sql.str();
         }
@@ -65,7 +67,7 @@ namespace event {
         /// @param configLookupKey
         /// @return Vector of fibrosis staging outcome probabilities
         std::vector<double> getTransitionProbabilities(
-            person::Person &person,
+            std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             std::string column) {
             std::string query = buildSQL(person, column);
@@ -85,7 +87,7 @@ namespace event {
             return storage;
         }
 
-        void addStagingCost(person::Person &person,
+        void addStagingCost(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             const bool testTwo = false) {
             std::string data;
@@ -103,16 +105,16 @@ namespace event {
                                    ((std::string)(testTwo ? "1" : "2")) + ")";
             cost::Cost fibrosisStagingCost = {cost::CostCategory::STAGING,
                                               costName, cost};
-            person.AddCost(fibrosisStagingCost);
+            person->AddCost(fibrosisStagingCost);
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
 
             // 0. Check if Person even has Fibrosis, exit if they are none
-            if (person.GetTrueFibrosisState() == person::FibrosisState::NONE) {
+            if (person->GetTrueFibrosisState() == person::FibrosisState::NONE) {
                 return;
             }
 
@@ -122,8 +124,8 @@ namespace event {
             std::string data;
             dm->GetFromConfig("fibrosis_staging.period", data);
             int period = std::stoi(data);
-            if (person.GetTimeSinceFibrosisStaging() < period &&
-                person.GetTimeOfFibrosisStaging() != -1) {
+            if (person->GetTimeSinceFibrosisStaging() < period &&
+                person->GetTimeOfFibrosisStaging() != -1) {
                 return;
             }
 
@@ -138,7 +140,7 @@ namespace event {
             std::vector<double> probs =
                 getTransitionProbabilities(person, dm, data);
 
-            // 4. Decide which stage is assigned to the person.
+            // 4. Decide which stage is assigned to the person->
             int res = decider->GetDecision(probs) + 1;
             if (res >= (int)person::MeasuredFibrosisState::COUNT) {
                 spdlog::get("main")->error(
@@ -150,7 +152,7 @@ namespace event {
                 (person::MeasuredFibrosisState)res;
 
             // 5. Assign this value as the person's measured state.
-            person.DiagnoseFibrosis(stateOne);
+            person->DiagnoseFibrosis(stateOne);
             this->addStagingCost(person, dm);
 
             // 6. Get a vector of the probabilities of each of the possible
@@ -164,12 +166,12 @@ namespace event {
             }
             probs = getTransitionProbabilities(person, dm, data);
 
-            // 7. Decide which stage is assigned to the person.
+            // 7. Decide which stage is assigned to the person->
             if (probs.empty()) {
                 return;
             }
 
-            person.GiveSecondScreeningTest(true);
+            person->GiveSecondScreeningTest(true);
 
             person::MeasuredFibrosisState stateTwo =
                 (person::MeasuredFibrosisState)decider->GetDecision(probs);
@@ -188,8 +190,8 @@ namespace event {
                 // log an error
                 return;
             }
-            // 8. Assign this state to the person.
-            person.DiagnoseFibrosis(measured);
+            // 8. Assign this state to the person->
+            person->DiagnoseFibrosis(measured);
             this->addStagingCost(person, dm, true);
         }
     };
@@ -204,7 +206,7 @@ namespace event {
     FibrosisStaging::operator=(FibrosisStaging &&) noexcept = default;
 
     void FibrosisStaging::doEvent(
-        person::Person &person,
+        std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

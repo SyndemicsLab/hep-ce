@@ -26,7 +26,7 @@ namespace event {
     class VoluntaryRelinking::VoluntaryRelinkingIMPL {
     private:
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             std::string data;
@@ -39,13 +39,13 @@ namespace event {
             dm->GetFromConfig("linking.voluntary_relink_duration", data);
             int voluntaryRelinkDuration = std::stoi(data);
 
-            if (person.GetLinkState() != person::LinkageState::UNLINKED ||
-                (person.GetTimeSinceLinkChange()) > voluntaryRelinkDuration ||
+            if (person->GetLinkState() != person::LinkageState::UNLINKED ||
+                (person->GetTimeSinceLinkChange()) > voluntaryRelinkDuration ||
                 relink == 1) {
                 return; // if linked or never linked OR too long since last
                         // linked OR relink draw is false
             }
-            person.Link(person::LinkageType::BACKGROUND);
+            person->Link(person::LinkageType::BACKGROUND);
         }
     };
 
@@ -61,7 +61,7 @@ namespace event {
     VoluntaryRelinking::operator=(VoluntaryRelinking &&) noexcept = default;
 
     void VoluntaryRelinking::doEvent(
-        person::Person &person,
+        std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

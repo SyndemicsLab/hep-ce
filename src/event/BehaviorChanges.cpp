@@ -64,36 +64,38 @@ namespace event {
             return 0;
         }
 
-        std::string buildTransitionSQL(person::Person const &person) const {
-            int age_years = person.GetAge() / 12.0;
+        std::string
+        buildTransitionSQL(std::shared_ptr<person::PersonBase> person) const {
+            int age_years = person->GetAge() / 12.0;
             std::stringstream sql;
             sql << "SELECT never, former_noninjection, former_injection, "
                    "noninjection, injection ";
             sql << "FROM behavior_transitions ";
             sql << "WHERE age_years = '" << std::to_string(age_years) << "'";
-            sql << " AND gender = '" << person.GetSex() << "'";
-            sql << " AND moud = '" << person.GetMoudState() << "'";
-            sql << " AND drug_behavior = '" << person.GetBehavior() << "';";
+            sql << " AND gender = '" << person->GetSex() << "'";
+            sql << " AND moud = '" << person->GetMoudState() << "'";
+            sql << " AND drug_behavior = '" << person->GetBehavior() << "';";
 
             return sql.str();
         }
 
-        std::string buildCostSQL(person::Person const &person) const {
+        std::string
+        buildCostSQL(std::shared_ptr<person::PersonBase> person) const {
             std::stringstream sql;
             sql << "SELECT cost, utility FROM behavior_costs ";
             sql << "INNER JOIN behavior_utilities ON "
                    "((behavior_costs.gender = behavior_utilities.gender) "
                    "AND (behavior_costs.drug_behavior = "
                    "behavior_utilities.drug_behavior)) ";
-            sql << "WHERE ((behavior_costs.gender = '" << person.GetSex()
+            sql << "WHERE ((behavior_costs.gender = '" << person->GetSex()
                 << "')";
             sql << " AND (behavior_costs.drug_behavior = '"
-                << person.GetBehavior() << "'));";
+                << person->GetBehavior() << "'));";
             return sql.str();
         }
 
         void calculateCostAndUtility(
-            person::Person &person,
+            std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) const {
             std::string query = this->buildCostSQL(person);
             std::vector<struct behavior_costs_select> storage;
@@ -119,17 +121,17 @@ namespace event {
 
             cost::Cost behaviorCost = {this->costCategory, "Drug Behavior",
                                        storage[0].cost};
-            person.AddCost(behaviorCost);
-            person.SetUtility(storage[0].util);
+            person->AddCost(behaviorCost);
+            person->SetUtility(storage[0].util);
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
 
             // Determine person's current behavior classification
-            person::Behavior bc = person.GetBehavior();
+            person::Behavior bc = person->GetBehavior();
 
             // Insert person's behavior cost
             this->calculateCostAndUtility(person, dm);
@@ -178,7 +180,7 @@ namespace event {
 
             // 3. If the drawn state differs from the current state, change the
             // bools in BehaviorState to match
-            person.SetBehavior(toBC);
+            person->SetBehavior(toBC);
         }
     };
 
@@ -192,7 +194,7 @@ namespace event {
     BehaviorChanges::operator=(BehaviorChanges &&) noexcept = default;
 
     void BehaviorChanges::doEvent(
-        person::Person &person,
+        std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

@@ -32,21 +32,21 @@ namespace event {
             d->push_back(temp);
             return 0;
         }
-        std::string buildSQL(person::Person &person,
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person,
                              std::string const column) const {
             std::stringstream sql;
             std::string age_years =
-                std::to_string((int)(person.GetAge() / 12.0));
+                std::to_string((int)(person->GetAge() / 12.0));
             sql << "SELECT " << column;
             sql << " FROM screening_and_linkage ";
             sql << "WHERE ((age_years = '" << age_years << "')";
-            sql << " AND (gender = '" << person.GetSex() << "')";
-            sql << " AND (drug_behavior = '" << person.GetBehavior() << "'));";
+            sql << " AND (gender = '" << person->GetSex() << "')";
+            sql << " AND (drug_behavior = '" << person->GetBehavior() << "'));";
             return sql.str();
         }
 
         std::vector<double>
-        getTransitions(person::Person &person,
+        getTransitions(std::shared_ptr<person::PersonBase> person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::string columnKey) {
             std::unordered_map<std::string, std::string> selectCriteria;
@@ -68,19 +68,19 @@ namespace event {
             return result;
         }
 
-        void addLinkingCost(person::Person &person, std::string name,
-                            double cost) {
+        void addLinkingCost(std::shared_ptr<person::PersonBase> person,
+                            std::string name, double cost) {
             cost::Cost linkingCost = {cost::CostCategory::LINKING, name, cost};
-            person.AddCost(linkingCost);
+            person->AddCost(linkingCost);
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
-            if (person.GetHCV() == person::HCV::NONE) {
+            if (person->GetHCV() == person::HCV::NONE) {
                 // add false positive cost
-                person.Unlink();
+                person->Unlink();
                 std::string data;
                 dm->GetFromConfig("linking.false_positive_test_cost", data);
                 double falsePositiveCost = std::stod(data);
@@ -89,12 +89,12 @@ namespace event {
                 return;
             }
 
-            if (!person.IsIdentifiedAsHCVInfected()) {
-                person.DiagnoseHCV();
+            if (!person->IsIdentifiedAsHCVInfected()) {
+                person->DiagnoseHCV();
             }
 
             std::vector<double> probs;
-            if (person.GetLinkageType() == person::LinkageType::BACKGROUND) {
+            if (person->GetLinkageType() == person::LinkageType::BACKGROUND) {
                 // link probability
                 probs =
                     getTransitions(person, dm, "background_link_probability");
@@ -110,7 +110,7 @@ namespace event {
                     getTransitions(person, dm, "intervention_link_probability");
             }
 
-            if (person.GetLinkState() == person::LinkageState::UNLINKED) {
+            if (person->GetLinkState() == person::LinkageState::UNLINKED) {
                 // scale by relink multiplier
                 std::string data;
                 dm->GetFromConfig("linking.relink_multiplier", data);
@@ -125,10 +125,10 @@ namespace event {
             if (doLink) {
                 // need to figure out how to pass in the LinkageType to the
                 // event
-                person.Link(person.GetLinkageType());
+                person->Link(person->GetLinkageType());
             } else if (!doLink &&
-                       person.GetLinkState() == person::LinkageState::LINKED) {
-                person.Unlink();
+                       person->GetLinkState() == person::LinkageState::LINKED) {
+                person->Unlink();
             }
         }
     };
@@ -138,7 +138,7 @@ namespace event {
     Linking::Linking(Linking &&) noexcept = default;
     Linking &Linking::operator=(Linking &&) noexcept = default;
 
-    void Linking::doEvent(person::Person &person,
+    void Linking::doEvent(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                           std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

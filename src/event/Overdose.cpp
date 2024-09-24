@@ -22,17 +22,17 @@
 namespace event {
     class Overdose::OverdoseIMPL {
     private:
-        double getProbability(person::Person &person) {
+        double getProbability(std::shared_ptr<person::PersonBase> person) {
             // overdose probability is stratified by behavior classification and
             // MOUD state
             return 0.0;
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
-            person::Behavior bc = person.GetBehavior();
+            person::Behavior bc = person->GetBehavior();
             // return immediately if not in active use state
             if (bc < person::Behavior::NONINJECTION) {
                 return;
@@ -42,7 +42,7 @@ namespace event {
             // determine if person overdoses
             if (decider->GetDecision(
                     {1.0 - overdoseProbability, overdoseProbability})) {
-                person.ToggleOverdose();
+                person->ToggleOverdose();
             }
         }
     };
@@ -53,7 +53,7 @@ namespace event {
     Overdose::Overdose(Overdose &&) noexcept = default;
     Overdose &Overdose::operator=(Overdose &&) noexcept = default;
 
-    void Overdose::doEvent(person::Person &person,
+    void Overdose::doEvent(std::shared_ptr<person::PersonBase> person,
                            std::shared_ptr<datamanagement::DataManagerBase> dm,
                            std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

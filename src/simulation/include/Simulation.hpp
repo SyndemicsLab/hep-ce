@@ -22,7 +22,7 @@
 
 // Forward Defining Person to use in Execute
 namespace person {
-    class Person;
+    class PersonBase;
 }
 
 namespace event {

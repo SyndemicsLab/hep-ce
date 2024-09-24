@@ -51,9 +51,10 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::Person &person, std::string column) {
-            std::string geno3 = (person.IsGenotypeThree()) ? "TRUE" : "FALSE";
-            std::string cirr = (person.IsCirrhotic()) ? "TRUE" : "FALSE";
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person,
+                             std::string column) {
+            std::string geno3 = (person->IsGenotypeThree()) ? "TRUE" : "FALSE";
+            std::string cirr = (person->IsCirrhotic()) ? "TRUE" : "FALSE";
             std::stringstream sql;
 
             sql << "SELECT " << column << " FROM treatments ";
@@ -63,13 +64,14 @@ namespace event {
             return sql.str();
         }
 
-        bool isEligible(person::Person const &person) const {
-            person::FibrosisState fibrosisState = person.GetTrueFibrosisState();
-            person::Behavior behavior = person.GetBehavior();
-            int timeBehaviorChange = person.GetTimeBehaviorChange();
-            person::PregnancyState pregnancyState = person.GetPregnancyState();
+        bool isEligible(std::shared_ptr<person::PersonBase> person) const {
+            person::FibrosisState fibrosisState =
+                person->GetTrueFibrosisState();
+            person::Behavior behavior = person->GetBehavior();
+            int timeBehaviorChange = person->GetTimeBehaviorChange();
+            person::PregnancyState pregnancyState = person->GetPregnancyState();
             if (!isEligibleFibrosisStage(fibrosisState) ||
-                ((person.GetTimeSinceLinkChange()) > -1) ||
+                ((person->GetTimeSinceLinkChange()) > -1) ||
                 (behavior == person::Behavior::INJECTION) ||
                 (behavior == person::Behavior::FORMER_INJECTION &&
                  timeBehaviorChange < -1) ||
@@ -86,17 +88,18 @@ namespace event {
             return (fibrosisState < person::FibrosisState::NONE) ? true : false;
         }
 
-        void addTreatmentCostAndUtility(person::Person &person, double cost,
-                                        double util) {
+        void
+        addTreatmentCostAndUtility(std::shared_ptr<person::PersonBase> person,
+                                   double cost, double util) {
             cost::Cost treatmentCost = {cost::CostCategory::TREATMENT,
                                         "Treatment Cost", cost};
-            person.AddCost(treatmentCost);
-            person.SetUtility(util);
+            person->AddCost(treatmentCost);
+            person->SetUtility(util);
         }
 
-        bool isLostToFollowUp(person::Person &person,
+        bool isLostToFollowUp(std::shared_ptr<person::PersonBase> person,
                               std::unique_ptr<stats::Decider> &decider) {
-            if (person.HasInitiatedTreatment() || isEligible(person)) {
+            if (person->HasInitiatedTreatment() || isEligible(person)) {
                 return false;
             }
             std::string data;
@@ -106,20 +109,20 @@ namespace event {
             if (ltfu != 0) {
                 return false;
             }
-            person.Unlink();
+            person->Unlink();
             return true;
         }
 
-        void chargeCostOfVisit(person::Person &person) {
+        void chargeCostOfVisit(std::shared_ptr<person::PersonBase> person) {
             std::string data;
             dm->GetFromConfig("treatment.treatment_cost", data);
             double cost = std::stod(data);
             cost::Cost visitCost = {cost::CostCategory::TREATMENT,
                                     "Cost of Treatment Visit", cost};
-            person.AddCost(visitCost);
+            person->AddCost(visitCost);
         }
 
-        void chargeCostOfCourse(person::Person &person) {
+        void chargeCostOfCourse(std::shared_ptr<person::PersonBase> person) {
             std::string query = buildSQL(person, "treatment_cost");
             std::vector<double> storage;
             std::string error;
@@ -133,15 +136,15 @@ namespace event {
             }
             cost::Cost courseCost = {cost::CostCategory::TREATMENT,
                                      "Cost of Treatment Course", storage[0]};
-            person.AddCost(courseCost);
+            person->AddCost(courseCost);
 
             std::string data;
             dm->GetFromConfig("treatment.treatment_utility", data);
             double util = std::stod(data);
-            person.SetUtility(util);
+            person->SetUtility(util);
         }
 
-        bool doesWithdraw(person::Person &person,
+        bool doesWithdraw(std::shared_ptr<person::PersonBase> person,
                           std::unique_ptr<stats::Decider> &decider) {
             std::string query = buildSQL(person, "withdrawal_probability");
 
@@ -157,7 +160,7 @@ namespace event {
             return false;
         }
 
-        bool experiencedToxicity(person::Person &person,
+        bool experiencedToxicity(std::shared_ptr<person::PersonBase> person,
                                  std::unique_ptr<stats::Decider> &decider) {
             std::string query = buildSQL(person, "toxicity");
             std::vector<double> storage;
@@ -168,11 +171,11 @@ namespace event {
             return (toxicity == 1) ? true : false;
         }
 
-        bool initiatesTreatment(person::Person &person,
+        bool initiatesTreatment(std::shared_ptr<person::PersonBase> person,
                                 std::unique_ptr<stats::Decider> &decider) {
             // if person hasn't initialized draw, if they have, continue
             // treatment
-            if (person.HasInitiatedTreatment()) {
+            if (person->HasInitiatedTreatment()) {
                 return true;
             }
             std::string data;
@@ -186,19 +189,19 @@ namespace event {
                 return false;
             }
             // person initiates treatment -- set treatment initiation values
-            person.InitiateTreatment();
+            person->InitiateTreatment();
             return true;
         }
 
-        void quitEngagement(person::Person &person) {
+        void quitEngagement(std::shared_ptr<person::PersonBase> person) {
             // unlink from care
-            person.Unlink();
+            person->Unlink();
             // reset utility
-            person.SetUtility(1.0);
+            person->SetUtility(1.0);
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             this->dm = dm;
@@ -224,31 +227,31 @@ namespace event {
 
             // 6. Determine if the person withdraws from the treatment
             if (this->doesWithdraw(person, decider)) {
-                person.AddWithdrawal();
+                person->AddWithdrawal();
                 this->quitEngagement(person);
                 return;
             }
 
             // 7. Determine if the person has a toxic reaction
             if (this->experiencedToxicity(person, decider)) {
-                person.AddToxicReaction();
+                person->AddToxicReaction();
                 this->quitEngagement(person);
                 std::string data;
                 dm->GetFromConfig("treatment.tox_cost", data);
                 double cost = std::stod(data);
                 cost::Cost toxicityCost = {cost::CostCategory::TREATMENT,
                                            "Toxicity Cost", cost};
-                person.AddCost(toxicityCost);
+                person->AddCost(toxicityCost);
 
                 data.clear();
                 dm->GetFromConfig("treatment.tox_utility", data);
                 double utility = std::stod(data);
-                person.SetUtility(utility);
+                person->SetUtility(utility);
             }
 
             // 8. Determine if the person has been treated long enough, if they
             // achieve SVR
-            int timeSinceInitiation = person.GetTimeSinceTreatmentInitiation();
+            int timeSinceInitiation = person->GetTimeSinceTreatmentInitiation();
 
             std::string query = buildSQL(person, "time, svr");
 
@@ -258,11 +261,11 @@ namespace event {
                                               &storage, error);
 
             if (decider->GetDecision({storage[0].svr}) == 1) {
-                person.AddSVR();
-                person.ClearHCV();
+                person->AddSVR();
+                person->ClearHCV();
             }
             if (timeSinceInitiation >= storage[0].time) {
-                person.AddCompletedTreatment();
+                person->AddCompletedTreatment();
                 this->quitEngagement(person);
             }
         }
@@ -273,7 +276,7 @@ namespace event {
     Treatment::Treatment(Treatment &&) noexcept = default;
     Treatment &Treatment::operator=(Treatment &&) noexcept = default;
 
-    void Treatment::doEvent(person::Person &person,
+    void Treatment::doEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

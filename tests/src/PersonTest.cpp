@@ -41,7 +41,7 @@ private:
     }
 
 protected:
-    std::shared_ptr<person::Person> testPerson;
+    std::shared_ptr<person::PersonBase> testPerson;
     void SetUp() override {
         RegisterLogger();
         std::shared_ptr<datamanagement::MOCKDataManager> dm =

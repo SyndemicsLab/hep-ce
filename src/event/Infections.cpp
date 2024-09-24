@@ -31,19 +31,19 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::Person &person) {
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person) {
             std::stringstream sql;
             std::string age_years =
-                std::to_string((int)(person.GetAge() / 12.0));
+                std::to_string((int)(person->GetAge() / 12.0));
             sql << "SELECT incidence FROM incidence ";
             sql << "WHERE age_years = '" << age_years << "'";
-            sql << " AND gender = '" << person.GetSex() << "'";
-            sql << " AND drug_behavior = '" << person.GetBehavior() << "';";
+            sql << " AND gender = '" << person->GetSex() << "'";
+            sql << " AND drug_behavior = '" << person->GetBehavior() << "';";
             return sql.str();
         }
 
         std::vector<double>
-        getInfectProb(person::Person &person,
+        getInfectProb(std::shared_ptr<person::PersonBase> person,
                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
             std::vector<double> storage;
@@ -63,18 +63,18 @@ namespace event {
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             // only those who aren't infected go to the rest of the event.
             // those who are infected transition from acute to chronic after 6
             // months.
-            switch (person.GetHCV()) {
+            switch (person->GetHCV()) {
             case person::HCV::NONE:
                 break;
             case person::HCV::ACUTE:
-                if (person.GetTimeSinceHCVChanged() >= 6) {
-                    person.SetHCV(person::HCV::CHRONIC);
+                if (person->GetTimeSinceHCVChanged() >= 6) {
+                    person->SetHCV(person::HCV::CHRONIC);
                 }
                 return;
             case person::HCV::CHRONIC:
@@ -88,7 +88,7 @@ namespace event {
             if (value != 0) {
                 return;
             }
-            person.InfectHCV();
+            person->InfectHCV();
         }
     };
     Infections::Infections() { impl = std::make_unique<InfectionsIMPL>(); }
@@ -98,7 +98,7 @@ namespace event {
     Infections &Infections::operator=(Infections &&) noexcept = default;
 
     void
-    Infections::doEvent(person::Person &person,
+    Infections::doEvent(std::shared_ptr<person::PersonBase> person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

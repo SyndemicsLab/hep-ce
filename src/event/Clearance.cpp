@@ -24,7 +24,7 @@ namespace event {
     class Clearance::ClearanceIMPL {
     private:
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             std::string data;
@@ -44,7 +44,7 @@ namespace event {
             // clearance.
 
             // if person isn't infected or is chronic, nothing to do
-            if (person.GetHCV() != person::HCV::ACUTE) {
+            if (person->GetHCV() != person::HCV::ACUTE) {
                 return;
             }
             // 1. Get the probability of acute clearance
@@ -55,7 +55,7 @@ namespace event {
             if (doesNotClear) {
                 return;
             }
-            person.ClearHCV();
+            person->ClearHCV();
         }
     };
     Clearance::Clearance() { impl = std::make_unique<ClearanceIMPL>(); }
@@ -64,7 +64,7 @@ namespace event {
     Clearance::Clearance(Clearance &&) noexcept = default;
     Clearance &Clearance::operator=(Clearance &&) noexcept = default;
 
-    void Clearance::doEvent(person::Person &person,
+    void Clearance::doEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

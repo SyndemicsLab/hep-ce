@@ -38,8 +38,9 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::Person &person, std::string column) const {
-            int age_years = person.GetAge() / 12.0; // intentional truncation
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person,
+                             std::string column) const {
+            int age_years = person->GetAge() / 12.0; // intentional truncation
             std::stringstream sql;
             sql << "SELECT " + column;
             sql << " FROM antibody_testing ";
@@ -50,27 +51,27 @@ namespace event {
                    "screening_and_linkage.drug_behavior)) ";
             sql << " WHERE antibody_testing.age_years = '"
                 << std::to_string(age_years) << "'";
-            sql << " AND screening_and_linkage.gender = '" << person.GetSex()
+            sql << " AND screening_and_linkage.gender = '" << person->GetSex()
                 << "'";
             sql << " AND screening_and_linkage.drug_behavior = '"
-                << person.GetBehavior() << "';";
+                << person->GetBehavior() << "';";
             return sql.str();
         }
 
         /// @brief The Background Screening Event Undertaken on a Person
         /// @param person The Person undergoing a background Screening
-        void backgroundScreen(person::Person &person,
+        void backgroundScreen(std::shared_ptr<person::PersonBase> person,
                               std::unique_ptr<stats::Decider> &decider) {
-            if (!person.GetTimeSinceLastScreening()) {
+            if (!person->GetTimeSinceLastScreening()) {
                 return;
             }
-            person.MarkScreened();
+            person->MarkScreened();
 
             std::string testPrefix = "screening_background_";
-            person::HCV infectionStatus = person.GetHCV();
-            bool firstTest =
-                this->test(infectionStatus, testPrefix + "ab", decider,
-                           [&person]() -> int { return person.AddAbScreen(); });
+            person::HCV infectionStatus = person->GetHCV();
+            bool firstTest = this->test(
+                infectionStatus, testPrefix + "ab", decider,
+                [&person]() -> int { return person->AddAbScreen(); });
             this->insertScreeningCost(person, "screening_background_ab.cost",
                                       "Background Antibody Screening");
 
@@ -79,7 +80,7 @@ namespace event {
             if (!firstTest) {
                 secondTest = this->test(
                     infectionStatus, testPrefix + "ab", decider,
-                    [&person]() -> int { return person.AddAbScreen(); });
+                    [&person]() -> int { return person->AddAbScreen(); });
                 this->insertScreeningCost(person,
                                           "screening_background_ab.cost",
                                           "Background Antibody Screening");
@@ -95,29 +96,31 @@ namespace event {
 
             if (this->test(
                     infectionStatus, testPrefix + "rna", decider,
-                    [&person]() -> int { return person.AddRnaScreen(); })) {
-                person.Link(person::LinkageType::BACKGROUND);
+                    [&person]() -> int { return person->AddRnaScreen(); })) {
+                person->Link(person::LinkageType::BACKGROUND);
                 // what else needs to happen during a link?
             }
 
-            person.Unlink();
+            person->Unlink();
         }
 
-        bool runABTest(person::Person &person, std::string prefix,
+        bool runABTest(std::shared_ptr<person::PersonBase> person,
+                       std::string prefix,
                        std::unique_ptr<stats::Decider> &decider) {
-            bool firstTest =
-                this->test(person.GetHCV(), prefix + "_ab", decider,
-                           [&person]() -> int { return person.AddAbScreen(); });
+            bool firstTest = this->test(
+                person->GetHCV(), prefix + "_ab", decider,
+                [&person]() -> int { return person->AddAbScreen(); });
             this->insertScreeningCost(person, prefix + "_ab.cost",
                                       "Intervention Antibody Screening");
             return firstTest;
         }
 
-        bool runRNATest(person::Person &person, std::string prefix,
+        bool runRNATest(std::shared_ptr<person::PersonBase> person,
+                        std::string prefix,
                         std::unique_ptr<stats::Decider> &decider) {
             bool firstTest = this->test(
-                person.GetHCV(), prefix + "_rna", decider,
-                [&person]() -> int { return person.AddRnaScreen(); });
+                person->GetHCV(), prefix + "_rna", decider,
+                [&person]() -> int { return person->AddRnaScreen(); });
             this->insertScreeningCost(person, prefix + "_rna.cost",
                                       "Intervention RNA Screening");
             return firstTest;
@@ -125,10 +128,10 @@ namespace event {
 
         /// @brief The Intervention Screening Event Undertaken on a Person
         /// @param person The Person undergoing an Intervention Screening
-        void interventionScreen(person::Person &person,
+        void interventionScreen(std::shared_ptr<person::PersonBase> person,
                                 std::unique_ptr<stats::Decider> &decider) {
-            person.MarkScreened();
-            if (!person.IsIdentifiedAsHCVInfected()) {
+            person->MarkScreened();
+            if (!person->IsIdentifiedAsHCVInfected()) {
                 bool firstTest =
                     runABTest(person, "screening_intervention", decider);
                 // if first test is negative, perform a second test
@@ -144,10 +147,10 @@ namespace event {
             bool rna_test =
                 runRNATest(person, "screening_intervention", decider);
             if (rna_test) {
-                person.Link(person::LinkageType::INTERVENTION);
+                person->Link(person::LinkageType::INTERVENTION);
                 // what else needs to happen during a link?
             } else {
-                person.Unlink();
+                person->Unlink();
             }
         }
 
@@ -172,8 +175,8 @@ namespace event {
             return value;
         }
 
-        std::vector<double>
-        getBackgroundScreeningProbability(person::Person &person) {
+        std::vector<double> getBackgroundScreeningProbability(
+            std::shared_ptr<person::PersonBase> person) {
             std::string query =
                 this->buildSQL(person, "background_screen_probability");
             std::vector<double> storage;
@@ -193,7 +196,7 @@ namespace event {
             std::string configStr =
                 "screening.seropositive_multiplier_not_boomer";
 
-            if (person.IsBoomer()) {
+            if (person->IsBoomer()) {
                 configStr = "screening.seropositive_multiplier_boomer";
             }
 
@@ -205,8 +208,8 @@ namespace event {
             return result;
         }
 
-        std::vector<double>
-        getInterventionScreeningProbability(person::Person &person) {
+        std::vector<double> getInterventionScreeningProbability(
+            std::shared_ptr<person::PersonBase> person) {
             std::string query =
                 this->buildSQL(person, "intervention_screen_probability");
             std::vector<double> storage;
@@ -234,7 +237,7 @@ namespace event {
             return result;
         }
 
-        void interventionDecision(person::Person &person,
+        void interventionDecision(std::shared_ptr<person::PersonBase> person,
                                   std::unique_ptr<stats::Decider> &decider) {
             std::vector<double> interventionProbability =
                 this->getInterventionScreeningProbability(person);
@@ -246,7 +249,8 @@ namespace event {
         /// @brief Insert cost for screening of type \code{type}
         /// @param person The person who is accruing cost
         /// @param type The screening type, used to discern the cost to add
-        void insertScreeningCost(person::Person &person, std::string configKey,
+        void insertScreeningCost(std::shared_ptr<person::PersonBase> person,
+                                 std::string configKey,
                                  std::string screeningName) {
             double screeningCost;
             std::string data;
@@ -255,11 +259,11 @@ namespace event {
 
             cost::Cost cost = {cost::CostCategory::SCREENING, screeningName,
                                screeningCost};
-            person.AddCost(cost);
+            person->AddCost(cost);
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             this->dm = dm;
@@ -278,10 +282,10 @@ namespace event {
             ///         or the period has been reached since their last
             ///         screening
             if (!(interventionType == "one-time" &&
-                  person.GetCurrentTimestep() == 1) &&
+                  person->GetCurrentTimestep() == 1) &&
                 !(interventionType == "periodic" &&
-                  (person.GetTimeSinceLastScreening() >= interventionPeriod ||
-                   person.GetTimeOfLastScreening() == -1))) {
+                  (person->GetTimeSinceLastScreening() >= interventionPeriod ||
+                   person->GetTimeOfLastScreening() == -1))) {
                 return;
             }
             this->interventionDecision(person, decider);
@@ -302,7 +306,7 @@ namespace event {
     Screening::Screening(Screening &&) noexcept = default;
     Screening &Screening::operator=(Screening &&) noexcept = default;
 
-    void Screening::doEvent(person::Person &person,
+    void Screening::doEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

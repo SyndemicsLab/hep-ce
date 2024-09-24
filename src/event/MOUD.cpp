@@ -26,24 +26,25 @@ namespace event {
         /// individual Person from the SQL Table
         /// @param person Person to retrieve transition rates for
         /// @return Vector of Transition Rates for each MOUD status
-        std::vector<double> getTransitions(person::Person &person);
+        std::vector<double>
+        getTransitions(std::shared_ptr<person::PersonBase> person);
 
         /// @brief Add cost based on person's current treatment status upon
         /// "experiencing" this event
         /// @param person Person accruing cost
-        void insertMOUDCost(person::Person &person);
+        void insertMOUDCost(std::shared_ptr<person::PersonBase> person);
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
 
-            person::Behavior bc = person.GetBehavior();
+            person::Behavior bc = person->GetBehavior();
 
             // Can only enter MOUD if in an active use state.
             if (!(bc >= person::Behavior::NONINJECTION)) {
                 // 1. Check the person's current MOUD status
-                person::MOUD moud = person.GetMoudState();
+                person::MOUD moud = person->GetMoudState();
                 // 2. Draw probability of changing MOUD state.
                 // TODO: MAKE THIS A REAL TRANSITION RATE
                 std::vector<double> probs = {0.50, 0.25, 0.25};
@@ -58,14 +59,14 @@ namespace event {
                 if (toMoud == person::MOUD::CURRENT) {
                     if (moud != toMoud) {
                         // new treatment start
-                        person.SetMoudState(toMoud);
+                        person->SetMoudState(toMoud);
                     }
                     // person continuing treatment
                     // add treatment cost
                 } else {
                     // person discontinuing treatment
                     // or going from post-treatment to no treatment
-                    person.SetMoudState(toMoud);
+                    person->SetMoudState(toMoud);
                     // figure out if we want to update timestartedmoud to an
                     // impossible value, e.g. -1
                 }
@@ -78,7 +79,7 @@ namespace event {
     MOUD::MOUD(MOUD &&) noexcept = default;
     MOUD &MOUD::operator=(MOUD &&) noexcept = default;
 
-    void MOUD::doEvent(person::Person &person,
+    void MOUD::doEvent(std::shared_ptr<person::PersonBase> person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

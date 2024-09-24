@@ -40,7 +40,7 @@ namespace simulation {
         int tstep = 0;
         uint64_t _seed;
         int defaultPopulationSize = 0;
-        std::vector<std::shared_ptr<person::Person>> population = {};
+        std::vector<std::shared_ptr<person::PersonBase>> population = {};
         std::vector<std::shared_ptr<event::Event>> events = {};
         static std::mt19937_64 generator;
 
@@ -159,7 +159,7 @@ namespace simulation {
 
         void CreatePerson(int id, std::string icValues) {
             person::PersonFactory factory;
-            std::shared_ptr<person::Person> newperson = factory.create();
+            std::shared_ptr<person::PersonBase> newperson = factory.create();
             if (!icValues.empty()) {
                 newperson->LoadICValues(icValues);
             }
@@ -210,7 +210,7 @@ namespace simulation {
 
         /// @brief Retrieve the Population Vector from the Simulation
         /// @return List of People in the Simulation
-        std::vector<std::shared_ptr<person::Person>> getPopulation() const {
+        std::vector<std::shared_ptr<person::PersonBase>> getPopulation() const {
             return this->population;
         }
 
@@ -235,9 +235,9 @@ namespace simulation {
 
                 for (std::shared_ptr<event::Event> &event : this->events) {
 #pragma omp parallel for
-                    for (std::shared_ptr<person::Person> &person :
+                    for (std::shared_ptr<person::PersonBase> &person :
                          this->population) {
-                        event->Execute(*person, _dm, decider);
+                        event->Execute(person, _dm, decider);
                     }
                 }
 

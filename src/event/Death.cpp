@@ -39,8 +39,8 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::Person const &person) const {
-            int age_years = person.GetAge() / 12.0; // intentional truncation
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person) const {
+            int age_years = person->GetAge() / 12.0; // intentional truncation
             std::stringstream sql;
             sql << "SELECT background_mortality, SMR";
             sql << " FROM SMR ";
@@ -48,23 +48,25 @@ namespace event {
                    "(SMR.gender = background_mortality.gender) ";
             sql << " WHERE background_mortality.age_years = '"
                 << std::to_string(age_years) << "'";
-            sql << " AND background_mortality.gender = '" << person.GetSex()
+            sql << " AND background_mortality.gender = '" << person->GetSex()
                 << "'";
-            sql << " AND SMR.drug_behavior = '" << person.GetBehavior() << "';";
+            sql << " AND SMR.drug_behavior = '" << person->GetBehavior()
+                << "';";
 
             return sql.str();
         }
         /// @brief The actual death of a person
         /// @param person Person who dies
-        void die(person::Person &person, person::DeathReason deathReason) {
-            person.Die(deathReason);
+        void die(std::shared_ptr<person::PersonBase> person,
+                 person::DeathReason deathReason) {
+            person->Die(deathReason);
         }
 
         void getFibrosisMortalityProb(
-            person::Person const &person,
+            std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm, double &prob) {
             std::string data;
-            switch (person.GetTrueFibrosisState()) {
+            switch (person->GetTrueFibrosisState()) {
             case person::FibrosisState::F4:
                 data.clear();
                 dm->GetFromConfig("mortality.f4", data);
@@ -81,7 +83,7 @@ namespace event {
         }
 
         void getSMRandBackgroundProb(
-            person::Person const &person,
+            std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             double &backgroundMortProb, double &smr) {
             std::string query = this->buildSQL(person);
@@ -112,8 +114,8 @@ namespace event {
             }
         }
 
-        bool ReachedMaxAge(person::Person &person) {
-            if (person.GetAge() >= 1200) {
+        bool ReachedMaxAge(std::shared_ptr<person::PersonBase> person) {
+            if (person->GetAge() >= 1200) {
                 this->die(person, person::DeathReason::AGE);
                 return true;
             }
@@ -121,7 +123,7 @@ namespace event {
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             if (ReachedMaxAge(person)) {
@@ -151,7 +153,7 @@ namespace event {
             } else if (retIdx == 1) {
                 this->die(person, person::DeathReason::LIVER);
             } else {
-                // person.ToggleOverdose();
+                // person->ToggleOverdose();
             }
         }
     };
@@ -162,7 +164,7 @@ namespace event {
     Death::Death(Death &&) noexcept = default;
     Death &Death::operator=(Death &&) noexcept = default;
 
-    void Death::doEvent(person::Person &person,
+    void Death::doEvent(std::shared_ptr<person::PersonBase> person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

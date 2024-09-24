@@ -30,19 +30,21 @@ namespace event {
             *d = std::stod(data[0]); // First Column Selected
             return 0;
         }
-        std::string buildSQL(person::Person &person, std::string column) {
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person,
+                             std::string column) {
             std::stringstream sql;
             std::string age_years =
-                std::to_string((int)(person.GetAge() / 12.0));
+                std::to_string((int)(person->GetAge() / 12.0));
             sql << "SELECT '" + column + "' FROM pregnancy";
             sql << " WHERE age_years = '" << age_years << "'";
             sql << " AND gestation = '"
-                << std::to_string(person.GetTimeSincePregnancyChange()) << "';";
+                << std::to_string(person->GetTimeSincePregnancyChange())
+                << "';";
             return sql.str();
         }
 
         bool
-        CheckMiscarriage(person::Person &person,
+        CheckMiscarriage(std::shared_ptr<person::PersonBase> person,
                          std::shared_ptr<datamanagement::DataManagerBase> dm,
                          std::unique_ptr<stats::Decider> &decider) {
             std::vector<double> prob =
@@ -51,7 +53,7 @@ namespace event {
         }
 
         std::vector<double> GetSingleProbability(
-            person::Person &person,
+            std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             std::string column) {
             std::string query = this->buildSQL(person, column);
@@ -68,7 +70,7 @@ namespace event {
         }
 
         int
-        GetNumberOfBirths(person::Person &person,
+        GetNumberOfBirths(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                           std::unique_ptr<stats::Decider> &decider) {
             std::string storage = "";
@@ -118,19 +120,19 @@ namespace event {
         }
 
         void
-        AttemptHaveChild(person::Person &person,
+        AttemptHaveChild(std::shared_ptr<person::PersonBase> person,
                          std::shared_ptr<datamanagement::DataManagerBase> dm,
                          std::unique_ptr<stats::Decider> &decider) {
             if (CheckMiscarriage(person, dm, decider)) {
-                person.Stillbirth();
+                person->Stillbirth();
                 return;
             }
 
             int numberOfBirths = GetNumberOfBirths(person, dm, decider);
 
-            if (person.GetHCV() != person::HCV::CHRONIC) {
+            if (person->GetHCV() != person::HCV::CHRONIC) {
                 for (int child = 0; child < numberOfBirths; ++child) {
-                    person.AddChild(person::HCV::NONE, false);
+                    person->AddChild(person::HCV::NONE, false);
                 }
                 return;
             }
@@ -138,43 +140,43 @@ namespace event {
             bool tested = DoChildrenGetTested(dm, decider);
             for (int child = 0; child < numberOfBirths; ++child) {
                 if (DrawChildInfection(dm, decider)) {
-                    person.AddChild(person::HCV::CHRONIC, tested);
+                    person->AddChild(person::HCV::CHRONIC, tested);
                 } else {
-                    person.AddChild(person::HCV::NONE, tested);
+                    person->AddChild(person::HCV::NONE, tested);
                 }
             }
         }
 
         void
-        AttemptHealthyMonth(person::Person &person,
+        AttemptHealthyMonth(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::unique_ptr<stats::Decider> &decider) {
             if (CheckMiscarriage(person, dm, decider)) {
-                person.Miscarry();
+                person->Miscarry();
             }
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
 
-            if (person.GetSex() == person::Sex::MALE || person.GetAge() < 15 ||
-                person.GetAge() > 45 ||
-                (person.GetPregnancyState() ==
+            if (person->GetSex() == person::Sex::MALE ||
+                person->GetAge() < 15 || person->GetAge() > 45 ||
+                (person->GetPregnancyState() ==
                      person::PregnancyState::POSTPARTUM &&
-                 person.GetTimeSincePregnancyChange() < 3)) {
+                 person->GetTimeSincePregnancyChange() < 3)) {
                 return;
             }
 
-            if (person.GetPregnancyState() ==
+            if (person->GetPregnancyState() ==
                 person::PregnancyState::POSTPARTUM) {
-                person.EndPostpartum();
+                person->EndPostpartum();
             }
 
-            if (person.GetPregnancyState() ==
+            if (person->GetPregnancyState() ==
                 person::PregnancyState::PREGNANT) {
-                if (person.GetTimeSincePregnancyChange() >= 9) {
+                if (person->GetTimeSincePregnancyChange() >= 9) {
                     AttemptHaveChild(person, dm, decider);
                 } else {
                     AttemptHealthyMonth(person, dm, decider);
@@ -184,7 +186,7 @@ namespace event {
                     person, dm, "pregnancy_probability");
                 // if you are pregnant (i.e. getDecision returns 0)
                 if (decider->GetDecision(prob) == 0) {
-                    person.Impregnate();
+                    person->Impregnate();
                 }
             }
             return;
@@ -209,7 +211,7 @@ namespace event {
 
     Pregnancy::Pregnancy() { impl = std::make_unique<PregnancyIMPL>(); }
 
-    void Pregnancy::doEvent(person::Person &person,
+    void Pregnancy::doEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);

@@ -83,7 +83,7 @@ private:
     }
 
 protected:
-    std::shared_ptr<person::Person> testPerson;
+    std::shared_ptr<person::PersonBase> testPerson;
     std::shared_ptr<datamanagement::MOCKDataManager> person_dm;
     event::EventFactory efactory;
     std::unique_ptr<stats::Decider> decider;
@@ -110,7 +110,7 @@ TEST_F(EventTest, Aging) {
     testPerson->CreatePersonFromTable(4321, person_dm);
     std::shared_ptr<event::Event> event = efactory.create("Aging");
     int first_age = testPerson->GetAge();
-    event->Execute(*testPerson, NULL, decider);
+    event->Execute(testPerson, NULL, decider);
     EXPECT_EQ(first_age + 1, testPerson->GetAge());
 }
 
@@ -129,7 +129,7 @@ TEST_F(EventTest, BehaviorChanges) {
     EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillRepeatedly(testing::Return(0));
 
-    event->Execute(*testPerson, event_dm, decider);
+    event->Execute(testPerson, event_dm, decider);
     EXPECT_EQ(person::Behavior::NONINJECTION, testPerson->GetBehavior());
 }
 
@@ -151,7 +151,7 @@ TEST_F(EventTest, Clearance) {
         .WillRepeatedly(DoAll(SetArgReferee<1>(clearance_prob), Return(0)));
     testPerson->SetHCV(person::HCV::ACUTE);
 
-    event->Execute(*testPerson, event_dm, decider);
+    event->Execute(testPerson, event_dm, decider);
     EXPECT_EQ(person::HCV::NONE, testPerson->GetHCV());
 }
 
@@ -174,7 +174,7 @@ TEST_F(EventTest, Death) {
 
     testPerson->UpdateTrueFibrosis(person::FibrosisState::F4);
     EXPECT_EQ(true, testPerson->IsAlive());
-    event->Execute(*testPerson, event_dm, decider);
+    event->Execute(testPerson, event_dm, decider);
     EXPECT_EQ(false, testPerson->IsAlive());
 }
 
@@ -204,7 +204,7 @@ TEST_F(EventTest, FibrosisProgression) {
 
     testPerson->SetHCV(person::HCV::CHRONIC);
     testPerson->UpdateTrueFibrosis(person::FibrosisState::F0);
-    event->Execute(*testPerson, event_dm, decider);
+    event->Execute(testPerson, event_dm, decider);
     EXPECT_EQ(person::FibrosisState::F1, testPerson->GetTrueFibrosisState());
 }
 
@@ -241,7 +241,7 @@ TEST_F(EventTest, FibrosisStaging) {
     EXPECT_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one", _))
         .WillRepeatedly(DoAll(SetArgReferee<1>(col), Return(0)));
 
-    event->Execute(*testPerson, event_dm, decider);
+    event->Execute(testPerson, event_dm, decider);
     EXPECT_EQ(person::MeasuredFibrosisState::F4,
               testPerson->GetMeasuredFibrosisState());
 }
@@ -263,7 +263,7 @@ TEST_F(EventTest, Infections) {
         .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
 
     testPerson->SetHCV(person::HCV::NONE);
-    event->Execute(*testPerson, event_dm, decider);
+    event->Execute(testPerson, event_dm, decider);
     EXPECT_EQ(person::HCV::ACUTE, testPerson->GetHCV());
 }
 
@@ -293,7 +293,7 @@ TEST_F(EventTest, Linking) {
 
     testPerson->SetHCV(person::HCV::ACUTE);
     int numLinks = testPerson->GetLinkCount();
-    event->Execute(*testPerson, event_dm, decider);
+    event->Execute(testPerson, event_dm, decider);
     EXPECT_EQ(person::LinkageState::LINKED, testPerson->GetLinkState());
     EXPECT_EQ(numLinks + 1, testPerson->GetLinkCount());
 }
@@ -326,7 +326,7 @@ TEST_F(EventTest, Screening) {
     EXPECT_CALL(*event_dm, GetFromConfig("screening.period", _))
         .WillRepeatedly(DoAll(SetArgReferee<1>(period), Return(0)));
 
-    event->Execute(*testPerson, event_dm, decider);
+    event->Execute(testPerson, event_dm, decider);
     EXPECT_EQ(0, testPerson->GetTimeSinceLastScreening());
 }
 
@@ -358,6 +358,6 @@ TEST_F(EventTest, Treatment) {
     EXPECT_CALL(*event_dm, GetFromConfig("screening.period", _))
         .WillRepeatedly(DoAll(SetArgReferee<1>(period), Return(0)));
 
-    event->Execute(*testPerson, event_dm, decider);
+    event->Execute(testPerson, event_dm, decider);
     EXPECT_EQ(0, testPerson->GetTimeSinceLastScreening());
 }

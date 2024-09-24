@@ -7,7 +7,7 @@
 namespace person {
     class PersonFactory {
     public:
-        std::shared_ptr<person::Person> create();
+        std::shared_ptr<person::PersonBase> create();
     };
 } // namespace person
 

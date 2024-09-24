@@ -163,7 +163,7 @@ namespace person {
         virtual std::vector<Child> GetChildren() const = 0;
     };
     /// @brief Class describing a Person
-    class Person : PersonBase {
+    class Person : public PersonBase {
     private:
         class PersonIMPL;
         std::unique_ptr<PersonIMPL> pImplPERSON;

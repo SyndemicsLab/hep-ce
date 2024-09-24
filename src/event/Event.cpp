@@ -2,10 +2,10 @@
 #include "Person.hpp"
 
 namespace event {
-    int Event::Execute(person::Person &person,
+    int Event::Execute(std::shared_ptr<person::PersonBase> person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::unique_ptr<stats::Decider> &decider) {
-        if (person.IsAlive()) {
+        if (person->IsAlive()) {
             this->doEvent(person, dm, decider);
         }
         return 0;

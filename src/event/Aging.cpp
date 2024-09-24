@@ -38,8 +38,8 @@ namespace event {
             return 0;
         }
 
-        std::string buildSQL(person::Person const &person) const {
-            std::string a = std::to_string((int)(person.GetAge() / 12.0));
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person) const {
+            std::string a = std::to_string((int)(person->GetAge() / 12.0));
             std::stringstream sql;
             sql << "SELECT cost, utility FROM background_costs ";
             sql << "INNER JOIN background_utilities ON "
@@ -49,16 +49,16 @@ namespace event {
                    "AND (background_costs.drug_behavior = "
                    "background_utilities.drug_behavior)) ";
             sql << "WHERE background_costs.age_years = '" << a << "'"
-                << " AND background_costs.gender = '" << person.GetSex() << "'"
+                << " AND background_costs.gender = '" << person->GetSex() << "'"
                 << " AND background_costs.drug_behavior = '"
-                << person.GetBehavior() << "';";
+                << person->GetBehavior() << "';";
             return sql.str();
         }
 
         /// @brief Adds person's background cost
         /// @param person The person to whom cost will be added
         void addBackgroundCostAndUtility(
-            person::Person &person,
+            std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
             std::vector<struct cost_util> storage = {};
@@ -78,14 +78,14 @@ namespace event {
             }
             cost::Cost backgroundCost = {cost::CostCategory::MISC,
                                          "Background Cost", storage[0].cost};
-            person.AddCost(backgroundCost);
-            person.SetUtility(storage[0].util);
+            person->AddCost(backgroundCost);
+            person->SetUtility(storage[0].util);
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            person.Grow();
+            person->Grow();
             this->addBackgroundCostAndUtility(person, dm);
         }
     };
@@ -96,7 +96,7 @@ namespace event {
     Aging::Aging(Aging &&) noexcept = default;
     Aging &Aging::operator=(Aging &&) noexcept = default;
 
-    void Aging::doEvent(person::Person &person,
+    void Aging::doEvent(std::shared_ptr<person::PersonBase> person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm);

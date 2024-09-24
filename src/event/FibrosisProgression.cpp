@@ -37,14 +37,14 @@ namespace event {
             d->push_back(temp);
             return 0;
         }
-        std::string buildSQL(person::Person &person) {
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person) {
             std::stringstream sql;
-            std::string hcv_status = (person.GetHCV() == person::HCV::NONE)
+            std::string hcv_status = (person->GetHCV() == person::HCV::NONE)
                                          ? "negative"
                                          : "positive";
             sql << "SELECT cost FROM hcv_costs";
             sql << " WHERE hcv_status = '" << hcv_status << "'";
-            sql << " AND metavir_stage = '" << person.GetTrueFibrosisState()
+            sql << " AND metavir_stage = '" << person->GetTrueFibrosisState()
                 << "';";
             return sql.str();
         }
@@ -83,7 +83,7 @@ namespace event {
         }
 
         void addLiverDiseaseCost(
-            person::Person &person,
+            std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
             std::vector<struct fib_prog_select> storage;
@@ -98,11 +98,11 @@ namespace event {
                                            "Liver Disease Care",
                                            storage[0].cost};
 
-            person.AddCost(liverDiseaseCost);
+            person->AddCost(liverDiseaseCost);
         }
 
     public:
-        void doEvent(person::Person &person,
+        void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::unique_ptr<stats::Decider> &decider) {
             std::string data;
@@ -112,11 +112,11 @@ namespace event {
                 std::istringstream(data) >> std::boolalpha >> costFlag;
             }
             // can only progress in fibrosis state if actively infected with HCV
-            if (person.GetHCV() == person::HCV::NONE) {
+            if (person->GetHCV() == person::HCV::NONE) {
                 return;
             }
             // 1. Get current fibrosis status
-            person::FibrosisState fs = person.GetTrueFibrosisState();
+            person::FibrosisState fs = person->GetTrueFibrosisState();
             // 2. Get the transition probability
             std::vector<double> prob = getTransition(fs, dm);
             // 3. Draw whether the person's fibrosis state progresses (0
@@ -125,13 +125,13 @@ namespace event {
                 (decider->GetDecision(prob) == 0) ? ++fs : fs;
 
             // 4. Apply the result state
-            if (newFibrosis != person.GetTrueFibrosisState()) {
-                person.UpdateTrueFibrosis(newFibrosis);
+            if (newFibrosis != person->GetTrueFibrosisState()) {
+                person->UpdateTrueFibrosis(newFibrosis);
             }
 
             // insert Person's liver-related disease cost (taking the highest
             // fibrosis state)
-            if (costFlag && person.IsIdentifiedAsHCVInfected()) {
+            if (costFlag && person->IsIdentifiedAsHCVInfected()) {
                 this->addLiverDiseaseCost(person, dm);
             }
         }
@@ -148,7 +148,7 @@ namespace event {
     FibrosisProgression::operator=(FibrosisProgression &&) noexcept = default;
 
     void FibrosisProgression::doEvent(
-        person::Person &person,
+        std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::unique_ptr<stats::Decider> &decider) {
         impl->doEvent(person, dm, decider);
