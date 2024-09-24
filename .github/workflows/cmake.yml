@@ -21,20 +21,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Clone and Build DataManagement
-      working-directory: ${{ github.workspace }}
-      run: |
-        gh repo clone SyndemicsLab/DataManagement
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Install Boost
       uses: MarkusJx/install-boost@v2.4.5
       id: install-boost
       with:
         boost_version: 1.82.0
 
-
     - name: Build and Test
       working-directory: ${{ github.workspace }}
       run: scripts/build.sh -p
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
