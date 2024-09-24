@@ -29,7 +29,7 @@
 #$ -M Matthew.Carroll@bmc.org
 
 # use multiple slots
-# -pe omp 16
+# -pe omp 28
 
 # use tasks, comment this line if running on single node.
 #$ -t 1-1
