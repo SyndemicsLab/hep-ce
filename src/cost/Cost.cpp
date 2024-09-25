@@ -88,4 +88,9 @@ namespace cost {
         os << cost.name << " " << cost.cost << std::endl;
         return os;
     }
+
+    bool Cost::operator==(const Cost &f) const {
+        return ((category == f.category) && (name == f.name) &&
+                (cost == f.cost));
+    }
 } // namespace cost

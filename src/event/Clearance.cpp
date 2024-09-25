@@ -52,7 +52,7 @@ namespace event {
             // 2. Decide whether the person clears
             int doesNotClear = decider->GetDecision(prob);
             // if you do not clear, return immediately
-            if (doesNotClear) {
+            if (doesNotClear != 0) {
                 return;
             }
             person->ClearHCV();

@@ -42,6 +42,7 @@ namespace cost {
         CostCategory category = CostCategory::MISC;
         std::string name = "";
         double cost = 0;
+        bool operator==(const Cost &) const;
     };
     std::ostream &operator<<(std::ostream &os, const Cost &cost);
 

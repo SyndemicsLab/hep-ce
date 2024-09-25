@@ -20,6 +20,10 @@
 
 #include "Event.hpp"
 
+namespace stats {
+    class DeciderBase;
+}
+
 namespace event {
     /// @brief Subclass of Event used to simulate overdoses among active drug
     /// users.
@@ -27,7 +31,6 @@ namespace event {
     private:
         class OverdoseIMPL;
         std::unique_ptr<OverdoseIMPL> impl;
-        std::unique_ptr<stats::Decider> decider;
         /// @brief Implementation of Virtual Function doEvent
         /// @param person Individual person undergoing Event
         void doEvent(std::shared_ptr<person::PersonBase> person,

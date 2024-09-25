@@ -17,22 +17,53 @@
 
 #include <gtest/gtest.h>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "Aging.hpp"
-#include "DataManagerMock.hpp"
-#include "Decider.hpp"
-#include "Event.hpp"
-#include "EventFactory.hpp"
-#include "Person.hpp"
-#include "PersonFactory.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
+#include "DataManagerMock.hpp"
+#include "DeciderMock.hpp"
+#include "PersonMock.hpp"
+
+#include "Event.hpp"
+#include "EventFactory.hpp"
+
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
+
+class EventTest : public ::testing::Test {
+private:
+    void RegisterLogger() {
+        auto console_sink =
+            std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        std::vector<spdlog::sink_ptr> sinks{console_sink};
+        auto logger = std::make_shared<spdlog::logger>("main", sinks.begin(),
+                                                       sinks.end());
+        spdlog::register_logger(logger);
+        spdlog::flush_every(std::chrono::seconds(3));
+    }
+
+protected:
+    std::shared_ptr<NiceMock<person::MOCKPerson>> testPerson;
+    std::shared_ptr<NiceMock<datamanagement::MOCKDataManager>> event_dm;
+    event::EventFactory efactory;
+    std::shared_ptr<NiceMock<stats::MOCKDecider>> decider;
+    void SetUp() override {
+        RegisterLogger();
+        event_dm =
+            std::make_unique<NiceMock<datamanagement::MOCKDataManager>>();
+        decider = std::make_shared<NiceMock<stats::MOCKDecider>>();
+        testPerson = std::make_shared<NiceMock<person::MOCKPerson>>();
+        ON_CALL(*testPerson, IsAlive()).WillByDefault(Return(true));
+    }
+    void TearDown() override { spdlog::drop("main"); }
+};
 
 struct person_select {
     person::Sex sex = person::Sex::MALE;
@@ -70,279 +101,42 @@ struct person_select {
     int completedTreatments = 0;
     int svrs = 0;
 };
-class EventTest : public ::testing::Test {
-private:
-    void RegisterLogger() {
-        auto console_sink =
-            std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
-        std::vector<spdlog::sink_ptr> sinks{console_sink};
-        auto logger = std::make_shared<spdlog::logger>("main", sinks.begin(),
-                                                       sinks.end());
-        spdlog::register_logger(logger);
-        spdlog::flush_every(std::chrono::seconds(3));
-    }
 
-protected:
-    std::shared_ptr<person::PersonBase> testPerson;
-    std::shared_ptr<datamanagement::MOCKDataManager> person_dm;
-    event::EventFactory efactory;
-    std::unique_ptr<stats::Decider> decider;
-    void SetUp() override {
-        RegisterLogger();
-        person_dm = std::make_unique<datamanagement::MOCKDataManager>();
-        decider = std::make_unique<stats::Decider>();
-        person::PersonFactory pfactory;
-        testPerson = pfactory.create();
-        decider = std::make_unique<stats::Decider>();
-    }
-    void TearDown() override { spdlog::drop("main"); }
+struct cost_util {
+    double cost = 100.00;
+    double util = 0.75;
+};
+
+struct behavior_trans_select {
+    double never = 0.0;
+    double fni = 0.25;
+    double fi = 0.25;
+    double ni = 0.25;
+    double in = 0.25;
+};
+
+struct background_smr {
+    double back_mort = 0.0;
+    double smr = 0.0;
 };
 
 ACTION_P(SetArg2ToPersonCallbackValue, value) {
     *reinterpret_cast<struct person_select *>(arg2) = *value;
 }
 
-TEST_F(EventTest, Aging) {
-    struct person_select person;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-    std::shared_ptr<event::Event> event = efactory.create("Aging");
-    int first_age = testPerson->GetAge();
-    event->Execute(testPerson, NULL, decider);
-    EXPECT_EQ(first_age + 1, testPerson->GetAge());
+ACTION_P(SetArg2ToCostUtilCallbackValue, value) {
+    *reinterpret_cast<std::vector<struct cost_util> *>(arg2) = *value;
 }
 
-TEST_F(EventTest, BehaviorChanges) {
-    struct person_select person;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-    std::shared_ptr<event::Event> event = efactory.create("BehaviorChanges");
-
-    // I want to add storage as the argument from SelectCustomCallback but GMock
-    // is being a pain
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
-        std::make_unique<datamanagement::MOCKDataManager>();
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(testing::Return(0));
-
-    event->Execute(testPerson, event_dm, decider);
-    EXPECT_EQ(person::Behavior::NONINJECTION, testPerson->GetBehavior());
-}
-
-TEST_F(EventTest, Clearance) {
-    struct person_select person;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-    std::shared_ptr<event::Event> event = efactory.create("Clearance");
-
-    std::string clearance_prob = std::string("1.0");
-
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
-        std::make_unique<datamanagement::MOCKDataManager>();
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(Return(0));
-    EXPECT_CALL(*event_dm, GetFromConfig(_, _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(clearance_prob), Return(0)));
-    testPerson->SetHCV(person::HCV::ACUTE);
-
-    event->Execute(testPerson, event_dm, decider);
-    EXPECT_EQ(person::HCV::NONE, testPerson->GetHCV());
-}
-
-TEST_F(EventTest, Death) {
-    struct person_select person;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-    std::shared_ptr<event::Event> event = efactory.create("Death");
-
-    std::string f4_mort = std::string("1.0");
-
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
-        std::make_unique<datamanagement::MOCKDataManager>();
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(Return(0));
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(f4_mort), Return(0)));
-
-    testPerson->UpdateTrueFibrosis(person::FibrosisState::F4);
-    EXPECT_EQ(true, testPerson->IsAlive());
-    event->Execute(testPerson, event_dm, decider);
-    EXPECT_EQ(false, testPerson->IsAlive());
-}
-
-TEST_F(EventTest, FibrosisProgression) {
-    struct person_select person;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-    std::shared_ptr<event::Event> event =
-        efactory.create("FibrosisProgression");
-
-    std::string add_cost = std::string("false");
-
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
-        std::make_unique<datamanagement::MOCKDataManager>();
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(Return(0));
-    EXPECT_CALL(*event_dm,
-                GetFromConfig("fibrosis.add_cost_only_if_identified", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(add_cost), Return(0)));
-
-    std::string fib_1 = std::string("1.0");
-
-    EXPECT_CALL(*event_dm, GetFromConfig("fibrosis.f01", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(fib_1), Return(0)));
-
-    testPerson->SetHCV(person::HCV::CHRONIC);
-    testPerson->UpdateTrueFibrosis(person::FibrosisState::F0);
-    event->Execute(testPerson, event_dm, decider);
-    EXPECT_EQ(person::FibrosisState::F1, testPerson->GetTrueFibrosisState());
+ACTION_P(SetArg2ToBehaviorTransitionsCallbackValue, value) {
+    *reinterpret_cast<std::vector<struct behavior_trans_select> *>(arg2) =
+        *value;
 }
 
 ACTION_P(SetArg2ToCallbackValue, value) {
     *reinterpret_cast<std::vector<double> *>(arg2) = *value;
 }
 
-TEST_F(EventTest, FibrosisStaging) {
-    struct person_select person;
-    person.fibrosisState = person::FibrosisState::F4;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-
-    std::shared_ptr<event::Event> event = efactory.create("FibrosisStaging");
-
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
-        std::make_unique<datamanagement::MOCKDataManager>();
-
-    std::vector<double> storage = {0.0, 0.0, 1.0, 0.0};
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
-
-    std::string t1 = std::string("0.0");
-    EXPECT_CALL(*event_dm, GetFromConfig(_, _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(t1), Return(0)));
-
-    std::string period = std::string("12");
-    EXPECT_CALL(*event_dm, GetFromConfig("fibrosis_staging.period", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(period), Return(0)));
-
-    std::string col = std::string("colname");
-    EXPECT_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(col), Return(0)));
-
-    event->Execute(testPerson, event_dm, decider);
-    EXPECT_EQ(person::MeasuredFibrosisState::F4,
-              testPerson->GetMeasuredFibrosisState());
-}
-
-TEST_F(EventTest, Infections) {
-    struct person_select person;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-
-    std::shared_ptr<event::Event> event = efactory.create("Infections");
-
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
-        std::make_unique<datamanagement::MOCKDataManager>();
-
-    std::vector<double> storage = {1.0};
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
-
-    testPerson->SetHCV(person::HCV::NONE);
-    event->Execute(testPerson, event_dm, decider);
-    EXPECT_EQ(person::HCV::ACUTE, testPerson->GetHCV());
-}
-
-TEST_F(EventTest, Linking) {
-    struct person_select person;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-
-    std::shared_ptr<event::Event> event = efactory.create("Linking");
-
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
-        std::make_unique<datamanagement::MOCKDataManager>();
-
-    std::vector<double> storage = {1.0};
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
-
-    std::string cost = std::string("20.25");
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(cost), Return(0)));
-
-    std::string relink = std::string("1.0");
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(relink), Return(0)));
-
-    testPerson->SetHCV(person::HCV::ACUTE);
-    int numLinks = testPerson->GetLinkCount();
-    event->Execute(testPerson, event_dm, decider);
-    EXPECT_EQ(person::LinkageState::LINKED, testPerson->GetLinkState());
-    EXPECT_EQ(numLinks + 1, testPerson->GetLinkCount());
-}
-
-TEST_F(EventTest, Screening) {
-    struct person_select person;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-
-    std::shared_ptr<event::Event> event = efactory.create("Screening");
-
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
-        std::make_unique<datamanagement::MOCKDataManager>();
-
-    std::vector<double> storage = {1.0};
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
-
-    std::string specificity = std::string("1.0");
-    EXPECT_CALL(*event_dm, GetFromConfig(_, _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(specificity), Return(0)));
-
-    std::string intervention = std::string("periodic");
-    EXPECT_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(intervention), Return(0)));
-
-    std::string period = std::string("6");
-    EXPECT_CALL(*event_dm, GetFromConfig("screening.period", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>(period), Return(0)));
-
-    event->Execute(testPerson, event_dm, decider);
-    EXPECT_EQ(0, testPerson->GetTimeSinceLastScreening());
-}
-
-TEST_F(EventTest, Treatment) {
-    struct person_select person;
-    EXPECT_CALL(*person_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(
-            DoAll(SetArg2ToPersonCallbackValue(&person), Return(0)));
-    testPerson->CreatePersonFromTable(4321, person_dm);
-
-    std::shared_ptr<event::Event> event = efactory.create("Treatment");
-
-    std::shared_ptr<datamanagement::MOCKDataManager> event_dm =
-        std::make_unique<datamanagement::MOCKDataManager>();
-
-    std::vector<double> storage = {1.0};
-    EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
+ACTION_P(SetArg2ToBackgroundSMRMortalityCallbackValue, value) {
+    *reinterpret_cast<std::vector<struct background_smr> *>(arg2) = *value;
 }

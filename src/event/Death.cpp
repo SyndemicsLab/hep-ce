@@ -24,15 +24,15 @@
 namespace event {
     class Death::DeathIMPL {
     private:
-        struct death_select {
+        struct background_smr {
             double back_mort = 0.0;
             double smr = 0.0;
         };
         static int callback(void *storage, int count, char **data,
                             char **columns) {
-            std::vector<struct death_select> *d =
-                (std::vector<struct death_select> *)storage;
-            struct death_select temp;
+            std::vector<struct background_smr> *d =
+                (std::vector<struct background_smr> *)storage;
+            struct background_smr temp;
             temp.back_mort = std::stod(data[0]); // First Column Selected
             temp.smr = std::stod(data[1]);       // Second Column Selected
             d->push_back(temp);
@@ -87,7 +87,7 @@ namespace event {
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             double &backgroundMortProb, double &smr) {
             std::string query = this->buildSQL(person);
-            std::vector<struct death_select> storage;
+            std::vector<struct background_smr> storage;
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);

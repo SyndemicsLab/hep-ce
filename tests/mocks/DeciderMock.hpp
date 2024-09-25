@@ -7,6 +7,7 @@
 
 namespace stats {
     class MOCKDecider : public DeciderBase {
+    public:
         MOCK_METHOD(int, LoadGenerator, (std::mt19937_64 const generator),
                     (override));
         MOCK_METHOD(int, GetDecision, (std::vector<double> probs), (override));

@@ -23,9 +23,6 @@
 
 namespace event {
     class BehaviorChanges::BehaviorChangesIMPL {
-    private:
-        cost::CostCategory costCategory = cost::CostCategory::BEHAVIOR;
-
         struct behavior_trans_select {
             double never = 0.0;
             double fni = 0.25;
@@ -34,7 +31,7 @@ namespace event {
             double in = 0.25;
         };
 
-        struct behavior_costs_select {
+        struct cost_util {
             double cost = 0.0;
             double util = 0.0;
         };
@@ -55,9 +52,9 @@ namespace event {
 
         static int callback_costs(void *storage, int count, char **data,
                                   char **columns) {
-            std::vector<struct behavior_costs_select> *d =
-                (std::vector<struct behavior_costs_select> *)storage;
-            struct behavior_costs_select temp;
+            std::vector<struct cost_util> *d =
+                (std::vector<struct cost_util> *)storage;
+            struct cost_util temp;
             temp.cost = std::stod(data[0]); // First Column Selected
             temp.util = std::stod(data[1]); // Second Column Selected
             d->push_back(temp);
@@ -75,7 +72,6 @@ namespace event {
             sql << " AND gender = '" << person->GetSex() << "'";
             sql << " AND moud = '" << person->GetMoudState() << "'";
             sql << " AND drug_behavior = '" << person->GetBehavior() << "';";
-
             return sql.str();
         }
 
@@ -98,7 +94,7 @@ namespace event {
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) const {
             std::string query = this->buildCostSQL(person);
-            std::vector<struct behavior_costs_select> storage;
+            std::vector<struct cost_util> storage;
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback_costs,
                                               &storage, error);
@@ -113,14 +109,14 @@ namespace event {
                 spdlog::get("main")->warn("Cost and Utility Not Found for "
                                           "Behavior Changes! Query: {}",
                                           query);
-                struct behavior_costs_select s;
+                struct cost_util s;
                 s.cost = 0.0;
                 s.util = 0.0;
                 storage.push_back(s);
             }
 
-            cost::Cost behaviorCost = {this->costCategory, "Drug Behavior",
-                                       storage[0].cost};
+            cost::Cost behaviorCost = {cost::CostCategory::BEHAVIOR,
+                                       "Drug Behavior", storage[0].cost};
             person->AddCost(behaviorCost);
             person->SetUtility(storage[0].util);
         }

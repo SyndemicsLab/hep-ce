@@ -46,6 +46,16 @@ add_executable(${PROJECT_NAME}
   src/SimTest.cpp
   src/CostTest.cpp
   src/eventtests/EventTest.cpp
+  src/eventtests/AgingTest.cpp
+  src/eventtests/BehaviorChangesTest.cpp
+  src/eventtests/ClearanceTest.cpp
+  src/eventtests/DeathTest.cpp
+  src/eventtests/FibrosisProgressionTest.cpp
+  src/eventtests/FibrosisStagingTest.cpp
+  src/eventtests/InfectionsTest.cpp
+  src/eventtests/LinkingTest.cpp
+  src/eventtests/ScreeningTest.cpp
+  src/eventtests/TreatmentTest.cpp
 )
 
 # BE VERY CAREFUL WITH GTEST AS ITS A PAIN IN THE BUTT
