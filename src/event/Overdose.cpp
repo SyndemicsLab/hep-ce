@@ -31,7 +31,7 @@ namespace event {
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::unique_ptr<stats::Decider> &decider) {
+                     std::shared_ptr<stats::DeciderBase> decider) {
             person::Behavior bc = person->GetBehavior();
             // return immediately if not in active use state
             if (bc < person::Behavior::NONINJECTION) {
@@ -55,7 +55,7 @@ namespace event {
 
     void Overdose::doEvent(std::shared_ptr<person::PersonBase> person,
                            std::shared_ptr<datamanagement::DataManagerBase> dm,
-                           std::unique_ptr<stats::Decider> &decider) {
+                           std::shared_ptr<stats::DeciderBase> decider) {
         impl->doEvent(person, dm, decider);
     }
 

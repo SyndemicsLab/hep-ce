@@ -6,7 +6,12 @@
 #include <vector>
 
 namespace stats {
-    class Decider {
+    class DeciderBase {
+    public:
+        virtual int LoadGenerator(std::mt19937_64 const generator) = 0;
+        virtual int GetDecision(std::vector<double> probs) = 0;
+    };
+    class Decider : public DeciderBase {
     private:
         class DeciderIMPL;
         std::unique_ptr<DeciderIMPL> impl;

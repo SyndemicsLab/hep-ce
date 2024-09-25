@@ -31,12 +31,13 @@
 #include <omp.h>
 #include <random>
 #include <sstream>
+#include <time.h>
 
 namespace simulation {
     class Simulation::SimulationIMPL {
     private:
         std::shared_ptr<datamanagement::DataManager> _dm;
-        std::unique_ptr<stats::Decider> decider;
+        std::shared_ptr<stats::DeciderBase> decider;
         int tstep = 0;
         uint64_t _seed;
         int defaultPopulationSize = 0;
@@ -95,7 +96,7 @@ namespace simulation {
         SimulationIMPL(size_t seed = 1234, std::string const &logfile = "")
             : _seed(seed) {
             this->generator.seed(_seed);
-            this->decider = std::make_unique<stats::Decider>();
+            this->decider = std::make_shared<stats::Decider>();
             this->decider->LoadGenerator(this->generator);
 
             std::string logname = (logfile.empty()) ? "logfile.log" : logfile;
@@ -233,16 +234,18 @@ namespace simulation {
             size_t duration = std::stol(data);
             for (tstep; tstep < duration; ++tstep) {
 
-                for (std::shared_ptr<event::Event> &event : this->events) {
+                clock_t cStartClock = clock();
 #pragma omp parallel for
-                    for (std::shared_ptr<person::PersonBase> &person :
-                         this->population) {
+                for (std::shared_ptr<person::PersonBase> &person :
+                     this->population) {
+                    for (std::shared_ptr<event::Event> &event : this->events) {
                         event->Execute(person, _dm, decider);
                     }
                 }
 
-                spdlog::get("main")->info("Simulation completed timestep {}",
-                                          tstep);
+                spdlog::get("main")->info(
+                    "Simulation completed timestep {} in {} seconds", tstep,
+                    (clock() - cStartClock) / (double)CLOCKS_PER_SEC);
             }
             return 0;
         }
@@ -284,6 +287,7 @@ namespace simulation {
         int CreateNPeople(size_t const N, std::string const &icFile) {
             BuildPersonTable();
             this->population.clear();
+            _dm->StartTransaction();
 
             std::ifstream csv;
             int j = 0;
@@ -302,6 +306,7 @@ namespace simulation {
             for (size_t i = j; i < N; ++i) {
                 CreatePerson(i, {});
             }
+            _dm->EndTransaction();
             return 0;
         }
 

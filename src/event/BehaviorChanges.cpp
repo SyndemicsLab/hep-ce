@@ -128,7 +128,7 @@ namespace event {
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::unique_ptr<stats::Decider> &decider) {
+                     std::shared_ptr<stats::DeciderBase> decider) {
 
             // Determine person's current behavior classification
             person::Behavior bc = person->GetBehavior();
@@ -196,7 +196,7 @@ namespace event {
     void BehaviorChanges::doEvent(
         std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
-        std::unique_ptr<stats::Decider> &decider) {
+        std::shared_ptr<stats::DeciderBase> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

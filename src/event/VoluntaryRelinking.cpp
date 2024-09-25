@@ -28,7 +28,7 @@ namespace event {
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::unique_ptr<stats::Decider> &decider) {
+                     std::shared_ptr<stats::DeciderBase> decider) {
             std::string data;
             dm->GetFromConfig("linking.voluntary_relinkage_probability", data);
             double relinkProbability = std::stod(data);
@@ -63,7 +63,7 @@ namespace event {
     void VoluntaryRelinking::doEvent(
         std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
-        std::unique_ptr<stats::Decider> &decider) {
+        std::shared_ptr<stats::DeciderBase> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

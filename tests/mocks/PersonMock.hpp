@@ -1,3 +1,6 @@
+#ifndef PERSONMOCK_HPP_
+#define PERSONMOCK_HPP_
+
 #include "Person.hpp"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
@@ -153,3 +156,5 @@ namespace person {
         MOCK_METHOD(std::vector<Child>, GetChildren, (), (const, override));
     };
 } // namespace person
+
+#endif

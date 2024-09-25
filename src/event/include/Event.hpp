@@ -33,9 +33,9 @@ namespace datamanagement {
     class DataManagerBase;
 }
 
-// Forward Defining Decider from stats project
+// Forward Defining DeciderBase from stats project
 namespace stats {
-    class Decider;
+    class DeciderBase;
 }
 
 /// @brief Namespace containing the Events that occur during the simulation
@@ -45,7 +45,7 @@ namespace event {
         virtual void
         doEvent(std::shared_ptr<person::PersonBase> person,
                 std::shared_ptr<datamanagement::DataManagerBase> dm,
-                std::unique_ptr<stats::Decider> &decider) = 0;
+                std::shared_ptr<stats::DeciderBase> decider) = 0;
 
     public:
         Event();
@@ -59,7 +59,7 @@ namespace event {
 
         int Execute(std::shared_ptr<person::PersonBase> person,
                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                    std::unique_ptr<stats::Decider> &decider);
+                    std::shared_ptr<stats::DeciderBase> decider);
     };
 } // namespace event
 #endif

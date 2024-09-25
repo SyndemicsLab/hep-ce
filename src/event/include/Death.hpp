@@ -33,7 +33,7 @@ namespace event {
         /// @param person Individual Person undergoing Event
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::unique_ptr<stats::Decider> &decider) override;
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
         Death();

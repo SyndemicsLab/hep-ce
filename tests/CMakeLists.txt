@@ -44,8 +44,8 @@ enable_testing()
 add_executable(${PROJECT_NAME}
   src/PersonTest.cpp
   src/SimTest.cpp
-  src/EventTest.cpp
   src/CostTest.cpp
+  src/eventtests/EventTest.cpp
 )
 
 # BE VERY CAREFUL WITH GTEST AS ITS A PAIN IN THE BUTT

@@ -98,7 +98,7 @@ namespace event {
         }
 
         bool isLostToFollowUp(std::shared_ptr<person::PersonBase> person,
-                              std::unique_ptr<stats::Decider> &decider) {
+                              std::shared_ptr<stats::DeciderBase> decider) {
             if (person->HasInitiatedTreatment() || isEligible(person)) {
                 return false;
             }
@@ -145,7 +145,7 @@ namespace event {
         }
 
         bool doesWithdraw(std::shared_ptr<person::PersonBase> person,
-                          std::unique_ptr<stats::Decider> &decider) {
+                          std::shared_ptr<stats::DeciderBase> decider) {
             std::string query = buildSQL(person, "withdrawal_probability");
 
             std::vector<double> storage;
@@ -161,7 +161,7 @@ namespace event {
         }
 
         bool experiencedToxicity(std::shared_ptr<person::PersonBase> person,
-                                 std::unique_ptr<stats::Decider> &decider) {
+                                 std::shared_ptr<stats::DeciderBase> decider) {
             std::string query = buildSQL(person, "toxicity");
             std::vector<double> storage;
             std::string error;
@@ -172,7 +172,7 @@ namespace event {
         }
 
         bool initiatesTreatment(std::shared_ptr<person::PersonBase> person,
-                                std::unique_ptr<stats::Decider> &decider) {
+                                std::shared_ptr<stats::DeciderBase> decider) {
             // if person hasn't initialized draw, if they have, continue
             // treatment
             if (person->HasInitiatedTreatment()) {
@@ -203,7 +203,7 @@ namespace event {
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::unique_ptr<stats::Decider> &decider) {
+                     std::shared_ptr<stats::DeciderBase> decider) {
             this->dm = dm;
 
             // 1. Check if the Person is Lost To Follow Up (LTFU)
@@ -278,7 +278,7 @@ namespace event {
 
     void Treatment::doEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
-                            std::unique_ptr<stats::Decider> &decider) {
+                            std::shared_ptr<stats::DeciderBase> decider) {
         impl->doEvent(person, dm, decider);
     }
 

@@ -1,3 +1,6 @@
+#ifndef DATAMANAGERMOCK_HPP_
+#define DATAMANAGERMOCK_HPP_
+
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include <DataManagement/DataManagerBase.hpp>
@@ -35,5 +38,9 @@ namespace datamanagement {
                     (const, override));
         MOCK_METHOD(int, SaveDatabase, (std::string const &outfile),
                     (override));
+        MOCK_METHOD(int, StartTransaction, (), (const, override));
+        MOCK_METHOD(int, EndTransaction, (), (const, override));
     };
 } // namespace datamanagement
+
+#endif

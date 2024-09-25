@@ -61,7 +61,7 @@ namespace event {
         /// @brief The Background Screening Event Undertaken on a Person
         /// @param person The Person undergoing a background Screening
         void backgroundScreen(std::shared_ptr<person::PersonBase> person,
-                              std::unique_ptr<stats::Decider> &decider) {
+                              std::shared_ptr<stats::DeciderBase> decider) {
             if (!person->GetTimeSinceLastScreening()) {
                 return;
             }
@@ -106,7 +106,7 @@ namespace event {
 
         bool runABTest(std::shared_ptr<person::PersonBase> person,
                        std::string prefix,
-                       std::unique_ptr<stats::Decider> &decider) {
+                       std::shared_ptr<stats::DeciderBase> decider) {
             bool firstTest = this->test(
                 person->GetHCV(), prefix + "_ab", decider,
                 [&person]() -> int { return person->AddAbScreen(); });
@@ -117,7 +117,7 @@ namespace event {
 
         bool runRNATest(std::shared_ptr<person::PersonBase> person,
                         std::string prefix,
-                        std::unique_ptr<stats::Decider> &decider) {
+                        std::shared_ptr<stats::DeciderBase> decider) {
             bool firstTest = this->test(
                 person->GetHCV(), prefix + "_rna", decider,
                 [&person]() -> int { return person->AddRnaScreen(); });
@@ -129,7 +129,7 @@ namespace event {
         /// @brief The Intervention Screening Event Undertaken on a Person
         /// @param person The Person undergoing an Intervention Screening
         void interventionScreen(std::shared_ptr<person::PersonBase> person,
-                                std::unique_ptr<stats::Decider> &decider) {
+                                std::shared_ptr<stats::DeciderBase> decider) {
             person->MarkScreened();
             if (!person->IsIdentifiedAsHCVInfected()) {
                 bool firstTest =
@@ -155,7 +155,7 @@ namespace event {
         }
 
         bool test(person::HCV infectionStatus, std::string configKey,
-                  std::unique_ptr<stats::Decider> &decider,
+                  std::shared_ptr<stats::DeciderBase> decider,
                   std::function<int(void)> testFunc) {
             double probability = 0.5;
             std::string data;
@@ -238,7 +238,7 @@ namespace event {
         }
 
         void interventionDecision(std::shared_ptr<person::PersonBase> person,
-                                  std::unique_ptr<stats::Decider> &decider) {
+                                  std::shared_ptr<stats::DeciderBase> decider) {
             std::vector<double> interventionProbability =
                 this->getInterventionScreeningProbability(person);
             if (decider->GetDecision(interventionProbability) == 0) {
@@ -265,7 +265,7 @@ namespace event {
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::unique_ptr<stats::Decider> &decider) {
+                     std::shared_ptr<stats::DeciderBase> decider) {
             this->dm = dm;
             std::string interventionType;
             dm->GetFromConfig("screening.intervention_type", interventionType);
@@ -308,7 +308,7 @@ namespace event {
 
     void Screening::doEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
-                            std::unique_ptr<stats::Decider> &decider) {
+                            std::shared_ptr<stats::DeciderBase> decider) {
         impl->doEvent(person, dm, decider);
     }
 

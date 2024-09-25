@@ -65,7 +65,7 @@ namespace event {
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::unique_ptr<stats::Decider> &decider) {
+                     std::shared_ptr<stats::DeciderBase> decider) {
             // only those who aren't infected go to the rest of the event.
             // those who are infected transition from acute to chronic after 6
             // months.
@@ -100,7 +100,7 @@ namespace event {
     void
     Infections::doEvent(std::shared_ptr<person::PersonBase> person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        std::unique_ptr<stats::Decider> &decider) {
+                        std::shared_ptr<stats::DeciderBase> decider) {
         impl->doEvent(person, dm, decider);
     }
 

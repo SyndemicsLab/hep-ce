@@ -104,7 +104,7 @@ namespace event {
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::unique_ptr<stats::Decider> &decider) {
+                     std::shared_ptr<stats::DeciderBase> decider) {
             std::string data;
             dm->GetFromConfig("fibrosis.add_cost_only_if_identified", data);
             bool costFlag = false;
@@ -150,7 +150,7 @@ namespace event {
     void FibrosisProgression::doEvent(
         std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
-        std::unique_ptr<stats::Decider> &decider) {
+        std::shared_ptr<stats::DeciderBase> decider) {
         impl->doEvent(person, dm, decider);
     }
 } // namespace event

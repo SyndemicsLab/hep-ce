@@ -111,7 +111,7 @@ namespace event {
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::unique_ptr<stats::Decider> &decider) {
+                     std::shared_ptr<stats::DeciderBase> decider) {
 
             // 0. Check if Person even has Fibrosis, exit if they are none
             if (person->GetTrueFibrosisState() == person::FibrosisState::NONE) {
@@ -208,7 +208,7 @@ namespace event {
     void FibrosisStaging::doEvent(
         std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
-        std::unique_ptr<stats::Decider> &decider) {
+        std::shared_ptr<stats::DeciderBase> decider) {
         impl->doEvent(person, dm, decider);
     }
 
