@@ -801,11 +801,11 @@ namespace person {
         pImplPERSON->ClearHCV();
         return 0;
     }
-    int Person::SetBehavior(const Behavior &bc) {
+    int Person::SetBehavior(Behavior bc) {
         pImplPERSON->SetBehavior(bc);
         return 0;
     }
-    int Person::DiagnoseFibrosis(MeasuredFibrosisState &data) {
+    int Person::DiagnoseFibrosis(MeasuredFibrosisState data) {
         data = pImplPERSON->DiagnoseFibrosis(data);
         return 0;
     }

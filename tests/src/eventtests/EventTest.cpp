@@ -133,7 +133,7 @@ ACTION_P(SetArg2ToBehaviorTransitionsCallbackValue, value) {
         *value;
 }
 
-ACTION_P(SetArg2ToCallbackValue, value) {
+ACTION_P(SetArg2ToDoubleCallbackValue, value) {
     *reinterpret_cast<std::vector<double> *>(arg2) = *value;
 }
 

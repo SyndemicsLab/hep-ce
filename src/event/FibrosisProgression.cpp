@@ -25,15 +25,11 @@
 namespace event {
     class FibrosisProgression::FibrosisProgressionIMPL {
     private:
-        struct fib_prog_select {
-            double cost;
-        };
         static int callback(void *storage, int count, char **data,
                             char **columns) {
-            std::vector<struct fib_prog_select> *d =
-                (std::vector<struct fib_prog_select> *)storage;
-            struct fib_prog_select temp;
-            temp.cost = std::stod(data[0]); // First Column Selected
+            std::vector<double> *d = (std::vector<double> *)storage;
+            double temp;
+            temp = std::stod(data[0]); // First Column Selected
             d->push_back(temp);
             return 0;
         }
@@ -55,7 +51,6 @@ namespace event {
             // get the probability of transitioning to the next fibrosis state
             std::string data;
 
-            data.clear();
             switch (fs) {
             case person::FibrosisState::F0:
                 dm->GetFromConfig("fibrosis.f01", data);
@@ -86,7 +81,7 @@ namespace event {
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = this->buildSQL(person);
-            std::vector<struct fib_prog_select> storage;
+            std::vector<double> storage;
             std::string error;
             int rc = dm->SelectCustomCallback(query, callback, &storage, error);
             if (rc != 0) {
@@ -94,9 +89,17 @@ namespace event {
                     "No cost avaliable for Fibrosis Progression!");
                 return;
             }
+            double c = 0.00;
+            if (!storage.empty()) {
+                c = storage[0];
+            } else {
+                spdlog::get("main")->warn(
+                    "No cost Found for Fibrosis Progression, setting cost to "
+                    "$0.00.");
+            }
+
             cost::Cost liverDiseaseCost = {cost::CostCategory::LIVER,
-                                           "Liver Disease Care",
-                                           storage[0].cost};
+                                           "Liver Disease Care", c};
 
             person->AddCost(liverDiseaseCost);
         }
@@ -121,17 +124,18 @@ namespace event {
             std::vector<double> prob = getTransition(fs, dm);
             // 3. Draw whether the person's fibrosis state progresses (0
             // progresses)
-            person::FibrosisState newFibrosis =
-                (decider->GetDecision(prob) == 0) ? ++fs : fs;
+            (decider->GetDecision(prob) == 0) ? ++fs : fs;
 
-            // 4. Apply the result state
-            if (newFibrosis != person->GetTrueFibrosisState()) {
-                person->UpdateTrueFibrosis(newFibrosis);
+            if (fs == person->GetTrueFibrosisState()) {
+                return;
             }
 
+            // 4. Apply the result state
+            person->UpdateTrueFibrosis(fs);
             // insert Person's liver-related disease cost (taking the highest
             // fibrosis state)
-            if (costFlag && person->IsIdentifiedAsHCVInfected()) {
+            if (!costFlag ||
+                (costFlag && person->IsIdentifiedAsHCVInfected())) {
                 this->addLiverDiseaseCost(person, dm);
             }
         }

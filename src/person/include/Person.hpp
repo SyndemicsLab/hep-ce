@@ -94,7 +94,7 @@ namespace person {
         virtual int GetTimeSinceTreatmentInitiation() const = 0;
 
         // Drug Use Behavior
-        virtual int SetBehavior(const Behavior &bc) = 0;
+        virtual int SetBehavior(Behavior) = 0;
         virtual Behavior GetBehavior() const = 0;
         virtual BehaviorDetails GetBehaviorDetails() const = 0;
 
@@ -106,9 +106,9 @@ namespace person {
 
         // Fibrosis
         virtual MeasuredFibrosisState GetMeasuredFibrosisState() const = 0;
-        virtual int DiagnoseFibrosis(MeasuredFibrosisState &data) = 0;
+        virtual int DiagnoseFibrosis(MeasuredFibrosisState) = 0;
         virtual FibrosisState GetTrueFibrosisState() const = 0;
-        virtual void UpdateTrueFibrosis(FibrosisState state) = 0;
+        virtual void UpdateTrueFibrosis(FibrosisState) = 0;
 
         virtual StagingDetails GetFibrosisStagingDetails() const = 0;
 
@@ -242,7 +242,7 @@ namespace person {
         int GetTimeSinceTreatmentInitiation() const;
 
         // Drug Use Behavior
-        int SetBehavior(const Behavior &bc);
+        int SetBehavior(Behavior);
         Behavior GetBehavior() const;
         BehaviorDetails GetBehaviorDetails() const;
 
@@ -254,9 +254,9 @@ namespace person {
 
         // Fibrosis
         MeasuredFibrosisState GetMeasuredFibrosisState() const;
-        int DiagnoseFibrosis(MeasuredFibrosisState &data);
+        int DiagnoseFibrosis(MeasuredFibrosisState);
         FibrosisState GetTrueFibrosisState() const;
-        void UpdateTrueFibrosis(FibrosisState state);
+        void UpdateTrueFibrosis(FibrosisState);
 
         StagingDetails GetFibrosisStagingDetails() const;
 

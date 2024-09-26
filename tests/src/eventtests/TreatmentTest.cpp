@@ -15,5 +15,6 @@ TEST_F(TreatmentTest, Treatment) {
 
     std::vector<double> storage = {1.0};
     EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
+        .WillRepeatedly(
+            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
 }

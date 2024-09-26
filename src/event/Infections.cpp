@@ -51,14 +51,21 @@ namespace event {
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
             if (rc != 0) {
-                spdlog::get("main")->error("No Transitions Avaliable for "
-                                           "Behavior Change! Error Message: "
-                                           "{}",
-                                           error);
+                spdlog::get("main")->error(
+                    "Error retrieving Infection Probability! Error Message: "
+                    "{}",
+                    error);
                 spdlog::get("main")->info("Query: {}", query);
                 return {};
             }
-            std::vector<double> result = {storage[0], 1 - storage[0]};
+            std::vector<double> result;
+            if (storage.empty()) {
+                spdlog::get("main")->warn(
+                    "No result found for Infection Probability!");
+                result = {0.0, 1.0};
+            } else {
+                result = {storage[0], 1 - storage[0]};
+            }
             return result;
         }
 
@@ -69,23 +76,18 @@ namespace event {
             // only those who aren't infected go to the rest of the event.
             // those who are infected transition from acute to chronic after 6
             // months.
-            switch (person->GetHCV()) {
-            case person::HCV::NONE:
-                break;
-            case person::HCV::ACUTE:
-                if (person->GetTimeSinceHCVChanged() >= 6) {
+            if (person->GetHCV() != person::HCV::NONE) {
+                if (person->GetHCV() == person::HCV::ACUTE &&
+                    person->GetTimeSinceHCVChanged() >= 6) {
                     person->SetHCV(person::HCV::CHRONIC);
                 }
-                return;
-            case person::HCV::CHRONIC:
                 return;
             }
 
             // draw new infection probability
             std::vector<double> prob = this->getInfectProb(person, dm);
             // decide whether person is infected; if value == 0, infect
-            int value = decider->GetDecision(prob);
-            if (value != 0) {
+            if (decider->GetDecision(prob) != 0) {
                 return;
             }
             person->InfectHCV();

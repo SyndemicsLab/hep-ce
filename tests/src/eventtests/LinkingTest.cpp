@@ -14,7 +14,8 @@ TEST_F(LinkingTest, Linking) {
 
     std::vector<double> storage = {1.0};
     EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillRepeatedly(DoAll(SetArg2ToCallbackValue(&storage), Return(0)));
+        .WillRepeatedly(
+            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
 
     std::string cost = std::string("20.25");
     EXPECT_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))

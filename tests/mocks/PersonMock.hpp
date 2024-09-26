@@ -79,7 +79,7 @@ namespace person {
                     (const, override));
 
         // Drug Use Behavior
-        MOCK_METHOD(int, SetBehavior, (const Behavior &bc), (override));
+        MOCK_METHOD(int, SetBehavior, (Behavior), (override));
         MOCK_METHOD(Behavior, GetBehavior, (), (const, override));
         MOCK_METHOD(BehaviorDetails, GetBehaviorDetails, (), (const, override));
 
@@ -92,8 +92,7 @@ namespace person {
         // Fibrosis
         MOCK_METHOD(MeasuredFibrosisState, GetMeasuredFibrosisState, (),
                     (const, override));
-        MOCK_METHOD(int, DiagnoseFibrosis, (MeasuredFibrosisState & data),
-                    (override));
+        MOCK_METHOD(int, DiagnoseFibrosis, (MeasuredFibrosisState), (override));
         MOCK_METHOD(FibrosisState, GetTrueFibrosisState, (), (const, override));
         MOCK_METHOD(void, UpdateTrueFibrosis, (FibrosisState state),
                     (override));

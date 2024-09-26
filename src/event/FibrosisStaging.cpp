@@ -174,7 +174,8 @@ namespace event {
             person->GiveSecondScreeningTest(true);
 
             person::MeasuredFibrosisState stateTwo =
-                (person::MeasuredFibrosisState)decider->GetDecision(probs);
+                (person::MeasuredFibrosisState)(decider->GetDecision(probs) +
+                                                1);
 
             // determine whether to use latest test value or greatest
             data.clear();
