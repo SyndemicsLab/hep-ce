@@ -63,7 +63,7 @@ namespace event {
             if (rc != 0) {
                 spdlog::get("main")->error(
                     "No cost avaliable for Fibrosis Progression!");
-                return;
+                return {};
             }
             std::vector<double> result = {storage, 1 - storage};
             return result;
@@ -193,32 +193,16 @@ namespace event {
         }
     };
 
-    // Pregnancy::Pregnancy(std::mt19937_64 &generator, Data::IDataTablePtr
-    // table,
-    //                      Data::Config &config,
-    //                      std::shared_ptr<spdlog::logger> logger,
-    //                      std::string name)
-    //     : ProbEvent(generator, table, config, logger, name) {
-    //     this->multDeliveryProb = this->config.get(
-    //         "pregnancy.multiple_delivery_probability", (double)-1.0);
-
-    //     this->verticalHCVTransProb = this->config.get(
-    //         "pregnancy.vertical_hcv_transition_probability", (double)-1.0);
-
-    //     this->infantHCVTestedProb = this->config.get(
-    //         "pregnancy.infant_hcv_tested_probability", (double)-1.0);
-    // }
-
     Pregnancy::Pregnancy() { impl = std::make_unique<PregnancyIMPL>(); }
+
+    Pregnancy::~Pregnancy() = default;
+    Pregnancy::Pregnancy(Pregnancy &&) noexcept = default;
+    Pregnancy &Pregnancy::operator=(Pregnancy &&) noexcept = default;
 
     void Pregnancy::doEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::shared_ptr<stats::DeciderBase> decider) {
         impl->doEvent(person, dm, decider);
     }
-
-    Pregnancy::~Pregnancy() = default;
-    Pregnancy::Pregnancy(Pregnancy &&) noexcept = default;
-    Pregnancy &Pregnancy::operator=(Pregnancy &&) noexcept = default;
 
 } // namespace event

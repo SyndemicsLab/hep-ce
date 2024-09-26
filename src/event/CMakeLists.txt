@@ -41,6 +41,7 @@ target_sources(${PROJECT_NAME}
         Screening.cpp
         Treatment.cpp
         VoluntaryRelinking.cpp
+        Pregnancy.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} 

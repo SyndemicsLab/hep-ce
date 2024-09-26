@@ -41,6 +41,9 @@ namespace event {
         if (eventName == "VoluntaryRelinking") {
             return makeEvent<VoluntaryRelinking>();
         }
+        if (eventName == "Pregnancy") {
+            return makeEvent<Pregnancy>();
+        }
         spdlog::get("main")->error("Unknown Event! Exiting...");
         exit(-1);
     }

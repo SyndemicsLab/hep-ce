@@ -22,7 +22,6 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-
     /// @brief Subclass of Event used to Spread Infections
     class Infections : public Event {
     private:

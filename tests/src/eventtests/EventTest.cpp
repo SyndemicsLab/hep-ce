@@ -138,6 +138,10 @@ ACTION_P(SetArg2ToBehaviorTransitionsCallbackValue, value) {
         *value;
 }
 
+ACTION_P(SetArg2ToPureDoubleCallbackValue, value) {
+    *reinterpret_cast<double *>(arg2) = *value;
+}
+
 ACTION_P(SetArg2ToDoubleCallbackValue, value) {
     *reinterpret_cast<std::vector<double> *>(arg2) = *value;
 }
