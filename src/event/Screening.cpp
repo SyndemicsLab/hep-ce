@@ -28,8 +28,6 @@
 namespace event {
     class Screening::ScreeningIMPL {
     private:
-        std::shared_ptr<datamanagement::DataManagerBase> dm;
-
         static int callback(void *storage, int count, char **data,
                             char **columns) {
             std::vector<double> *d = (std::vector<double> *)storage;
@@ -58,103 +56,33 @@ namespace event {
             return sql.str();
         }
 
-        /// @brief The Background Screening Event Undertaken on a Person
-        /// @param person The Person undergoing a background Screening
-        void backgroundScreen(std::shared_ptr<person::PersonBase> person,
-                              std::shared_ptr<stats::DeciderBase> decider) {
-            if (!person->GetTimeSinceLastScreening()) {
-                return;
-            }
-            person->MarkScreened();
-
-            std::string testPrefix = "screening_background_";
-            person::HCV infectionStatus = person->GetHCV();
-            bool firstTest = this->test(
-                infectionStatus, testPrefix + "ab", decider,
-                [&person]() -> int { return person->AddAbScreen(); });
-            this->insertScreeningCost(person, "screening_background_ab.cost",
-                                      "Background Antibody Screening");
-
-            // if first test is negative, perform a second test
-            bool secondTest = false;
-            if (!firstTest) {
-                secondTest = this->test(
-                    infectionStatus, testPrefix + "ab", decider,
-                    [&person]() -> int { return person->AddAbScreen(); });
-                this->insertScreeningCost(person,
-                                          "screening_background_ab.cost",
-                                          "Background Antibody Screening");
-            }
-
-            if (!firstTest && !secondTest) {
-                return; // run two tests and if both are negative do nothing
-            }
-
-            // if either is positive then...
-            this->insertScreeningCost(person, "screening_background_rna.cost",
-                                      "Background RNA Screening");
-
-            if (this->test(
-                    infectionStatus, testPrefix + "rna", decider,
-                    [&person]() -> int { return person->AddRnaScreen(); })) {
-                person->Link(person::LinkageType::BACKGROUND);
-                // what else needs to happen during a link?
-            }
-
-            person->Unlink();
-        }
-
         bool runABTest(std::shared_ptr<person::PersonBase> person,
+                       std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::string prefix,
                        std::shared_ptr<stats::DeciderBase> decider) {
-            bool firstTest = this->test(
-                person->GetHCV(), prefix + "_ab", decider,
+            bool test = this->test(
+                person->GetHCV(), dm, prefix + "_ab", decider,
                 [&person]() -> int { return person->AddAbScreen(); });
-            this->insertScreeningCost(person, prefix + "_ab.cost",
-                                      "Intervention Antibody Screening");
-            return firstTest;
+            this->insertScreeningCost(person, dm, prefix + "_ab.cost",
+                                      "Antibody Screening");
+            return test;
         }
 
         bool runRNATest(std::shared_ptr<person::PersonBase> person,
+                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::string prefix,
                         std::shared_ptr<stats::DeciderBase> decider) {
-            bool firstTest = this->test(
-                person->GetHCV(), prefix + "_rna", decider,
+            bool test = this->test(
+                person->GetHCV(), dm, prefix + "_rna", decider,
                 [&person]() -> int { return person->AddRnaScreen(); });
-            this->insertScreeningCost(person, prefix + "_rna.cost",
-                                      "Intervention RNA Screening");
-            return firstTest;
+            this->insertScreeningCost(person, dm, prefix + "_rna.cost",
+                                      "RNA Screening");
+            return test;
         }
 
-        /// @brief The Intervention Screening Event Undertaken on a Person
-        /// @param person The Person undergoing an Intervention Screening
-        void interventionScreen(std::shared_ptr<person::PersonBase> person,
-                                std::shared_ptr<stats::DeciderBase> decider) {
-            person->MarkScreened();
-            if (!person->IsIdentifiedAsHCVInfected()) {
-                bool firstTest =
-                    runABTest(person, "screening_intervention", decider);
-                // if first test is negative, perform a second test
-                if (!firstTest) {
-                    bool secondTest =
-                        runABTest(person, "screening_intervention", decider);
-                    if (!secondTest) {
-                        return; // two negatives
-                    }
-                }
-            }
-
-            bool rna_test =
-                runRNATest(person, "screening_intervention", decider);
-            if (rna_test) {
-                person->Link(person::LinkageType::INTERVENTION);
-                // what else needs to happen during a link?
-            } else {
-                person->Unlink();
-            }
-        }
-
-        bool test(person::HCV infectionStatus, std::string configKey,
+        bool test(person::HCV infectionStatus,
+                  std::shared_ptr<datamanagement::DataManagerBase> dm,
+                  std::string configKey,
                   std::shared_ptr<stats::DeciderBase> decider,
                   std::function<int(void)> testFunc) {
             double probability = 0.5;
@@ -169,29 +97,70 @@ namespace event {
                 dm->GetFromConfig(configKey + ".specificity", data);
                 probability = std::stod(data);
             }
-            // probability is the chance of false positive or false negative
-            int value = decider->GetDecision({probability});
             testFunc();
-            return value;
+            // probability is the chance of false positive or false negative
+            bool rValue =
+                (decider->GetDecision({probability, 1 - probability}) == 0)
+                    ? true
+                    : false;
+            return rValue;
         }
 
-        std::vector<double> getBackgroundScreeningProbability(
-            std::shared_ptr<person::PersonBase> person) {
-            std::string query =
-                this->buildSQL(person, "background_screen_probability");
+        /// @brief The Intervention Screening Event Undertaken on a Person
+        /// @param person The Person undergoing an Intervention Screening
+        void Screen(std::string screenkey,
+                    std::shared_ptr<person::PersonBase> person,
+                    std::shared_ptr<datamanagement::DataManagerBase> dm,
+                    std::shared_ptr<stats::DeciderBase> decider) {
+            person->MarkScreened();
+            if ((screenkey == "screening_intervention" &&
+                 !person->IsIdentifiedAsHCVInfected()) ||
+                screenkey == "screening_background") {
+                // if first test is negative, perform a second test
+                if (!runABTest(person, dm, screenkey, decider)) {
+                    if (!runABTest(person, dm, screenkey, decider)) {
+                        return; // two negatives
+                    }
+                }
+            }
+
+            if (runRNATest(person, dm, screenkey, decider)) {
+                person::LinkageType type =
+                    (screenkey == "screening_background")
+                        ? person::LinkageType::BACKGROUND
+                        : person::LinkageType::INTERVENTION;
+                person->Link(type);
+            } else {
+                person->Unlink();
+            }
+        }
+
+        std::vector<double> GetScreeningProbability(
+            std::string colname, std::shared_ptr<person::PersonBase> person,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string query = this->buildSQL(person, colname);
             std::vector<double> storage;
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
             if (rc != 0) {
                 spdlog::get("main")->error(
-                    "Error extracting background_screen_probability "
+                    "Error extracting {} "
                     "Screening Data from antibody_testing and "
                     "screening_and_linkage! Error Message: {}",
-                    error);
+                    colname, error);
                 return {};
             }
-            double prob = storage[0];
+            std::vector<double> probs;
+            if (storage.empty()) {
+                spdlog::get("main")->warn(
+                    "Callback Function Returned Empty Dataset From Query: "
+                    "{}",
+                    query);
+                probs = {0.0};
+            } else {
+                probs = {storage[0]};
+            }
 
             std::string configStr =
                 "screening.seropositive_multiplier_not_boomer";
@@ -203,55 +172,30 @@ namespace event {
             std::string data;
             dm->GetFromConfig(configStr, data);
             double multiplier = (data.empty()) ? 1.0 : std::stod(data);
-            prob *= multiplier;
-            std::vector<double> result = {prob, 1 - prob};
+            probs[0] *= multiplier;
+            std::vector<double> result = {probs[0], 1 - probs[0]};
             return result;
         }
 
-        std::vector<double> getInterventionScreeningProbability(
-            std::shared_ptr<person::PersonBase> person) {
-            std::string query =
-                this->buildSQL(person, "intervention_screen_probability");
-            std::vector<double> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
-                                              error);
-            if (rc != 0) {
-                spdlog::get("main")->error(
-                    "Error extracting intervention_screen_probability "
-                    "Screening Data from antibody_testing and "
-                    "screening_and_linkage! Error Message: {}",
-                    error);
-                return {};
-            }
-            std::vector<double> result;
-            if (storage.empty()) {
-                spdlog::get("main")->warn(
-                    "Callback Function Returned Empty Dataset From Query: "
-                    "{}",
-                    query);
-                result = {0.0, 0.0};
-            } else {
-                result = {storage[0], 1 - storage[0]};
-            }
-            return result;
-        }
-
-        void interventionDecision(std::shared_ptr<person::PersonBase> person,
-                                  std::shared_ptr<stats::DeciderBase> decider) {
+        void interventionDecision(
+            std::shared_ptr<person::PersonBase> person,
+            std::shared_ptr<datamanagement::DataManagerBase> dm,
+            std::shared_ptr<stats::DeciderBase> decider) {
             std::vector<double> interventionProbability =
-                this->getInterventionScreeningProbability(person);
+                this->GetScreeningProbability("intervention_screen_probability",
+                                              person, dm);
             if (decider->GetDecision(interventionProbability) == 0) {
-                this->interventionScreen(person, decider);
+                this->Screen("screening_intervention", person, dm, decider);
             }
         }
 
         /// @brief Insert cost for screening of type \code{type}
         /// @param person The person who is accruing cost
         /// @param type The screening type, used to discern the cost to add
-        void insertScreeningCost(std::shared_ptr<person::PersonBase> person,
-                                 std::string configKey,
-                                 std::string screeningName) {
+        void
+        insertScreeningCost(std::shared_ptr<person::PersonBase> person,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            std::string configKey, std::string screeningName) {
             double screeningCost;
             std::string data;
             dm->GetFromConfig(configKey, data);
@@ -266,36 +210,34 @@ namespace event {
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            this->dm = dm;
-            std::string interventionType;
-            dm->GetFromConfig("screening.intervention_type", interventionType);
-
             std::string temp;
             dm->GetFromConfig("screening.period", temp);
             int interventionPeriod = (temp.empty()) ? 0 : std::stoi(temp);
 
-            /// Skip Screening Conditions:
-            /// 1. Cannot have InterventionType is One-Time and CurrentTimestep
+            std::string interventionType;
+            dm->GetFromConfig("screening.intervention_type", interventionType);
+            /// Intervention Screening Conditions:
+            /// 1. Have InterventionType is One-Time and CurrentTimestep
             ///         is 1
-            /// 2. Cannot have Intervention Type is Periodic and the person
+            /// 2. Have Intervention Type is Periodic and the person
             ///         hasn't screened
             ///         or the period has been reached since their last
             ///         screening
-            if (!(interventionType == "one-time" &&
-                  person->GetCurrentTimestep() == 1) &&
-                !(interventionType == "periodic" &&
-                  (person->GetTimeSinceLastScreening() >= interventionPeriod ||
-                   person->GetTimeOfLastScreening() == -1))) {
-                return;
+            if ((interventionType == "one-time" &&
+                 person->GetCurrentTimestep() == 1) ||
+                (interventionType == "periodic" &&
+                 (person->GetTimeSinceLastScreening() >= interventionPeriod ||
+                  person->GetTimeOfLastScreening() == -1))) {
+                this->interventionDecision(person, dm, decider);
             }
-            this->interventionDecision(person, decider);
 
-            // [screen, don't screen]
+            // Background Screening:
             std::vector<double> backgroundProbability =
-                this->getBackgroundScreeningProbability(person);
-
-            if (decider->GetDecision(backgroundProbability) == 0) {
-                this->backgroundScreen(person, decider);
+                this->GetScreeningProbability("background_screen_probability",
+                                              person, dm);
+            if (decider->GetDecision(backgroundProbability) == 0 &&
+                person->GetTimeSinceLastScreening() != 0) {
+                this->Screen("screening_background", person, dm, decider);
             }
         }
     };

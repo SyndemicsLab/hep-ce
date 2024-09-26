@@ -25,8 +25,6 @@
 namespace event {
     class Treatment::TreatmentIMPL {
     private:
-        std::shared_ptr<datamanagement::DataManagerBase> dm;
-
         struct cost_svr_select {
             int time;
             double svr;
@@ -97,23 +95,30 @@ namespace event {
             person->SetUtility(util);
         }
 
-        bool isLostToFollowUp(std::shared_ptr<person::PersonBase> person,
-                              std::shared_ptr<stats::DeciderBase> decider) {
+        bool LostToFollowUp(std::shared_ptr<person::PersonBase> person,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            std::shared_ptr<stats::DeciderBase> decider) {
             if (person->HasInitiatedTreatment() || isEligible(person)) {
                 return false;
             }
             std::string data;
             dm->GetFromConfig("treatment.ltfu_probability", data);
+            if (data.empty()) {
+                spdlog::get("main")->warn(
+                    "No Loss To Follow-Up Probability Found!");
+                data = "0.0";
+            }
             double ltfuProb = std::stod(data);
-            int ltfu = decider->GetDecision({ltfuProb});
-            if (ltfu != 0) {
+            if (decider->GetDecision({ltfuProb, 1 - ltfuProb}) != 0) {
                 return false;
             }
-            person->Unlink();
+            this->quitEngagement(person);
             return true;
         }
 
-        void chargeCostOfVisit(std::shared_ptr<person::PersonBase> person) {
+        void
+        chargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
+                          std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string data;
             dm->GetFromConfig("treatment.treatment_cost", data);
             double cost = std::stod(data);
@@ -122,7 +127,9 @@ namespace event {
             person->AddCost(visitCost);
         }
 
-        void chargeCostOfCourse(std::shared_ptr<person::PersonBase> person) {
+        void chargeCostOfCourse(
+            std::shared_ptr<person::PersonBase> person,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = buildSQL(person, "treatment_cost");
             std::vector<double> storage;
             std::string error;
@@ -144,8 +151,9 @@ namespace event {
             person->SetUtility(util);
         }
 
-        bool doesWithdraw(std::shared_ptr<person::PersonBase> person,
-                          std::shared_ptr<stats::DeciderBase> decider) {
+        bool Withdraws(std::shared_ptr<person::PersonBase> person,
+                       std::shared_ptr<datamanagement::DataManagerBase> dm,
+                       std::shared_ptr<stats::DeciderBase> decider) {
             std::string query = buildSQL(person, "withdrawal_probability");
 
             std::vector<double> storage;
@@ -153,26 +161,65 @@ namespace event {
             int rc = dm->SelectCustomCallback(query, this->callback_double,
                                               &storage, error);
 
-            int withdraw = decider->GetDecision({storage[0]});
-            if (withdraw == 1) {
+            if (storage.empty()) {
+                spdlog::get("main")->warn("Withdrawal Probability not Found!");
+                storage.push_back(0.0);
+            }
+
+            if (decider->GetDecision({storage[0], 1 - storage[0]}) == 0) {
+                person->AddWithdrawal();
+                this->quitEngagement(person);
                 return true;
             }
             return false;
         }
 
-        bool experiencedToxicity(std::shared_ptr<person::PersonBase> person,
-                                 std::shared_ptr<stats::DeciderBase> decider) {
+        bool
+        ExperienceToxicity(std::shared_ptr<person::PersonBase> person,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           std::shared_ptr<stats::DeciderBase> decider) {
             std::string query = buildSQL(person, "toxicity");
             std::vector<double> storage;
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback_double,
                                               &storage, error);
-            int toxicity = decider->GetDecision({storage[0]});
-            return (toxicity == 1) ? true : false;
+            double probability = 0.0;
+            if (storage.empty()) {
+                spdlog::get("main")->warn("No Toxicity Probability Found!");
+            } else {
+                probability = storage[0];
+            }
+            if (decider->GetDecision({probability, 1 - probability}) == 1) {
+                return false;
+            }
+            person->AddToxicReaction();
+            this->quitEngagement(person);
+            std::string data;
+            dm->GetFromConfig("treatment.tox_cost", data);
+            if (data.empty()) {
+                spdlog::get("main")->warn("No Toxicity Cost Found!");
+                data = "0.00";
+            }
+            double cost = std::stod(data);
+            cost::Cost toxicityCost = {cost::CostCategory::TREATMENT,
+                                       "Toxicity Cost", cost};
+            person->AddCost(toxicityCost);
+
+            data.clear();
+            dm->GetFromConfig("treatment.tox_utility", data);
+            if (data.empty()) {
+                spdlog::get("main")->warn("No Toxicity Utility Found!");
+                data = "0.00";
+            }
+            double utility = std::stod(data);
+            person->SetUtility(utility);
+            return true;
         }
 
-        bool initiatesTreatment(std::shared_ptr<person::PersonBase> person,
-                                std::shared_ptr<stats::DeciderBase> decider) {
+        bool
+        InitiateTreatment(std::shared_ptr<person::PersonBase> person,
+                          std::shared_ptr<datamanagement::DataManagerBase> dm,
+                          std::shared_ptr<stats::DeciderBase> decider) {
             // if person hasn't initialized draw, if they have, continue
             // treatment
             if (person->HasInitiatedTreatment()) {
@@ -180,14 +227,18 @@ namespace event {
             }
             std::string data;
             dm->GetFromConfig("treatment.treatment_initialization", data);
+            if (data.empty()) {
+                spdlog::get("main")->warn(
+                    "Treatment Initialization Probability Not Found!");
+                data = "0.0";
+            }
             double initProb = std::stod(data);
-            int initiation = decider->GetDecision({initProb});
-            // if the randomly-drawn value from getDecision is 0, person
-            // does not initiate treatment
-            if (initiation == 1) {
 
+            if (decider->GetDecision({initProb, 1 - initProb}) != 0) {
+                this->quitEngagement(person);
                 return false;
             }
+
             // person initiates treatment -- set treatment initiation values
             person->InitiateTreatment();
             return true;
@@ -204,67 +255,53 @@ namespace event {
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            this->dm = dm;
-
             // 1. Check if the Person is Lost To Follow Up (LTFU)
-            if (this->isLostToFollowUp(person, decider)) {
-                this->quitEngagement(person);
+            if (LostToFollowUp(person, dm, decider)) {
                 return;
             }
 
             // 2. Charge the Cost of the Visit (varies if this is retreatment)
-            chargeCostOfVisit(person);
+            chargeCostOfVisit(person, dm);
 
             // 3. Determine if the Person Engages and Initiates Treatment (i.e.
             // picks up medicine)
-            if (!this->initiatesTreatment(person, decider)) {
-                this->quitEngagement(person);
+            if (!InitiateTreatment(person, dm, decider)) {
                 return;
             }
 
             // 5. Charge the person for the Course they are on
-            chargeCostOfCourse(person);
+            chargeCostOfCourse(person, dm);
 
             // 6. Determine if the person withdraws from the treatment
-            if (this->doesWithdraw(person, decider)) {
-                person->AddWithdrawal();
-                this->quitEngagement(person);
+            if (Withdraws(person, dm, decider)) {
                 return;
             }
 
             // 7. Determine if the person has a toxic reaction
-            if (this->experiencedToxicity(person, decider)) {
-                person->AddToxicReaction();
-                this->quitEngagement(person);
-                std::string data;
-                dm->GetFromConfig("treatment.tox_cost", data);
-                double cost = std::stod(data);
-                cost::Cost toxicityCost = {cost::CostCategory::TREATMENT,
-                                           "Toxicity Cost", cost};
-                person->AddCost(toxicityCost);
-
-                data.clear();
-                dm->GetFromConfig("treatment.tox_utility", data);
-                double utility = std::stod(data);
-                person->SetUtility(utility);
+            if (ExperienceToxicity(person, dm, decider)) {
+                return;
             }
 
             // 8. Determine if the person has been treated long enough, if they
             // achieve SVR
-            int timeSinceInitiation = person->GetTimeSinceTreatmentInitiation();
-
             std::string query = buildSQL(person, "time, svr");
 
             std::vector<struct cost_svr_select> storage;
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback_struct,
                                               &storage, error);
+            if (storage.empty()) {
+                spdlog::get("main")->warn("No SVR Probability Found!");
+                struct cost_svr_select temp = {0, 0.0};
+                storage.push_back(temp);
+            }
 
-            if (decider->GetDecision({storage[0].svr}) == 1) {
+            if (decider->GetDecision({storage[0].svr, 1 - storage[0].svr}) ==
+                0) {
                 person->AddSVR();
                 person->ClearHCV();
             }
-            if (timeSinceInitiation >= storage[0].time) {
+            if (person->GetTimeSinceTreatmentInitiation() >= storage[0].time) {
                 person->AddCompletedTreatment();
                 this->quitEngagement(person);
             }

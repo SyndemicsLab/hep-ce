@@ -31,19 +31,31 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) {
             std::string data;
             dm->GetFromConfig("linking.voluntary_relinkage_probability", data);
+            if (data.empty()) {
+                spdlog::get("main")->warn(
+                    "No Voluntary Relinkage Probability Found!");
+                data = "0.00";
+            }
             double relinkProbability = std::stod(data);
 
-            int relink = decider->GetDecision({relinkProbability});
+            int relink = decider->GetDecision(
+                {relinkProbability, 1 - relinkProbability});
 
             data.clear();
             dm->GetFromConfig("linking.voluntary_relink_duration", data);
+            if (data.empty()) {
+                spdlog::get("main")->warn(
+                    "No Voluntary Relinkage Duration Found!");
+                data = "0";
+            }
             int voluntaryRelinkDuration = std::stoi(data);
 
+            // if linked or never linked OR too long since last linked OR relink
+            // draw is false
             if (person->GetLinkState() != person::LinkageState::UNLINKED ||
                 (person->GetTimeSinceLinkChange()) > voluntaryRelinkDuration ||
-                relink == 1) {
-                return; // if linked or never linked OR too long since last
-                        // linked OR relink draw is false
+                relink != 0) {
+                return;
             }
             person->Link(person::LinkageType::BACKGROUND);
         }

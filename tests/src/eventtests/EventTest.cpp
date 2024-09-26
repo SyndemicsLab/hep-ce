@@ -120,6 +120,11 @@ struct background_smr {
     double smr = 0.0;
 };
 
+struct cost_svr_select {
+    int time = 5;
+    double svr = 0.8;
+};
+
 ACTION_P(SetArg2ToPersonCallbackValue, value) {
     *reinterpret_cast<struct person_select *>(arg2) = *value;
 }
@@ -139,4 +144,8 @@ ACTION_P(SetArg2ToDoubleCallbackValue, value) {
 
 ACTION_P(SetArg2ToBackgroundSMRMortalityCallbackValue, value) {
     *reinterpret_cast<std::vector<struct background_smr> *>(arg2) = *value;
+}
+
+ACTION_P(SetArg2ToCostSVRCallbackValue, value) {
+    *reinterpret_cast<std::vector<struct cost_svr_select> *>(arg2) = *value;
 }

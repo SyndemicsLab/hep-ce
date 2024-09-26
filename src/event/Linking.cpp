@@ -63,29 +63,77 @@ namespace event {
                     error);
                 return {};
             }
-            // {0: link, 1: don't link}
-            std::vector<double> result = {storage[0], 1 - storage[0]};
+            std::vector<double> result;
+            if (storage.empty()) {
+                spdlog::get("main")->warn("No Values found for Linking Data!");
+                result = {0.0, 1.0};
+            } else {
+                // {0: link, 1: don't link}
+                result = {storage[0], 1 - storage[0]};
+            }
+
             return result;
         }
 
         void addLinkingCost(std::shared_ptr<person::PersonBase> person,
-                            std::string name, double cost) {
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            std::string name) {
+            std::string param = "";
+            if (name == "Intervention Linking Cost") {
+                param = "linking.intervention_cost";
+            } else if (name == "False Positive Linking Cost") {
+                param = "linking.false_positive_test_cost";
+            } else {
+                return;
+            }
+
+            std::string data = "";
+            dm->GetFromConfig(param, data);
+            if (data.empty()) {
+                spdlog::get("main")->warn("{} Not Found! Assuming "
+                                          "0.00...",
+                                          param);
+                data = "0.00";
+            }
+            double cost = std::stod(data);
             cost::Cost linkingCost = {cost::CostCategory::LINKING, name, cost};
             person->AddCost(linkingCost);
+        }
+
+        bool
+        FalsePositive(std::shared_ptr<person::PersonBase> person,
+                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            if (person->GetHCV() != person::HCV::NONE) {
+                return false;
+            }
+            person->Unlink();
+            this->addLinkingCost(person, dm, "False Positive Linking Cost");
+            return true;
+        }
+
+        /// @brief Helper Function to Scale the probabilities if the person is
+        /// relinking
+        /// @param person Person Under Study
+        /// @param dm Data Manager Object
+        /// @param probabilities Linking Probabilities (0: link, 1: unlink)
+        void ScaleIfRelink(std::shared_ptr<person::PersonBase> person,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           std::vector<double> &probabilities) {
+            if (person->GetLinkState() != person::LinkageState::UNLINKED) {
+                return; // Not Relinking
+            }
+            std::string data;
+            dm->GetFromConfig("linking.relink_multiplier", data);
+            double relinkScalar = std::stod(data);
+            probabilities[1] = probabilities[1] * relinkScalar;
+            probabilities[0] = 1 - probabilities[1];
         }
 
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            if (person->GetHCV() == person::HCV::NONE) {
-                // add false positive cost
-                person->Unlink();
-                std::string data;
-                dm->GetFromConfig("linking.false_positive_test_cost", data);
-                double falsePositiveCost = std::stod(data);
-                this->addLinkingCost(person, "False Positive Linking Cost",
-                                     falsePositiveCost);
+            if (FalsePositive(person, dm)) {
                 return;
             }
 
@@ -94,40 +142,24 @@ namespace event {
             }
 
             std::vector<double> probs;
-            if (person->GetLinkageType() == person::LinkageType::BACKGROUND) {
-                // link probability
-                probs =
-                    getTransitions(person, dm, "background_link_probability");
-            } else {
-                // add intervention cost
-                std::string data;
-                dm->GetFromConfig("linking.intervention_cost", data);
-                double interventionCost = std::stod(data);
-                this->addLinkingCost(person, "Intervention Linking Cost",
-                                     interventionCost);
-                // link probability
-                probs =
-                    getTransitions(person, dm, "intervention_link_probability");
-            }
+            probs =
+                (person->GetLinkageType() == person::LinkageType::BACKGROUND)
+                    ? getTransitions(person, dm, "background_link_probability")
+                    : getTransitions(person, dm,
+                                     "intervention_link_probability");
 
-            if (person->GetLinkState() == person::LinkageState::UNLINKED) {
-                // scale by relink multiplier
-                std::string data;
-                dm->GetFromConfig("linking.relink_multiplier", data);
-                double relinkScalar = std::stod(data);
-                probs[1] = probs[1] * relinkScalar;
-                probs[0] = 1 - probs[1];
-            }
+            ScaleIfRelink(person, dm, probs);
 
             // draw from link probability
-            bool doLink = (decider->GetDecision(probs) == 0) ? true : false;
-
-            if (doLink) {
-                // need to figure out how to pass in the LinkageType to the
-                // event
+            if (decider->GetDecision(probs) == 0) {
                 person->Link(person->GetLinkageType());
-            } else if (!doLink &&
-                       person->GetLinkState() == person::LinkageState::LINKED) {
+                if (person->GetLinkageType() ==
+                    person::LinkageType::INTERVENTION) {
+                    this->addLinkingCost(person, dm,
+                                         "Intervention Linking Cost");
+                }
+
+            } else if (person->GetLinkState() == person::LinkageState::LINKED) {
                 person->Unlink();
             }
         }

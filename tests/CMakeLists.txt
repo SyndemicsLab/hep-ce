@@ -56,6 +56,7 @@ add_executable(${PROJECT_NAME}
   src/eventtests/LinkingTest.cpp
   src/eventtests/ScreeningTest.cpp
   src/eventtests/TreatmentTest.cpp
+  src/eventtests/VoluntaryRelinkingTest.cpp
 )
 
 # BE VERY CAREFUL WITH GTEST AS ITS A PAIN IN THE BUTT
