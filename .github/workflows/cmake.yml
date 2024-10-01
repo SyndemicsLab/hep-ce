@@ -32,3 +32,5 @@ jobs:
       - name: Build and Test
         working-directory: ${{ github.workspace }}
         run: scripts/build.sh -p
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
