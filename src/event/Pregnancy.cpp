@@ -33,13 +33,11 @@ namespace event {
         std::string buildSQL(std::shared_ptr<person::PersonBase> person,
                              std::string column) {
             std::stringstream sql;
-            std::string age_years =
-                std::to_string((int)(person->GetAge() / 12.0));
+            int age_years = (int)(person->GetAge() / 12.0);
             sql << "SELECT '" + column + "' FROM pregnancy";
-            sql << " WHERE age_years = '" << age_years << "'";
-            sql << " AND gestation = '"
-                << std::to_string(person->GetTimeSincePregnancyChange())
-                << "';";
+            sql << " WHERE age_years = " << age_years;
+            sql << " AND gestation = " << person->GetTimeSincePregnancyChange()
+                << ";";
             return sql.str();
         }
 

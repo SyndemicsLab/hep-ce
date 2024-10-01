@@ -35,13 +35,11 @@ namespace event {
         }
         std::string buildSQL(std::shared_ptr<person::PersonBase> person) {
             std::stringstream sql;
-            std::string hcv_status = (person->GetHCV() == person::HCV::NONE)
-                                         ? "negative"
-                                         : "positive";
-            sql << "SELECT cost FROM hcv_costs";
-            sql << " WHERE hcv_status = '" << hcv_status << "'";
-            sql << " AND metavir_stage = '" << person->GetTrueFibrosisState()
-                << "';";
+            int hcv_status = (person->GetHCV() == person::HCV::NONE) ? 0 : 1;
+            sql << "SELECT cost FROM hcv_impacts";
+            sql << " WHERE hcv_status = " << hcv_status;
+            sql << " AND fibrosis_state = "
+                << ((int)person->GetTrueFibrosisState()) << ";";
             return sql.str();
         }
 

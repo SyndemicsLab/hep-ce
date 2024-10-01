@@ -25,9 +25,12 @@ int main(int argc, char *argv[]) {
         std::filesystem::path outputSet =
             ((std::filesystem::path)rootInputDir) /
             ("output" + std::to_string(i));
+        std::filesystem::path dbfile = inputSet / "inputs.db";
+        std::filesystem::path cffile = inputSet / "sim.conf";
         std::filesystem::path logfile = outputSet / "log.txt";
-        simulation::Simulation sim(logfile.string());
-        sim.LoadData(inputSet.string());
+        simulation::Simulation sim(logfile.string(), false);
+        sim.LoadData(dbfile.string(), cffile.string(),
+                     simulation::DataType::SQL);
         sim.Run();
         sim.WriteResults(outputSet.string());
     }

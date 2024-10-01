@@ -30,6 +30,7 @@ namespace datamanagement {
                      std::string &error),
                     (const, override));
         MOCK_METHOD(int, LoadConfig, (std::string const &filepath), (override));
+        MOCK_METHOD(std::string, GetConfigFile, (), (const, override));
         MOCK_METHOD(int, GetFromConfig,
                     (std::string const key, std::string &data),
                     (const, override));
@@ -40,6 +41,9 @@ namespace datamanagement {
                     (override));
         MOCK_METHOD(int, StartTransaction, (), (const, override));
         MOCK_METHOD(int, EndTransaction, (), (const, override));
+        MOCK_METHOD(std::string, GetDBFileName, (), (const, override));
+        MOCK_METHOD(int, ConnectToDatabase, (std::string const &dbfile),
+                    (override));
     };
 } // namespace datamanagement
 

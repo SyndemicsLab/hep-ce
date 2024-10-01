@@ -93,7 +93,8 @@ namespace simulation {
         }
 
     public:
-        SimulationIMPL(size_t seed = 1234, std::string const &logfile = "")
+        SimulationIMPL(size_t seed = 1234, std::string const &logfile = "",
+                       bool temp_db = true)
             : _seed(seed) {
             this->generator.seed(_seed);
             this->decider = std::make_shared<stats::Decider>();
@@ -118,9 +119,17 @@ namespace simulation {
             spdlog::get("main")->info("Simulation seed: " +
                                       std::to_string(this->_seed));
             _dm = std::make_shared<datamanagement::DataManager>();
+            if (temp_db) {
+                _dm->ConnectToDatabase("temp.db");
+            }
         }
 
-        virtual ~SimulationIMPL() { spdlog::get("main")->flush(); }
+        virtual ~SimulationIMPL() {
+            spdlog::get("main")->flush();
+            if (std::filesystem::exists("temp.db")) {
+                std::filesystem::remove("temp.db");
+            }
+        }
 
         int AddCSVTable(std::string const &filepath) {
             return _dm->AddCSVTable(filepath);
@@ -158,7 +167,7 @@ namespace simulation {
             return _dm->Create(query.str(), table);
         }
 
-        void CreatePerson(int id, std::string icValues) {
+        void CreatePerson(int id, std::vector<std::string> icValues) {
             person::PersonFactory factory;
             std::shared_ptr<person::PersonBase> newperson = factory.create();
             if (!icValues.empty()) {
@@ -232,21 +241,44 @@ namespace simulation {
                 exit(-1);
             }
             size_t duration = std::stol(data);
-            for (tstep; tstep < duration; ++tstep) {
 
-                clock_t cStartClock = clock();
-#pragma omp parallel for
-                for (std::shared_ptr<person::PersonBase> &person :
-                     this->population) {
-                    for (std::shared_ptr<event::Event> &event : this->events) {
-                        event->Execute(person, _dm, decider);
+            // Might need to switch to MPI to make use of multiple
+            // nodes instead of just cores:
+            // https://stackoverflow.com/questions/52496748/parallel-for-loop-in-c-using-mpi
+            clock_t cStartClock = clock();
+            int num_threads = 1;
+#pragma omp parallel shared(num_threads, duration, _dm, population, events,    \
+                                decider)
+            {
+                num_threads = omp_get_num_threads();
+
+                std::shared_ptr<datamanagement::DataManager> dm_copy =
+                    std::make_shared<datamanagement::DataManager>();
+                dm_copy->ConnectToDatabase(_dm->GetDBFileName());
+                int rc = dm_copy->LoadConfig(_dm->GetConfigFile());
+
+                for (int i = 0; i < population.size(); ++i) {
+                    std::shared_ptr<person::PersonBase> &p = population[i];
+                    if (!p->IsAlive()) {
+                        continue;
+                    }
+#pragma omp for collapse(2) ordered
+                    for (tstep = 0; tstep < duration; ++tstep) {
+                        for (int j = 0; j < events.size(); ++j) {
+#pragma omp ordered
+                            {
+                                std::shared_ptr<event::Event> &event =
+                                    events[j];
+                                event->Execute(p, dm_copy, decider);
+                            }
+                        }
                     }
                 }
-
-                spdlog::get("main")->info(
-                    "Simulation completed timestep {} in {} seconds", tstep,
-                    (clock() - cStartClock) / (double)CLOCKS_PER_SEC);
             }
+            spdlog::get("main")->info(
+                "Simulation completed in {} seconds",
+                (clock() - cStartClock) /
+                    (num_threads * (double)CLOCKS_PER_SEC));
             return 0;
         }
 
@@ -284,23 +316,21 @@ namespace simulation {
 
         /// @brief Function used to Create Population Set
         /// @param N Number of People to create in the Population
-        int CreateNPeople(size_t const N, std::string const &icFile) {
+        int CreateNPeople(size_t const N) {
             BuildPersonTable();
             this->population.clear();
             _dm->StartTransaction();
-
-            std::ifstream csv;
+            datamanagement::Table table;
+            int rc = _dm->Select("SELECT * FROM init_cohort", table);
             int j = 0;
-            csv.open(icFile, std::ios::in);
-            if (csv) {
-                std::string line;
-                std::getline(csv, line); // grab header line
-                while (std::getline(csv, line) && j < N) {
-                    ++j;
-                    CreatePerson(j, line);
+            for (datamanagement::Row &row : table) {
+                if (j < N) {
+                    CreatePerson(j, row);
+                } else {
+                    break;
                 }
+                ++j;
             }
-            csv.close();
 
             // Fill up Remaining Space to reach N people
             for (size_t i = j; i < N; ++i) {
@@ -322,42 +352,68 @@ namespace simulation {
         int SaveSimulationState(std::string const &outfile) {
             return _dm->SaveDatabase(outfile);
         }
-    };
+
+        int LoadDirectory(std::string const &dir) {
+            int rc = 0;
+            if (!std::filesystem::is_directory(dir)) {
+                spdlog::get("main")->error("{} is not a valid directory!", dir);
+                return 1;
+            }
+            std::string temp = dir;
+            std::string ic_file = "";
+            for (const auto &dirEntry :
+                 std::filesystem::recursive_directory_iterator(temp)) {
+                std::filesystem::path p = dirEntry.path();
+                if (p.filename() == "init_cohort.csv") {
+                    ic_file = p;
+                } else if (p.extension() == ".csv") {
+                    // SQLITE_OK == 0, anything evaluating to "True" is SQLite
+                    // Error
+                    rc += AddCSVTable(p.string());
+                } else if (p.extension() == ".conf") {
+                    rc += LoadConfig(p.string());
+                }
+            }
+            return rc;
+        }
+
+        int LoadDB(std::string const &dbfile) {
+            if (_dm == nullptr) {
+                _dm = std::make_shared<datamanagement::DataManager>();
+            }
+            return _dm->ConnectToDatabase(dbfile);
+        }
+    }; // namespace simulation
     std::mt19937_64 Simulation::SimulationIMPL::generator;
 
-    Simulation::Simulation(size_t seed, std::string const &logfile) {
-        pImplSIM = std::make_unique<SimulationIMPL>(seed, logfile);
+    Simulation::Simulation(size_t seed, std::string const &logfile,
+                           bool temp_db) {
+        pImplSIM = std::make_unique<SimulationIMPL>(seed, logfile, temp_db);
     }
-    Simulation::Simulation(std::string const &logfile)
-        : Simulation::Simulation(1234, logfile) {}
+    Simulation::Simulation(std::string const &logfile, bool temp_db)
+        : Simulation::Simulation(1234, logfile, temp_db) {}
     Simulation::~Simulation() {}
     int Simulation::Run() { return pImplSIM->run(); }
 
     /// @brief Load an entire directory to the DataManager
     /// @param indir Directory containing CSVs and Config file
     /// @return 0 if success, positive int otherwise
-    int Simulation::LoadData(std::string const &indir) {
+    int Simulation::LoadData(std::string const &s, std::string const &conf,
+                             DataType const datatype) {
         int rc = 0;
-        if (!std::filesystem::is_directory(indir)) {
-            spdlog::get("main")->error("{} is not a valid directory!", indir);
-            return 1;
-        }
-        std::string temp = indir;
-        std::string ic_file = "";
-        for (const auto &dirEntry :
-             std::filesystem::recursive_directory_iterator(temp)) {
-            std::filesystem::path p = dirEntry.path();
-            if (p.filename() == "init_cohort.csv") {
-                ic_file = p;
-            } else if (p.extension() == ".csv") {
-                // SQLITE_OK == 0, anything evaluating to "True" is SQLite Error
-                rc += LoadTable(p.string());
-            } else if (p.extension() == ".conf") {
-                rc += LoadConfig(p.string());
-            }
+        rc += LoadConfig(conf);
+        switch (datatype) {
+        case DataType::CSV:
+            rc += pImplSIM->LoadDirectory(s);
+            break;
+        case DataType::SQL:
+            rc += pImplSIM->LoadDB(s);
+            break;
+        default:
+            rc += 1;
         }
         LoadEvents();
-        CreateNPeople(pImplSIM->GetPopulationSize(), ic_file);
+        CreateNPeople(pImplSIM->GetPopulationSize());
 
         return rc;
     }
@@ -392,8 +448,8 @@ namespace simulation {
     }
 
     int Simulation::LoadEvents() { return pImplSIM->LoadEvents(); }
-    int Simulation::CreateNPeople(size_t const N, std::string const &icFile) {
-        return pImplSIM->CreateNPeople(N, icFile);
+    int Simulation::CreateNPeople(size_t const N) {
+        return pImplSIM->CreateNPeople(N);
     }
 
     int Simulation::WriteResults(std::string const &outfile) {

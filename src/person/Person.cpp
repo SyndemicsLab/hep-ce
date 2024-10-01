@@ -229,33 +229,27 @@ namespace person {
             this->AddHCVClearance();
         }
 
-        int LoadICValues(std::string icValues) {
-            std::stringstream ss(icValues);
-            std::vector<std::string> vec;
-            while (ss.good()) {
-                std::string substr;
-                getline(ss, substr, ',');
-                vec.push_back(substr);
+        int LoadICValues(std::vector<std::string> icValues) {
+            if (icValues.size() < 9) {
+                spdlog::get("main")->warn(
+                    "Incorrect Number of Initial Cohort Values Retrieved!");
+                return -1;
             }
-            SetAge(std::stoi(vec[1]));
-            this->sex << vec[2];
-            person::Behavior behav;
-            behav << vec[3];
-            SetBehavior(behav);
-            behaviorDetails.timeLastActive = std::stoi(vec[4]);
-            bool sero = (vec[5] == "True") ? true : false;
+            SetAge(std::stoi(icValues[1]));
+            this->sex = static_cast<person::Sex>(std::stoi(icValues[2]));
+            SetBehavior(static_cast<person::Behavior>(std::stoi(icValues[3])));
+            behaviorDetails.timeLastActive = std::stoi(icValues[4]);
+            bool sero = (std::stoi(icValues[5]) == 1) ? true : false;
             SetSeropositivity(sero);
-            bool geno = (vec[6] == "True") ? true : false;
+            bool geno = (std::stoi(icValues[6]) == 1) ? true : false;
             SetGenotypeThree(geno);
-            person::FibrosisState fib;
-            fib << vec[7];
-            this->infectionStatus.fibrosisState = fib;
-            if (vec[8] == "1") {
+            this->infectionStatus.fibrosisState =
+                static_cast<person::FibrosisState>(std::stoi(icValues[7]));
+            if (std::stoi(icValues[8]) == 1) {
                 DiagnoseHCV();
             }
-            if (vec[9] == "linked") {
-                linkStatus.linkState = person::LinkageState::LINKED;
-            }
+            linkStatus.linkState =
+                static_cast<person::LinkageState>(std::stoi(icValues[9]));
             return 0;
         }
 
@@ -809,7 +803,7 @@ namespace person {
         data = pImplPERSON->DiagnoseFibrosis(data);
         return 0;
     }
-    int Person::LoadICValues(std::string icValues) {
+    int Person::LoadICValues(std::vector<std::string> icValues) {
         pImplPERSON->LoadICValues(icValues);
         return 0;
     }

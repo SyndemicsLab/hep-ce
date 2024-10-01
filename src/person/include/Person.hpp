@@ -121,7 +121,7 @@ namespace person {
         virtual void SetUtility(double util) = 0;
 
         // General Data Handling
-        virtual int LoadICValues(std::string icValues) = 0;
+        virtual int LoadICValues(std::vector<std::string> icValues) = 0;
         virtual bool IsAlive() const = 0;
         virtual bool IsGenotypeThree() const = 0;
         virtual void SetGenotypeThree(bool genotype) = 0;
@@ -269,7 +269,7 @@ namespace person {
         void SetUtility(double util);
 
         // General Data Handling
-        int LoadICValues(std::string icValues);
+        int LoadICValues(std::vector<std::string> icValues);
         bool IsAlive() const;
         bool IsGenotypeThree() const;
         void SetGenotypeThree(bool genotype);

@@ -110,7 +110,8 @@ namespace person {
         MOCK_METHOD(void, SetUtility, (double util), (override));
 
         // General Data Handling
-        MOCK_METHOD(int, LoadICValues, (std::string icValues), (override));
+        MOCK_METHOD(int, LoadICValues, (std::vector<std::string> icValues),
+                    (override));
         MOCK_METHOD(bool, IsAlive, (), (const, override));
         MOCK_METHOD(bool, IsGenotypeThree, (), (const, override));
         MOCK_METHOD(void, SetGenotypeThree, (bool genotype), (override));

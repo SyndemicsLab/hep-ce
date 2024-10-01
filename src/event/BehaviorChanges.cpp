@@ -68,25 +68,21 @@ namespace event {
             sql << "SELECT never, former_noninjection, former_injection, "
                    "noninjection, injection ";
             sql << "FROM behavior_transitions ";
-            sql << "WHERE age_years = '" << std::to_string(age_years) << "'";
-            sql << " AND gender = '" << person->GetSex() << "'";
-            sql << " AND moud = '" << person->GetMoudState() << "'";
-            sql << " AND drug_behavior = '" << person->GetBehavior() << "';";
+            sql << "WHERE age_years = " << age_years;
+            sql << " AND gender = " << ((int)person->GetSex());
+            sql << " AND moud = " << ((int)person->GetMoudState());
+            sql << " AND drug_behavior = " << ((int)person->GetBehavior())
+                << ";";
             return sql.str();
         }
 
         std::string
         buildCostSQL(std::shared_ptr<person::PersonBase> person) const {
             std::stringstream sql;
-            sql << "SELECT cost, utility FROM behavior_costs ";
-            sql << "INNER JOIN behavior_utilities ON "
-                   "((behavior_costs.gender = behavior_utilities.gender) "
-                   "AND (behavior_costs.drug_behavior = "
-                   "behavior_utilities.drug_behavior)) ";
-            sql << "WHERE ((behavior_costs.gender = '" << person->GetSex()
-                << "')";
-            sql << " AND (behavior_costs.drug_behavior = '"
-                << person->GetBehavior() << "'));";
+            sql << "SELECT cost, utility FROM behavior_impacts ";
+            sql << "WHERE gender = " << ((int)person->GetSex());
+            sql << " AND drug_behavior = " << ((int)person->GetBehavior())
+                << ";";
             return sql.str();
         }
 

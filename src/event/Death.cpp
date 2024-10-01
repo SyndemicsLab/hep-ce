@@ -42,16 +42,15 @@ namespace event {
         std::string buildSQL(std::shared_ptr<person::PersonBase> person) const {
             int age_years = person->GetAge() / 12.0; // intentional truncation
             std::stringstream sql;
-            sql << "SELECT background_mortality, SMR";
-            sql << " FROM SMR ";
+            sql << "SELECT background_mortality, smr";
+            sql << " FROM smr ";
             sql << " INNER JOIN background_mortality ON "
-                   "(SMR.gender = background_mortality.gender) ";
-            sql << " WHERE background_mortality.age_years = '"
-                << std::to_string(age_years) << "'";
-            sql << " AND background_mortality.gender = '" << person->GetSex()
-                << "'";
-            sql << " AND SMR.drug_behavior = '" << person->GetBehavior()
-                << "';";
+                   "(smr.gender = background_mortality.gender) ";
+            sql << " WHERE background_mortality.age_years = " << age_years;
+            sql << " AND background_mortality.gender = "
+                << ((int)person->GetSex());
+            sql << " AND SMR.drug_behavior = " << ((int)person->GetBehavior())
+                << ";";
 
             return sql.str();
         }

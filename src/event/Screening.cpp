@@ -47,12 +47,11 @@ namespace event {
                    "screening_and_linkage.age_years) ";
             sql << " AND (antibody_testing.drug_behavior = "
                    "screening_and_linkage.drug_behavior)) ";
-            sql << " WHERE antibody_testing.age_years = '"
-                << std::to_string(age_years) << "'";
-            sql << " AND screening_and_linkage.gender = '" << person->GetSex()
-                << "'";
-            sql << " AND screening_and_linkage.drug_behavior = '"
-                << person->GetBehavior() << "';";
+            sql << " WHERE antibody_testing.age_years = " << age_years;
+            sql << " AND screening_and_linkage.gender = "
+                << ((int)person->GetSex());
+            sql << " AND screening_and_linkage.drug_behavior = "
+                << ((int)person->GetBehavior()) << ";";
             return sql.str();
         }
 

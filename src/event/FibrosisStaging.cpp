@@ -34,8 +34,8 @@ namespace event {
                              std::string columns) {
             std::stringstream sql;
             sql << "SELECT " << columns << " FROM fibrosis ";
-            sql << "WHERE true_fib = '" << person->GetTrueFibrosisState()
-                << "'";
+            sql << "WHERE fibrosis_state = "
+                << ((int)person->GetTrueFibrosisState());
             sql << " LIMIT 4;"; // weird issue with returning a bunch hits
             return sql.str();
         }

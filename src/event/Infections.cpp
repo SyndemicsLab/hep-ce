@@ -33,12 +33,12 @@ namespace event {
 
         std::string buildSQL(std::shared_ptr<person::PersonBase> person) {
             std::stringstream sql;
-            std::string age_years =
-                std::to_string((int)(person->GetAge() / 12.0));
+            int age_years = (int)(person->GetAge() / 12.0);
             sql << "SELECT incidence FROM incidence ";
-            sql << "WHERE age_years = '" << age_years << "'";
-            sql << " AND gender = '" << person->GetSex() << "'";
-            sql << " AND drug_behavior = '" << person->GetBehavior() << "';";
+            sql << "WHERE age_years = " << age_years;
+            sql << " AND gender = " << ((int)person->GetSex());
+            sql << " AND drug_behavior = " << ((int)person->GetBehavior())
+                << ";";
             return sql.str();
         }
 

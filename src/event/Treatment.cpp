@@ -51,13 +51,13 @@ namespace event {
 
         std::string buildSQL(std::shared_ptr<person::PersonBase> person,
                              std::string column) {
-            std::string geno3 = (person->IsGenotypeThree()) ? "TRUE" : "FALSE";
-            std::string cirr = (person->IsCirrhotic()) ? "TRUE" : "FALSE";
+            int geno3 = (person->IsGenotypeThree()) ? 1 : 0;
+            int cirr = (person->IsCirrhotic()) ? 1 : 0;
             std::stringstream sql;
 
             sql << "SELECT " << column << " FROM treatments ";
-            sql << "WHERE is_genotype3 = '" << geno3 << "'";
-            sql << " AND is_cirrhotic = '" << cirr << "';";
+            sql << "WHERE genotype_three = " << geno3;
+            sql << " AND cirrhotic = " << cirr << ";";
 
             return sql.str();
         }

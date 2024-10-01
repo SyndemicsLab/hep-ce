@@ -93,21 +93,21 @@ namespace person {
     /// These states strictly increase, with the possibility of progressing to
     /// HCC being possible at any time from stage F3 and higher.
     enum class FibrosisState {
-        /// No adverse liver effects
-        NONE = 0,
         /// No scarring
-        F0 = 1,
+        F0 = 0,
         /// Mild liver scarring
-        F1 = 2,
+        F1 = 1,
         /// Scarring has occurred and extends outside the liver area
-        F2 = 3,
+        F2 = 2,
         /// Fibrosis spreading and forming bridges with other fibrotic liver
         /// areas
-        F3 = 4,
+        F3 = 3,
         /// Cirrhosis or advanced scarring
-        F4 = 5,
+        F4 = 4,
         /// Symptomatic cirrhosis; overt complications
-        DECOMP = 6,
+        DECOMP = 5,
+        /// No adverse liver effects
+        NONE = 6,
         COUNT = 7
     };
     std::ostream &operator<<(std::ostream &os, const FibrosisState &inst);

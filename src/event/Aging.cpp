@@ -41,17 +41,11 @@ namespace event {
         std::string buildSQL(std::shared_ptr<person::PersonBase> person) const {
             std::string a = std::to_string((int)(person->GetAge() / 12.0));
             std::stringstream sql;
-            sql << "SELECT cost, utility FROM background_costs ";
-            sql << "INNER JOIN background_utilities ON "
-                   "((background_costs.age_years = "
-                   "background_utilities.age_years) AND "
-                   "(background_costs.gender = background_utilities.gender) "
-                   "AND (background_costs.drug_behavior = "
-                   "background_utilities.drug_behavior)) ";
-            sql << "WHERE background_costs.age_years = '" << a << "'"
-                << " AND background_costs.gender = '" << person->GetSex() << "'"
-                << " AND background_costs.drug_behavior = '"
-                << person->GetBehavior() << "';";
+            sql << "SELECT cost, utility FROM background_impacts ";
+            sql << "WHERE age_years = " << a
+                << " AND gender = " << ((int)person->GetSex())
+                << " AND drug_behavior = " << ((int)person->GetBehavior())
+                << ";";
             return sql.str();
         }
 
@@ -67,6 +61,7 @@ namespace event {
                 // Let default values stay
                 return;
             }
+
             int rc = dm->SelectCustomCallback(query, this->callback, &storage,
                                               error);
             if (rc != 0) {
@@ -75,6 +70,12 @@ namespace event {
                     "background behaviors! Error Message: {}",
                     error);
                 return;
+            }
+            if (storage.empty()) {
+                spdlog::get("main")->warn(
+                    "No Background Cost found for Aging!");
+                struct cost_util temp = {0.00, 0.0};
+                storage.push_back(temp);
             }
             cost::Cost backgroundCost = {cost::CostCategory::MISC,
                                          "Background Cost", storage[0].cost};
