@@ -19,16 +19,15 @@ jobs:
     name: Build Debug
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Install Boost
-      uses: MarkusJx/install-boost@v2.4.5
-      id: install-boost
-      with:
-        boost_version: 1.82.0
-
-    - name: Build and Test
-      working-directory: ${{ github.workspace }}
-      run: scripts/build.sh -p
-      env:
-        GITHUB_TOKEN: ${{ secrets.SSH_PRIVATE_KEY }}
+      - uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+      - name: Install Boost
+        uses: MarkusJx/install-boost@v2.4.5
+        id: install-boost
+        with:
+          boost_version: 1.82.0
+      - name: Build and Test
+        working-directory: ${{ github.workspace }}
+        run: scripts/build.sh -p
