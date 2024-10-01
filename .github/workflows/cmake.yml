@@ -31,4 +31,4 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: scripts/build.sh -p
       env:
-        GITHUB_TOKEN: ${{ secrets.OAUTH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.SSH_PRIVATE_KEY }}
