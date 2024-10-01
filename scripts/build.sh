@@ -30,7 +30,7 @@ dminstall () {
     # subshell needed to avoid changing working directory unnecessarily
     (
 	cd "DataManagement" || return 1
-	scripts/build.sh -li "$TOPLEVEL/lib/dminstall"
+	scripts/build.sh -i "$TOPLEVEL/lib/dminstall"
     )
     rm -rf DataManagement
 }
