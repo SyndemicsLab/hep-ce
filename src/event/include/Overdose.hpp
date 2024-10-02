@@ -20,10 +20,6 @@
 
 #include "Event.hpp"
 
-namespace stats {
-    class DeciderBase;
-}
-
 namespace event {
     /// @brief Subclass of Event used to simulate overdoses among active drug
     /// users.

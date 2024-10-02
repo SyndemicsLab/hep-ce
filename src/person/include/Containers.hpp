@@ -39,7 +39,8 @@ namespace person {
         LIVER = 2,
         INFECTION = 3,
         AGE = 4,
-        COUNT = 5
+        OVERDOSE = 5,
+        COUNT = 6
     };
     std::ostream &operator<<(std::ostream &os, const DeathReason &inst);
     DeathReason &operator<<(DeathReason &inst, const std::string &str);
