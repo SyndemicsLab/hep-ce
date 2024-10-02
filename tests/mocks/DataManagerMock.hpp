@@ -44,6 +44,7 @@ namespace datamanagement {
         MOCK_METHOD(std::string, GetDBFileName, (), (const, override));
         MOCK_METHOD(int, ConnectToDatabase, (std::string const &dbfile),
                     (override));
+        MOCK_METHOD(int, CloseConnection, (), (override));
     };
 } // namespace datamanagement
 

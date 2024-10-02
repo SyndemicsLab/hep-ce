@@ -17,9 +17,14 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
 
     // Data Setup
     std::vector<double> storage = {1.0};
+    struct cost_svr_select cost = {5, 0.5};
+    std::vector<struct cost_svr_select> cstorage = {cost};
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
             DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+    ON_CALL(*event_dm, SelectCustomCallback(_, _, &cstorage, _))
+        .WillByDefault(
+            DoAll(SetArg2ToCostSVRCallbackValue(&cstorage), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))

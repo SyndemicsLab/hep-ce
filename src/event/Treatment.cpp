@@ -290,18 +290,24 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, this->callback_struct,
                                               &storage, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error Selecting Treatment! Error Message: {}", error);
+                return;
+            }
+            struct cost_svr_select data = {0, 0.0};
             if (storage.empty()) {
                 spdlog::get("main")->warn("No SVR Probability Found!");
-                struct cost_svr_select temp = {0, 0.0};
-                storage.push_back(temp);
+            } else {
+                data.svr = storage[0].svr;
+                data.time = storage[0].time;
             }
 
-            if (decider->GetDecision({storage[0].svr, 1 - storage[0].svr}) ==
-                0) {
+            if (decider->GetDecision({data.svr, 1 - data.svr}) == 0) {
                 person->AddSVR();
                 person->ClearHCV();
             }
-            if (person->GetTimeSinceTreatmentInitiation() >= storage[0].time) {
+            if (person->GetTimeSinceTreatmentInitiation() >= data.time) {
                 person->AddCompletedTreatment();
                 this->quitEngagement(person);
             }
