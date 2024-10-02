@@ -40,6 +40,9 @@ namespace person {
         case DeathReason::AGE:
             os << "age";
             break;
+        case DeathReason::OVERDOSE:
+            os << "overdose";
+            break;
         default:
             os << "N/A";
             break;
@@ -55,6 +58,8 @@ namespace person {
             inst = DeathReason::INFECTION;
         } else if (str == "age") {
             inst = DeathReason::AGE;
+        } else if (str == "overdose") {
+            inst = DeathReason::OVERDOSE;
         } else {
             inst = DeathReason::NA;
         }

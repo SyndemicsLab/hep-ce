@@ -18,58 +18,56 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"
+#include <DataManagement/DataManagerBase.hpp>
+#include <sstream>
 
 namespace event {
     class MOUD::MOUDIMPL {
     private:
-        /// @brief Retrieve Transition Rates for MOUD for the
-        /// individual Person from the SQL Table
-        /// @param person Person to retrieve transition rates for
-        /// @return Vector of Transition Rates for each MOUD status
-        std::vector<double>
-        getTransitions(std::shared_ptr<person::PersonBase> person);
-
-        /// @brief Add cost based on person's current treatment status upon
-        /// "experiencing" this event
-        /// @param person Person accruing cost
-        void insertMOUDCost(std::shared_ptr<person::PersonBase> person);
+        static int callback_double(void *storage, int count, char **data,
+                                   char **columns) {
+            std::vector<double> *d = (std::vector<double> *)storage;
+            double temp = std::stod(data[0]);
+            d->push_back(temp);
+            return 0;
+        }
+        std::string buildSQL(std::shared_ptr<person::PersonBase> person) {
+            std::stringstream sql;
+            sql << "SELECT transition_probability FROM moud";
+            sql << " WHERE current_moud = " << ((int)person->GetMoudState());
+            sql << " AND age = " << ((int)(person->GetAge() / 12.0));
+            sql << " AND pregant = " << ((int)(person->GetPregnancyState()));
+            return sql.str();
+        }
 
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-
-            person::Behavior bc = person->GetBehavior();
-
-            // Can only enter MOUD if in an active use state.
-            if (!(bc >= person::Behavior::NONINJECTION)) {
-                // 1. Check the person's current MOUD status
-                person::MOUD moud = person->GetMoudState();
-                // 2. Draw probability of changing MOUD state.
-                // TODO: MAKE THIS A REAL TRANSITION RATE
-                std::vector<double> probs = {0.50, 0.25, 0.25};
-                // 3. Make a transition decision.
-                int res = decider->GetDecision(probs);
-                if (res >= (int)person::MOUD::COUNT) {
-                    spdlog::get("main")->error("MOUD Decision returned "
-                                               "value outside bounds");
-                    return;
-                }
-                person::MOUD toMoud = (person::MOUD)res;
-                if (toMoud == person::MOUD::CURRENT) {
-                    if (moud != toMoud) {
-                        // new treatment start
-                        person->SetMoudState(toMoud);
-                    }
-                    // person continuing treatment
-                    // add treatment cost
-                } else {
-                    // person discontinuing treatment
-                    // or going from post-treatment to no treatment
-                    person->SetMoudState(toMoud);
-                    // figure out if we want to update timestartedmoud to an
-                    // impossible value, e.g. -1
-                }
+            // if the person has never used, no MOUD change
+            if (person->GetBehavior() == person::Behavior::NEVER) {
+                return;
+            }
+            std::string query = buildSQL(person);
+            std::vector<double> storage;
+            std::string error;
+            int rc = dm->SelectCustomCallback(query, this->callback_double,
+                                              &storage, error);
+            if (rc != 0) {
+                spdlog::get("main")->error("Error extracting MOUD Transition "
+                                           "Probability! Error Message: {}",
+                                           error);
+                return;
+            }
+            double probability = 0.0;
+            if (!storage.empty()) {
+                probability = storage[0];
+            } else {
+                spdlog::get("main")->warn(
+                    "No MOUD Transition Probability Found!");
+            }
+            if (decider->GetDecision({probability, 1 - probability}) == 0) {
+                person->TransitionMOUD();
             }
         }
     };

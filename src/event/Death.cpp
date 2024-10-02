@@ -38,6 +38,13 @@ namespace event {
             d->push_back(temp);
             return 0;
         }
+        static int callback_double(void *storage, int count, char **data,
+                                   char **columns) {
+            std::vector<double> *d = (std::vector<double> *)storage;
+            double temp = std::stod(data[0]);
+            d->push_back(temp);
+            return 0;
+        }
 
         std::string buildSQL(std::shared_ptr<person::PersonBase> person) const {
             int age_years = person->GetAge() / 12.0; // intentional truncation
@@ -54,6 +61,18 @@ namespace event {
 
             return sql.str();
         }
+
+        std::string
+        buildOverdoseSQL(std::shared_ptr<person::PersonBase> person) const {
+            int age_years = person->GetAge() / 12.0; // intentional truncation
+            std::stringstream sql;
+            sql << "SELECT fatality_probability FROM overdoses";
+            sql << " WHERE moud = " << ((int)person->GetMoudState());
+            sql << " AND drug_behavior = " << ((int)person->GetBehavior())
+                << ";";
+            return sql.str();
+        }
+
         /// @brief The actual death of a person
         /// @param person Person who dies
         void die(std::shared_ptr<person::PersonBase> person,
@@ -121,11 +140,47 @@ namespace event {
             return false;
         }
 
+        bool FatalOverdose(std::shared_ptr<person::PersonBase> person,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           std::shared_ptr<stats::DeciderBase> decider) {
+            if (!person->GetCurrentlyOverdosing()) {
+                return false;
+            }
+
+            std::string query = buildOverdoseSQL(person);
+            std::vector<double> storage;
+            std::string error;
+            int rc = dm->SelectCustomCallback(query, this->callback_double,
+                                              &storage, error);
+            if (rc != 0) {
+                spdlog::get("main")->error("Error extracting Fatal Overdose "
+                                           "Probability! Error Message: {}",
+                                           error);
+                return false;
+            }
+            double probability = 0.0;
+            if (!storage.empty()) {
+                probability = storage[0];
+            } else {
+                spdlog::get("main")->warn(
+                    "No Fatal Overdose Probability Found!");
+            }
+            if (decider->GetDecision({probability, 1 - probability}) != 0) {
+                person->ToggleOverdose();
+                return false;
+            }
+            this->die(person, person::DeathReason::OVERDOSE);
+            return true;
+        }
+
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             if (ReachedMaxAge(person)) {
+                return;
+            }
+            if (FatalOverdose(person, dm, decider)) {
                 return;
             }
 
@@ -151,8 +206,6 @@ namespace event {
                 this->die(person, person::DeathReason::BACKGROUND);
             } else if (retIdx == 1) {
                 this->die(person, person::DeathReason::LIVER);
-            } else {
-                // person->ToggleOverdose();
             }
         }
     };

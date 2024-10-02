@@ -39,7 +39,8 @@ namespace person {
         LIVER = 2,
         INFECTION = 3,
         AGE = 4,
-        COUNT = 5
+        OVERDOSE = 5,
+        COUNT = 6
     };
     std::ostream &operator<<(std::ostream &os, const DeathReason &inst);
     DeathReason &operator<<(DeathReason &inst, const std::string &str);
@@ -228,6 +229,8 @@ namespace person {
     struct MOUDDetails {
         MOUD moudState = MOUD::NONE;
         int timeStartedMoud = 0;
+        int currentStateConcurrentMonths = 0;
+        int totalMOUDMonths = 0;
     };
     std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 
