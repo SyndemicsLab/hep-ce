@@ -35,9 +35,7 @@ namespace event {
             std::stringstream sql;
             int age_years = (int)(person->GetAge() / 12.0);
             sql << "SELECT '" + column + "' FROM pregnancy";
-            sql << " WHERE age_years = " << age_years;
-            sql << " AND gestation = " << person->GetTimeSincePregnancyChange()
-                << ";";
+            sql << " WHERE age_years = " << age_years << ";";
             return sql.str();
         }
 
@@ -59,8 +57,7 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, callback, &storage, error);
             if (rc != 0) {
-                spdlog::get("main")->error(
-                    "No cost avaliable for Fibrosis Progression!");
+                spdlog::get("main")->error("No cost avaliable for Pregnancy!");
                 return {};
             }
             std::vector<double> result = {storage, 1 - storage};
