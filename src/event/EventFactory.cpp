@@ -44,6 +44,9 @@ namespace event {
         if (eventName == "Pregnancy") {
             return makeEvent<Pregnancy>();
         }
+        if (eventName == "MOUD") {
+            return makeEvent<MOUD>();
+        }
         spdlog::get("main")->error("Unknown Event! Exiting...");
         exit(-1);
     }
