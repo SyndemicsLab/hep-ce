@@ -156,7 +156,7 @@ namespace person {
         virtual void SetPregnancyState(PregnancyState state) = 0;
         virtual void SetNumMiscarriages(int miscarriages) = 0;
 
-        virtual void SetMoudState(MOUD moud) = 0;
+        virtual void TransitionMOUD() = 0;
         virtual MOUD GetMoudState() const = 0;
         virtual int GetTimeStartedMoud() const = 0;
         virtual MOUDDetails GetMOUDDetails() const = 0;
@@ -290,13 +290,14 @@ namespace person {
         cost::CostTracker GetCosts() const;
         Health GetHealth() const;
 
-        // TODO
+        // Pregnancy
         PregnancyState GetPregnancyState() const;
         int GetTimeOfPregnancyChange() const;
         int GetTimeSincePregnancyChange() const;
         int GetNumMiscarriages() const;
         int Miscarry();
         int Stillbirth();
+        std::vector<Child> GetChildren() const;
         int AddChild(HCV hcv, bool test);
         int EndPostpartum();
         int Impregnate();
@@ -304,11 +305,11 @@ namespace person {
         void SetPregnancyState(PregnancyState state);
         void SetNumMiscarriages(int miscarriages);
 
-        void SetMoudState(MOUD moud);
+        // MOUD
+        void TransitionMOUD();
         MOUD GetMoudState() const;
         int GetTimeStartedMoud() const;
         MOUDDetails GetMOUDDetails() const;
-        std::vector<Child> GetChildren() const;
     };
 } // namespace person
 #endif

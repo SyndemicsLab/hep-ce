@@ -67,13 +67,7 @@ namespace event {
                     "No MOUD Transition Probability Found!");
             }
             if (decider->GetDecision({probability, 1 - probability}) == 0) {
-                if (person->GetMoudState() == person::MOUD::CURRENT) {
-                    person->SetMoudState(person::MOUD::POST);
-                } else if (person->GetMoudState() == person::MOUD::POST) {
-                    person->SetMoudState(person::MOUD::NONE);
-                } else if (person->GetMoudState() == person::MOUD::NONE) {
-                    person->SetMoudState(person::MOUD::CURRENT);
-                }
+                person->TransitionMOUD();
             }
         }
     };

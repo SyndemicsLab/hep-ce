@@ -117,7 +117,21 @@ namespace person {
                 GetBehavior() == person::Behavior::INJECTION) {
                 this->behaviorDetails.timeLastActive = this->_currentTime;
             }
+            if (GetMoudState() == person::MOUD::CURRENT) {
+                this->moudDetails.totalMOUDMonths++;
+            }
+            this->moudDetails.currentStateConcurrentMonths++;
             return 0;
+        }
+
+        /// @brief Setter for MOUD State
+        /// @param moud PersonIMPL's new MOUD state
+        void SetMoudState(MOUD moud) {
+            if (moud == person::MOUD::CURRENT) {
+                this->moudDetails.timeStartedMoud = this->_currentTime;
+            }
+            this->moudDetails.currentStateConcurrentMonths = 0;
+            this->moudDetails.moudState = moud;
         }
 
     public:
@@ -387,6 +401,20 @@ namespace person {
             child.hcv = hcv;
             child.tested = test;
             this->children.push_back(child);
+        }
+
+        void TransitionMOUD() {
+            if (GetBehavior() == person::Behavior::NEVER) {
+                return;
+            }
+            person::MOUD current = GetMoudState();
+            if (current == person::MOUD::CURRENT) {
+                SetMoudState(person::MOUD::POST);
+            } else if (current == person::MOUD::POST) {
+                SetMoudState(person::MOUD::NONE);
+            } else if (current == person::MOUD::NONE) {
+                SetMoudState(person::MOUD::CURRENT);
+            }
         }
 
         ////////////// CHECKS /////////////////
@@ -716,13 +744,6 @@ namespace person {
         /// otherwise
         void SetGenotypeThree(bool genotype) {
             this->infectionStatus.isGenotypeThree = genotype;
-        }
-
-        /// @brief Setter for MOUD State
-        /// @param moud PersonIMPL's new MOUD state
-        void SetMoudState(MOUD moud) {
-            this->moudDetails.timeStartedMoud = this->_currentTime;
-            this->moudDetails.moudState = moud;
         }
 
         /// @brief Set a value for a person's utility
@@ -1067,7 +1088,7 @@ namespace person {
     void Person::SetGenotypeThree(bool genotype) {
         pImplPERSON->SetGenotypeThree(genotype);
     }
-    void Person::SetMoudState(MOUD moud) { pImplPERSON->SetMoudState(moud); }
+    void Person::TransitionMOUD() {}
     void Person::SetUtility(double util) { pImplPERSON->SetUtility(util); }
     void Person::SetBoomer(bool status) { pImplPERSON->SetBoomer(status); }
 

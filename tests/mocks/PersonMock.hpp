@@ -149,7 +149,7 @@ namespace person {
                     (override));
         MOCK_METHOD(void, SetNumMiscarriages, (int miscarriages), (override));
 
-        MOCK_METHOD(void, SetMoudState, (MOUD moud), (override));
+        MOCK_METHOD(void, TransitionMOUD, (), (override));
         MOCK_METHOD(MOUD, GetMoudState, (), (const, override));
         MOCK_METHOD(int, GetTimeStartedMoud, (), (const, override));
         MOCK_METHOD(MOUDDetails, GetMOUDDetails, (), (const, override));

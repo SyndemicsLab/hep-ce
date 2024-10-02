@@ -229,6 +229,8 @@ namespace person {
     struct MOUDDetails {
         MOUD moudState = MOUD::NONE;
         int timeStartedMoud = 0;
+        int currentStateConcurrentMonths = 0;
+        int totalMOUDMonths = 0;
     };
     std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 
