@@ -92,6 +92,12 @@ namespace simulation {
             return 0;
         }
 
+        void LogCycle(int i) {
+            if (i % 1000 == 0) {
+                spdlog::get("main")->info("person {} completed.", i);
+            }
+        }
+
     public:
         SimulationIMPL(size_t seed = 1234, std::string const &logfile = "",
                        bool temp_db = true)
@@ -246,23 +252,20 @@ namespace simulation {
             // nodes instead of just cores:
             // https://stackoverflow.com/questions/52496748/parallel-for-loop-in-c-using-mpi
             clock_t cStartClock = clock();
-            int num_threads = 1;
-#pragma omp parallel shared(num_threads, duration, _dm, population, events,    \
-                                decider)
+#pragma omp parallel shared(duration, _dm, population, events, decider)
             {
-                num_threads = omp_get_num_threads();
-
                 std::shared_ptr<datamanagement::DataManager> dm_copy =
                     std::make_shared<datamanagement::DataManager>();
                 dm_copy->ConnectToDatabase(_dm->GetDBFileName());
                 int rc = dm_copy->LoadConfig(_dm->GetConfigFile());
 
+#pragma omp for ordered
                 for (int i = 0; i < population.size(); ++i) {
                     std::shared_ptr<person::PersonBase> &p = population[i];
                     if (!p->IsAlive()) {
+                        LogCycle(i);
                         continue;
                     }
-#pragma omp for collapse(2) ordered
                     for (tstep = 0; tstep < duration; ++tstep) {
                         for (int j = 0; j < events.size(); ++j) {
 #pragma omp ordered
@@ -273,12 +276,12 @@ namespace simulation {
                             }
                         }
                     }
+                    LogCycle(i);
                 }
             }
-            spdlog::get("main")->info(
-                "Simulation completed in {} seconds",
-                (clock() - cStartClock) /
-                    (num_threads * (double)CLOCKS_PER_SEC));
+            spdlog::get("main")->info("Simulation completed in {} seconds",
+                                      (clock() - cStartClock) /
+                                          ((double)CLOCKS_PER_SEC));
             return 0;
         }
 
