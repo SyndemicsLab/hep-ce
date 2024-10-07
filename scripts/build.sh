@@ -98,7 +98,9 @@ done
 	# build tests, if specified
 	if [[ -n "$BUILD_TESTS" ]]; then
 	    CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_TESTS=$BUILD_TESTS"
-        rm -rf ../bin/hepceTest
+        if [[ -f "$TOPLEVEL/bin/hepceTest" ]]; then
+            rm "$TOPLEVEL/bin/hepceTest"
+        fi
 	fi
 
     # build static library if BUILD_STATIC_LIBRARY is on, otherwise build
