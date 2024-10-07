@@ -118,14 +118,14 @@ namespace event {
         }
 
         void
-        chargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
+        ChargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm) {
             cost::Cost visitCost = {cost::CostCategory::TREATMENT,
                                     "Cost of Treatment Visit", treatment_cost};
             person->AddCost(visitCost);
         }
 
-        void chargeCostOfCourse(
+        void ChargeCostOfCourse(
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string query = buildSQL(person, "treatment_cost");
@@ -236,39 +236,10 @@ namespace event {
             return std::stod(data);
         }
 
-    public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) {
-            // 1. Check if the Person is Lost To Follow Up (LTFU)
-            if (LostToFollowUp(person, dm, decider)) {
-                return;
-            }
-
-            // 2. Charge the Cost of the Visit (varies if this is retreatment)
-            chargeCostOfVisit(person, dm);
-
-            // 3. Determine if the Person Engages and Initiates Treatment (i.e.
-            // picks up medicine)
-            if (!InitiateTreatment(person, dm, decider)) {
-                return;
-            }
-
-            // 5. Charge the person for the Course they are on
-            chargeCostOfCourse(person, dm);
-
-            // 6. Determine if the person withdraws from the treatment
-            if (Withdraws(person, dm, decider)) {
-                return;
-            }
-
-            // 7. Determine if the person has a toxic reaction
-            if (ExperienceToxicity(person, dm, decider)) {
-                return;
-            }
-
-            // 8. Determine if the person has been treated long enough, if they
-            // achieve SVR
+        void DecideIfPersonAchievesSVR(
+            std::shared_ptr<person::PersonBase> person,
+            std::shared_ptr<datamanagement::DataManagerBase> dm,
+            std::shared_ptr<stats::DeciderBase> decider) {
             std::string query = buildSQL(person, "time, svr");
 
             std::vector<struct cost_svr_select> storage;
@@ -296,6 +267,42 @@ namespace event {
                 person->AddCompletedTreatment();
                 this->quitEngagement(person);
             }
+        }
+
+    public:
+        void doEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) {
+            // 1. Check if the Person is Lost To Follow Up (LTFU)
+            if (LostToFollowUp(person, dm, decider)) {
+                return;
+            }
+
+            // 2. Charge the Cost of the Visit (varies if this is retreatment)
+            ChargeCostOfVisit(person, dm);
+
+            // 3. Determine if the Person Engages and Initiates Treatment (i.e.
+            // picks up medicine)
+            if (!InitiateTreatment(person, dm, decider)) {
+                return;
+            }
+
+            // 5. Charge the person for the Course they are on
+            ChargeCostOfCourse(person, dm);
+
+            // 6. Determine if the person withdraws from the treatment
+            if (Withdraws(person, dm, decider)) {
+                return;
+            }
+
+            // 7. Determine if the person has a toxic reaction
+            if (ExperienceToxicity(person, dm, decider)) {
+                return;
+            }
+
+            // 8. Determine if the person has been treated long enough, if they
+            // achieve SVR
+            DecideIfPersonAchievesSVR(person, dm, decider);
         }
         TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             lost_to_follow_up_probability =
