@@ -125,9 +125,6 @@ namespace event {
             // Determine person's current behavior classification
             person::Behavior bc = person->GetBehavior();
 
-            // Insert person's behavior cost
-            this->calculateCostAndUtility(person, dm);
-
             // Typical Behavior Change
             // 1. Generate the transition probabilities based on the starting
             // state
@@ -173,10 +170,14 @@ namespace event {
             // 3. If the drawn state differs from the current state, change the
             // bools in BehaviorState to match
             person->SetBehavior(toBC);
+
+            // Insert person's behavior cost
+            this->calculateCostAndUtility(person, dm);
         }
     };
 
-    BehaviorChanges::BehaviorChanges() {
+    BehaviorChanges::BehaviorChanges(
+        std::shared_ptr<datamanagement::DataManagerBase> dm) {
         impl = std::make_unique<BehaviorChangesIMPL>();
     }
 

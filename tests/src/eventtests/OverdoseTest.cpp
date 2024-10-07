@@ -19,7 +19,7 @@ TEST_F(OverdoseTest, FormerUsers) {
     EXPECT_CALL(*testPerson, ToggleOverdose()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Overdose");
+    std::shared_ptr<event::Event> event = efactory.create("Overdose", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -33,7 +33,7 @@ TEST_F(OverdoseTest, NeverUsers) {
     EXPECT_CALL(*testPerson, ToggleOverdose()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Overdose");
+    std::shared_ptr<event::Event> event = efactory.create("Overdose", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -54,7 +54,7 @@ TEST_F(OverdoseTest, Injection_No_Overdose) {
     EXPECT_CALL(*testPerson, ToggleOverdose()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Overdose");
+    std::shared_ptr<event::Event> event = efactory.create("Overdose", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -75,6 +75,6 @@ TEST_F(OverdoseTest, Injection_Overdose) {
     EXPECT_CALL(*testPerson, ToggleOverdose()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Overdose");
+    std::shared_ptr<event::Event> event = efactory.create("Overdose", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

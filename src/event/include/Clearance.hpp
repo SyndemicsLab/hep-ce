@@ -34,7 +34,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Clearance();
+        Clearance(std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~Clearance();
 
         // Copy Operations

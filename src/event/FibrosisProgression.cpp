@@ -25,6 +25,13 @@
 namespace event {
     class FibrosisProgression::FibrosisProgressionIMPL {
     private:
+        double f01_probability;
+        double f12_probability;
+        double f23_probability;
+        double f34_probability;
+        double f4d_probability;
+        bool costFlag = false;
+
         static int callback(void *storage, int count, char **data,
                             char **columns) {
             std::vector<double> *d = (std::vector<double> *)storage;
@@ -47,32 +54,32 @@ namespace event {
         getTransition(person::FibrosisState fs,
                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
             // get the probability of transitioning to the next fibrosis state
-            std::string data;
+            double data;
 
             switch (fs) {
             case person::FibrosisState::F0:
-                dm->GetFromConfig("fibrosis.f01", data);
+                data = f01_probability;
                 break;
             case person::FibrosisState::F1:
-                dm->GetFromConfig("fibrosis.f12", data);
+                data = f12_probability;
                 break;
             case person::FibrosisState::F2:
-                dm->GetFromConfig("fibrosis.f23", data);
+                data = f23_probability;
                 break;
             case person::FibrosisState::F3:
-                dm->GetFromConfig("fibrosis.f34", data);
+                data = f34_probability;
                 break;
             case person::FibrosisState::F4:
-                dm->GetFromConfig("fibrosis.f4d", data);
+                data = f4d_probability;
                 break;
             case person::FibrosisState::DECOMP:
-                data = "0.0";
+                data = 0.0;
                 break;
             }
 
             // to work with getDecision, return the complement to the transition
             // probability
-            return {std::stod(data), 1 - std::stod(data)};
+            return {data, 1 - data};
         }
 
         void addLiverDiseaseCost(
@@ -83,8 +90,9 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, callback, &storage, error);
             if (rc != 0) {
-                spdlog::get("main")->error(
-                    "No cost avaliable for Fibrosis Progression!");
+                spdlog::get("main")->error("No cost avaliable for Fibrosis "
+                                           "Progression! Error Message: {}",
+                                           error);
                 return;
             }
             double c = 0.00;
@@ -106,12 +114,6 @@ namespace event {
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            std::string data;
-            dm->GetFromConfig("fibrosis.add_cost_only_if_identified", data);
-            bool costFlag = false;
-            if (!data.empty()) {
-                std::istringstream(data) >> std::boolalpha >> costFlag;
-            }
             // can only progress in fibrosis state if actively infected with HCV
             if (person->GetHCV() == person::HCV::NONE) {
                 return;
@@ -137,10 +139,40 @@ namespace event {
                 this->addLiverDiseaseCost(person, dm);
             }
         }
+        FibrosisProgressionIMPL(
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string data;
+
+            dm->GetFromConfig("fibrosis.f01", data);
+            this->f01_probability = std::stod(data);
+            data.clear();
+
+            dm->GetFromConfig("fibrosis.f12", data);
+            this->f12_probability = std::stod(data);
+            data.clear();
+
+            dm->GetFromConfig("fibrosis.f23", data);
+            this->f23_probability = std::stod(data);
+            data.clear();
+
+            dm->GetFromConfig("fibrosis.f34", data);
+            this->f34_probability = std::stod(data);
+            data.clear();
+
+            dm->GetFromConfig("fibrosis.f4d", data);
+            this->f4d_probability = std::stod(data);
+            data.clear();
+
+            dm->GetFromConfig("fibrosis.add_cost_only_if_identified", data);
+            if (!data.empty()) {
+                std::istringstream(data) >> std::boolalpha >> costFlag;
+            }
+        }
     };
 
-    FibrosisProgression::FibrosisProgression() {
-        impl = std::make_unique<FibrosisProgressionIMPL>();
+    FibrosisProgression::FibrosisProgression(
+        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<FibrosisProgressionIMPL>(dm);
     }
 
     FibrosisProgression::~FibrosisProgression() = default;

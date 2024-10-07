@@ -34,7 +34,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Infections();
+        Infections(std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~Infections();
 
         // Copy Operations

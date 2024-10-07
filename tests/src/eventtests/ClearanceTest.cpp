@@ -24,6 +24,7 @@ TEST_F(ClearanceTest, Clearance) {
     EXPECT_CALL(*testPerson, ClearHCV()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Clearance");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Clearance", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

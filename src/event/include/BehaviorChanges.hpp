@@ -32,7 +32,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        BehaviorChanges();
+        BehaviorChanges(std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~BehaviorChanges();
 
         // Copy Operations

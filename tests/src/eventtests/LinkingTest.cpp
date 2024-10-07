@@ -13,14 +13,20 @@ TEST_F(LinkingTest, FalsePositive) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
 
+    // Data Setup
+    ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+
     // Expectations
     EXPECT_CALL(*testPerson, Unlink()).Times(1);
     EXPECT_CALL(*testPerson, AddCost(_)).Times(1);
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
-        .WillOnce(DoAll(SetArgReferee<1>("12.00"), Return(0)));
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking");
+    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -35,6 +41,12 @@ TEST_F(LinkingTest, BackgroundRelink) {
         .WillByDefault(Return(person::LinkageType::BACKGROUND));
 
     // Data Setup
+    ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
     std::vector<double> storage = {1.0};
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
@@ -44,16 +56,10 @@ TEST_F(LinkingTest, BackgroundRelink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
-        .Times(0);
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
-        .Times(0);
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
-        .WillOnce(DoAll(SetArgReferee<1>("1.0"), Return(0)));
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking");
+    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -68,6 +74,8 @@ TEST_F(LinkingTest, BackgroundFirstLink) {
         .WillByDefault(Return(person::LinkageType::BACKGROUND));
 
     // Data Setup
+    ON_CALL(*event_dm, GetFromConfig(_, _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     std::vector<double> storage = {1.0};
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
@@ -77,16 +85,10 @@ TEST_F(LinkingTest, BackgroundFirstLink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
-        .Times(0);
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
-        .Times(0);
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
-        .Times(0);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking");
+    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -101,26 +103,26 @@ TEST_F(LinkingTest, InterventionLink) {
         .WillByDefault(Return(person::LinkageType::INTERVENTION));
 
     // Data Setup
+    ON_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     std::vector<double> storage = {1.0};
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
             DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
-        .Times(0);
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
-        .WillOnce(DoAll(SetArgReferee<1>("12.00"), Return(0)));
-    EXPECT_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
-        .Times(0);
     EXPECT_CALL(*testPerson, AddCost(_)).Times(1);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking");
+    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -135,6 +137,8 @@ TEST_F(LinkingTest, DecideToUnlink) {
         .WillByDefault(Return(person::LinkageType::INTERVENTION));
 
     // Data Setup
+    ON_CALL(*event_dm, GetFromConfig(_, _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     std::vector<double> storage = {0.0};
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
@@ -149,6 +153,6 @@ TEST_F(LinkingTest, DecideToUnlink) {
     EXPECT_CALL(*testPerson, Unlink()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking");
+    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

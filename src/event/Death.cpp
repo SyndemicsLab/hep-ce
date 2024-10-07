@@ -24,6 +24,8 @@
 namespace event {
     class Death::DeathIMPL {
     private:
+        double f4_probability;
+        double decomp_probability;
         struct background_smr {
             double back_mort = 0.0;
             double smr = 0.0;
@@ -86,14 +88,10 @@ namespace event {
             std::string data;
             switch (person->GetTrueFibrosisState()) {
             case person::FibrosisState::F4:
-                data.clear();
-                dm->GetFromConfig("mortality.f4", data);
-                prob = std::stod(data);
+                prob = f4_probability;
                 break;
             case person::FibrosisState::DECOMP:
-                data.clear();
-                dm->GetFromConfig("mortality.decomp", data);
-                prob = std::stod(data);
+                prob = decomp_probability;
                 break;
             default:
                 prob = 0;
@@ -208,9 +206,21 @@ namespace event {
                 this->die(person, person::DeathReason::LIVER);
             }
         }
+        DeathIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string data;
+            data.clear();
+            dm->GetFromConfig("mortality.f4", data);
+            this->f4_probability = std::stod(data);
+
+            data.clear();
+            dm->GetFromConfig("mortality.decomp", data);
+            this->decomp_probability = std::stod(data);
+        }
     };
 
-    Death::Death() { impl = std::make_unique<DeathIMPL>(); }
+    Death::Death(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<DeathIMPL>(dm);
+    }
 
     Death::~Death() = default;
     Death::Death(Death &&) noexcept = default;

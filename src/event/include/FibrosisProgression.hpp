@@ -38,7 +38,8 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        FibrosisProgression();
+        FibrosisProgression(
+            std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~FibrosisProgression();
 
         // Copy Operations

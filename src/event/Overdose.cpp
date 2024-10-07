@@ -74,7 +74,9 @@ namespace event {
         }
     };
 
-    Overdose::Overdose() { impl = std::make_unique<OverdoseIMPL>(); }
+    Overdose::Overdose(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<OverdoseIMPL>();
+    }
 
     Overdose::~Overdose() = default;
     Overdose::Overdose(Overdose &&) noexcept = default;

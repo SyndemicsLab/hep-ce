@@ -32,6 +32,6 @@ TEST_F(AgingTest, Aging) {
     EXPECT_CALL(*testPerson, SetUtility(cost.util)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Aging");
+    std::shared_ptr<event::Event> event = efactory.create("Aging", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

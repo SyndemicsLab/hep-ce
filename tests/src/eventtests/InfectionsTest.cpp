@@ -26,7 +26,8 @@ TEST_F(InfectionsTest, Infections_NewInfection) {
     EXPECT_CALL(*testPerson, InfectHCV()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Infections");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Infections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -47,7 +48,8 @@ TEST_F(InfectionsTest, Infections_DoNotInfect) {
     EXPECT_CALL(*testPerson, InfectHCV()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Infections");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Infections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -61,7 +63,8 @@ TEST_F(InfectionsTest, Infections_AcuteProgression) {
     EXPECT_CALL(*testPerson, InfectHCV()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Infections");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Infections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -75,7 +78,8 @@ TEST_F(InfectionsTest, Infections_NoAcuteProgression) {
     EXPECT_CALL(*testPerson, InfectHCV()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Infections");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Infections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -89,6 +93,7 @@ TEST_F(InfectionsTest, Infections_HandleChronicHCV) {
     EXPECT_CALL(*testPerson, InfectHCV()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Infections");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Infections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

@@ -42,6 +42,7 @@ TEST_F(BehaviorChangesTest, BehaviorChanges) {
         .Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("BehaviorChanges");
+    std::shared_ptr<event::Event> event =
+        efactory.create("BehaviorChanges", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

@@ -44,7 +44,8 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
     EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Screening");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Screening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -82,7 +83,8 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
     EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Screening");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Screening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -121,7 +123,8 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
     EXPECT_CALL(*testPerson, Unlink()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Screening");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Screening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -160,7 +163,8 @@ TEST_F(ScreeningTest, BackgroundScreening_TFtestResults) {
     EXPECT_CALL(*testPerson, Unlink()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Screening");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Screening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -199,7 +203,8 @@ TEST_F(ScreeningTest, BackgroundScreening_TTtestResults) {
     EXPECT_CALL(*testPerson, Unlink()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Screening");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Screening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -235,6 +240,7 @@ TEST_F(ScreeningTest, NoScreen) {
     EXPECT_CALL(*testPerson, Unlink()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Screening");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Screening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

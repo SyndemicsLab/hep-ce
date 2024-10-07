@@ -35,7 +35,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Linking();
+        Linking(std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~Linking();
 
         // Copy Operations

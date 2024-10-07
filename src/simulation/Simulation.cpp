@@ -307,7 +307,7 @@ namespace simulation {
             event::EventFactory factory;
             for (std::string eventObj : eventList) {
 
-                auto ev = factory.create(eventObj);
+                auto ev = factory.create(eventObj, _dm);
                 this->events.push_back(ev);
                 spdlog::get("main")->info("{} Event Created", eventObj);
             }

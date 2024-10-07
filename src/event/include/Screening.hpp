@@ -35,7 +35,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Screening();
+        Screening(std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~Screening();
 
         // Copy Operations

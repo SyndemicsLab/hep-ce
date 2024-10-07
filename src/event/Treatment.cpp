@@ -25,6 +25,13 @@
 namespace event {
     class Treatment::TreatmentIMPL {
     private:
+        double lost_to_follow_up_probability;
+        double treatment_cost;
+        double treatment_utility;
+        double toxicity_cost;
+        double toxicity_utility;
+        double treatment_init_probability;
+
         struct cost_svr_select {
             int time;
             double svr;
@@ -101,15 +108,9 @@ namespace event {
             if (person->HasInitiatedTreatment() || isEligible(person)) {
                 return false;
             }
-            std::string data;
-            dm->GetFromConfig("treatment.ltfu_probability", data);
-            if (data.empty()) {
-                spdlog::get("main")->warn(
-                    "No Loss To Follow-Up Probability Found!");
-                data = "0.0";
-            }
-            double ltfuProb = std::stod(data);
-            if (decider->GetDecision({ltfuProb, 1 - ltfuProb}) != 0) {
+            if (decider->GetDecision({lost_to_follow_up_probability,
+                                      1 - lost_to_follow_up_probability}) !=
+                0) {
                 return false;
             }
             this->quitEngagement(person);
@@ -119,11 +120,8 @@ namespace event {
         void
         chargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            std::string data;
-            dm->GetFromConfig("treatment.treatment_cost", data);
-            double cost = std::stod(data);
             cost::Cost visitCost = {cost::CostCategory::TREATMENT,
-                                    "Cost of Treatment Visit", cost};
+                                    "Cost of Treatment Visit", treatment_cost};
             person->AddCost(visitCost);
         }
 
@@ -141,14 +139,11 @@ namespace event {
                                            error);
                 return;
             }
+            double cost = (!storage.empty()) ? storage[0] : 0.0;
             cost::Cost courseCost = {cost::CostCategory::TREATMENT,
-                                     "Cost of Treatment Course", storage[0]};
+                                     "Cost of Treatment Course", cost};
             person->AddCost(courseCost);
-
-            std::string data;
-            dm->GetFromConfig("treatment.treatment_utility", data);
-            double util = std::stod(data);
-            person->SetUtility(util);
+            person->SetUtility(treatment_utility);
         }
 
         bool Withdraws(std::shared_ptr<person::PersonBase> person,
@@ -194,25 +189,11 @@ namespace event {
             }
             person->AddToxicReaction();
             this->quitEngagement(person);
-            std::string data;
-            dm->GetFromConfig("treatment.tox_cost", data);
-            if (data.empty()) {
-                spdlog::get("main")->warn("No Toxicity Cost Found!");
-                data = "0.00";
-            }
-            double cost = std::stod(data);
-            cost::Cost toxicityCost = {cost::CostCategory::TREATMENT,
-                                       "Toxicity Cost", cost};
-            person->AddCost(toxicityCost);
 
-            data.clear();
-            dm->GetFromConfig("treatment.tox_utility", data);
-            if (data.empty()) {
-                spdlog::get("main")->warn("No Toxicity Utility Found!");
-                data = "0.00";
-            }
-            double utility = std::stod(data);
-            person->SetUtility(utility);
+            cost::Cost toxicityCost = {cost::CostCategory::TREATMENT,
+                                       "Toxicity Cost", toxicity_cost};
+            person->AddCost(toxicityCost);
+            person->SetUtility(toxicity_utility);
             return true;
         }
 
@@ -225,16 +206,8 @@ namespace event {
             if (person->HasInitiatedTreatment()) {
                 return true;
             }
-            std::string data;
-            dm->GetFromConfig("treatment.treatment_initialization", data);
-            if (data.empty()) {
-                spdlog::get("main")->warn(
-                    "Treatment Initialization Probability Not Found!");
-                data = "0.0";
-            }
-            double initProb = std::stod(data);
-
-            if (decider->GetDecision({initProb, 1 - initProb}) != 0) {
+            if (decider->GetDecision({treatment_init_probability,
+                                      1 - treatment_init_probability}) != 0) {
                 this->quitEngagement(person);
                 return false;
             }
@@ -249,6 +222,18 @@ namespace event {
             person->Unlink();
             // reset utility
             person->SetUtility(1.0);
+        }
+
+        double ParseDoublesFromConfig(
+            std::string configKey,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string data;
+            dm->GetFromConfig(configKey, data);
+            if (data.empty()) {
+                spdlog::get("main")->warn("No {} Found!", configKey);
+                data = "0.0";
+            }
+            return std::stod(data);
         }
 
     public:
@@ -312,8 +297,23 @@ namespace event {
                 this->quitEngagement(person);
             }
         }
+        TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            lost_to_follow_up_probability =
+                ParseDoublesFromConfig("treatment.ltfu_probability", dm);
+            treatment_cost =
+                ParseDoublesFromConfig("treatment.treatment_cost", dm);
+            treatment_utility =
+                ParseDoublesFromConfig("treatment.treatment_utility", dm);
+            toxicity_cost = ParseDoublesFromConfig("treatment.tox_cost", dm);
+            toxicity_utility =
+                ParseDoublesFromConfig("treatment.tox_utility", dm);
+            treatment_init_probability = ParseDoublesFromConfig(
+                "treatment.treatment_initialization", dm);
+        }
     };
-    Treatment::Treatment() { impl = std::make_unique<TreatmentIMPL>(); }
+    Treatment::Treatment(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<TreatmentIMPL>(dm);
+    }
 
     Treatment::~Treatment() = default;
     Treatment::Treatment(Treatment &&) noexcept = default;

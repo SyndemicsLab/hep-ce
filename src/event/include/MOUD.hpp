@@ -33,7 +33,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        MOUD();
+        MOUD(std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~MOUD();
 
         // Copy Operations

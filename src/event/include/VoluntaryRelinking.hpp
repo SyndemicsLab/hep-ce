@@ -35,7 +35,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        VoluntaryRelinking();
+        VoluntaryRelinking(std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~VoluntaryRelinking();
 
         // Copy Operations

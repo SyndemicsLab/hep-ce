@@ -34,7 +34,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Overdose();
+        Overdose(std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~Overdose();
 
         // Copy Operations

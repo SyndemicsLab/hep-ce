@@ -33,7 +33,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Aging();
+        Aging(std::shared_ptr<datamanagement::DataManagerBase> dm);
         ~Aging();
 
         // Copy Operations

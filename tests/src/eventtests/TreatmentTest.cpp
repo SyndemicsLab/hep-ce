@@ -33,6 +33,10 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.ltfu_probability", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.tox_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -53,7 +57,8 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
     EXPECT_CALL(*testPerson, Unlink()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Treatment");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Treatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -81,6 +86,10 @@ TEST_F(TreatmentTest, FinishTreatment) {
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.ltfu_probability", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.tox_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -98,7 +107,8 @@ TEST_F(TreatmentTest, FinishTreatment) {
     EXPECT_CALL(*testPerson, Unlink()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Treatment");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Treatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -121,6 +131,10 @@ TEST_F(TreatmentTest, LostToFollowUp) {
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.ltfu_probability", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.tox_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -135,7 +149,8 @@ TEST_F(TreatmentTest, LostToFollowUp) {
     EXPECT_CALL(*testPerson, Unlink()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Treatment");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Treatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -158,6 +173,10 @@ TEST_F(TreatmentTest, Withdraw) {
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.ltfu_probability", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.tox_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_)).WillOnce(Return(0)); // Withdraw
@@ -172,7 +191,8 @@ TEST_F(TreatmentTest, Withdraw) {
     EXPECT_CALL(*testPerson, AddWithdrawal()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Treatment");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Treatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -220,6 +240,7 @@ TEST_F(TreatmentTest, DevelopToxicity) {
     EXPECT_CALL(*testPerson, AddToxicReaction()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Treatment");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Treatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

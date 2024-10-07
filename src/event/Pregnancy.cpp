@@ -24,6 +24,10 @@
 namespace event {
     class Pregnancy::PregnancyIMPL {
     private:
+        double multiple_delivery_probability;
+        double infant_hcv_tested_probability;
+        double vertical_hcv_transition_probability;
+
         static int callback(void *storage, int count, char **data,
                             char **columns) {
             double *d = (double *)storage;
@@ -68,16 +72,9 @@ namespace event {
         GetNumberOfBirths(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                           std::shared_ptr<stats::DeciderBase> decider) {
-            std::string storage = "";
-            dm->GetFromConfig("pregnancy.multiple_delivery_probability",
-                              storage);
-            if (storage.empty()) {
-                spdlog::get("main")->warn(
-                    "No Multiple Delivery Probability Found! Assuming 0.");
-                storage = "0";
-            }
-            double prob = std::stod(storage);
-            std::vector<double> result = {prob, 1 - prob};
+
+            std::vector<double> result = {multiple_delivery_probability,
+                                          1 - multiple_delivery_probability};
             // Currently only deciding between single birth or twins
             return (decider->GetDecision(result) == 0) ? 2 : 1;
         }
@@ -85,32 +82,18 @@ namespace event {
         bool
         DoChildrenGetTested(std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::shared_ptr<stats::DeciderBase> decider) {
-            std::string storage = "";
-            dm->GetFromConfig("pregnancy.infant_hcv_tested_probability",
-                              storage);
-            if (storage.empty()) {
-                spdlog::get("main")->warn(
-                    "No Infant HCV Testing Probability Found! Assuming 0.");
-                storage = "0";
-            }
-            double prob = std::stod(storage);
-            std::vector<double> result = {prob, 1 - prob};
+
+            std::vector<double> result = {infant_hcv_tested_probability,
+                                          1 - infant_hcv_tested_probability};
             return (decider->GetDecision(result) == 0) ? true : false;
         }
 
         bool
         DrawChildInfection(std::shared_ptr<datamanagement::DataManagerBase> dm,
                            std::shared_ptr<stats::DeciderBase> decider) {
-            std::string storage = "";
-            dm->GetFromConfig("pregnancy.vertical_hcv_transition_probability",
-                              storage);
-            if (storage.empty()) {
-                spdlog::get("main")->warn("No Infant HCV Vertical Transmission "
-                                          "Probability Found! Assuming 0.");
-                storage = "0";
-            }
-            double prob = std::stod(storage);
-            std::vector<double> result = {prob, 1 - prob};
+            std::vector<double> result = {
+                vertical_hcv_transition_probability,
+                1 - vertical_hcv_transition_probability};
             return (decider->GetDecision(result) == 0) ? true : false;
         }
 
@@ -186,9 +169,43 @@ namespace event {
             }
             return;
         }
+
+        PregnancyIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string storage;
+            dm->GetFromConfig("pregnancy.multiple_delivery_probability",
+                              storage);
+            if (storage.empty()) {
+                spdlog::get("main")->warn(
+                    "No Multiple Delivery Probability Found! Assuming 0.");
+                storage = "0";
+            }
+            multiple_delivery_probability = std::stod(storage);
+
+            storage.clear();
+            dm->GetFromConfig("pregnancy.infant_hcv_tested_probability",
+                              storage);
+            if (storage.empty()) {
+                spdlog::get("main")->warn(
+                    "No Infant HCV Testing Probability Found! Assuming 0.");
+                storage = "0";
+            }
+            infant_hcv_tested_probability = std::stod(storage);
+
+            storage.clear();
+            dm->GetFromConfig("pregnancy.vertical_hcv_transition_probability",
+                              storage);
+            if (storage.empty()) {
+                spdlog::get("main")->warn("No Infant HCV Vertical Transmission "
+                                          "Probability Found! Assuming 0.");
+                storage = "0";
+            }
+            vertical_hcv_transition_probability = std::stod(storage);
+        }
     };
 
-    Pregnancy::Pregnancy() { impl = std::make_unique<PregnancyIMPL>(); }
+    Pregnancy::Pregnancy(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<PregnancyIMPL>(dm);
+    }
 
     Pregnancy::~Pregnancy() = default;
     Pregnancy::Pregnancy(Pregnancy &&) noexcept = default;

@@ -93,7 +93,10 @@ namespace event {
             person->InfectHCV();
         }
     };
-    Infections::Infections() { impl = std::make_unique<InfectionsIMPL>(); }
+    Infections::Infections(
+        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<InfectionsIMPL>();
+    }
 
     Infections::~Infections() = default;
     Infections::Infections(Infections &&) noexcept = default;

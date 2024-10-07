@@ -29,7 +29,8 @@ TEST_F(VoluntaryRelinkingTest, Relink) {
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("VoluntaryRelinking");
+    std::shared_ptr<event::Event> event =
+        efactory.create("VoluntaryRelinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -53,7 +54,8 @@ TEST_F(VoluntaryRelinkingTest, NotUnlinked) {
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("VoluntaryRelinking");
+    std::shared_ptr<event::Event> event =
+        efactory.create("VoluntaryRelinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -77,7 +79,8 @@ TEST_F(VoluntaryRelinkingTest, TooLongDuration) {
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("VoluntaryRelinking");
+    std::shared_ptr<event::Event> event =
+        efactory.create("VoluntaryRelinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -101,6 +104,7 @@ TEST_F(VoluntaryRelinkingTest, DecideNotToRelink) {
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("VoluntaryRelinking");
+    std::shared_ptr<event::Event> event =
+        efactory.create("VoluntaryRelinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

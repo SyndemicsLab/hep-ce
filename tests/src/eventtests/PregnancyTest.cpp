@@ -18,11 +18,23 @@ TEST_F(PregnancyTest, Males) {
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
         .WillByDefault(Return(-1));
 
+    // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.multiple_delivery_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
     // Expectations
     EXPECT_CALL(*decider, GetDecision(_)).Times(0); // No Randomness
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -35,11 +47,23 @@ TEST_F(PregnancyTest, TooYoung) {
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
         .WillByDefault(Return(2));
 
+    // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.multiple_delivery_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
     // Expectations
     EXPECT_CALL(*decider, GetDecision(_)).Times(0); // No Randomness
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -52,11 +76,23 @@ TEST_F(PregnancyTest, TooOld) {
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
         .WillByDefault(Return(-1));
 
+    // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.multiple_delivery_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
     // Expectations
     EXPECT_CALL(*decider, GetDecision(_)).Times(0); // No Randomness
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -69,11 +105,23 @@ TEST_F(PregnancyTest, Postpartum) {
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
         .WillByDefault(Return(2));
 
+    // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.multiple_delivery_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
     // Expectations
     EXPECT_CALL(*decider, GetDecision(_)).Times(0); // No Randomness
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -87,6 +135,15 @@ TEST_F(PregnancyTest, EndPostpartum_ReImpregnate) {
         .WillByDefault(Return(3));
 
     // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.multiple_delivery_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     double storage = 1.0;
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
@@ -100,7 +157,8 @@ TEST_F(PregnancyTest, EndPostpartum_ReImpregnate) {
     EXPECT_CALL(*testPerson, Impregnate()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -114,6 +172,15 @@ TEST_F(PregnancyTest, Pregnant_Miscarry) {
         .WillByDefault(Return(5));
 
     // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.multiple_delivery_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     double storage = 1.0;
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
@@ -126,7 +193,8 @@ TEST_F(PregnancyTest, Pregnant_Miscarry) {
     EXPECT_CALL(*testPerson, Miscarry()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -140,6 +208,15 @@ TEST_F(PregnancyTest, Pregnant_HealthyTimestep) {
         .WillByDefault(Return(5));
 
     // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.multiple_delivery_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     double storage = 1.0;
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
@@ -152,7 +229,8 @@ TEST_F(PregnancyTest, Pregnant_HealthyTimestep) {
     EXPECT_CALL(*testPerson, Miscarry()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -166,6 +244,15 @@ TEST_F(PregnancyTest, Pregnant_Stillbirth) {
         .WillByDefault(Return(9));
 
     // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.multiple_delivery_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     double storage = 1.0;
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
@@ -178,7 +265,8 @@ TEST_F(PregnancyTest, Pregnant_Stillbirth) {
     EXPECT_CALL(*testPerson, Stillbirth()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -193,6 +281,15 @@ TEST_F(PregnancyTest, Pregnant_Healthy_Birth) {
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
 
     // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.multiple_delivery_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     double storage = 1.0;
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(
@@ -209,7 +306,8 @@ TEST_F(PregnancyTest, Pregnant_Healthy_Birth) {
     EXPECT_CALL(*testPerson, AddChild(_, _)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -231,6 +329,12 @@ TEST_F(PregnancyTest, Pregnant_Twins) {
     ON_CALL(*event_dm,
             GetFromConfig("pregnancy.multiple_delivery_probability", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.infant_hcv_tested_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("pregnancy.vertical_hcv_transition_probability", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -242,7 +346,8 @@ TEST_F(PregnancyTest, Pregnant_Twins) {
     EXPECT_CALL(*testPerson, AddChild(_, _)).Times(2);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -283,7 +388,8 @@ TEST_F(PregnancyTest, Pregnant_Test_NoInfect_Child) {
     EXPECT_CALL(*testPerson, AddChild(person::HCV::NONE, true)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -324,7 +430,8 @@ TEST_F(PregnancyTest, Pregnant_NoTest_NoInfect_Child) {
     EXPECT_CALL(*testPerson, AddChild(person::HCV::NONE, false)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -365,7 +472,8 @@ TEST_F(PregnancyTest, Pregnant_Test_Infect_Child) {
     EXPECT_CALL(*testPerson, AddChild(person::HCV::CHRONIC, true)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -406,6 +514,7 @@ TEST_F(PregnancyTest, Pregnant_NoTest_Infect_Children) {
     EXPECT_CALL(*testPerson, AddChild(person::HCV::CHRONIC, false)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Pregnancy");
+    std::shared_ptr<event::Event> event =
+        efactory.create("Pregnancy", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

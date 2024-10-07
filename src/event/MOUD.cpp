@@ -71,7 +71,9 @@ namespace event {
             }
         }
     };
-    MOUD::MOUD() { impl = std::make_unique<MOUDIMPL>(); }
+    MOUD::MOUD(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<MOUDIMPL>();
+    }
 
     MOUD::~MOUD() = default;
     MOUD::MOUD(MOUD &&) noexcept = default;

@@ -25,10 +25,29 @@
 namespace event {
     class VoluntaryRelinking::VoluntaryRelinkingIMPL {
     private:
+        double relink_probability;
+        int voluntary_relink_duration;
+
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
+
+            int relink = decider->GetDecision(
+                {relink_probability, 1 - relink_probability});
+
+            // if linked or never linked OR too long since last linked OR relink
+            // draw is false
+            if (person->GetLinkState() != person::LinkageState::UNLINKED ||
+                (person->GetTimeSinceLinkChange()) >
+                    voluntary_relink_duration ||
+                relink != 0) {
+                return;
+            }
+            person->Link(person::LinkageType::BACKGROUND);
+        }
+        VoluntaryRelinkingIMPL(
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string data;
             dm->GetFromConfig("linking.voluntary_relinkage_probability", data);
             if (data.empty()) {
@@ -36,10 +55,7 @@ namespace event {
                     "No Voluntary Relinkage Probability Found!");
                 data = "0.00";
             }
-            double relinkProbability = std::stod(data);
-
-            int relink = decider->GetDecision(
-                {relinkProbability, 1 - relinkProbability});
+            relink_probability = std::stod(data);
 
             data.clear();
             dm->GetFromConfig("linking.voluntary_relink_duration", data);
@@ -48,21 +64,13 @@ namespace event {
                     "No Voluntary Relinkage Duration Found!");
                 data = "0";
             }
-            int voluntaryRelinkDuration = std::stoi(data);
-
-            // if linked or never linked OR too long since last linked OR relink
-            // draw is false
-            if (person->GetLinkState() != person::LinkageState::UNLINKED ||
-                (person->GetTimeSinceLinkChange()) > voluntaryRelinkDuration ||
-                relink != 0) {
-                return;
-            }
-            person->Link(person::LinkageType::BACKGROUND);
+            voluntary_relink_duration = std::stoi(data);
         }
     };
 
-    VoluntaryRelinking::VoluntaryRelinking() {
-        impl = std::make_unique<VoluntaryRelinkingIMPL>();
+    VoluntaryRelinking::VoluntaryRelinking(
+        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<VoluntaryRelinkingIMPL>(dm);
     }
 
     VoluntaryRelinking::~VoluntaryRelinking() = default;

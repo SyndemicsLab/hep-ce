@@ -19,7 +19,7 @@ TEST_F(MOUDTest, NeverUsed) {
     EXPECT_CALL(*testPerson, TransitionMOUD()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("MOUD");
+    std::shared_ptr<event::Event> event = efactory.create("MOUD", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -40,7 +40,7 @@ TEST_F(MOUDTest, No_Transition) {
     EXPECT_CALL(*testPerson, TransitionMOUD()).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("MOUD");
+    std::shared_ptr<event::Event> event = efactory.create("MOUD", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -61,6 +61,6 @@ TEST_F(MOUDTest, Transition) {
     EXPECT_CALL(*testPerson, TransitionMOUD()).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("MOUD");
+    std::shared_ptr<event::Event> event = efactory.create("MOUD", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

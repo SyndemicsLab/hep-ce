@@ -13,14 +13,30 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_NoFibrosis) {
     // Person Setup
     ON_CALL(*testPerson, GetTrueFibrosisState())
         .WillByDefault(Return(person::FibrosisState::NONE));
+    ON_CALL(*event_dm, GetFromConfig(_, _)).WillByDefault(Return(0));
+
+    // Data Setup
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.period", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("12"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("test_one"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("test_two"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("fibrosis_staging.multitest_result_method", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
 
     // Expectations
-    EXPECT_CALL(*event_dm, GetFromConfig(_, _)).Times(0);
     EXPECT_CALL(*testPerson, DiagnoseFibrosis(_)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_)).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("FibrosisStaging");
+    std::shared_ptr<event::Event> event =
+        efactory.create("FibrosisStaging", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -33,15 +49,27 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_RecentlyStaged) {
     ON_CALL(*testPerson, GetTimeOfFibrosisStaging()).WillByDefault(Return(5));
 
     // Data Setup
-    EXPECT_CALL(*event_dm, GetFromConfig("fibrosis_staging.period", _))
-        .WillRepeatedly(DoAll(SetArgReferee<1>("12"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.period", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("12"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("test_one"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("test_two"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("fibrosis_staging.multitest_result_method", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
 
     // Expectations
     EXPECT_CALL(*testPerson, DiagnoseFibrosis(_)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_)).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("FibrosisStaging");
+    std::shared_ptr<event::Event> event =
+        efactory.create("FibrosisStaging", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -54,6 +82,9 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
     ON_CALL(*testPerson, GetTimeOfFibrosisStaging()).WillByDefault(Return(-1));
 
     // Data Setup
+    ON_CALL(*event_dm,
+            GetFromConfig("fibrosis_staging.multitest_result_method", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.period", _))
         .WillByDefault(DoAll(SetArgReferee<1>("12"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one", _))
@@ -79,7 +110,8 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
     EXPECT_CALL(*testPerson, AddCost(_)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("FibrosisStaging");
+    std::shared_ptr<event::Event> event =
+        efactory.create("FibrosisStaging", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -121,7 +153,8 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
     EXPECT_CALL(*testPerson, AddCost(_)).Times(2);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("FibrosisStaging");
+    std::shared_ptr<event::Event> event =
+        efactory.create("FibrosisStaging", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
@@ -166,6 +199,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
     EXPECT_CALL(*testPerson, AddCost(_)).Times(2);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("FibrosisStaging");
+    std::shared_ptr<event::Event> event =
+        efactory.create("FibrosisStaging", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

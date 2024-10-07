@@ -25,6 +25,10 @@
 namespace event {
     class Linking::LinkingIMPL {
     private:
+        double intervention_cost;
+        double false_positive_test_cost;
+        double relink_multiplier;
+
         static int callback(void *storage, int count, char **data,
                             char **columns) {
             std::vector<double> *d = (std::vector<double> *)storage;
@@ -78,24 +82,14 @@ namespace event {
         void addLinkingCost(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::string name) {
-            std::string param = "";
+            double cost;
             if (name == "Intervention Linking Cost") {
-                param = "linking.intervention_cost";
+                cost = intervention_cost;
             } else if (name == "False Positive Linking Cost") {
-                param = "linking.false_positive_test_cost";
+                cost = false_positive_test_cost;
             } else {
                 return;
             }
-
-            std::string data = "";
-            dm->GetFromConfig(param, data);
-            if (data.empty()) {
-                spdlog::get("main")->warn("{} Not Found! Assuming "
-                                          "0.00...",
-                                          param);
-                data = "0.00";
-            }
-            double cost = std::stod(data);
             cost::Cost linkingCost = {cost::CostCategory::LINKING, name, cost};
             person->AddCost(linkingCost);
         }
@@ -122,11 +116,20 @@ namespace event {
             if (person->GetLinkState() != person::LinkageState::UNLINKED) {
                 return; // Not Relinking
             }
-            std::string data;
-            dm->GetFromConfig("linking.relink_multiplier", data);
-            double relinkScalar = std::stod(data);
-            probabilities[1] = probabilities[1] * relinkScalar;
+            probabilities[1] = probabilities[1] * relink_multiplier;
             probabilities[0] = 1 - probabilities[1];
+        }
+
+        double ParseDoublesFromConfig(
+            std::string configKey,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string data;
+            dm->GetFromConfig(configKey, data);
+            if (data.empty()) {
+                spdlog::get("main")->warn("No {} Found!", configKey);
+                data = "0.0";
+            }
+            return std::stod(data);
         }
 
     public:
@@ -163,8 +166,20 @@ namespace event {
                 person->Unlink();
             }
         }
+        LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            intervention_cost =
+                ParseDoublesFromConfig("linking.intervention_cost", dm);
+
+            false_positive_test_cost =
+                ParseDoublesFromConfig("linking.false_positive_test_cost", dm);
+
+            relink_multiplier =
+                ParseDoublesFromConfig("linking.relink_multiplier", dm);
+        }
     };
-    Linking::Linking() { impl = std::make_unique<LinkingIMPL>(); }
+    Linking::Linking(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<LinkingIMPL>(dm);
+    }
 
     Linking::~Linking() = default;
     Linking::Linking(Linking &&) noexcept = default;

@@ -28,6 +28,30 @@
 namespace event {
     class Screening::ScreeningIMPL {
     private:
+        double background_rna_acute_sensitivity;
+        double background_rna_chronic_sensitivity;
+        double background_rna_specificity;
+        double background_rna_cost;
+
+        double background_ab_acute_sensitivity;
+        double background_ab_chronic_sensitivity;
+        double background_ab_specificity;
+        double background_ab_cost;
+
+        double intervention_rna_acute_sensitivity;
+        double intervention_rna_chronic_sensitivity;
+        double intervention_rna_specificity;
+        double intervention_rna_cost;
+
+        double intervention_ab_acute_sensitivity;
+        double intervention_ab_chronic_sensitivity;
+        double intervention_ab_specificity;
+        double intervention_ab_cost;
+
+        double seropositivity_boomer_multiplier;
+        int screening_period;
+        std::string intervention_type;
+
         static int callback(void *storage, int count, char **data,
                             char **columns) {
             std::vector<double> *d = (std::vector<double> *)storage;
@@ -79,23 +103,54 @@ namespace event {
             return test;
         }
 
+        double
+        GetScreeningTypeSensitivitySpecificity(person::HCV infectionStatus,
+                                               std::string configKey) {
+            if (configKey == "screening_background_rna") {
+                if (infectionStatus == person::HCV::ACUTE) {
+                    return 1 - background_rna_acute_sensitivity;
+                } else if (infectionStatus == person::HCV::CHRONIC) {
+                    return 1 - background_rna_chronic_sensitivity;
+                } else {
+                    return background_rna_specificity;
+                }
+            } else if (configKey == "screening_background_ab") {
+                if (infectionStatus == person::HCV::ACUTE) {
+                    return 1 - background_ab_acute_sensitivity;
+                } else if (infectionStatus == person::HCV::CHRONIC) {
+                    return 1 - background_ab_chronic_sensitivity;
+                } else {
+                    return background_ab_specificity;
+                }
+            } else if (configKey == "screening_intervention_rna") {
+                if (infectionStatus == person::HCV::ACUTE) {
+                    return 1 - intervention_rna_acute_sensitivity;
+                } else if (infectionStatus == person::HCV::CHRONIC) {
+                    return 1 - intervention_rna_chronic_sensitivity;
+                } else {
+                    return intervention_rna_specificity;
+                }
+            } else if (configKey == "screening_intervention_ab") {
+                if (infectionStatus == person::HCV::ACUTE) {
+                    return 1 - intervention_ab_acute_sensitivity;
+                } else if (infectionStatus == person::HCV::CHRONIC) {
+                    return 1 - intervention_ab_chronic_sensitivity;
+                } else {
+                    return intervention_ab_specificity;
+                }
+            } else {
+                return 0.0;
+            }
+        }
+
         bool test(person::HCV infectionStatus,
                   std::shared_ptr<datamanagement::DataManagerBase> dm,
                   std::string configKey,
                   std::shared_ptr<stats::DeciderBase> decider,
                   std::function<int(void)> testFunc) {
-            double probability = 0.5;
-            std::string data;
-            if (infectionStatus == person::HCV::ACUTE) {
-                dm->GetFromConfig(configKey + ".acute_sensitivity", data);
-                probability = 1 - std::stod(data);
-            } else if (infectionStatus == person::HCV::CHRONIC) {
-                dm->GetFromConfig(configKey + ".chronic_sensitivity", data);
-                probability = 1 - std::stod(data);
-            } else {
-                dm->GetFromConfig(configKey + ".specificity", data);
-                probability = std::stod(data);
-            }
+            double probability = GetScreeningTypeSensitivitySpecificity(
+                infectionStatus, configKey);
+
             testFunc();
             // probability is the chance of false positive or false negative
             bool rValue =
@@ -161,17 +216,11 @@ namespace event {
                 probs = {storage[0]};
             }
 
-            std::string configStr =
-                "screening.seropositive_multiplier_not_boomer";
-
             if (person->IsBoomer()) {
-                configStr = "screening.seropositive_multiplier_boomer";
+
+                probs[0] *= seropositivity_boomer_multiplier;
             }
 
-            std::string data;
-            dm->GetFromConfig(configStr, data);
-            double multiplier = (data.empty()) ? 1.0 : std::stod(data);
-            probs[0] *= multiplier;
             std::vector<double> result = {probs[0], 1 - probs[0]};
             return result;
         }
@@ -196,9 +245,17 @@ namespace event {
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::string configKey, std::string screeningName) {
             double screeningCost;
-            std::string data;
-            dm->GetFromConfig(configKey, data);
-            screeningCost = std::stod(data);
+            if (configKey == "screening_background_rna") {
+                screeningCost = background_rna_cost;
+            } else if (configKey == "screening_background_ab") {
+                screeningCost = background_ab_cost;
+            } else if (configKey == "screening_intervention_rna") {
+                screeningCost = intervention_rna_cost;
+            } else if (configKey == "screening_intervention_ab") {
+                screeningCost = intervention_ab_cost;
+            } else {
+                screeningCost = 0.0;
+            }
 
             cost::Cost cost = {cost::CostCategory::SCREENING, screeningName,
                                screeningCost};
@@ -209,12 +266,6 @@ namespace event {
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            std::string temp;
-            dm->GetFromConfig("screening.period", temp);
-            int interventionPeriod = (temp.empty()) ? 0 : std::stoi(temp);
-
-            std::string interventionType;
-            dm->GetFromConfig("screening.intervention_type", interventionType);
             /// Intervention Screening Conditions:
             /// 1. Have InterventionType is One-Time and CurrentTimestep
             ///         is 1
@@ -222,10 +273,10 @@ namespace event {
             ///         hasn't screened
             ///         or the period has been reached since their last
             ///         screening
-            if ((interventionType == "one-time" &&
+            if ((intervention_type == "one-time" &&
                  person->GetCurrentTimestep() == 1) ||
-                (interventionType == "periodic" &&
-                 (person->GetTimeSinceLastScreening() >= interventionPeriod ||
+                (intervention_type == "periodic" &&
+                 (person->GetTimeSinceLastScreening() >= screening_period ||
                   person->GetTimeOfLastScreening() == -1))) {
                 this->interventionDecision(person, dm, decider);
             }
@@ -239,9 +290,71 @@ namespace event {
                 this->Screen("screening_background", person, dm, decider);
             }
         }
+        ScreeningIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string data;
+
+            // Background RNA
+            dm->GetFromConfig("screening_background_rna.acute_sensitivity",
+                              data);
+            background_rna_acute_sensitivity = 1 - std::stod(data);
+            dm->GetFromConfig("screening_background_rna.chronic_sensitivity",
+                              data);
+            background_rna_chronic_sensitivity = 1 - std::stod(data);
+            dm->GetFromConfig("screening_background_rna.specificity", data);
+            background_rna_specificity = std::stod(data);
+            dm->GetFromConfig("screening_background_rna.cost", data);
+            background_rna_cost = std::stod(data);
+
+            // Background AB
+            dm->GetFromConfig("screening_background_ab.acute_sensitivity",
+                              data);
+            background_ab_acute_sensitivity = 1 - std::stod(data);
+            dm->GetFromConfig("screening_background_ab.chronic_sensitivity",
+                              data);
+            background_ab_chronic_sensitivity = 1 - std::stod(data);
+            dm->GetFromConfig("screening_background_ab.specificity", data);
+            background_ab_specificity = std::stod(data);
+            dm->GetFromConfig("screening_background_ab.cost", data);
+            background_ab_cost = std::stod(data);
+
+            // Intervention RNA
+            dm->GetFromConfig("screening_intervention_rna.acute_sensitivity",
+                              data);
+            intervention_rna_acute_sensitivity = 1 - std::stod(data);
+            dm->GetFromConfig("screening_intervention_rna.chronic_sensitivity",
+                              data);
+            intervention_rna_chronic_sensitivity = 1 - std::stod(data);
+            dm->GetFromConfig("screening_intervention_rna.specificity", data);
+            intervention_rna_specificity = std::stod(data);
+            dm->GetFromConfig("screening_intervention_rna.cost", data);
+            intervention_rna_cost = std::stod(data);
+
+            // Intervention AB
+            dm->GetFromConfig("screening_intervention_ab.acute_sensitivity",
+                              data);
+            intervention_ab_acute_sensitivity = 1 - std::stod(data);
+            dm->GetFromConfig("screening_intervention_ab.chronic_sensitivity",
+                              data);
+            intervention_ab_chronic_sensitivity = 1 - std::stod(data);
+            dm->GetFromConfig("screening_intervention_ab.specificity", data);
+            intervention_ab_specificity = std::stod(data);
+            dm->GetFromConfig("screening_intervention_ab.cost", data);
+            intervention_ab_cost = std::stod(data);
+
+            // Other Config Gets
+            dm->GetFromConfig("screening.seropositivity_multiplier_boomer",
+                              data);
+            seropositivity_boomer_multiplier =
+                (data.empty()) ? 1.0 : std::stod(data);
+            dm->GetFromConfig("screening.period", data);
+            screening_period = (data.empty()) ? 0 : std::stoi(data);
+            dm->GetFromConfig("screening.intervention_type", intervention_type);
+        }
     };
 
-    Screening::Screening() { impl = std::make_unique<ScreeningIMPL>(); }
+    Screening::Screening(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<ScreeningIMPL>(dm);
+    }
 
     Screening::~Screening() = default;
     Screening::Screening(Screening &&) noexcept = default;

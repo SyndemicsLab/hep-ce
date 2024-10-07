@@ -91,7 +91,9 @@ namespace event {
         }
     };
 
-    Aging::Aging() { impl = std::make_unique<AgingIMPL>(); }
+    Aging::Aging(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<AgingIMPL>();
+    }
 
     Aging::~Aging() = default;
     Aging::Aging(Aging &&) noexcept = default;
