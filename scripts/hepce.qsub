@@ -19,7 +19,7 @@
 #$ -o hepce.qlog
 
 #  Request time needed for job to run (default: 12 hours)
-#$ -l h_rt=72:00:00
+#$ -l h_rt=144:00:00
 
 #  Send an email when the job begins and when it ends running
 #  (b = when job begins, a = if job aborts, e = when job ends)
@@ -29,7 +29,7 @@
 #$ -M Matthew.Carroll@bmc.org
 
 # use multiple slots
-# -pe omp 28
+# -pe omp 36
 
 # use tasks, comment this line if running on single node.
 #$ -t 1-1
