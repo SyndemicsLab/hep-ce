@@ -154,6 +154,11 @@ namespace person {
         MOCK_METHOD(int, GetTimeStartedMoud, (), (const, override));
         MOCK_METHOD(MOUDDetails, GetMOUDDetails, (), (const, override));
         MOCK_METHOD(std::vector<Child>, GetChildren, (), (const, override));
+
+        MOCK_METHOD(void, DevelopHCC, (HCCState state), (override));
+        MOCK_METHOD(HCCState, GetHCCState, (), (const, override));
+        MOCK_METHOD(void, DiagnoseHCC, (), (override));
+        MOCK_METHOD(bool, IsDiagnosedWithHCC, (), (const, override));
     };
 } // namespace person
 

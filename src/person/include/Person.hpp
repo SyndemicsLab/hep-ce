@@ -161,6 +161,12 @@ namespace person {
         virtual int GetTimeStartedMoud() const = 0;
         virtual MOUDDetails GetMOUDDetails() const = 0;
         virtual std::vector<Child> GetChildren() const = 0;
+
+        // HCC
+        virtual void DevelopHCC(HCCState state) = 0;
+        virtual HCCState GetHCCState() const = 0;
+        virtual void DiagnoseHCC() = 0;
+        virtual bool IsDiagnosedWithHCC() const = 0;
     };
     /// @brief Class describing a Person
     class Person : public PersonBase {
@@ -310,6 +316,12 @@ namespace person {
         MOUD GetMoudState() const;
         int GetTimeStartedMoud() const;
         MOUDDetails GetMOUDDetails() const;
+
+        // HCC
+        void DevelopHCC(HCCState state);
+        HCCState GetHCCState() const;
+        void DiagnoseHCC();
+        bool IsDiagnosedWithHCC() const;
     };
 } // namespace person
 #endif
