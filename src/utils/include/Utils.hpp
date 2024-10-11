@@ -60,13 +60,12 @@ namespace Utils {
     // tuple_2i definition
 
     typedef std::tuple<int, int> tuple_2i;
-    struct key_hash_2i : public std::unary_function<tuple_2i, std::size_t> {
+    struct key_hash_2i {
         std::size_t operator()(const tuple_2i &k) const {
             return std::get<0>(k) ^ std::get<1>(k);
         }
     };
-    struct key_equal_2i
-        : public std::binary_function<tuple_2i, tuple_2i, bool> {
+    struct key_equal_2i {
         bool operator()(const tuple_2i &v0, const tuple_2i &v1) const {
             return v0 == v1;
         }
@@ -75,13 +74,12 @@ namespace Utils {
     // tuple_3i definition
 
     typedef std::tuple<int, int, int> tuple_3i;
-    struct key_hash_3i : public std::unary_function<tuple_3i, std::size_t> {
+    struct key_hash_3i {
         std::size_t operator()(const tuple_3i &k) const {
             return std::get<0>(k) ^ std::get<1>(k) ^ std::get<2>(k);
         }
     };
-    struct key_equal_3i
-        : public std::binary_function<tuple_3i, tuple_3i, bool> {
+    struct key_equal_3i {
         bool operator()(const tuple_3i &v0, const tuple_3i &v1) const {
             return v0 == v1;
         }
@@ -90,14 +88,13 @@ namespace Utils {
     // tuple_4i definition
 
     typedef std::tuple<int, int, int, int> tuple_4i;
-    struct key_hash_4i : public std::unary_function<tuple_4i, std::size_t> {
+    struct key_hash_4i {
         std::size_t operator()(const tuple_4i &k) const {
             return std::get<0>(k) ^ std::get<1>(k) ^ std::get<2>(k) ^
                    std::get<3>(k);
         }
     };
-    struct key_equal_4i
-        : public std::binary_function<tuple_4i, tuple_4i, bool> {
+    struct key_equal_4i {
         bool operator()(const tuple_4i &v0, const tuple_4i &v1) const {
             return v0 == v1;
         }
