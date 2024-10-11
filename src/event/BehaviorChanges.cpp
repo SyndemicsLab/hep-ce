@@ -17,13 +17,14 @@
 #include "BehaviorChanges.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 
 namespace event {
     class BehaviorChanges::BehaviorChangesIMPL {
-        struct behavior_trans_select {
+        struct behavior_transitions {
             double never = 0.0;
             double fni = 0.25;
             double fi = 0.25;
@@ -31,90 +32,99 @@ namespace event {
             double in = 0.25;
         };
 
+        typedef std::unordered_map<Utils::tuple_4i, struct behavior_transitions,
+                                   Utils::key_hash_4i, Utils::key_equal_4i>
+            behaviormap_t;
+        behaviormap_t behavior_data;
+
+        std::string TransitionSQL() const {
+            return "SELECT age_years, gender, moud, drug_behavior, never, "
+                   "former_noninjection, former_injection, "
+                   "noninjection, injection FROM behavior_transitions;";
+        }
+
+        static int callback_trans(void *storage, int count, char **data,
+                                  char **columns) {
+            Utils::tuple_4i tup =
+                std::make_tuple(std::stoi(data[0]), std::stoi(data[1]),
+                                std::stoi(data[2]), std::stoi(data[3]));
+            struct behavior_transitions behavior = {
+                std::stod(data[4]), std::stod(data[5]), std::stod(data[6]),
+                std::stod(data[7]), std::stod(data[8])};
+            (*((behaviormap_t *)storage))[tup] = behavior;
+            return 0;
+        }
+
         struct cost_util {
             double cost = 0.0;
             double util = 0.0;
         };
 
-        static int callback_trans(void *storage, int count, char **data,
-                                  char **columns) {
-            std::vector<struct behavior_trans_select> *d =
-                (std::vector<struct behavior_trans_select> *)storage;
-            struct behavior_trans_select temp;
-            temp.never = std::stod(data[0]);
-            temp.fni = std::stod(data[1]);
-            temp.fi = std::stod(data[2]);
-            temp.ni = std::stod(data[3]);
-            temp.in = std::stod(data[4]);
-            d->push_back(temp);
-            return 0;
+        typedef std::unordered_map<Utils::tuple_2i, struct cost_util,
+                                   Utils::key_hash_2i, Utils::key_equal_2i>
+            costmap_t;
+        costmap_t cost_data;
+
+        std::string CostSQL() const {
+            return "SELECT gender, drug_behavior, cost, utility FROM "
+                   "behavior_impacts;";
         }
 
         static int callback_costs(void *storage, int count, char **data,
                                   char **columns) {
-            std::vector<struct cost_util> *d =
-                (std::vector<struct cost_util> *)storage;
-            struct cost_util temp;
-            temp.cost = std::stod(data[0]); // First Column Selected
-            temp.util = std::stod(data[1]); // Second Column Selected
-            d->push_back(temp);
+            Utils::tuple_2i tup =
+                std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
+            struct cost_util cu = {std::stod(data[0]), std::stod(data[1])};
+            (*((costmap_t *)storage))[tup] = cu;
             return 0;
-        }
-
-        std::string
-        buildTransitionSQL(std::shared_ptr<person::PersonBase> person) const {
-            int age_years = person->GetAge() / 12.0;
-            std::stringstream sql;
-            sql << "SELECT never, former_noninjection, former_injection, "
-                   "noninjection, injection ";
-            sql << "FROM behavior_transitions ";
-            sql << "WHERE age_years = " << age_years;
-            sql << " AND gender = " << ((int)person->GetSex());
-            sql << " AND moud = " << ((int)person->GetMoudState());
-            sql << " AND drug_behavior = " << ((int)person->GetBehavior())
-                << ";";
-            return sql.str();
-        }
-
-        std::string
-        buildCostSQL(std::shared_ptr<person::PersonBase> person) const {
-            std::stringstream sql;
-            sql << "SELECT cost, utility FROM behavior_impacts ";
-            sql << "WHERE gender = " << ((int)person->GetSex());
-            sql << " AND drug_behavior = " << ((int)person->GetBehavior())
-                << ";";
-            return sql.str();
         }
 
         void calculateCostAndUtility(
             std::shared_ptr<person::PersonBase> person,
-            std::shared_ptr<datamanagement::DataManagerBase> dm) const {
-            std::string query = this->buildCostSQL(person);
-            std::vector<struct cost_util> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback_costs,
-                                              &storage, error);
-            if (rc != 0) {
-                spdlog::get("main")->error(
-                    "No cost avaliable for Behavior Changes! Error Message: "
-                    "{}",
-                    error);
-                return;
-            }
-            if (storage.empty()) {
-                spdlog::get("main")->warn("Cost and Utility Not Found for "
-                                          "Behavior Changes! Query: {}",
-                                          query);
-                struct cost_util s;
-                s.cost = 0.0;
-                s.util = 0.0;
-                storage.push_back(s);
-            }
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            int gender = ((int)person->GetSex());
+            int behavior = ((int)person->GetBehavior());
+            Utils::tuple_2i tup = std::make_tuple(gender, behavior);
 
             cost::Cost behaviorCost = {cost::CostCategory::BEHAVIOR,
-                                       "Drug Behavior", storage[0].cost};
+                                       "Drug Behavior", cost_data[tup].cost};
             person->AddCost(behaviorCost);
-            person->SetUtility(storage[0].util);
+            person->SetUtility(cost_data[tup].util);
+        }
+
+        int LoadCostData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string error;
+            int rc = dm->SelectCustomCallback(CostSQL(), this->callback_costs,
+                                              &cost_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Behavior Change Data from background "
+                    "costs and "
+                    "background behaviors! Error Message: {}",
+                    error);
+            }
+            if (cost_data.empty()) {
+                spdlog::get("main")->warn(
+                    "No Background Cost found for Behavior Changes!");
+            }
+            return rc;
+        }
+
+        int
+        LoadBehaviorData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string error;
+            int rc = dm->SelectCustomCallback(
+                TransitionSQL(), this->callback_trans, &behavior_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error("Error extracting Behavior Change "
+                                           "Transition Data! Error Message: {}",
+                                           error);
+            }
+            if (behavior_data.empty()) {
+                spdlog::get("main")->warn(
+                    "No Transition Data found for Behavior Changes!");
+            }
+            return rc;
         }
 
     public:
@@ -122,41 +132,19 @@ namespace event {
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
 
-            // Determine person's current behavior classification
-            person::Behavior bc = person->GetBehavior();
-
             // Typical Behavior Change
             // 1. Generate the transition probabilities based on the starting
             // state
-            std::string query = this->buildTransitionSQL(person);
-            std::vector<struct behavior_trans_select> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback_trans,
-                                              &storage, error);
+            int age_years = (int)(person->GetAge() / 12.0);
+            int gender = ((int)person->GetSex());
+            int moud = ((int)person->GetMoudState());
+            int behavior = ((int)person->GetBehavior());
+            Utils::tuple_4i tup =
+                std::make_tuple(age_years, gender, moud, behavior);
+            struct behavior_transitions temp = behavior_data[tup];
+            std::vector<double> probs = {temp.never, temp.fni, temp.fi, temp.ni,
+                                         temp.in};
 
-            if (rc != 0) {
-#ifdef NDEBUG
-                spdlog::get("main")->error("No Transitions Avaliable for "
-                                           "Behavior Change! Error Message: "
-                                           "{}",
-                                           error);
-#endif
-            }
-            std::vector<double> probs;
-            if (storage.empty()) {
-                spdlog::get("main")->warn(
-                    "Callback Function Returned Empty Dataset, setting even "
-                    "random transition probability. Query: "
-                    "{}",
-                    query);
-                probs = {0.2, 0.2, 0.2, 0.2, 0.2};
-            } else {
-                probs = {storage[0].never, storage[0].fni, storage[0].fi,
-                         storage[0].ni, storage[0].in};
-            }
-
-            // currently using placeholders to test compiling
-            // std::vector<double> probs = {0.25, 0.25, 0.25, 0.25};
             // 2. Draw a behavior state to be transitioned to
             int res = decider->GetDecision(probs);
             if (res >= (int)person::Behavior::COUNT) {
@@ -174,11 +162,23 @@ namespace event {
             // Insert person's behavior cost
             this->calculateCostAndUtility(person, dm);
         }
+
+        BehaviorChangesIMPL(
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            if (dm == nullptr) {
+                spdlog::get("main")->warn(
+                    "No Data Manager Provided during Construction. No Data "
+                    "Loaded to Behavior Changes.");
+                return;
+            }
+            int rc = LoadCostData(dm);
+            rc = LoadBehaviorData(dm);
+        }
     };
 
     BehaviorChanges::BehaviorChanges(
         std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        impl = std::make_unique<BehaviorChangesIMPL>();
+        impl = std::make_unique<BehaviorChangesIMPL>(dm);
     }
 
     BehaviorChanges::~BehaviorChanges() = default;

@@ -17,56 +17,66 @@
 #include "Infections.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 namespace event {
     class Infections::InfectionsIMPL {
     private:
-        static int callback(void *storage, int count, char **data,
-                            char **columns) {
-            std::vector<double> *d = (std::vector<double> *)storage;
-            double temp = std::stod(data[0]);
-            d->push_back(temp);
+        typedef std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                                   Utils::key_equal_3i>
+            incidencemap_t;
+        incidencemap_t incidence_data;
+        static int callback_incidence(void *storage, int count, char **data,
+                                      char **columns) {
+            Utils::tuple_3i tup = std::make_tuple(
+                std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
+            (*((incidencemap_t *)storage))[tup] = std::stod(data[3]);
             return 0;
         }
 
-        std::string buildSQL(std::shared_ptr<person::PersonBase> person) {
-            std::stringstream sql;
-            int age_years = (int)(person->GetAge() / 12.0);
-            sql << "SELECT incidence FROM incidence ";
-            sql << "WHERE age_years = " << age_years;
-            sql << " AND gender = " << ((int)person->GetSex());
-            sql << " AND drug_behavior = " << ((int)person->GetBehavior())
-                << ";";
-            return sql.str();
+        std::string IncidenceSQL() {
+            return "SELECT age_years, gender, drug_behavior, incidence FROM "
+                   "incidence;";
         }
 
         std::vector<double>
         getInfectProb(std::shared_ptr<person::PersonBase> person,
                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            std::string query = this->buildSQL(person);
-            std::vector<double> storage;
+            if (incidence_data.empty()) {
+                spdlog::get("main")->warn(
+                    "No result found for Infection Probability!");
+                return {0.0, 1.0};
+            }
+
+            int age_years = (int)(person->GetAge() / 12.0);
+            int gender = (int)person->GetSex();
+            int drug_behavior = (int)person->GetBehavior();
+            Utils::tuple_3i tup =
+                std::make_tuple(age_years, gender, drug_behavior);
+            double incidence = incidence_data[tup];
+
+            return {incidence, 1 - incidence};
+        }
+
+        int
+        LoadIncidenceData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
-                                              error);
+            int rc = dm->SelectCustomCallback(IncidenceSQL(),
+                                              this->callback_incidence,
+                                              &incidence_data, error);
             if (rc != 0) {
                 spdlog::get("main")->error(
                     "Error retrieving Infection Probability! Error Message: "
                     "{}",
                     error);
-                spdlog::get("main")->info("Query: {}", query);
-                return {};
             }
-            std::vector<double> result;
-            if (storage.empty()) {
+            if (incidence_data.empty()) {
                 spdlog::get("main")->warn(
-                    "No result found for Infection Probability!");
-                result = {0.0, 1.0};
-            } else {
-                result = {storage[0], 1 - storage[0]};
+                    "No result found for Infection Probability.");
             }
-            return result;
+            return rc;
         }
 
     public:
@@ -92,10 +102,14 @@ namespace event {
             }
             person->InfectHCV();
         }
+
+        InfectionsIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            int rc = LoadIncidenceData(dm);
+        }
     };
     Infections::Infections(
         std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        impl = std::make_unique<InfectionsIMPL>();
+        impl = std::make_unique<InfectionsIMPL>(dm);
     }
 
     Infections::~Infections() = default;

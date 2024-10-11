@@ -17,11 +17,14 @@ TEST_F(AgingTest, Aging) {
         .WillByDefault(Return(person::Behavior::INJECTION));
 
     // Data Setup
+    Utils::tuple_3i tup = std::make_tuple(25, 0, 4);
     struct cost_util cost = {25.00, 0.5};
-    std::vector<struct cost_util> cstorage = {cost};
+    std::unordered_map<Utils::tuple_3i, struct cost_util, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        cstorage;
+    cstorage[tup] = cost;
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToCostUtilCallbackValue(&cstorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_CU(&cstorage), Return(0)));
 
     cost::Cost backgroundCost = {cost::CostCategory::MISC, "Background Cost",
                                  cost.cost};

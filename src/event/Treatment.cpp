@@ -18,6 +18,7 @@
 #include "Cost.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
@@ -32,41 +33,34 @@ namespace event {
         double toxicity_utility;
         double treatment_init_probability;
 
-        struct cost_svr_select {
-            int time;
-            double svr;
-        };
+        typedef std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                                   Utils::key_equal_2i>
+            treatmentmap_t;
+        treatmentmap_t duration_data;
+        treatmentmap_t cost_data;
+        treatmentmap_t svr_data;
+        treatmentmap_t toxicity_data;
+        treatmentmap_t withdrawal_data;
 
-        static int callback_double(void *storage, int count, char **data,
-                                   char **columns) {
-            std::vector<double> *d = (std::vector<double> *)storage;
-            double temp = std::stod(data[0]);
-            d->push_back(temp);
+        static int callback_treament(void *storage, int count, char **data,
+                                     char **columns) {
+            Utils::tuple_2i key =
+                std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
+            treatmentmap_t temp = (*((treatmentmap_t *)storage));
+            temp[key] = std::stod(data[2]);
             return 0;
         }
 
-        static int callback_struct(void *storage, int count, char **data,
-                                   char **columns) {
-            std::vector<cost_svr_select> *d =
-                (std::vector<cost_svr_select> *)storage;
-            cost_svr_select temp;
-            temp.time = std::stoi(data[0]);
-            temp.svr = std::stod(data[1]);
-            d->push_back(temp);
-            return 0;
+        std::string TreatmentSQL(std::string column) {
+            return "SELECT genotype_three, cirrhotic, " + column +
+                   " FROM treatments;";
         }
 
-        std::string buildSQL(std::shared_ptr<person::PersonBase> person,
-                             std::string column) {
+        Utils::tuple_2i
+        GetTuple(std::shared_ptr<person::PersonBase> person) const {
             int geno3 = (person->IsGenotypeThree()) ? 1 : 0;
             int cirr = (person->IsCirrhotic()) ? 1 : 0;
-            std::stringstream sql;
-
-            sql << "SELECT " << column << " FROM treatments ";
-            sql << "WHERE genotype_three = " << geno3;
-            sql << " AND cirrhotic = " << cirr << ";";
-
-            return sql.str();
+            return std::make_tuple(geno3, cirr);
         }
 
         bool isEligible(std::shared_ptr<person::PersonBase> person) const {
@@ -128,20 +122,13 @@ namespace event {
         void ChargeCostOfCourse(
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            std::string query = buildSQL(person, "treatment_cost");
-            std::vector<double> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback_double,
-                                              &storage, error);
-            if (rc != 0) {
-                spdlog::get("main")->error("Error extracting Treatment Data "
-                                           "from treatments! Error Message: {}",
-                                           error);
+            if (cost_data.empty()) {
+                spdlog::get("main")->warn("No Treatment Cost Data Found.");
                 return;
             }
-            double cost = (!storage.empty()) ? storage[0] : 0.0;
             cost::Cost courseCost = {cost::CostCategory::TREATMENT,
-                                     "Cost of Treatment Course", cost};
+                                     "Cost of Treatment Course",
+                                     cost_data[GetTuple(person)]};
             person->AddCost(courseCost);
             person->SetUtility(treatment_utility);
         }
@@ -149,19 +136,13 @@ namespace event {
         bool Withdraws(std::shared_ptr<person::PersonBase> person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::shared_ptr<stats::DeciderBase> decider) {
-            std::string query = buildSQL(person, "withdrawal_probability");
-
-            std::vector<double> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback_double,
-                                              &storage, error);
-
-            if (storage.empty()) {
-                spdlog::get("main")->warn("Withdrawal Probability not Found!");
-                storage.push_back(0.0);
+            if (withdrawal_data.empty()) {
+                spdlog::get("main")->warn("No Withdrawal Data Found.");
+                return false;
             }
 
-            if (decider->GetDecision({storage[0], 1 - storage[0]}) == 0) {
+            if (decider->GetDecision({withdrawal_data[GetTuple(person)]}) ==
+                0) {
                 person->AddWithdrawal();
                 this->quitEngagement(person);
                 return true;
@@ -173,18 +154,12 @@ namespace event {
         ExperienceToxicity(std::shared_ptr<person::PersonBase> person,
                            std::shared_ptr<datamanagement::DataManagerBase> dm,
                            std::shared_ptr<stats::DeciderBase> decider) {
-            std::string query = buildSQL(person, "toxicity");
-            std::vector<double> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback_double,
-                                              &storage, error);
-            double probability = 0.0;
-            if (storage.empty()) {
-                spdlog::get("main")->warn("No Toxicity Probability Found!");
-            } else {
-                probability = storage[0];
+            if (toxicity_data.empty()) {
+                spdlog::get("main")->warn("No Toxicity Data Found.");
+                return false;
             }
-            if (decider->GetDecision({probability, 1 - probability}) == 1) {
+
+            if (decider->GetDecision({toxicity_data[GetTuple(person)]}) == 1) {
                 return false;
             }
             person->AddToxicReaction();
@@ -240,33 +215,100 @@ namespace event {
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             std::shared_ptr<stats::DeciderBase> decider) {
-            std::string query = buildSQL(person, "time, svr");
-
-            std::vector<struct cost_svr_select> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback_struct,
-                                              &storage, error);
-            if (rc != 0) {
-                spdlog::get("main")->error(
-                    "Error Selecting Treatment! Error Message: {}", error);
+            if (svr_data.empty()) {
+                spdlog::get("main")->warn("No SVR Probability Found!");
+                return;
+            } else if (duration_data.empty()) {
+                spdlog::get("main")->warn("No Treatment Duration Found!");
                 return;
             }
-            struct cost_svr_select data = {0, 0.0};
-            if (storage.empty()) {
-                spdlog::get("main")->warn("No SVR Probability Found!");
-            } else {
-                data.svr = storage[0].svr;
-                data.time = storage[0].time;
-            }
 
-            if (decider->GetDecision({data.svr, 1 - data.svr}) == 0) {
+            double svr = svr_data[GetTuple(person)];
+            double duration = duration_data[GetTuple(person)];
+
+            if (decider->GetDecision({svr}) == 0) {
                 person->AddSVR();
                 person->ClearHCV();
             }
-            if (person->GetTimeSinceTreatmentInitiation() >= data.time) {
+            if (person->GetTimeSinceTreatmentInitiation() >= (int)duration) {
                 person->AddCompletedTreatment();
                 this->quitEngagement(person);
             }
+        }
+
+        int LoadCostData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string error;
+            int rc = dm->SelectCustomCallback(TreatmentSQL("cost"),
+                                              this->callback_treament,
+                                              &cost_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error("Error extracting Treatment Data "
+                                           "from treatments! Error Message: {}",
+                                           error);
+            }
+            return rc;
+        }
+
+        int LoadWithdrawalData(
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string error;
+            int rc = dm->SelectCustomCallback(TreatmentSQL("withdrawal"),
+                                              this->callback_treament,
+                                              &withdrawal_data, error);
+
+            if (rc != 0) {
+                spdlog::get("main")->warn(
+                    "Error Retrieving Treatment Withdrawal Probability! Error "
+                    "Message: {}",
+                    error);
+            }
+            return rc;
+        }
+
+        int
+        LoadToxicityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string error;
+            int rc = dm->SelectCustomCallback(TreatmentSQL("toxicity"),
+                                              this->callback_treament,
+                                              &toxicity_data, error);
+
+            if (rc != 0) {
+                spdlog::get("main")->warn(
+                    "Error Retrieving Treatment Toxicity Probability! Error "
+                    "Message: {}",
+                    error);
+            }
+            return rc;
+        }
+
+        int LoadSVRData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string error;
+            int rc = dm->SelectCustomCallback(
+                TreatmentSQL("svr"), this->callback_treament, &svr_data, error);
+
+            if (rc != 0) {
+                spdlog::get("main")->warn(
+                    "Error Retrieving Treatment SVR Probability! Error "
+                    "Message: {}",
+                    error);
+            }
+            return rc;
+        }
+
+        int
+        LoadDurationData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string error;
+            int rc = dm->SelectCustomCallback(TreatmentSQL("duration"),
+                                              this->callback_treament,
+                                              &duration_data, error);
+
+            if (rc != 0) {
+                spdlog::get("main")->warn(
+                    "Error Retrieving Treatment Duration! Error "
+                    "Message: {}",
+                    error);
+            }
+            return rc;
         }
 
     public:
@@ -316,6 +358,12 @@ namespace event {
                 ParseDoublesFromConfig("treatment.tox_utility", dm);
             treatment_init_probability = ParseDoublesFromConfig(
                 "treatment.treatment_initialization", dm);
+
+            int rc = LoadCostData(dm);
+            rc = LoadWithdrawalData(dm);
+            rc = LoadToxicityData(dm);
+            rc = LoadSVRData(dm);
+            rc = LoadDurationData(dm);
         }
     };
     Treatment::Treatment(std::shared_ptr<datamanagement::DataManagerBase> dm) {

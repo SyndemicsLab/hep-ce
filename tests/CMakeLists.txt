@@ -71,6 +71,7 @@ target_link_libraries(${PROJECT_NAME}
         person
         simulation
         event
+        utils
         cost
         stats
         DataManagement::DataManagement

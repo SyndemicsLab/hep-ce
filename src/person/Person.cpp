@@ -1097,9 +1097,11 @@ namespace person {
     void Person::SetUtility(double util) { pImplPERSON->SetUtility(util); }
     void Person::SetBoomer(bool status) { pImplPERSON->SetBoomer(status); }
 
-    void Person::DevelopHCC(HCCState state) {}
-    HCCState Person::GetHCCState() const {}
-    void Person::DiagnoseHCC() {}
-    bool Person::IsDiagnosedWithHCC() const {}
+    void Person::DevelopHCC(HCCState state) { pImplPERSON->DevelopHCC(state); }
+    HCCState Person::GetHCCState() const { return pImplPERSON->GetHCCState(); }
+    void Person::DiagnoseHCC() { pImplPERSON->DiagnoseHCC(); }
+    bool Person::IsDiagnosedWithHCC() const {
+        return pImplPERSON->IsDiagnosedWithHCC();
+    }
 
 } // namespace person

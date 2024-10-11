@@ -29,6 +29,7 @@
 
 #include "Event.hpp"
 #include "EventFactory.hpp"
+#include "Utils.hpp"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -107,7 +108,7 @@ struct cost_util {
     double util = 0.75;
 };
 
-struct behavior_trans_select {
+struct behavior_transitions {
     double never = 0.0;
     double fni = 0.25;
     double fi = 0.25;
@@ -129,13 +130,54 @@ ACTION_P(SetArg2ToPersonCallbackValue, value) {
     *reinterpret_cast<struct person_select *>(arg2) = *value;
 }
 
-ACTION_P(SetArg2ToCostUtilCallbackValue, value) {
-    *reinterpret_cast<std::vector<struct cost_util> *>(arg2) = *value;
+ACTION_P(SetArg2ToUM_T2I_CU, value) {
+    *reinterpret_cast<
+        std::unordered_map<Utils::tuple_2i, struct cost_util,
+                           Utils::key_hash_2i, Utils::key_equal_2i> *>(arg2) =
+        *value;
 }
 
-ACTION_P(SetArg2ToBehaviorTransitionsCallbackValue, value) {
-    *reinterpret_cast<std::vector<struct behavior_trans_select> *>(arg2) =
+ACTION_P(SetArg2ToUM_T2I_Double, value) {
+    *reinterpret_cast<std::unordered_map<
+        Utils::tuple_2i, double, Utils::key_hash_2i, Utils::key_equal_2i> *>(
+        arg2) = *value;
+}
+
+ACTION_P(SetArg2ToUM_T3I_CU, value) {
+    *reinterpret_cast<
+        std::unordered_map<Utils::tuple_3i, struct cost_util,
+                           Utils::key_hash_3i, Utils::key_equal_3i> *>(arg2) =
         *value;
+}
+
+ACTION_P(SetArg2ToUM_T3I_BS, value) {
+    *reinterpret_cast<
+        std::unordered_map<Utils::tuple_3i, struct background_smr,
+                           Utils::key_hash_3i, Utils::key_equal_3i> *>(arg2) =
+        *value;
+}
+
+ACTION_P(SetArg2ToUM_T3I_Double, value) {
+    *reinterpret_cast<std::unordered_map<
+        Utils::tuple_3i, double, Utils::key_hash_3i, Utils::key_equal_3i> *>(
+        arg2) = *value;
+}
+
+ACTION_P(SetArg2ToUM_T4I_BT, value) {
+    *reinterpret_cast<
+        std::unordered_map<Utils::tuple_4i, struct behavior_transitions,
+                           Utils::key_hash_4i, Utils::key_equal_4i> *>(arg2) =
+        *value;
+}
+
+ACTION_P(SetArg2ToUM_Int_VecDouble, value) {
+    *reinterpret_cast<
+        std::unordered_map<int, std::vector<double>> *>(arg2) =
+        *value;
+}
+
+ACTION_P(SetArg2ToCostUtilCallbackValue, value) {
+    *reinterpret_cast<std::vector<struct cost_util> *>(arg2) = *value;
 }
 
 ACTION_P(SetArg2ToPureDoubleCallbackValue, value) {

@@ -9,6 +9,9 @@ using ::testing::SetArgReferee;
 
 class FibrosisProgressionTest : public EventTest {};
 
+std::string const COST_QUERY =
+    "SELECT hcv_status, fibrosis_state, cost FROM hcv_impacts;";
+
 TEST_F(FibrosisProgressionTest, FibrosisProgression_NoHCV) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("fibrosis.add_cost_only_if_identified", _))
@@ -24,6 +27,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_NoHCV) {
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f4d", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
+    // Cost Setup
+    double cost = 25.25;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+
     // Expectations
     EXPECT_CALL(*testPerson, GetHCV()).WillOnce(Return(person::HCV::NONE));
     EXPECT_CALL(*testPerson, GetTrueFibrosisState()).Times(0);
@@ -38,9 +51,6 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F01) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("fibrosis.add_cost_only_if_identified", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    std::vector<double> costs = {25.25};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToDoubleCallbackValue(&costs), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f01", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f12", _))
@@ -51,6 +61,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F01) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f4d", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -77,9 +97,6 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F12) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("fibrosis.add_cost_only_if_identified", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    std::vector<double> costs = {25.25};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToDoubleCallbackValue(&costs), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f01", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f12", _))
@@ -90,6 +107,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F12) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f4d", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -116,9 +143,6 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F23) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("fibrosis.add_cost_only_if_identified", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    std::vector<double> costs = {25.25};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToDoubleCallbackValue(&costs), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f01", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f12", _))
@@ -129,6 +153,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F23) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f4d", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -155,9 +189,6 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F34) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("fibrosis.add_cost_only_if_identified", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    std::vector<double> costs = {25.25};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToDoubleCallbackValue(&costs), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f01", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f12", _))
@@ -168,6 +199,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F34) {
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f4d", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -194,9 +235,6 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F4D) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("fibrosis.add_cost_only_if_identified", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    std::vector<double> costs = {25.25};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToDoubleCallbackValue(&costs), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f01", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f12", _))
@@ -207,6 +245,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F4D) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f4d", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -233,9 +281,6 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_DECOMP) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("fibrosis.add_cost_only_if_identified", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    std::vector<double> costs = {25.25};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToDoubleCallbackValue(&costs), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f01", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f12", _))
@@ -246,6 +291,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_DECOMP) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis.f4d", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));

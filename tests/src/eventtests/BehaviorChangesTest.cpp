@@ -9,6 +9,10 @@ using ::testing::SetArgReferee;
 
 class BehaviorChangesTest : public EventTest {};
 
+std::string const COST_QUERY =
+    "SELECT gender, drug_behavior, cost, utility FROM "
+    "behavior_impacts;";
+
 TEST_F(BehaviorChangesTest, BehaviorChanges) {
     // Person Setup
     ON_CALL(*testPerson, GetBehavior())
@@ -19,16 +23,26 @@ TEST_F(BehaviorChangesTest, BehaviorChanges) {
         .WillByDefault(Return(person::MOUD::NONE));
 
     // Data Setup
-    struct cost_util cost = {25.00, 0.5};
-    std::vector<struct cost_util> cstorage = {cost};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, &cstorage, _))
-        .WillByDefault(
-            DoAll(SetArg2ToCostUtilCallbackValue(&cstorage), Return(0)));
-    struct behavior_trans_select trans = {0.0, 0.0, 1.0, 0.0, 0.0};
-    std::vector<struct behavior_trans_select> tstorage = {trans};
+
+    // Transitions Setup
+    struct behavior_transitions trans = {0.0, 0.0, 1.0, 0.0, 0.0};
+    Utils::tuple_4i tup_4i = std::make_tuple(25, 0, 0, 4);
+    std::unordered_map<Utils::tuple_4i, struct behavior_transitions,
+                       Utils::key_hash_4i, Utils::key_equal_4i>
+        tstorage;
+    tstorage[tup_4i] = trans;
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(DoAll(
-            SetArg2ToBehaviorTransitionsCallbackValue(&tstorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_BT(&tstorage), Return(0)));
+
+    // Cost Setup
+    struct cost_util cost = {25.00, 0.5};
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
+    std::unordered_map<Utils::tuple_2i, struct cost_util, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&cstorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(2));

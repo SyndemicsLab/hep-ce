@@ -18,6 +18,7 @@
 #include "Cost.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <functional>
@@ -52,31 +53,33 @@ namespace event {
         int screening_period;
         std::string intervention_type;
 
-        static int callback(void *storage, int count, char **data,
-                            char **columns) {
-            std::vector<double> *d = (std::vector<double> *)storage;
-            double temp = std::stod(data[0]);
-            d->push_back(temp);
+        typedef std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                                   Utils::key_equal_3i>
+            screenmap_t;
+        screenmap_t intervention_screen_data;
+        screenmap_t background_screen_data;
+
+        static int callback_screen(void *storage, int count, char **data,
+                                   char **columns) {
+            Utils::tuple_3i tup = std::make_tuple(
+                std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
+            (*((screenmap_t *)storage))[tup] = std::stod(data[3]);
             return 0;
         }
 
-        std::string buildSQL(std::shared_ptr<person::PersonBase> person,
-                             std::string column) const {
-            int age_years = person->GetAge() / 12.0; // intentional truncation
-            std::stringstream sql;
-            sql << "SELECT " + column;
-            sql << " FROM antibody_testing ";
-            sql << " INNER JOIN screening_and_linkage ";
-            sql << " ON ((antibody_testing.age_years = "
-                   "screening_and_linkage.age_years) ";
-            sql << " AND (antibody_testing.drug_behavior = "
-                   "screening_and_linkage.drug_behavior)) ";
-            sql << " WHERE antibody_testing.age_years = " << age_years;
-            sql << " AND screening_and_linkage.gender = "
-                << ((int)person->GetSex());
-            sql << " AND screening_and_linkage.drug_behavior = "
-                << ((int)person->GetBehavior()) << ";";
-            return sql.str();
+        std::string ScreenSQL(std::string column) const {
+            // int age_years = person->GetAge() / 12.0; // intentional
+            // truncation std::stringstream sql;
+            return "SELECT at.age_years, sl.gender, sl.drug_behavior, " +
+                   column +
+                   " FROM antibody_testing AS at INNER JOIN "
+                   "screening_and_linkage AS sl ON ((at.age_years = "
+                   "sl.age_years) AND (at.drug_behavior = sl.drug_behavior));";
+            // sql << " WHERE at.age_years = " << age_years;
+            // sql << " AND sl.gender = " << ((int)person->GetSex());
+            // sql << " AND sl.drug_behavior = " << ((int)person->GetBehavior())
+            //     << ";";
+            // return sql.str();
         }
 
         bool runABTest(std::shared_ptr<person::PersonBase> person,
@@ -189,50 +192,34 @@ namespace event {
             }
         }
 
-        std::vector<double> GetScreeningProbability(
+        double GetScreeningProbability(
             std::string colname, std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            std::string query = this->buildSQL(person, colname);
-            std::vector<double> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
-                                              error);
-            if (rc != 0) {
-                spdlog::get("main")->error(
-                    "Error extracting {} "
-                    "Screening Data from antibody_testing and "
-                    "screening_and_linkage! Error Message: {}",
-                    colname, error);
-                return {};
-            }
-            std::vector<double> probs;
-            if (storage.empty()) {
-                spdlog::get("main")->warn(
-                    "Callback Function Returned Empty Dataset From Query: "
-                    "{}",
-                    query);
-                probs = {0.0};
-            } else {
-                probs = {storage[0]};
-            }
+            int age_years = (int)(person->GetAge() / 12.0);
+            int gender = (int)person->GetSex();
+            int drug_behavior = (int)person->GetBehavior();
+            Utils::tuple_3i tup =
+                std::make_tuple(age_years, gender, drug_behavior);
 
+            double probability = 0.0;
+            if (colname == "background_screen_probability") {
+                probability = background_screen_data[tup];
+            } else if (colname == "intervention_screen_probability") {
+                probability = intervention_screen_data[tup];
+            }
             if (person->IsBoomer()) {
-
-                probs[0] *= seropositivity_boomer_multiplier;
+                probability *= seropositivity_boomer_multiplier;
             }
-
-            std::vector<double> result = {probs[0], 1 - probs[0]};
-            return result;
+            return probability;
         }
 
         void interventionDecision(
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             std::shared_ptr<stats::DeciderBase> decider) {
-            std::vector<double> interventionProbability =
-                this->GetScreeningProbability("intervention_screen_probability",
-                                              person, dm);
-            if (decider->GetDecision(interventionProbability) == 0) {
+            double interventionProbability = this->GetScreeningProbability(
+                "intervention_screen_probability", person, dm);
+            if (decider->GetDecision({interventionProbability}) == 0) {
                 this->Screen("screening_intervention", person, dm, decider);
             }
         }
@@ -282,10 +269,9 @@ namespace event {
             }
 
             // Background Screening:
-            std::vector<double> backgroundProbability =
-                this->GetScreeningProbability("background_screen_probability",
-                                              person, dm);
-            if (decider->GetDecision(backgroundProbability) == 0 &&
+            double backgroundProbability = this->GetScreeningProbability(
+                "background_screen_probability", person, dm);
+            if (decider->GetDecision({backgroundProbability}) == 0 &&
                 person->GetTimeSinceLastScreening() != 0) {
                 this->Screen("screening_background", person, dm, decider);
             }
@@ -349,6 +335,39 @@ namespace event {
             dm->GetFromConfig("screening.period", data);
             screening_period = (data.empty()) ? 0 : std::stoi(data);
             dm->GetFromConfig("screening.intervention_type", intervention_type);
+
+            std::string error;
+            int rc = dm->SelectCustomCallback(
+                ScreenSQL("background_screen_probability"),
+                this->callback_screen, &background_screen_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting background_screen_probability "
+                    "Screening Data from antibody_testing and "
+                    "screening_and_linkage! Error Message: {}",
+                    error);
+            }
+
+            if (background_screen_data.empty()) {
+                spdlog::get("main")->warn(
+                    "No Background Screening Probabilities Found.");
+            }
+
+            rc = dm->SelectCustomCallback(
+                ScreenSQL("intervention_screen_probability"),
+                this->callback_screen, &intervention_screen_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting intervention_screen_probability "
+                    "Screening Data from antibody_testing and "
+                    "screening_and_linkage! Error Message: {}",
+                    error);
+            }
+
+            if (intervention_screen_data.empty()) {
+                spdlog::get("main")->warn(
+                    "No Intervention Screening Probabilities Found.");
+            }
         }
     };
 

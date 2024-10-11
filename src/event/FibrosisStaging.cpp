@@ -28,23 +28,31 @@ namespace event {
         double test_two_cost;
         int staging_period;
         std::string test_one;
+        std::unordered_map<int, std::vector<double>> test_one_data;
         std::string test_two;
+        std::unordered_map<int, std::vector<double>> test_two_data;
         std::string multitest_result_method;
 
-        static int callback(void *storage, int count, char **data,
-                            char **columns) {
-            std::vector<double> *d = (std::vector<double> *)storage;
-            d->push_back(std::stod(data[0]));
+        static int callback_fibrosis_test(void *storage, int count, char **data,
+                                          char **columns) {
+            std::unordered_map<int, std::vector<double>> temp =
+                (*((std::unordered_map<int, std::vector<double>> *)storage));
+            int key = std::stoi(data[0]);
+            if (temp.find(key) == temp.end()) {
+                temp[key] = {};
+            }
+            temp[key].push_back(std::stod(data[1]));
             return 0;
         }
-        std::string buildSQL(std::shared_ptr<person::PersonBase> person,
-                             std::string columns) {
-            std::stringstream sql;
-            sql << "SELECT " << columns << " FROM fibrosis ";
-            sql << "WHERE fibrosis_state = "
-                << ((int)person->GetTrueFibrosisState());
-            sql << " LIMIT 4;"; // weird issue with returning a bunch hits
-            return sql.str();
+
+        std::string FibrosisTestSQL(std::string column) {
+            return "SELECT fibrosis_state, " + column + " FROM fibrosis;";
+            // std::stringstream sql;
+            // sql << "SELECT fibrosis_state, " << column << " FROM fibrosis ";
+            // sql << "WHERE fibrosis_state = "
+            //     << ((int)person->GetTrueFibrosisState());
+            // sql << " LIMIT 4;"; // weird issue with returning a bunch hits
+            // return sql.str();
         }
 
         /// @brief Aggregate the fibrosis stage testing probabilities for a
@@ -69,21 +77,13 @@ namespace event {
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             std::string column) {
-            std::string query = buildSQL(person, column);
-            std::vector<double> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
-                                              error);
-            if (rc != 0) {
-                spdlog::get("main")->error(
-                    "Error extracting Fibrosis Data from fibrosis table! Error "
-                    "Message: {}",
-                    error);
-                spdlog::get("main")->info("Query: {}", query);
-                return {};
+            int fibrosis_state = (int)person->GetTrueFibrosisState();
+            if (column == test_one) {
+                return test_one_data[fibrosis_state];
+            } else if (column == test_two) {
+                return test_two_data[fibrosis_state];
             }
-
-            return storage;
+            return {};
         }
 
         void addStagingCost(std::shared_ptr<person::PersonBase> person,
@@ -97,6 +97,36 @@ namespace event {
             cost::Cost fibrosisStagingCost = {cost::CostCategory::STAGING,
                                               costName, cost};
             person->AddCost(fibrosisStagingCost);
+        }
+
+        int
+        LoadTestOneData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string error;
+            int rc = dm->SelectCustomCallback(FibrosisTestSQL(test_one),
+                                              this->callback_fibrosis_test,
+                                              &test_one_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Fibrosis Data from fibrosis table! Error "
+                    "Message: {}\nQuery: {}",
+                    error, FibrosisTestSQL(test_one));
+            }
+            return rc;
+        }
+
+        int
+        LoadTestTwoData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string error;
+            int rc = dm->SelectCustomCallback(FibrosisTestSQL(test_two),
+                                              this->callback_fibrosis_test,
+                                              &test_two_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Fibrosis Data from fibrosis table! Error "
+                    "Message: {}\nQuery: {}",
+                    error, FibrosisTestSQL(test_two));
+            }
+            return rc;
         }
 
     public:
@@ -121,8 +151,7 @@ namespace event {
             // for the input table to grab only test characteristics for this
             // state.
 
-            // 3. Get a vector of the probabilities of each of the possible
-            // fibrosis outcomes (test one).
+            // 3. Get the probability of each of the test_one fibrosis outcomes.
             std::vector<double> probs =
                 getTransitionProbabilities(person, dm, test_one);
 
@@ -194,9 +223,15 @@ namespace event {
             dm->GetFromConfig("fibrosis_staging.test_one", data);
             test_one = data;
 
+            LoadTestOneData(dm);
+
             data.clear();
             dm->GetFromConfig("fibrosis_staging.test_two", data);
             test_two = data;
+
+            if (!test_two.empty()) {
+                LoadTestTwoData(dm);
+            }
 
             data.clear();
             dm->GetFromConfig("fibrosis_staging.multitest_result_method", data);

@@ -9,6 +9,20 @@ using ::testing::SetArgReferee;
 
 class ScreeningTest : public EventTest {};
 
+std::string const BACKGROUND_SCREEN_QUERY =
+    "SELECT at.age_years, sl.gender, sl.drug_behavior, "
+    "background_screen_probability"
+    " FROM antibody_testing AS at INNER JOIN "
+    "screening_and_linkage AS sl ON ((at.age_years = "
+    "sl.age_years) AND (at.drug_behavior = sl.drug_behavior));";
+
+std::string const INTERVENTION_SCREEN_QUERY =
+    "SELECT at.age_years, sl.gender, sl.drug_behavior, "
+    "intervention_screen_probability"
+    " FROM antibody_testing AS at INNER JOIN "
+    "screening_and_linkage AS sl ON ((at.age_years = "
+    "sl.age_years) AND (at.drug_behavior = sl.drug_behavior));";
+
 TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
     // Person Setup
     ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(0));
@@ -16,6 +30,10 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetBehavior())
+        .WillByDefault(Return(person::Behavior::NEVER));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -24,10 +42,25 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
         .WillByDefault(DoAll(SetArgReferee<1>("periodic"), Return(0)));
-    std::vector<double> storage = {1.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+
+    // Background Link Setup
+    double link_prob = 0.5;
+    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        bstorage;
+    bstorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+
+    // Intervention Link Setup
+    link_prob = 0.5;
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        istorage;
+    istorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -56,6 +89,10 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetBehavior())
+        .WillByDefault(Return(person::Behavior::NEVER));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -64,10 +101,25 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
         .WillByDefault(DoAll(SetArgReferee<1>("periodic"), Return(0)));
-    std::vector<double> storage = {1.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+
+    // Background Link Setup
+    double link_prob = 0.5;
+    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        bstorage;
+    bstorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+
+    // Intervention Link Setup
+    link_prob = 0.5;
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        istorage;
+    istorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -95,6 +147,10 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetBehavior())
+        .WillByDefault(Return(person::Behavior::NEVER));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -103,10 +159,25 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
         .WillByDefault(DoAll(SetArgReferee<1>("periodic"), Return(0)));
-    std::vector<double> storage = {1.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+
+    // Background Link Setup
+    double link_prob = 0.5;
+    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        bstorage;
+    bstorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+
+    // Intervention Link Setup
+    link_prob = 0.5;
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        istorage;
+    istorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -135,6 +206,10 @@ TEST_F(ScreeningTest, BackgroundScreening_TFtestResults) {
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetBehavior())
+        .WillByDefault(Return(person::Behavior::NEVER));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -143,10 +218,25 @@ TEST_F(ScreeningTest, BackgroundScreening_TFtestResults) {
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
         .WillByDefault(DoAll(SetArgReferee<1>("periodic"), Return(0)));
-    std::vector<double> storage = {1.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+
+    // Background Link Setup
+    double link_prob = 0.5;
+    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        bstorage;
+    bstorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+
+    // Intervention Link Setup
+    link_prob = 0.5;
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        istorage;
+    istorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -175,6 +265,10 @@ TEST_F(ScreeningTest, BackgroundScreening_TTtestResults) {
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetBehavior())
+        .WillByDefault(Return(person::Behavior::NEVER));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -183,10 +277,25 @@ TEST_F(ScreeningTest, BackgroundScreening_TTtestResults) {
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
         .WillByDefault(DoAll(SetArgReferee<1>("periodic"), Return(0)));
-    std::vector<double> storage = {1.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+
+    // Background Link Setup
+    double link_prob = 0.5;
+    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        bstorage;
+    bstorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+
+    // Intervention Link Setup
+    link_prob = 0.5;
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        istorage;
+    istorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -215,6 +324,10 @@ TEST_F(ScreeningTest, NoScreen) {
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetBehavior())
+        .WillByDefault(Return(person::Behavior::NEVER));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -223,10 +336,25 @@ TEST_F(ScreeningTest, NoScreen) {
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
         .WillByDefault(DoAll(SetArgReferee<1>("periodic"), Return(0)));
-    std::vector<double> storage = {1.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+
+    // Background Link Setup
+    double link_prob = 0.5;
+    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        bstorage;
+    bstorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+
+    // Intervention Link Setup
+    link_prob = 0.5;
+    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
+        istorage;
+    istorage[tup_3i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_SCREEN_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))

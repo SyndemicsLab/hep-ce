@@ -32,12 +32,14 @@ namespace event {
             return 0;
         }
         std::string buildSQL(std::shared_ptr<person::PersonBase> person) {
-            std::stringstream sql;
-            sql << "SELECT transition_probability FROM moud";
-            sql << " WHERE current_moud = " << ((int)person->GetMoudState());
-            sql << " AND age = " << ((int)(person->GetAge() / 12.0));
-            sql << " AND pregant = " << ((int)(person->GetPregnancyState()));
-            return sql.str();
+            return "SELECT current_moud, age, pregnant, transition_probability "
+                   "FROM moud;";
+            // std::stringstream sql;
+            // sql << "SELECT transition_probability FROM moud";
+            // sql << " WHERE current_moud = " << ((int)person->GetMoudState());
+            // sql << " AND age = " << ((int)(person->GetAge() / 12.0));
+            // sql << " AND pregant = " << ((int)(person->GetPregnancyState()));
+            // return sql.str();
         }
 
     public:

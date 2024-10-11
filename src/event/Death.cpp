@@ -17,6 +17,7 @@
 #include "Death.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
@@ -26,53 +27,109 @@ namespace event {
     private:
         double f4_probability;
         double decomp_probability;
+
         struct background_smr {
             double back_mort = 0.0;
             double smr = 0.0;
         };
-        static int callback(void *storage, int count, char **data,
-                            char **columns) {
-            std::vector<struct background_smr> *d =
-                (std::vector<struct background_smr> *)storage;
-            struct background_smr temp;
-            temp.back_mort = std::stod(data[0]); // First Column Selected
-            temp.smr = std::stod(data[1]);       // Second Column Selected
-            d->push_back(temp);
-            return 0;
-        }
-        static int callback_double(void *storage, int count, char **data,
-                                   char **columns) {
-            std::vector<double> *d = (std::vector<double> *)storage;
-            double temp = std::stod(data[0]);
-            d->push_back(temp);
-            return 0;
-        }
 
-        std::string buildSQL(std::shared_ptr<person::PersonBase> person) const {
-            int age_years = person->GetAge() / 12.0; // intentional truncation
+        typedef std::unordered_map<Utils::tuple_3i, struct background_smr,
+                                   Utils::key_hash_3i, Utils::key_equal_3i>
+            backgroundmap_t;
+        backgroundmap_t background_data;
+
+        std::string BackgroundMortalitySQL() const {
             std::stringstream sql;
-            sql << "SELECT background_mortality, smr";
-            sql << " FROM smr ";
-            sql << " INNER JOIN background_mortality ON "
-                   "(smr.gender = background_mortality.gender) ";
-            sql << " WHERE background_mortality.age_years = " << age_years;
-            sql << " AND background_mortality.gender = "
-                << ((int)person->GetSex());
-            sql << " AND SMR.drug_behavior = " << ((int)person->GetBehavior())
-                << ";";
+            sql << "SELECT bm.age_years, bm.gender, "
+                   "smr.drug_behavior, bm.background_mortality, smr.smr";
+            sql << " FROM smr AS smr";
+            sql << " INNER JOIN background_mortality AS bm ON "
+                   "smr.gender = bm.gender;";
 
             return sql.str();
         }
 
-        std::string
-        buildOverdoseSQL(std::shared_ptr<person::PersonBase> person) const {
-            int age_years = person->GetAge() / 12.0; // intentional truncation
-            std::stringstream sql;
-            sql << "SELECT fatality_probability FROM overdoses";
-            sql << " WHERE moud = " << ((int)person->GetMoudState());
-            sql << " AND drug_behavior = " << ((int)person->GetBehavior())
-                << ";";
-            return sql.str();
+        static int callback_background(void *storage, int count, char **data,
+                                       char **columns) {
+            Utils::tuple_3i tup = std::make_tuple(
+                std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
+            struct background_smr temp = {std::stod(data[3]),
+                                          std::stod(data[4])};
+            (*((backgroundmap_t *)storage))[tup] = temp;
+            return 0;
+        }
+
+        int LoadBackgroundMortality(
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string query = this->BackgroundMortalitySQL();
+            std::string error;
+            int rc = dm->SelectCustomCallback(query, this->callback_background,
+                                              &background_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Death Data from background_mortality and "
+                    "SMR! Error Message: {}",
+                    error);
+                spdlog::get("main")->info("Query: {}", query);
+            }
+            if (background_data.empty()) {
+                spdlog::get("main")->warn(
+                    "Setting background death probability to zero. No Data "
+                    "Found for background_mortality and "
+                    "SMR with the query: {}",
+                    query);
+            }
+            return rc;
+        }
+
+        typedef std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                                   Utils::key_equal_2i>
+            overdosemap_t;
+        overdosemap_t overdose_data;
+
+        std::string OverdoseSQL() const {
+            return "SELECT moud, drug_behavior, fatality_probability FROM "
+                   "overdoses;";
+        }
+
+        static int callback_overdose(void *storage, int count, char **data,
+                                     char **columns) {
+            Utils::tuple_2i tup =
+                std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
+            (*((overdosemap_t *)storage))[tup] = std::stod(data[2]);
+            return 0;
+        }
+
+        int CheckOverdoseTable(
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string query =
+                "SELECT name FROM sqlite_master WHERE type='table' AND "
+                "name='overdoses';";
+            datamanagement::Table table;
+            int rc = dm->Select(query, table);
+            if (rc == 0 && table.empty()) {
+                spdlog::get("main")->info(
+                    "No Overdoses table Found During Death. Ignoring.");
+                rc = -1;
+            }
+            return rc;
+        }
+
+        int
+        LoadOverdoseData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            int rc = CheckOverdoseTable(dm);
+            if (rc != 0) {
+                return rc;
+            }
+            std::string error;
+            rc = dm->SelectCustomCallback(
+                OverdoseSQL(), this->callback_overdose, &overdose_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error("Error extracting Fatal Overdose "
+                                           "Probability! Error Message: {}",
+                                           error);
+            }
+            return rc;
         }
 
         /// @brief The actual death of a person
@@ -102,32 +159,24 @@ namespace event {
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             double &backgroundMortProb, double &smr) {
-            std::string query = this->buildSQL(person);
-            std::vector<struct background_smr> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
-                                              error);
-            if (rc != 0) {
-                spdlog::get("main")->error(
-                    "Error extracting Death Data from background_mortality and "
-                    "SMR! Error Message: {}",
-                    error);
-                spdlog::get("main")->info("Query: {}", query);
-                return;
-            }
-            if (storage.empty()) {
-                // error
+
+            if (background_data.empty()) {
                 spdlog::get("main")->warn(
                     "Setting background death probability to zero. No Data "
                     "Found for background_mortality and "
-                    "SMR with the query: {}",
-                    query);
+                    "SMR");
                 backgroundMortProb = 0;
                 smr = 0;
-            } else {
-                backgroundMortProb = storage[0].back_mort;
-                smr = storage[0].smr;
+                return;
             }
+            // age, gender, drug
+            int age_years = (int)(person->GetAge() / 12.0);
+            int gender = (int)person->GetSex();
+            int drug_behavior = (int)person->GetBehavior();
+            Utils::tuple_3i tup =
+                std::make_tuple(age_years, gender, drug_behavior);
+            backgroundMortProb = background_data[tup].back_mort;
+            smr = background_data[tup].smr;
         }
 
         bool ReachedMaxAge(std::shared_ptr<person::PersonBase> person) {
@@ -145,24 +194,18 @@ namespace event {
                 return false;
             }
 
-            std::string query = buildOverdoseSQL(person);
-            std::vector<double> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback_double,
-                                              &storage, error);
-            if (rc != 0) {
-                spdlog::get("main")->error("Error extracting Fatal Overdose "
-                                           "Probability! Error Message: {}",
-                                           error);
-                return false;
-            }
-            double probability = 0.0;
-            if (!storage.empty()) {
-                probability = storage[0];
-            } else {
+            if (overdose_data.empty()) {
                 spdlog::get("main")->warn(
                     "No Fatal Overdose Probability Found!");
+                person->ToggleOverdose();
+                return false;
             }
+
+            int moud = (int)person->GetMoudState();
+            int drug_behavior = (int)person->GetBehavior();
+            Utils::tuple_2i tup = std::make_tuple(moud, drug_behavior);
+            double probability = overdose_data[tup];
+
             if (decider->GetDecision({probability, 1 - probability}) != 0) {
                 person->ToggleOverdose();
                 return false;
@@ -206,6 +249,7 @@ namespace event {
                 this->die(person, person::DeathReason::LIVER);
             }
         }
+
         DeathIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string data;
             data.clear();
@@ -215,6 +259,9 @@ namespace event {
             data.clear();
             dm->GetFromConfig("mortality.decomp", data);
             this->decomp_probability = std::stod(data);
+
+            int rc = LoadOverdoseData(dm);
+            rc = LoadBackgroundMortality(dm);
         }
     };
 

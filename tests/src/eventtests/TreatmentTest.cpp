@@ -9,22 +9,26 @@ using ::testing::SetArgReferee;
 
 class TreatmentTest : public EventTest {};
 
+std::string const DURATION_QUERY =
+    "SELECT genotype_three, cirrhotic, duration FROM treatments;";
+std::string const COST_QUERY =
+    "SELECT genotype_three, cirrhotic, cost FROM treatments;";
+std::string const SVR_QUERY =
+    "SELECT genotype_three, cirrhotic, svr FROM treatments;";
+std::string const TOXICITY_QUERY =
+    "SELECT genotype_three, cirrhotic, toxicity FROM treatments;";
+std::string const WITHDRAWAL_QUERY =
+    "SELECT genotype_three, cirrhotic, withdrawal FROM treatments;";
+
 TEST_F(TreatmentTest, NewTreatmentInitiation) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(-1));
+    ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
+    ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
 
     // Data Setup
-    std::vector<double> storage = {1.0};
-    struct cost_svr_select cost = {5, 0.5};
-    std::vector<struct cost_svr_select> cstorage = {cost};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, &cstorage, _))
-        .WillByDefault(
-            DoAll(SetArg2ToCostSVRCallbackValue(&cstorage), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
@@ -37,6 +41,52 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+
+    // Duration Setup
+    double duration = 2;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 0);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        dstorage;
+    dstorage[tup_2i] = duration;
+    ON_CALL(*event_dm, SelectCustomCallback(DURATION_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&dstorage), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+
+    // SVR Setup
+    double svr = 0.5;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        sstorage;
+    sstorage[tup_2i] = svr;
+    ON_CALL(*event_dm, SelectCustomCallback(SVR_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&sstorage), Return(0)));
+
+    // Toxicity Setup
+    double toxicity = 1.0;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        tstorage;
+    tstorage[tup_2i] = toxicity;
+    ON_CALL(*event_dm, SelectCustomCallback(TOXICITY_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&tstorage), Return(0)));
+
+    // Withdrawal Setup
+    double withdrawal = 0.9;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        wstorage;
+    wstorage[tup_2i] = withdrawal;
+    ON_CALL(*event_dm, SelectCustomCallback(WITHDRAWAL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&wstorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -67,17 +117,10 @@ TEST_F(TreatmentTest, FinishTreatment) {
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(5));
+    ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
+    ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
 
     // Data Setup
-    std::vector<double> storage = {1.0};
-    struct cost_svr_select cost = {5, 0.5};
-    std::vector<struct cost_svr_select> cstorage = {cost};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, &cstorage, _))
-        .WillByDefault(
-            DoAll(SetArg2ToCostSVRCallbackValue(&cstorage), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
@@ -90,6 +133,52 @@ TEST_F(TreatmentTest, FinishTreatment) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+
+    // Duration Setup
+    double duration = 2;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 0);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        dstorage;
+    dstorage[tup_2i] = duration;
+    ON_CALL(*event_dm, SelectCustomCallback(DURATION_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&dstorage), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+
+    // SVR Setup
+    double svr = 0.5;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        sstorage;
+    sstorage[tup_2i] = svr;
+    ON_CALL(*event_dm, SelectCustomCallback(SVR_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&sstorage), Return(0)));
+
+    // Toxicity Setup
+    double toxicity = 1.0;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        tstorage;
+    tstorage[tup_2i] = toxicity;
+    ON_CALL(*event_dm, SelectCustomCallback(TOXICITY_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&tstorage), Return(0)));
+
+    // Withdrawal Setup
+    double withdrawal = 0.9;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        wstorage;
+    wstorage[tup_2i] = withdrawal;
+    ON_CALL(*event_dm, SelectCustomCallback(WITHDRAWAL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&wstorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -117,12 +206,10 @@ TEST_F(TreatmentTest, LostToFollowUp) {
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(0));
+    ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
+    ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
 
     // Data Setup
-    std::vector<double> storage = {1.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
@@ -135,6 +222,52 @@ TEST_F(TreatmentTest, LostToFollowUp) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+
+    // Duration Setup
+    double duration = 2;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 0);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        dstorage;
+    dstorage[tup_2i] = duration;
+    ON_CALL(*event_dm, SelectCustomCallback(DURATION_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&dstorage), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+
+    // SVR Setup
+    double svr = 0.5;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        sstorage;
+    sstorage[tup_2i] = svr;
+    ON_CALL(*event_dm, SelectCustomCallback(SVR_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&sstorage), Return(0)));
+
+    // Toxicity Setup
+    double toxicity = 1.0;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        tstorage;
+    tstorage[tup_2i] = toxicity;
+    ON_CALL(*event_dm, SelectCustomCallback(TOXICITY_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&tstorage), Return(0)));
+
+    // Withdrawal Setup
+    double withdrawal = 0.9;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        wstorage;
+    wstorage[tup_2i] = withdrawal;
+    ON_CALL(*event_dm, SelectCustomCallback(WITHDRAWAL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&wstorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
@@ -159,12 +292,10 @@ TEST_F(TreatmentTest, Withdraw) {
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(5));
+    ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
+    ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
 
     // Data Setup
-    std::vector<double> storage = {1.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
@@ -177,6 +308,52 @@ TEST_F(TreatmentTest, Withdraw) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+
+    // Duration Setup
+    double duration = 2;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 0);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        dstorage;
+    dstorage[tup_2i] = duration;
+    ON_CALL(*event_dm, SelectCustomCallback(DURATION_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&dstorage), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+
+    // SVR Setup
+    double svr = 0.5;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        sstorage;
+    sstorage[tup_2i] = svr;
+    ON_CALL(*event_dm, SelectCustomCallback(SVR_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&sstorage), Return(0)));
+
+    // Toxicity Setup
+    double toxicity = 1.0;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        tstorage;
+    tstorage[tup_2i] = toxicity;
+    ON_CALL(*event_dm, SelectCustomCallback(TOXICITY_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&tstorage), Return(0)));
+
+    // Withdrawal Setup
+    double withdrawal = 0.9;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        wstorage;
+    wstorage[tup_2i] = withdrawal;
+    ON_CALL(*event_dm, SelectCustomCallback(WITHDRAWAL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&wstorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_)).WillOnce(Return(0)); // Withdraw
@@ -201,17 +378,10 @@ TEST_F(TreatmentTest, DevelopToxicity) {
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(5));
+    ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
+    ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
 
     // Data Setup
-    std::vector<double> storage = {1.0};
-    struct cost_svr_select cost = {5, 0.5};
-    std::vector<struct cost_svr_select> cstorage = {cost};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, &cstorage, _))
-        .WillByDefault(
-            DoAll(SetArg2ToCostSVRCallbackValue(&cstorage), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
@@ -224,6 +394,52 @@ TEST_F(TreatmentTest, DevelopToxicity) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+
+    // Duration Setup
+    double duration = 2;
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 0);
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        dstorage;
+    dstorage[tup_2i] = duration;
+    ON_CALL(*event_dm, SelectCustomCallback(DURATION_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&dstorage), Return(0)));
+
+    // Cost Setup
+    double cost = 25.25;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        cstorage;
+    cstorage[tup_2i] = cost;
+    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+
+    // SVR Setup
+    double svr = 0.5;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        sstorage;
+    sstorage[tup_2i] = svr;
+    ON_CALL(*event_dm, SelectCustomCallback(SVR_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&sstorage), Return(0)));
+
+    // Toxicity Setup
+    double toxicity = 1.0;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        tstorage;
+    tstorage[tup_2i] = toxicity;
+    ON_CALL(*event_dm, SelectCustomCallback(TOXICITY_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&tstorage), Return(0)));
+
+    // Withdrawal Setup
+    double withdrawal = 0.9;
+    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                       Utils::key_equal_2i>
+        wstorage;
+    wstorage[tup_2i] = withdrawal;
+    ON_CALL(*event_dm, SelectCustomCallback(WITHDRAWAL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&wstorage), Return(0)));
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))

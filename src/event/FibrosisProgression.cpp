@@ -18,6 +18,7 @@
 #include "FibrosisProgression.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
@@ -32,22 +33,21 @@ namespace event {
         double f4d_probability;
         bool costFlag = false;
 
-        static int callback(void *storage, int count, char **data,
-                            char **columns) {
-            std::vector<double> *d = (std::vector<double> *)storage;
-            double temp;
-            temp = std::stod(data[0]); // First Column Selected
-            d->push_back(temp);
-            return 0;
+        typedef std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                                   Utils::key_equal_2i>
+            costmap_t;
+        costmap_t cost_data;
+
+        std::string CostSQL() {
+            return "SELECT hcv_status, fibrosis_state, cost FROM hcv_impacts;";
         }
-        std::string buildSQL(std::shared_ptr<person::PersonBase> person) {
-            std::stringstream sql;
-            int hcv_status = (person->GetHCV() == person::HCV::NONE) ? 0 : 1;
-            sql << "SELECT cost FROM hcv_impacts";
-            sql << " WHERE hcv_status = " << hcv_status;
-            sql << " AND fibrosis_state = "
-                << ((int)person->GetTrueFibrosisState()) << ";";
-            return sql.str();
+
+        static int callback_cost(void *storage, int count, char **data,
+                                 char **columns) {
+            Utils::tuple_2i tup =
+                std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
+            (*((costmap_t *)storage))[tup] = std::stod(data[2]);
+            return 0;
         }
 
         std::vector<double>
@@ -82,30 +82,16 @@ namespace event {
             return {data, 1 - data};
         }
 
-        void addLiverDiseaseCost(
+        void AddLiverDiseaseCost(
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            std::string query = this->buildSQL(person);
-            std::vector<double> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, callback, &storage, error);
-            if (rc != 0) {
-                spdlog::get("main")->error("No cost avaliable for Fibrosis "
-                                           "Progression! Error Message: {}",
-                                           error);
-                return;
-            }
-            double c = 0.00;
-            if (!storage.empty()) {
-                c = storage[0];
-            } else {
-                spdlog::get("main")->warn(
-                    "No cost Found for Fibrosis Progression, setting cost to "
-                    "$0.00.");
-            }
+            int hcv_status = (person->GetHCV() == person::HCV::NONE) ? 0 : 1;
+            int fibrosis_state = (int)person->GetTrueFibrosisState();
+            Utils::tuple_2i tup = std::make_tuple(hcv_status, fibrosis_state);
 
             cost::Cost liverDiseaseCost = {cost::CostCategory::LIVER,
-                                           "Liver Disease Care", c};
+                                           "Liver Disease Care",
+                                           cost_data[tup]};
 
             person->AddCost(liverDiseaseCost);
         }
@@ -136,7 +122,7 @@ namespace event {
             // fibrosis state)
             if (!costFlag ||
                 (costFlag && person->IsIdentifiedAsHCVInfected())) {
-                this->addLiverDiseaseCost(person, dm);
+                this->AddLiverDiseaseCost(person, dm);
             }
         }
         FibrosisProgressionIMPL(
@@ -166,6 +152,19 @@ namespace event {
             dm->GetFromConfig("fibrosis.add_cost_only_if_identified", data);
             if (!data.empty()) {
                 std::istringstream(data) >> std::boolalpha >> costFlag;
+            }
+
+            std::string error;
+            int rc = dm->SelectCustomCallback(CostSQL(), callback_cost,
+                                              &cost_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error("No cost avaliable for Fibrosis "
+                                           "Progression! Error Message: {}",
+                                           error);
+            }
+            if (cost_data.empty()) {
+                spdlog::get("main")->warn(
+                    "No cost Found for Fibrosis Progression.");
             }
         }
     };

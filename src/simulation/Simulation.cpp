@@ -179,12 +179,14 @@ namespace simulation {
             if (!icValues.empty()) {
                 newperson->LoadICValues(icValues);
             }
-            std::stringstream query;
-            query << "INSERT INTO 'population' VALUES (";
-            query << newperson->GetPersonDataString();
-            query << ")";
-            datamanagement::Table table;
-            _dm->Update(query.str(), table);
+            // TODO Fix this so we can read and load population to DB quicker
+
+            // std::stringstream query;
+            // query << "INSERT INTO 'population' VALUES (";
+            // query << newperson->GetPersonDataString();
+            // query << ")";
+            // datamanagement::Table table;
+            // _dm->Update(query.str(), table);
             this->population.push_back(newperson);
         }
 

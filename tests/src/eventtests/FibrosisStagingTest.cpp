@@ -9,6 +9,12 @@ using ::testing::SetArgReferee;
 
 class FibrosisStagingTest : public EventTest {};
 
+std::string const TEST_ONE_QUERY =
+    "SELECT fibrosis_state, test_one FROM fibrosis;";
+
+std::string const TEST_TWO_QUERY =
+    "SELECT fibrosis_state, test_two FROM fibrosis;";
+
 TEST_F(FibrosisStagingTest, FibrosisStaging_NoFibrosis) {
     // Person Setup
     ON_CALL(*testPerson, GetTrueFibrosisState())
@@ -29,6 +35,18 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_NoFibrosis) {
     ON_CALL(*event_dm,
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
+
+    // Test One Data Setup
+    std::unordered_map<int, std::vector<double>> t1storage;
+    t1storage[6] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_ONE_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t1storage), Return(0)));
+
+    // Test Two Data Setup
+    std::unordered_map<int, std::vector<double>> t2storage;
+    t2storage[6] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_TWO_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t2storage), Return(0)));
 
     // Expectations
     EXPECT_CALL(*testPerson, DiagnoseFibrosis(_)).Times(0);
@@ -63,6 +81,18 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_RecentlyStaged) {
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
 
+    // Test One Data Setup
+    std::unordered_map<int, std::vector<double>> t1storage;
+    t1storage[0] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_ONE_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t1storage), Return(0)));
+
+    // Test Two Data Setup
+    std::unordered_map<int, std::vector<double>> t2storage;
+    t2storage[0] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_TWO_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t2storage), Return(0)));
+
     // Expectations
     EXPECT_CALL(*testPerson, DiagnoseFibrosis(_)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_)).Times(0);
@@ -88,17 +118,25 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.period", _))
         .WillByDefault(DoAll(SetArgReferee<1>("12"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("colname"), Return(0)));
-    std::vector<double> storage = {0.0, 0.0, 1.0, 0.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+        .WillByDefault(DoAll(SetArgReferee<1>("test_one"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("15.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("30.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two", _))
         .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+
+    // Test One Data Setup
+    std::unordered_map<int, std::vector<double>> t1storage;
+    t1storage[0] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_ONE_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t1storage), Return(0)));
+
+    // Test Two Data Setup
+    std::unordered_map<int, std::vector<double>> t2storage;
+    t2storage[0] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_TWO_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t2storage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0)); // F0
@@ -127,20 +165,28 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.period", _))
         .WillByDefault(DoAll(SetArgReferee<1>("12"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("colname"), Return(0)));
-    std::vector<double> storage = {0.0, 0.0, 1.0, 0.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+        .WillByDefault(DoAll(SetArgReferee<1>("test_one"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("15.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("30.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("colname"), Return(0)));
+        .WillByDefault(DoAll(SetArgReferee<1>("test_two"), Return(0)));
     ON_CALL(*event_dm,
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
+
+    // Test One Data Setup
+    std::unordered_map<int, std::vector<double>> t1storage;
+    t1storage[0] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_ONE_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t1storage), Return(0)));
+
+    // Test Two Data Setup
+    std::unordered_map<int, std::vector<double>> t2storage;
+    t2storage[0] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_TWO_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t2storage), Return(0)));
 
     // Expectations
     EXPECT_CALL(*decider, GetDecision(_))
@@ -170,20 +216,28 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.period", _))
         .WillByDefault(DoAll(SetArgReferee<1>("12"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("colname"), Return(0)));
-    std::vector<double> storage = {0.0, 0.0, 1.0, 0.0};
-    ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
-        .WillByDefault(
-            DoAll(SetArg2ToDoubleCallbackValue(&storage), Return(0)));
+        .WillByDefault(DoAll(SetArgReferee<1>("test_one"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_one_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("15.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("30.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("colname"), Return(0)));
+        .WillByDefault(DoAll(SetArgReferee<1>("test_two"), Return(0)));
     ON_CALL(*event_dm,
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("latest"), Return(0)));
+
+    // Test One Data Setup
+    std::unordered_map<int, std::vector<double>> t1storage;
+    t1storage[0] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_ONE_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t1storage), Return(0)));
+
+    // Test Two Data Setup
+    std::unordered_map<int, std::vector<double>> t2storage;
+    t2storage[0] = {0.0, 0.0, 1.0, 0.0};
+    ON_CALL(*event_dm, SelectCustomCallback(TEST_TWO_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_Int_VecDouble(&t2storage), Return(0)));
 
     // Expectations
     EXPECT_CALL(*decider, GetDecision(_))

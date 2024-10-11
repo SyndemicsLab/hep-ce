@@ -18,6 +18,7 @@
 #include "Linking.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
@@ -29,54 +30,39 @@ namespace event {
         double false_positive_test_cost;
         double relink_multiplier;
 
-        static int callback(void *storage, int count, char **data,
-                            char **columns) {
-            std::vector<double> *d = (std::vector<double> *)storage;
-            double temp = std::stod(data[0]);
-            d->push_back(temp);
+        typedef std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                                   Utils::key_equal_3i>
+            linkmap_t;
+        linkmap_t background_link_data;
+        linkmap_t intervention_link_data;
+
+        static int callback_link(void *storage, int count, char **data,
+                                 char **columns) {
+            Utils::tuple_3i tup = std::make_tuple(
+                std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
+            (*((linkmap_t *)storage))[tup] = std::stod(data[3]);
             return 0;
         }
-        std::string buildSQL(std::shared_ptr<person::PersonBase> person,
-                             std::string const column) const {
-            std::stringstream sql;
-            int age_years = (int)(person->GetAge() / 12.0);
-            sql << "SELECT " << column;
-            sql << " FROM screening_and_linkage ";
-            sql << "WHERE age_years = " << age_years;
-            sql << " AND gender = " << ((int)person->GetSex());
-            sql << " AND drug_behavior = " << ((int)person->GetBehavior())
-                << ";";
-            return sql.str();
+        std::string LinkSQL(std::string const column) const {
+            return "SELECT age_years, gender, drug_behavior, " + column +
+                   " FROM screening_and_linkage;";
         }
 
-        std::vector<double>
-        getTransitions(std::shared_ptr<person::PersonBase> person,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm,
-                       std::string columnKey) {
-            std::unordered_map<std::string, std::string> selectCriteria;
-
-            std::string query = this->buildSQL(person, columnKey);
-            std::vector<double> storage;
-            std::string error;
-            int rc = dm->SelectCustomCallback(query, this->callback, &storage,
-                                              error);
-            if (rc != 0) {
-                spdlog::get("main")->error(
-                    "Error extracting Linking Data from screening_and_linkage! "
-                    "Error Message: {}",
-                    error);
-                return {};
+        double
+        getLinkProbability(std::shared_ptr<person::PersonBase> person,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           std::string columnKey) {
+            int age_years = (int)(person->GetAge() / 12.0);
+            int gender = (int)person->GetSex();
+            int drug_behavior = (int)person->GetBehavior();
+            Utils::tuple_3i tup =
+                std::make_tuple(age_years, gender, drug_behavior);
+            if (columnKey == "background_link_probability") {
+                return background_link_data[tup];
+            } else if (columnKey == "intervention_link_probability") {
+                return intervention_link_data[tup];
             }
-            std::vector<double> result;
-            if (storage.empty()) {
-                spdlog::get("main")->warn("No Values found for Linking Data!");
-                result = {0.0, 1.0};
-            } else {
-                // {0: link, 1: don't link}
-                result = {storage[0], 1 - storage[0]};
-            }
-
-            return result;
+            return 0.0;
         }
 
         void addLinkingCost(std::shared_ptr<person::PersonBase> person,
@@ -112,12 +98,13 @@ namespace event {
         /// @param probabilities Linking Probabilities (0: link, 1: unlink)
         void ScaleIfRelink(std::shared_ptr<person::PersonBase> person,
                            std::shared_ptr<datamanagement::DataManagerBase> dm,
-                           std::vector<double> &probabilities) {
+                           double &probability) {
             if (person->GetLinkState() != person::LinkageState::UNLINKED) {
                 return; // Not Relinking
             }
-            probabilities[1] = probabilities[1] * relink_multiplier;
-            probabilities[0] = 1 - probabilities[1];
+            double inverse_probability = 1 - probability;
+            inverse_probability *= relink_multiplier;
+            probability = 1 - inverse_probability;
         }
 
         double ParseDoublesFromConfig(
@@ -144,17 +131,17 @@ namespace event {
                 person->DiagnoseHCV();
             }
 
-            std::vector<double> probs;
-            probs =
+            double prob =
                 (person->GetLinkageType() == person::LinkageType::BACKGROUND)
-                    ? getTransitions(person, dm, "background_link_probability")
-                    : getTransitions(person, dm,
-                                     "intervention_link_probability");
+                    ? getLinkProbability(person, dm,
+                                         "background_link_probability")
+                    : getLinkProbability(person, dm,
+                                         "intervention_link_probability");
 
-            ScaleIfRelink(person, dm, probs);
+            ScaleIfRelink(person, dm, prob);
 
             // draw from link probability
-            if (decider->GetDecision(probs) == 0) {
+            if (decider->GetDecision({prob}) == 0) {
                 person->Link(person->GetLinkageType());
                 if (person->GetLinkageType() ==
                     person::LinkageType::INTERVENTION) {
@@ -175,6 +162,29 @@ namespace event {
 
             relink_multiplier =
                 ParseDoublesFromConfig("linking.relink_multiplier", dm);
+
+            std::string error;
+            int rc = dm->SelectCustomCallback(
+                LinkSQL("background_link_probability"), this->callback_link,
+                &background_link_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Background Linking Data from "
+                    "screening_and_linkage! "
+                    "Error Message: {}",
+                    error);
+            }
+
+            rc = dm->SelectCustomCallback(
+                LinkSQL("intervention_link_probability"), this->callback_link,
+                &intervention_link_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Intervention Linking Data from "
+                    "screening_and_linkage! "
+                    "Error Message: {}",
+                    error);
+            }
         }
     };
     Linking::Linking(std::shared_ptr<datamanagement::DataManagerBase> dm) {
