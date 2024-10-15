@@ -73,7 +73,7 @@ namespace event {
         /// @param table
         /// @param configLookupKey
         /// @return Vector of fibrosis staging outcome probabilities
-        std::vector<double> getTransitionProbabilities(
+        std::vector<double> GetMeasurementProbabilities(
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm,
             std::string column) {
@@ -153,7 +153,7 @@ namespace event {
 
             // 3. Get the probability of each of the test_one fibrosis outcomes.
             std::vector<double> probs =
-                getTransitionProbabilities(person, dm, test_one);
+                GetMeasurementProbabilities(person, dm, test_one);
 
             // 4. Decide which stage is assigned to the person->
             int res = decider->GetDecision(probs) + 1;
@@ -176,7 +176,7 @@ namespace event {
             if (test_two.empty()) {
                 return;
             }
-            probs = getTransitionProbabilities(person, dm, test_two);
+            probs = GetMeasurementProbabilities(person, dm, test_two);
 
             // 7. Decide which stage is assigned to the person->
             if (probs.empty()) {
