@@ -29,6 +29,8 @@
 namespace event {
     class Screening::ScreeningIMPL {
     private:
+        double discount = 0.0;
+
         double background_rna_acute_sensitivity;
         double background_rna_chronic_sensitivity;
         double background_rna_specificity;
@@ -244,9 +246,10 @@ namespace event {
                 screeningCost = 0.0;
             }
 
-            cost::Cost cost = {cost::CostCategory::SCREENING, screeningName,
-                               screeningCost};
-            person->AddCost(cost);
+            double discountAdjustedCost = Event::DiscountEventCost(
+                screeningCost, discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost,
+                            cost::CostCategory::SCREENING);
         }
 
     public:
@@ -277,6 +280,11 @@ namespace event {
             }
         }
         ScreeningIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string discount_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
+            if (discount_data.empty()) {
+                this->discount = std::stod(discount_data);
+            }
             std::string data;
 
             // Background RNA
@@ -337,7 +345,7 @@ namespace event {
             dm->GetFromConfig("screening.intervention_type", intervention_type);
 
             std::string error;
-            int rc = dm->SelectCustomCallback(
+            rc = dm->SelectCustomCallback(
                 ScreenSQL("background_screen_probability"),
                 this->callback_screen, &background_screen_data, error);
             if (rc != 0) {

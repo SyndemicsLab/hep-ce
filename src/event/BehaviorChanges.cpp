@@ -24,6 +24,8 @@
 
 namespace event {
     class BehaviorChanges::BehaviorChangesIMPL {
+    private:
+        double discount = 0.0;
         struct behavior_transitions {
             double never = 0.0;
             double fni = 0.25;
@@ -86,9 +88,9 @@ namespace event {
             int behavior = ((int)person->GetBehavior());
             Utils::tuple_2i tup = std::make_tuple(gender, behavior);
 
-            cost::Cost behaviorCost = {cost::CostCategory::BEHAVIOR,
-                                       "Drug Behavior", cost_data[tup].cost};
-            person->AddCost(behaviorCost);
+            double discountAdjustedCost = Event::DiscountEventCost(
+                cost_data[tup].cost, discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost, cost::CostCategory::BEHAVIOR);
             person->SetUtility(cost_data[tup].util);
         }
 
@@ -165,13 +167,18 @@ namespace event {
 
         BehaviorChangesIMPL(
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string discount_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
+            if (discount_data.empty()) {
+                this->discount = std::stod(discount_data);
+            }
             if (dm == nullptr) {
                 spdlog::get("main")->warn(
                     "No Data Manager Provided during Construction. No Data "
                     "Loaded to Behavior Changes.");
                 return;
             }
-            int rc = LoadCostData(dm);
+            rc = LoadCostData(dm);
             rc = LoadBehaviorData(dm);
         }
     };

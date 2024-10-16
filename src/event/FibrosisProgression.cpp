@@ -26,6 +26,7 @@
 namespace event {
     class FibrosisProgression::FibrosisProgressionIMPL {
     private:
+        double discount = 0.0;
         double f01_probability;
         double f12_probability;
         double f23_probability;
@@ -89,11 +90,9 @@ namespace event {
             int fibrosis_state = (int)person->GetTrueFibrosisState();
             Utils::tuple_2i tup = std::make_tuple(hcv_status, fibrosis_state);
 
-            cost::Cost liverDiseaseCost = {cost::CostCategory::LIVER,
-                                           "Liver Disease Care",
-                                           cost_data[tup]};
-
-            person->AddCost(liverDiseaseCost);
+            double discountAdjustedCost = Event::DiscountEventCost(
+                cost_data[tup], discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost, cost::CostCategory::LIVER);
         }
 
     public:
@@ -127,6 +126,11 @@ namespace event {
         }
         FibrosisProgressionIMPL(
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string discount_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
+            if (discount_data.empty()) {
+                this->discount = std::stod(discount_data);
+            }
             std::string data;
 
             dm->GetFromConfig("fibrosis.f01", data);
@@ -155,8 +159,8 @@ namespace event {
             }
 
             std::string error;
-            int rc = dm->SelectCustomCallback(CostSQL(), callback_cost,
-                                              &cost_data, error);
+            rc = dm->SelectCustomCallback(CostSQL(), callback_cost, &cost_data,
+                                          error);
             if (rc != 0) {
                 spdlog::get("main")->error("No cost avaliable for Fibrosis "
                                            "Progression! Error Message: {}",

@@ -26,6 +26,7 @@
 namespace event {
     class Linking::LinkingIMPL {
     private:
+        double discount = 0.0;
         double intervention_cost;
         double false_positive_test_cost;
         double relink_multiplier;
@@ -76,8 +77,10 @@ namespace event {
             } else {
                 return;
             }
-            cost::Cost linkingCost = {cost::CostCategory::LINKING, name, cost};
-            person->AddCost(linkingCost);
+
+            double discountAdjustedCost = Event::DiscountEventCost(
+                cost, discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost, cost::CostCategory::LINKING);
         }
 
         bool
@@ -154,6 +157,11 @@ namespace event {
             }
         }
         LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string discount_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
+            if (discount_data.empty()) {
+                this->discount = std::stod(discount_data);
+            }
             intervention_cost =
                 ParseDoublesFromConfig("linking.intervention_cost", dm);
 
@@ -164,7 +172,7 @@ namespace event {
                 ParseDoublesFromConfig("linking.relink_multiplier", dm);
 
             std::string error;
-            int rc = dm->SelectCustomCallback(
+            rc = dm->SelectCustomCallback(
                 LinkSQL("background_link_probability"), this->callback_link,
                 &background_link_data, error);
             if (rc != 0) {

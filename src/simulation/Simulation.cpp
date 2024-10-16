@@ -250,13 +250,14 @@ namespace simulation {
             }
             size_t duration = std::stol(data);
 
-            // size_t thread_size = 16;
-            // omp_set_dynamic(0);
-            // omp_set_num_threads(thread_size);
+            size_t thread_size = 16;
+            omp_set_dynamic(0);
+            omp_set_num_threads(thread_size);
 
             std::vector<std::shared_ptr<datamanagement::DataManager>> dm_pool;
 
-            for (int i = 0; i < omp_get_num_threads(); ++i) {
+            spdlog::get("main")->info("Data Management Pool Creation Started.");
+            for (int i = 0; i < thread_size; ++i) {
                 std::shared_ptr<datamanagement::DataManager> dm_copy =
                     std::make_shared<datamanagement::DataManager>();
                 dm_copy->ConnectToDatabase(_dm->GetDBFileName());
@@ -264,10 +265,13 @@ namespace simulation {
                 dm_pool.push_back(dm_copy);
             }
 
+            spdlog::get("main")->info("Data Management Pool Created.");
+
             // Might need to switch to MPI to make use of multiple
             // nodes instead of just cores:
             // https://stackoverflow.com/questions/52496748/parallel-for-loop-in-c-using-mpi
             clock_t cStartClock = clock();
+            spdlog::get("main")->info("Simulation Started.");
 #pragma omp parallel shared(duration, _dm, population, events, decider)
             {
 #pragma omp for ordered

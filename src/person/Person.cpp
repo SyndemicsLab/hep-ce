@@ -352,8 +352,8 @@ namespace person {
         /// @brief Add a cost to the person's CostTracker object
         /// @param cost The cost to be added
         /// @param timestep The timestep during which the cost was accrued
-        void AddCost(cost::Cost cost) {
-            // this->costs.addCost(cost, this->_currentTime);
+        void AddCost(double cost, cost::CostCategory category) {
+            // this->costs.AddCost(cost, category);
         }
 
         /// @brief Flips the person's overdose state
@@ -618,7 +618,9 @@ namespace person {
 
         /// @brief Getter for the PersonIMPL's costs
         /// @return cost::CostTracker containing this person's costs
-        cost::CostTracker GetCosts() const { return this->costs; }
+        std::unordered_map<cost::CostCategory, double> GetCosts() const {
+            return this->costs.GetCosts();
+        }
 
         Health GetHealth() const { return this->health; }
 
@@ -877,8 +879,8 @@ namespace person {
         pImplPERSON->DiagnoseHCV();
         return 0;
     }
-    int Person::AddCost(cost::Cost cost) {
-        pImplPERSON->AddCost(cost);
+    int Person::AddCost(double cost, cost::CostCategory category) {
+        pImplPERSON->AddCost(cost, category);
         return 0;
     }
     int Person::ToggleOverdose() {
@@ -1040,7 +1042,7 @@ namespace person {
     UtilityTracker Person::GetUtility() const {
         return pImplPERSON->GetUtility();
     }
-    cost::CostTracker Person::GetCosts() const {
+    std::unordered_map<cost::CostCategory, double> Person::GetCosts() const {
         return pImplPERSON->GetCosts();
     }
     Health Person::GetHealth() const { return pImplPERSON->GetHealth(); }

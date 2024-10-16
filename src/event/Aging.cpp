@@ -28,6 +28,7 @@
 namespace event {
     class Aging::AgingIMPL {
     private:
+        double discount = 0.0;
         struct cost_util {
             double cost;
             double util;
@@ -62,9 +63,9 @@ namespace event {
             int behavior = ((int)person->GetBehavior());
             Utils::tuple_3i tup = std::make_tuple(age_years, gender, behavior);
 
-            cost::Cost backgroundCost = {cost::CostCategory::MISC,
-                                         "Background Cost", data[tup].cost};
-            person->AddCost(backgroundCost);
+            double discountAdjustedCost = Event::DiscountEventCost(
+                data[tup].cost, discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost, cost::CostCategory::MISC);
             person->SetUtility(data[tup].util);
         }
 
@@ -93,6 +94,12 @@ namespace event {
             this->addBackgroundCostAndUtility(person, dm);
         }
         AgingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string discount_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
+            if (discount_data.empty()) {
+                this->discount = std::stod(discount_data);
+            }
+
             data = {};
             if (dm == nullptr) {
                 spdlog::get("main")->warn(
@@ -100,7 +107,7 @@ namespace event {
                     "Loaded to Aging.");
                 return;
             }
-            int rc = LoadData(dm);
+            rc = LoadData(dm);
         }
     };
 

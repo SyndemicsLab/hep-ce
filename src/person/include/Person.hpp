@@ -117,7 +117,7 @@ namespace person {
         virtual int GetTimeSinceFibrosisStaging() const = 0;
 
         // Cost Effectiveness
-        virtual int AddCost(cost::Cost cost) = 0;
+        virtual int AddCost(double cost, cost::CostCategory category) = 0;
         virtual void SetUtility(double util) = 0;
 
         // General Data Handling
@@ -139,7 +139,8 @@ namespace person {
         virtual int GetCurrentTimestep() const = 0;
         virtual Sex GetSex() const = 0;
         virtual UtilityTracker GetUtility() const = 0;
-        virtual cost::CostTracker GetCosts() const = 0;
+        virtual std::unordered_map<cost::CostCategory, double>
+        GetCosts() const = 0;
         virtual Health GetHealth() const = 0;
 
         // TODO
@@ -271,7 +272,8 @@ namespace person {
         int GetTimeSinceFibrosisStaging() const;
 
         // Cost Effectiveness
-        int AddCost(cost::Cost cost);
+        int AddCost(double cost,
+                    cost::CostCategory category = cost::CostCategory::MISC);
         void SetUtility(double util);
 
         // General Data Handling
@@ -293,7 +295,7 @@ namespace person {
         int GetCurrentTimestep() const;
         Sex GetSex() const;
         UtilityTracker GetUtility() const;
-        cost::CostTracker GetCosts() const;
+        std::unordered_map<cost::CostCategory, double> GetCosts() const;
         Health GetHealth() const;
 
         // Pregnancy

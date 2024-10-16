@@ -60,6 +60,8 @@ namespace event {
         int Execute(std::shared_ptr<person::PersonBase> person,
                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                     std::shared_ptr<stats::DeciderBase> decider);
+        static double DiscountEventCost(double cost, double discount_rate,
+                                        int timestep);
     };
 } // namespace event
 #endif

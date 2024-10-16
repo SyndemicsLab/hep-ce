@@ -19,6 +19,7 @@
 #ifndef COST_COST_HPP_
 #define COST_COST_HPP_
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -36,55 +37,57 @@ namespace cost {
         BACKGROUND = 7,
         COUNT = 8
     };
+    std::ostream &operator<<(std::ostream &os, const CostCategory &inst);
 
-    /// @brief Object to hold individual charges/costs
-    struct Cost {
-        CostCategory category = CostCategory::MISC;
-        std::string name = "";
-        double cost = 0;
-        bool operator==(const Cost &) const;
-    };
-    std::ostream &operator<<(std::ostream &os, const Cost &cost);
-
-    class CostTracker {
+    class CostTrackerBase {
     public:
-        CostTracker() {}
-
-        /// @brief Get a vector of total costs per timestep
-        /// @return Vector of total costs per timestep
-        std::unordered_map<int, double> getTotals() const;
-
         /// @brief Get a vector of discounted total costs per timestep
         /// @param discountRate The discount rate
         /// @return Vector of total discounted costs per timestep
-        std::unordered_map<int, double> getTotals(double discountRate) const;
+        virtual double GetTotal() const = 0;
 
         /// @brief Get the vector of costs as-is
         /// @return Vector of vectors of \code{Cost} objects, each element
         /// of the top-level vector representing the timestep during which
         /// the cost was accrued
-        std::unordered_map<int, std::vector<Cost>> getCosts() const {
-            return this->costs;
-        }
-
-        /// @brief Get category-stratified costs over the time horizon
-        /// @return Category-stratified costs
-        std::unordered_map<CostCategory, std::vector<double>>
-        getTotalsByCategory() const;
-
-        /// @brief Get discounted category-stratified costs over the time
-        /// horizon
-        /// @return Discounted, category-stratified costs
-        std::unordered_map<CostCategory, std::vector<double>>
-        getTotalsByCategory(double discountRate) const;
+        virtual std::unordered_map<CostCategory, double> GetCosts() const = 0;
 
         /// @brief Add a cost to the tracker
         /// @param cost The \code{Cost} item to be added
         /// @param timestep The timestep during which this cost is added
-        void addCost(Cost cost, int timestep);
+        virtual void AddCost(double cost, CostCategory category) = 0;
+    };
 
+    class CostTracker : public CostTrackerBase {
     private:
-        std::unordered_map<int, std::vector<Cost>> costs = {};
+        class CostTrackerIMPL;
+        std::unique_ptr<CostTrackerIMPL> impl;
+
+    public:
+        CostTracker();
+        ~CostTracker();
+
+        // Copy Operations
+        CostTracker(CostTracker const &) = delete;
+        CostTracker &operator=(CostTracker const &) = delete;
+        CostTracker(CostTracker &&) noexcept;
+        CostTracker &operator=(CostTracker &&) noexcept;
+        /// @brief Get a vector of discounted total costs per timestep
+        /// @param discountRate The discount rate
+        /// @return Vector of total discounted costs per timestep
+        double GetTotal() const override;
+
+        /// @brief Get the vector of costs as-is
+        /// @return Vector of vectors of \code{Cost} objects, each element
+        /// of the top-level vector representing the timestep during which
+        /// the cost was accrued
+        std::unordered_map<CostCategory, double> GetCosts() const override;
+
+        /// @brief Add a cost to the tracker
+        /// @param cost The \code{Cost} item to be added
+        /// @param timestep The timestep during which this cost is added
+        void AddCost(double cost,
+                     CostCategory category = CostCategory::MISC) override;
     };
 } // namespace cost
 #endif

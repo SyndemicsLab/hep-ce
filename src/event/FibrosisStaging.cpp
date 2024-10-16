@@ -24,6 +24,7 @@
 namespace event {
     class FibrosisStaging::FibrosisStagingIMPL {
     private:
+        double discount = 0.0;
         double test_one_cost;
         double test_two_cost;
         int staging_period;
@@ -92,11 +93,9 @@ namespace event {
 
             double cost = testTwo ? test_one_cost : test_two_cost;
 
-            std::string costName = "Fibrosis Staging Cost (Test" +
-                                   ((std::string)(testTwo ? "1" : "2")) + ")";
-            cost::Cost fibrosisStagingCost = {cost::CostCategory::STAGING,
-                                              costName, cost};
-            person->AddCost(fibrosisStagingCost);
+            double discountAdjustedCost = Event::DiscountEventCost(
+                cost, discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost, cost::CostCategory::STAGING);
         }
 
         int
@@ -206,6 +205,11 @@ namespace event {
         }
         FibrosisStagingIMPL(
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string discount_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
+            if (discount_data.empty()) {
+                this->discount = std::stod(discount_data);
+            }
             std::string data;
             data.clear();
             dm->GetFromConfig("fibrosis_staging.test_one_cost", data);

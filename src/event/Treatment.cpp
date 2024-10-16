@@ -26,6 +26,7 @@
 namespace event {
     class Treatment::TreatmentIMPL {
     private:
+        double discount = 0.0;
         double lost_to_follow_up_probability;
         double treatment_cost;
         double treatment_utility;
@@ -90,9 +91,12 @@ namespace event {
         void
         addTreatmentCostAndUtility(std::shared_ptr<person::PersonBase> person,
                                    double cost, double util) {
-            cost::Cost treatmentCost = {cost::CostCategory::TREATMENT,
-                                        "Treatment Cost", cost};
-            person->AddCost(treatmentCost);
+
+            double discountAdjustedCost = Event::DiscountEventCost(
+                cost, discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost,
+                            cost::CostCategory::TREATMENT);
+
             person->SetUtility(util);
         }
 
@@ -114,9 +118,10 @@ namespace event {
         void
         ChargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            cost::Cost visitCost = {cost::CostCategory::TREATMENT,
-                                    "Cost of Treatment Visit", treatment_cost};
-            person->AddCost(visitCost);
+            double discountAdjustedCost = Event::DiscountEventCost(
+                treatment_cost, discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost,
+                            cost::CostCategory::TREATMENT);
         }
 
         void ChargeCostOfCourse(
@@ -126,10 +131,11 @@ namespace event {
                 spdlog::get("main")->warn("No Treatment Cost Data Found.");
                 return;
             }
-            cost::Cost courseCost = {cost::CostCategory::TREATMENT,
-                                     "Cost of Treatment Course",
-                                     cost_data[GetTuple(person)]};
-            person->AddCost(courseCost);
+            double discountAdjustedCost =
+                Event::DiscountEventCost(cost_data[GetTuple(person)], discount,
+                                         person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost,
+                            cost::CostCategory::TREATMENT);
             person->SetUtility(treatment_utility);
         }
 
@@ -165,9 +171,10 @@ namespace event {
             person->AddToxicReaction();
             this->quitEngagement(person);
 
-            cost::Cost toxicityCost = {cost::CostCategory::TREATMENT,
-                                       "Toxicity Cost", toxicity_cost};
-            person->AddCost(toxicityCost);
+            double discountAdjustedCost = Event::DiscountEventCost(
+                toxicity_cost, discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost,
+                            cost::CostCategory::TREATMENT);
             person->SetUtility(toxicity_utility);
             return true;
         }
@@ -347,6 +354,11 @@ namespace event {
             DecideIfPersonAchievesSVR(person, dm, decider);
         }
         TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string discount_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
+            if (discount_data.empty()) {
+                this->discount = std::stod(discount_data);
+            }
             lost_to_follow_up_probability =
                 ParseDoublesFromConfig("treatment.ltfu_probability", dm);
             treatment_cost =
@@ -359,7 +371,7 @@ namespace event {
             treatment_init_probability = ParseDoublesFromConfig(
                 "treatment.treatment_initialization", dm);
 
-            int rc = LoadCostData(dm);
+            rc = LoadCostData(dm);
             rc = LoadWithdrawalData(dm);
             rc = LoadToxicityData(dm);
             rc = LoadSVRData(dm);

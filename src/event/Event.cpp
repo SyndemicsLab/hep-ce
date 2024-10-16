@@ -11,6 +11,13 @@ namespace event {
         return 0;
     }
 
+    double Event::DiscountEventCost(double cost, double discount_rate,
+                                    int timestep) {
+        // dividing discountRate by 12 because discount rates are annual
+        double denominator = std::pow(1 + discount_rate / 12, timestep + 1);
+        return cost / denominator;
+    }
+
     Event::Event() {}
 
     Event::~Event() = default;
