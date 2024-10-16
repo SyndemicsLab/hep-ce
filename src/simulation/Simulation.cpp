@@ -250,17 +250,26 @@ namespace simulation {
             }
             size_t duration = std::stol(data);
 
+            // size_t thread_size = 16;
+            // omp_set_dynamic(0);
+            // omp_set_num_threads(thread_size);
+
+            std::vector<std::shared_ptr<datamanagement::DataManager>> dm_pool;
+
+            for (int i = 0; i < omp_get_num_threads(); ++i) {
+                std::shared_ptr<datamanagement::DataManager> dm_copy =
+                    std::make_shared<datamanagement::DataManager>();
+                dm_copy->ConnectToDatabase(_dm->GetDBFileName());
+                int rc = dm_copy->LoadConfig(_dm->GetConfigFile());
+                dm_pool.push_back(dm_copy);
+            }
+
             // Might need to switch to MPI to make use of multiple
             // nodes instead of just cores:
             // https://stackoverflow.com/questions/52496748/parallel-for-loop-in-c-using-mpi
             clock_t cStartClock = clock();
 #pragma omp parallel shared(duration, _dm, population, events, decider)
             {
-                std::shared_ptr<datamanagement::DataManager> dm_copy =
-                    std::make_shared<datamanagement::DataManager>();
-                dm_copy->ConnectToDatabase(_dm->GetDBFileName());
-                int rc = dm_copy->LoadConfig(_dm->GetConfigFile());
-
 #pragma omp for ordered
                 for (int i = 0; i < population.size(); ++i) {
                     std::shared_ptr<person::PersonBase> &p = population[i];
@@ -274,7 +283,8 @@ namespace simulation {
                             {
                                 std::shared_ptr<event::Event> &event =
                                     events[j];
-                                event->Execute(p, dm_copy, decider);
+                                event->Execute(p, dm_pool[omp_get_thread_num()],
+                                               decider);
                             }
                         }
                     }

@@ -353,7 +353,7 @@ namespace person {
         /// @param cost The cost to be added
         /// @param timestep The timestep during which the cost was accrued
         void AddCost(cost::Cost cost) {
-            this->costs.addCost(cost, this->_currentTime);
+            // this->costs.addCost(cost, this->_currentTime);
         }
 
         /// @brief Flips the person's overdose state
