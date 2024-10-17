@@ -250,9 +250,9 @@ namespace simulation {
             }
             size_t duration = std::stol(data);
 
-            size_t thread_size = 16;
-            omp_set_dynamic(0);
-            omp_set_num_threads(thread_size);
+            size_t thread_size = 36;
+            // omp_set_dynamic(0);
+            // omp_set_num_threads(thread_size);
 
             std::vector<std::shared_ptr<datamanagement::DataManager>> dm_pool;
 
