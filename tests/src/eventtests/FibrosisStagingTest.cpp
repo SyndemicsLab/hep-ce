@@ -35,6 +35,8 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_NoFibrosis) {
     ON_CALL(*event_dm,
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Test One Data Setup
     std::unordered_map<int, std::vector<double>> t1storage;
@@ -50,7 +52,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_NoFibrosis) {
 
     // Expectations
     EXPECT_CALL(*testPerson, DiagnoseFibrosis(_)).Times(0);
-    EXPECT_CALL(*testPerson, AddCost(_)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -80,6 +82,8 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_RecentlyStaged) {
     ON_CALL(*event_dm,
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Test One Data Setup
     std::unordered_map<int, std::vector<double>> t1storage;
@@ -95,7 +99,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_RecentlyStaged) {
 
     // Expectations
     EXPECT_CALL(*testPerson, DiagnoseFibrosis(_)).Times(0);
-    EXPECT_CALL(*testPerson, AddCost(_)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -125,6 +129,8 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
         .WillByDefault(DoAll(SetArgReferee<1>("30.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two", _))
         .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Test One Data Setup
     std::unordered_map<int, std::vector<double>> t1storage;
@@ -145,7 +151,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
     EXPECT_CALL(*testPerson,
                 DiagnoseFibrosis(person::MeasuredFibrosisState::F01))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -175,6 +181,8 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
     ON_CALL(*event_dm,
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Test One Data Setup
     std::unordered_map<int, std::vector<double>> t1storage;
@@ -196,7 +204,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
     EXPECT_CALL(*testPerson,
                 DiagnoseFibrosis(person::MeasuredFibrosisState::F23))
         .Times(2);
-    EXPECT_CALL(*testPerson, AddCost(_)).Times(2);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(2);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -226,6 +234,8 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
     ON_CALL(*event_dm,
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("latest"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Test One Data Setup
     std::unordered_map<int, std::vector<double>> t1storage;
@@ -250,7 +260,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
     EXPECT_CALL(*testPerson,
                 DiagnoseFibrosis(person::MeasuredFibrosisState::F01))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_)).Times(2);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(2);
 
     // Running Test
     std::shared_ptr<event::Event> event =

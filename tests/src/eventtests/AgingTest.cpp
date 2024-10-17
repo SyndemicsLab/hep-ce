@@ -17,6 +17,8 @@ TEST_F(AgingTest, Aging) {
         .WillByDefault(Return(person::Behavior::INJECTION));
 
     // Data Setup
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     Utils::tuple_3i tup = std::make_tuple(25, 0, 4);
     struct cost_util cost = {25.00, 0.5};
     std::unordered_map<Utils::tuple_3i, struct cost_util, Utils::key_hash_3i,
@@ -26,12 +28,9 @@ TEST_F(AgingTest, Aging) {
     ON_CALL(*event_dm, SelectCustomCallback(_, _, _, _))
         .WillByDefault(DoAll(SetArg2ToUM_T3I_CU(&cstorage), Return(0)));
 
-    cost::Cost backgroundCost = {cost::CostCategory::MISC, "Background Cost",
-                                 cost.cost};
-
     // Expectations
     EXPECT_CALL(*testPerson, Grow()).Times(1);
-    EXPECT_CALL(*testPerson, AddCost(backgroundCost)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(cost.util)).Times(1);
 
     // Running Test

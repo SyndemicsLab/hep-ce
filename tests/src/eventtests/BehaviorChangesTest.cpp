@@ -23,6 +23,8 @@ TEST_F(BehaviorChangesTest, BehaviorChanges) {
         .WillByDefault(Return(person::MOUD::NONE));
 
     // Data Setup
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Transitions Setup
     struct behavior_transitions trans = {0.0, 0.0, 1.0, 0.0, 0.0};
@@ -48,9 +50,7 @@ TEST_F(BehaviorChangesTest, BehaviorChanges) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(2));
 
     // Expectations
-    cost::Cost backgroundCost = {cost::CostCategory::BEHAVIOR, "Drug Behavior",
-                                 cost.cost};
-    EXPECT_CALL(*testPerson, AddCost(_)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(_)).Times(1);
     EXPECT_CALL(*testPerson, SetBehavior(person::Behavior::FORMER_INJECTION))
         .Times(1);

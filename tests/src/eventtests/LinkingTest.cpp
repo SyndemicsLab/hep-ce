@@ -33,6 +33,8 @@ TEST_F(LinkingTest, FalsePositive) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Link Setup
     double link_prob = 0.5;
@@ -55,7 +57,7 @@ TEST_F(LinkingTest, FalsePositive) {
 
     // Expectations
     EXPECT_CALL(*testPerson, Unlink()).Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
@@ -83,6 +85,9 @@ TEST_F(LinkingTest, BackgroundRelink) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+
     // Background Link Setup
     double link_prob = 1.0;
     Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
@@ -129,6 +134,8 @@ TEST_F(LinkingTest, BackgroundFirstLink) {
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Link Setup
@@ -182,6 +189,8 @@ TEST_F(LinkingTest, InterventionLink) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Link Setup
     double link_prob = 0.0;
@@ -206,7 +215,7 @@ TEST_F(LinkingTest, InterventionLink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION)).Times(1);
 
     // Running Test
@@ -230,6 +239,8 @@ TEST_F(LinkingTest, DecideToUnlink) {
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Link Setup
@@ -255,7 +266,7 @@ TEST_F(LinkingTest, DecideToUnlink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(1));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(0);
     EXPECT_CALL(*testPerson, Link(_)).Times(0);
     EXPECT_CALL(*testPerson, Unlink()).Times(1);
 
