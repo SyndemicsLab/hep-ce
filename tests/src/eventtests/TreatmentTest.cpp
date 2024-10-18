@@ -22,11 +22,22 @@ std::string const WITHDRAWAL_QUERY =
 
 TEST_F(TreatmentTest, NewTreatmentInitiation) {
     // Person Setup
-    ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(false));
+    EXPECT_CALL(*testPerson, HasInitiatedTreatment())
+        .WillOnce(Return(false))       // False Positive
+        .WillOnce(Return(false))       // Initiate
+        .WillRepeatedly(Return(true)); // Remainder
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(-1));
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
+    ON_CALL(*testPerson, GetTrueFibrosisState())
+        .WillByDefault(Return(person::FibrosisState::NONE));
+    ON_CALL(*testPerson, GetTimeSinceLinkChange()).WillByDefault(Return(0));
+    ON_CALL(*testPerson, GetBehavior())
+        .WillByDefault(Return(person::Behavior::FORMER_NONINJECTION));
+    ON_CALL(*testPerson, GetTimeBehaviorChange()).WillByDefault(Return(120));
+    ON_CALL(*testPerson, GetPregnancyState())
+        .WillByDefault(Return(person::PregnancyState::NONE));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -41,8 +52,21 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.retreatment_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("eligibility.ineligible_drug_use", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("eligibility.ineligible_fibrosis_stages", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("eligibility.ineligible_time_former_threshold", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("eligibility.ineligible_time_since_linked", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
 
     // Duration Setup
     double duration = 2;
@@ -135,6 +159,8 @@ TEST_F(TreatmentTest, FinishTreatment) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.retreatment_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
@@ -226,6 +252,8 @@ TEST_F(TreatmentTest, LostToFollowUp) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.retreatment_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
@@ -314,6 +342,8 @@ TEST_F(TreatmentTest, Withdraw) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.retreatment_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
@@ -403,6 +433,8 @@ TEST_F(TreatmentTest, DevelopToxicity) {
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.retreatment_cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 

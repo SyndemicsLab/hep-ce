@@ -35,6 +35,11 @@ namespace event {
         double toxicity_utility;
         double treatment_init_probability;
 
+        std::vector<std::string> ineligible_behaviors = {};
+        std::vector<std::string> ineligible_fibrosis = {};
+        int ineligible_time_since_linked = -2;
+        int ineligible_time_since_last_use = -2;
+
         typedef std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
                                    Utils::key_equal_2i>
             treatmentmap_t;
@@ -43,6 +48,13 @@ namespace event {
         treatmentmap_t svr_data;
         treatmentmap_t toxicity_data;
         treatmentmap_t withdrawal_data;
+
+        void trim(std::string &str) {
+            while (str[0] == ' ')
+                str.erase(str.begin());
+            while (str[str.size() - 1] == ' ')
+                str.pop_back();
+        }
 
         static int callback_treament(void *storage, int count, char **data,
                                      char **columns) {
@@ -68,24 +80,41 @@ namespace event {
             person::FibrosisState fibrosisState =
                 person->GetTrueFibrosisState();
             person::Behavior behavior = person->GetBehavior();
-            int timeBehaviorChange = person->GetTimeBehaviorChange();
+            int timeSinceLastUse = person->GetTimeBehaviorChange();
+            int timeSinceLinked = person->GetTimeSinceLinkChange();
             person::PregnancyState pregnancyState = person->GetPregnancyState();
-            if (!isEligibleFibrosisStage(fibrosisState) ||
-                ((person->GetTimeSinceLinkChange()) > -1) ||
-                (behavior == person::Behavior::INJECTION) ||
-                (behavior == person::Behavior::FORMER_INJECTION &&
-                 timeBehaviorChange < -1) ||
-                (pregnancyState == person::PregnancyState::PREGNANT ||
-                 pregnancyState == person::PregnancyState::POSTPARTUM)) {
-                return false;
-            } else {
+            // if a person is an eligible fibrosis state, behavior, linked time,
+            // and hasn't used
+            if (isEligibleFibrosisStage(fibrosisState) &&
+                isEligibleBehavior(behavior) &&
+                (timeSinceLastUse > ineligible_time_since_last_use) &&
+                (timeSinceLinked < ineligible_time_since_linked)) {
                 return true;
             }
+            return false;
         }
 
         bool
         isEligibleFibrosisStage(person::FibrosisState fibrosisState) const {
-            return (fibrosisState < person::FibrosisState::NONE) ? true : false;
+            for (std::string state : ineligible_fibrosis) {
+                person::FibrosisState temp;
+                temp << state;
+                if (fibrosisState == temp) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        bool isEligibleBehavior(person::Behavior behavior) const {
+            for (std::string state : ineligible_behaviors) {
+                person::Behavior temp;
+                temp << state;
+                if (behavior == temp) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         void
@@ -194,10 +223,8 @@ namespace event {
             if (decider->GetDecision({treatment_init_probability}) == 0) {
                 person->InitiateTreatment();
                 return true;
-            } else {
-                this->quitEngagement(person);
-                return false;
             }
+            return false;
         }
 
         void quitEngagement(std::shared_ptr<person::PersonBase> person) {
@@ -319,6 +346,47 @@ namespace event {
             return rc;
         }
 
+        int
+        LoadEligibilityVectors(std::string data,
+                               std::vector<std::string> &ineligibility_vec) {
+            if (data.empty()) {
+                return 0;
+            }
+            std::stringstream s(data);
+            while (s.good()) {
+                std::string substr;
+                getline(s, substr, ',');
+                trim(substr);
+                ineligibility_vec.push_back(substr);
+            }
+            return 0;
+        }
+
+        int LoadEligibilityData(
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string eligibility_data;
+            dm->GetFromConfig("eligibility.ineligible_drug_use",
+                              eligibility_data);
+            LoadEligibilityVectors(eligibility_data, ineligible_behaviors);
+
+            eligibility_data.clear();
+            dm->GetFromConfig("eligibility.ineligible_fibrosis_stages",
+                              eligibility_data);
+            LoadEligibilityVectors(eligibility_data, ineligible_fibrosis);
+
+            std::string data;
+            dm->GetFromConfig("eligibility.ineligible_time_since_linked", data);
+            ineligible_time_since_linked =
+                (data.empty()) ? -2 : std::stoi(data);
+
+            data.clear();
+            dm->GetFromConfig("eligibility.ineligible_time_former_threshold",
+                              data);
+            ineligible_time_since_last_use =
+                (data.empty()) ? -2 : std::stoi(data);
+            return 0;
+        }
+
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
@@ -376,6 +444,8 @@ namespace event {
             toxicity_cost = ParseDoublesFromConfig("treatment.tox_cost", dm);
             toxicity_utility =
                 ParseDoublesFromConfig("treatment.tox_utility", dm);
+
+            rc = LoadEligibilityData(dm);
 
             rc = LoadCostData(dm);
             rc = LoadWithdrawalData(dm);

@@ -124,16 +124,14 @@ namespace event {
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            // If the person is already linked, are not identifed as infected,
-            // or a false positive, exit the event
+            // If the person is already linked, is not identifed as infected,
+            // has been longer than one month since screening, or a false
+            // positive, exit the event
             if (person->GetLinkState() == person::LinkageState::LINKED ||
-                person->IsIdentifiedAsHCVInfected() ||
+                (!person->IsIdentifiedAsHCVInfected()) ||
+                (person->GetTimeSinceLastScreening() > 1) ||
                 FalsePositive(person, dm)) {
                 return;
-            }
-
-            if (!person->IsIdentifiedAsHCVInfected()) {
-                person->DiagnoseHCV();
             }
 
             double prob =

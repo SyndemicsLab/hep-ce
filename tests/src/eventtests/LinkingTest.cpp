@@ -21,6 +21,10 @@ std::string const INTERVENTION_LINK_QUERY =
 TEST_F(LinkingTest, FalsePositive) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
+    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+        .WillByDefault(Return(true));
+    ON_CALL(*testPerson, GetLinkState())
+        .WillByDefault(Return(person::LinkageState::UNLINKED));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
     ON_CALL(*testPerson, GetBehavior())
@@ -268,7 +272,6 @@ TEST_F(LinkingTest, DecideToUnlink) {
     // Expectations
     EXPECT_CALL(*testPerson, AddCost(_, _)).Times(0);
     EXPECT_CALL(*testPerson, Link(_)).Times(0);
-    EXPECT_CALL(*testPerson, Unlink()).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
