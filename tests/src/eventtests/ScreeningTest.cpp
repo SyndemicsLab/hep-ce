@@ -74,7 +74,8 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(2);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION)).Times(1);
+    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::INTERVENTION))
+        .Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -132,7 +133,8 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION)).Times(1);
+    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::INTERVENTION))
+        .Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -190,8 +192,7 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
-    EXPECT_CALL(*testPerson, Link(_)).Times(0);
-    EXPECT_CALL(*testPerson, Unlink()).Times(1);
+    EXPECT_CALL(*testPerson, SetLinkageType(_)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -249,8 +250,7 @@ TEST_F(ScreeningTest, BackgroundScreening_TFtestResults) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
-    EXPECT_CALL(*testPerson, Link(_)).Times(0);
-    EXPECT_CALL(*testPerson, Unlink()).Times(1);
+    EXPECT_CALL(*testPerson, SetLinkageType(_)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -308,7 +308,8 @@ TEST_F(ScreeningTest, BackgroundScreening_TTtestResults) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(1);
+    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::BACKGROUND))
+        .Times(1);
     EXPECT_CALL(*testPerson, Unlink()).Times(0);
 
     // Running Test
@@ -364,7 +365,7 @@ TEST_F(ScreeningTest, NoScreen) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(0);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(0);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(0);
-    EXPECT_CALL(*testPerson, Link(_)).Times(0);
+    EXPECT_CALL(*testPerson, SetLinkageType(_)).Times(0);
     EXPECT_CALL(*testPerson, Unlink()).Times(0);
 
     // Running Test

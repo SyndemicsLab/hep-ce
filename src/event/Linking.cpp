@@ -86,12 +86,12 @@ namespace event {
         bool
         FalsePositive(std::shared_ptr<person::PersonBase> person,
                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            if (person->GetHCV() != person::HCV::NONE) {
-                return false;
+            if (person->GetHCV() == person::HCV::NONE) {
+                person->Unlink();
+                this->addLinkingCost(person, dm, "False Positive Linking Cost");
+                return true;
             }
-            person->Unlink();
-            this->addLinkingCost(person, dm, "False Positive Linking Cost");
-            return true;
+            return false;
         }
 
         /// @brief Helper Function to Scale the probabilities if the person is
@@ -105,9 +105,7 @@ namespace event {
             if (person->GetLinkState() != person::LinkageState::UNLINKED) {
                 return; // Not Relinking
             }
-            double inverse_probability = 1 - probability;
-            inverse_probability *= relink_multiplier;
-            probability = 1 - inverse_probability;
+            probability *= relink_multiplier;
         }
 
         double ParseDoublesFromConfig(
@@ -126,7 +124,11 @@ namespace event {
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            if (FalsePositive(person, dm)) {
+            // If the person is already linked, are not identifed as infected,
+            // or a false positive, exit the event
+            if (person->GetLinkState() == person::LinkageState::LINKED ||
+                person->IsIdentifiedAsHCVInfected() ||
+                FalsePositive(person, dm)) {
                 return;
             }
 
@@ -151,9 +153,6 @@ namespace event {
                     this->addLinkingCost(person, dm,
                                          "Intervention Linking Cost");
                 }
-
-            } else if (person->GetLinkState() == person::LinkageState::LINKED) {
-                person->Unlink();
             }
         }
         LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {

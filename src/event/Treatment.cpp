@@ -29,6 +29,7 @@ namespace event {
         double discount = 0.0;
         double lost_to_follow_up_probability;
         double treatment_cost;
+        double retreatment_cost;
         double treatment_utility;
         double toxicity_cost;
         double toxicity_utility;
@@ -47,8 +48,7 @@ namespace event {
                                      char **columns) {
             Utils::tuple_2i key =
                 std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-            treatmentmap_t temp = (*((treatmentmap_t *)storage));
-            temp[key] = std::stod(data[2]);
+            (*((treatmentmap_t *)storage))[key] = std::stod(data[2]);
             return 0;
         }
 
@@ -103,16 +103,16 @@ namespace event {
         bool LostToFollowUp(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::shared_ptr<stats::DeciderBase> decider) {
-            if (person->HasInitiatedTreatment() || isEligible(person)) {
+            // If the person is already on treatment, they can't be lost to
+            // follow up
+            if (person->HasInitiatedTreatment()) {
                 return false;
             }
-            if (decider->GetDecision({lost_to_follow_up_probability,
-                                      1 - lost_to_follow_up_probability}) !=
-                0) {
-                return false;
+            if (decider->GetDecision({lost_to_follow_up_probability}) == 0) {
+                this->quitEngagement(person);
+                return true;
             }
-            this->quitEngagement(person);
-            return true;
+            return false;
         }
 
         void
@@ -183,20 +183,21 @@ namespace event {
         InitiateTreatment(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                           std::shared_ptr<stats::DeciderBase> decider) {
-            // if person hasn't initialized draw, if they have, continue
-            // treatment
             if (person->HasInitiatedTreatment()) {
                 return true;
             }
-            if (decider->GetDecision({treatment_init_probability,
-                                      1 - treatment_init_probability}) != 0) {
+            // Do not start treatment until eligible
+            if (!isEligible(person)) {
+                return false;
+            }
+            // person initiates treatment -- set treatment initiation values
+            if (decider->GetDecision({treatment_init_probability}) == 0) {
+                person->InitiateTreatment();
+                return true;
+            } else {
                 this->quitEngagement(person);
                 return false;
             }
-
-            // person initiates treatment -- set treatment initiation values
-            person->InitiateTreatment();
-            return true;
         }
 
         void quitEngagement(std::shared_ptr<person::PersonBase> person) {
@@ -330,9 +331,12 @@ namespace event {
             // 2. Charge the Cost of the Visit (varies if this is retreatment)
             ChargeCostOfVisit(person, dm);
 
-            // 3. Determine if the Person Engages and Initiates Treatment (i.e.
-            // picks up medicine)
-            if (!InitiateTreatment(person, dm, decider)) {
+            // 3. Attempt to start treatment, if already on treatment nothing
+            // happens
+            InitiateTreatment(person, dm, decider);
+
+            // If the person is not on a treatment, exit
+            if (!person->HasInitiatedTreatment()) {
                 return;
             }
 
@@ -363,13 +367,15 @@ namespace event {
                 ParseDoublesFromConfig("treatment.ltfu_probability", dm);
             treatment_cost =
                 ParseDoublesFromConfig("treatment.treatment_cost", dm);
+            retreatment_cost =
+                ParseDoublesFromConfig("treatment.retreatment_cost", dm);
             treatment_utility =
                 ParseDoublesFromConfig("treatment.treatment_utility", dm);
+            treatment_init_probability = ParseDoublesFromConfig(
+                "treatment.treatment_initialization", dm);
             toxicity_cost = ParseDoublesFromConfig("treatment.tox_cost", dm);
             toxicity_utility =
                 ParseDoublesFromConfig("treatment.tox_utility", dm);
-            treatment_init_probability = ParseDoublesFromConfig(
-                "treatment.treatment_initialization", dm);
 
             rc = LoadCostData(dm);
             rc = LoadWithdrawalData(dm);

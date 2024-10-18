@@ -36,13 +36,19 @@ namespace event {
 
         static int callback_fibrosis_test(void *storage, int count, char **data,
                                           char **columns) {
-            std::unordered_map<int, std::vector<double>> temp =
-                (*((std::unordered_map<int, std::vector<double>> *)storage));
+            // std::unordered_map<int, std::vector<double>> temp =
+            //     (*((std::unordered_map<int, std::vector<double>> *)storage));
             int key = std::stoi(data[0]);
-            if (temp.find(key) == temp.end()) {
-                temp[key] = {};
+            if ((*((std::unordered_map<int, std::vector<double>> *)storage))
+                    .find(key) ==
+                (*((std::unordered_map<int, std::vector<double>> *)storage))
+                    .end()) {
+                (*((std::unordered_map<int, std::vector<double>> *)
+                       storage))[key] = {};
             }
-            temp[key].push_back(std::stod(data[1]));
+            double i = std::stod(data[1]);
+            (*((std::unordered_map<int, std::vector<double>> *)storage))[key]
+                .push_back(i);
             return 0;
         }
 

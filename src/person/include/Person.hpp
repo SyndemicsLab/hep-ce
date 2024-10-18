@@ -73,6 +73,7 @@ namespace person {
         virtual int GetTimeOfLinkChange() const = 0;
         virtual int GetTimeSinceLinkChange() const = 0;
         virtual int GetLinkCount() const = 0;
+        virtual void SetLinkageType(LinkageType) = 0;
         virtual LinkageType GetLinkageType() const = 0;
         virtual LinkageDetails GetLinkStatus() const = 0;
 
@@ -121,7 +122,7 @@ namespace person {
         virtual void SetUtility(double util) = 0;
 
         // General Data Handling
-        virtual int LoadICValues(std::vector<std::string> icValues) = 0;
+        virtual int LoadICValues(int id, std::vector<std::string> icValues) = 0;
         virtual bool IsAlive() const = 0;
         virtual bool IsGenotypeThree() const = 0;
         virtual void SetGenotypeThree(bool genotype) = 0;
@@ -228,6 +229,7 @@ namespace person {
         int GetTimeOfLinkChange() const;
         int GetTimeSinceLinkChange() const;
         int GetLinkCount() const;
+        void SetLinkageType(LinkageType linkType);
         LinkageType GetLinkageType() const;
         LinkageDetails GetLinkStatus() const;
 
@@ -277,7 +279,7 @@ namespace person {
         void SetUtility(double util);
 
         // General Data Handling
-        int LoadICValues(std::vector<std::string> icValues);
+        int LoadICValues(int id, std::vector<std::string> icValues);
         bool IsAlive() const;
         bool IsGenotypeThree() const;
         void SetGenotypeThree(bool genotype);

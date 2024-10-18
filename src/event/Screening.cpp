@@ -159,9 +159,7 @@ namespace event {
             testFunc();
             // probability is the chance of false positive or false negative
             bool rValue =
-                (decider->GetDecision({probability, 1 - probability}) == 0)
-                    ? true
-                    : false;
+                (decider->GetDecision({probability}) == 0) ? true : false;
             return rValue;
         }
 
@@ -188,9 +186,7 @@ namespace event {
                     (screenkey == "screening_background")
                         ? person::LinkageType::BACKGROUND
                         : person::LinkageType::INTERVENTION;
-                person->Link(type);
-            } else {
-                person->Unlink();
+                person->SetLinkageType(type);
             }
         }
 
@@ -256,6 +252,10 @@ namespace event {
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
+            // if a person is already linked, skip screening
+            if (person->GetLinkState() == person::LinkageState::LINKED) {
+                return;
+            }
             /// Intervention Screening Conditions:
             /// 1. Have InterventionType is One-Time and CurrentTimestep
             ///         is 1

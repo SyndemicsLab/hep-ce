@@ -41,13 +41,13 @@ namespace event {
                    "incidence;";
         }
 
-        std::vector<double>
-        getInfectProb(std::shared_ptr<person::PersonBase> person,
-                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        std::vector<double> GetInfectionProbability(
+            std::shared_ptr<person::PersonBase> person,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
             if (incidence_data.empty()) {
                 spdlog::get("main")->warn(
                     "No result found for Infection Probability!");
-                return {0.0, 1.0};
+                return {0.0};
             }
 
             int age_years = (int)(person->GetAge() / 12.0);
@@ -57,7 +57,7 @@ namespace event {
                 std::make_tuple(age_years, gender, drug_behavior);
             double incidence = incidence_data[tup];
 
-            return {incidence, 1 - incidence};
+            return {incidence};
         }
 
         int
@@ -83,24 +83,23 @@ namespace event {
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            // only those who aren't infected go to the rest of the event.
-            // those who are infected transition from acute to chronic after 6
-            // months.
-            if (person->GetHCV() != person::HCV::NONE) {
-                if (person->GetHCV() == person::HCV::ACUTE &&
-                    person->GetTimeSinceHCVChanged() >= 6) {
-                    person->SetHCV(person::HCV::CHRONIC);
-                }
+            // Chronic cases cannot be infected. Acute cases progress to chronic
+            // after 6 consecutive months of infection
+            if (person->GetHCV() == person::HCV::CHRONIC) {
+                return;
+            } else if (person->GetHCV() == person::HCV::ACUTE &&
+                       person->GetTimeSinceHCVChanged() >= 6) {
+                person->SetHCV(person::HCV::CHRONIC);
                 return;
             }
 
             // draw new infection probability
-            std::vector<double> prob = this->getInfectProb(person, dm);
+            std::vector<double> prob =
+                this->GetInfectionProbability(person, dm);
             // decide whether person is infected; if value == 0, infect
-            if (decider->GetDecision(prob) != 0) {
-                return;
+            if (decider->GetDecision(prob) == 0) {
+                person->InfectHCV();
             }
-            person->InfectHCV();
         }
 
         InfectionsIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {

@@ -56,6 +56,7 @@ namespace person {
         MOCK_METHOD(int, GetTimeOfLinkChange, (), (const, override));
         MOCK_METHOD(int, GetTimeSinceLinkChange, (), (const, override));
         MOCK_METHOD(int, GetLinkCount, (), (const, override));
+        MOCK_METHOD(void, SetLinkageType, (LinkageType), (override));
         MOCK_METHOD(LinkageType, GetLinkageType, (), (const, override));
         MOCK_METHOD(LinkageDetails, GetLinkStatus, (), (const, override));
 
@@ -110,8 +111,8 @@ namespace person {
         MOCK_METHOD(void, SetUtility, (double util), (override));
 
         // General Data Handling
-        MOCK_METHOD(int, LoadICValues, (std::vector<std::string> icValues),
-                    (override));
+        MOCK_METHOD(int, LoadICValues,
+                    (int id, std::vector<std::string> icValues), (override));
         MOCK_METHOD(bool, IsAlive, (), (const, override));
         MOCK_METHOD(bool, IsGenotypeThree, (), (const, override));
         MOCK_METHOD(void, SetGenotypeThree, (bool genotype), (override));

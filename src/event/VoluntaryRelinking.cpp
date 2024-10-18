@@ -32,20 +32,15 @@ namespace event {
         void doEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-
-            int relink = decider->GetDecision(
-                {relink_probability, 1 - relink_probability});
-
-            // if linked or never linked OR too long since last linked OR relink
-            // draw is false
-            if (person->GetLinkState() != person::LinkageState::UNLINKED ||
-                (person->GetTimeSinceLinkChange()) >
-                    voluntary_relink_duration ||
-                relink != 0) {
-                return;
+            // if linked or never linked OR too long since last linked
+            if ((person->GetLinkState() == person::LinkageState::UNLINKED) &&
+                ((person->GetTimeSinceLinkChange()) <
+                 voluntary_relink_duration) &&
+                (decider->GetDecision({relink_probability}) == 0)) {
+                person->Link(person::LinkageType::BACKGROUND);
             }
-            person->Link(person::LinkageType::BACKGROUND);
         }
+
         VoluntaryRelinkingIMPL(
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string data;

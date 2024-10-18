@@ -177,7 +177,7 @@ namespace simulation {
             person::PersonFactory factory;
             std::shared_ptr<person::PersonBase> newperson = factory.create();
             if (!icValues.empty()) {
-                newperson->LoadICValues(icValues);
+                newperson->LoadICValues(id, icValues);
             }
             // TODO Fix this so we can read and load population to DB quicker
 

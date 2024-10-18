@@ -223,32 +223,32 @@ namespace person {
             this->health.seropositive = true;
             this->health.timesInfected++;
 
-            if (this->health.fibrosisState != FibrosisState::NONE) {
-                return;
-            }
             // once infected, immediately enter F0
-            this->health.fibrosisState = FibrosisState::F0;
-            this->health.timeFibrosisStateChanged = this->_currentTime;
+            if (this->health.fibrosisState == FibrosisState::NONE) {
+                UpdateTrueFibrosis(FibrosisState::F0);
+            }
         }
 
         /// @brief Clear of HCV
         /// @param timestep Current simulation timestep
         void ClearHCV() {
             // cannot clear if the person is not infected
-            if (this->health.hcv == HCV::NONE) {
+            if (GetHCV() == HCV::NONE) {
                 return;
             }
             this->health.hcv = HCV::NONE;
+            this->health.identifiedHCV = false;
             this->health.timeHCVChanged = this->_currentTime;
             this->AddHCVClearance();
         }
 
-        int LoadICValues(std::vector<std::string> icValues) {
-            if (icValues.size() < 9) {
+        int LoadICValues(int id, std::vector<std::string> icValues) {
+            if (icValues.size() < 10) {
                 spdlog::get("main")->warn(
                     "Incorrect Number of Initial Cohort Values Retrieved!");
                 return -1;
             }
+            this->id = id;
             SetAge(std::stoi(icValues[1]));
             this->sex = static_cast<person::Sex>(std::stoi(icValues[2]));
             SetBehavior(static_cast<person::Behavior>(std::stoi(icValues[3])));
@@ -264,6 +264,7 @@ namespace person {
             }
             linkStatus.linkState =
                 static_cast<person::LinkageState>(std::stoi(icValues[9]));
+            health.hcv = static_cast<person::HCV>(std::stoi(icValues[10]));
             return 0;
         }
 
@@ -330,6 +331,7 @@ namespace person {
                 this->linkStatus.linkState = LinkageState::UNLINKED;
                 this->linkStatus.timeOfLinkChange = this->_currentTime;
             }
+            this->treatmentDetails.initiatedTreatment = false;
         }
 
         /// @brief Reset a PersonIMPL's Link State to Linked
@@ -551,6 +553,10 @@ namespace person {
         /// @brief Getter for link count
         /// @return Number of times PersonIMPL has linked to care
         int GetLinkCount() const { return this->linkStatus.linkCount; }
+
+        void SetLinkageType(LinkageType linkType) {
+            this->linkStatus.linkType = linkType;
+        }
 
         /// @brief Getter for Linkage Type
         /// @return Linkage Type
@@ -831,8 +837,8 @@ namespace person {
         data = pImplPERSON->DiagnoseFibrosis(data);
         return 0;
     }
-    int Person::LoadICValues(std::vector<std::string> icValues) {
-        pImplPERSON->LoadICValues(icValues);
+    int Person::LoadICValues(int id, std::vector<std::string> icValues) {
+        pImplPERSON->LoadICValues(id, icValues);
         return 0;
     }
     int Person::AddHCVClearance() {
@@ -999,6 +1005,9 @@ namespace person {
         return GetCurrentTimestep() - GetTimeOfLinkChange();
     }
     int Person::GetLinkCount() const { return pImplPERSON->GetLinkCount(); }
+    void Person::SetLinkageType(LinkageType linkType) {
+        return pImplPERSON->SetLinkageType(linkType);
+    }
     LinkageType Person::GetLinkageType() const {
         return pImplPERSON->GetLinkageType();
     }

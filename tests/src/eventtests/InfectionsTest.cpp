@@ -128,6 +128,9 @@ TEST_F(InfectionsTest, Infections_NoAcuteProgression) {
     ON_CALL(*event_dm, SelectCustomCallback(INCIDENCE_QUERY, _, _, _))
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
+    // Decider Setup
+    ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(1)); // Do Not Infect
+
     // Expectations
     EXPECT_CALL(*testPerson, SetHCV(_)).Times(0);
     EXPECT_CALL(*testPerson, InfectHCV()).Times(0);
