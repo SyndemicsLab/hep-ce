@@ -37,7 +37,7 @@ def extractor(df: pds.DataFrame) -> None:
     data["number of liver related deaths"] = df["deathReason"].value_counts()[
         "liver"]
     data["number of HCV identifications"] = df["identifiedHCV"].sum()
-    data["number of HCV infections"] = df["timesInfected"].sum()
+    data["number of new HCV infections"] = df["timesInfected"].sum()
     data["number of acute infection clearance"] = df["timesCleared"].sum()
     data["total number of ab screenings"] = df["numABTests"].sum()
     data["total number of rna screenings"] = df["numRNATests"].sum()
@@ -50,7 +50,7 @@ def extractor(df: pds.DataFrame) -> None:
 
 if __name__ == "__main__":
     # fix for arg path
-    # file_path = "/home/matt/population.csv"
-    file_path = "/home/matt/Repos/TestData/HEP-CE/newinputs/fibrosis/output1/population.csv"
+    file_path = "/home/matt/population.csv"
+    # file_path = "/home/matt/Repos/TestData/HEP-CE/newinputs/fibrosis/output1/population.csv"
     df = pds.read_csv(file_path)
     extractor(df)

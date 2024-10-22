@@ -70,7 +70,8 @@ namespace person {
         BACKGROUND = 0,
         /// Linked through intervention screening
         INTERVENTION = 1,
-        COUNT = 2
+        NA = 2,
+        COUNT = 3
     };
     std::ostream &operator<<(std::ostream &os, const LinkageType &inst);
     LinkageType &operator<<(LinkageType &inst, const std::string &str);
@@ -136,16 +137,17 @@ namespace person {
 
     /// @brief Clinically staged liver fibrosis stage
     enum class MeasuredFibrosisState {
-        /// Person has never been screened before
-        NONE = 0,
         /// Person is measured to be either F0 or F1
-        F01 = 1,
+        F01 = 0,
         /// Person is measured to be either F2 or F3
-        F23 = 2,
+        F23 = 1,
         /// Person is measured to be F4
-        F4 = 3,
+        F4 = 2,
         /// Person has decompensated liver
-        DECOMP = 4,
+        DECOMP = 3,
+        /// Person has never been screened before
+        NONE = 4,
+
         COUNT = 5
     };
     std::ostream &operator<<(std::ostream &os,
@@ -199,12 +201,12 @@ namespace person {
         FibrosisState fibrosisState = FibrosisState::NONE;
         bool isGenotypeThree = false;
         bool seropositive = false;
-        int timeHCVChanged = 0;
-        int timeFibrosisStateChanged = 0;
+        int timeHCVChanged = -1;
+        int timeFibrosisStateChanged = -1;
         int timesInfected = 0;
         int timesCleared = 0;
         bool identifiedHCV = false;
-        int timeIdentified = 0;
+        int timeIdentified = -1;
         HCCState hccState = HCCState::NONE;
     };
     std::ostream &operator<<(std::ostream &os, const Health &inst);
@@ -212,15 +214,15 @@ namespace person {
     /// @brief Attributes describing drug use behavior
     struct BehaviorDetails {
         Behavior behavior = Behavior::NEVER;
-        int timeLastActive = 0;
+        int timeLastActive = -1;
     };
     std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav);
 
     /// @brief Attributes describing Linkage
     struct LinkageDetails {
         LinkageState linkState = LinkageState::NEVER;
-        int timeOfLinkChange = 0;
-        LinkageType linkType = LinkageType::BACKGROUND;
+        int timeOfLinkChange = -1;
+        LinkageType linkType = LinkageType::NA;
         int linkCount = 0;
     };
     std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet);
@@ -228,7 +230,7 @@ namespace person {
     /// @brief Attributes describing MOUD status
     struct MOUDDetails {
         MOUD moudState = MOUD::NONE;
-        int timeStartedMoud = 0;
+        int timeStartedMoud = -1;
         int currentStateConcurrentMonths = 0;
         int totalMOUDMonths = 0;
     };
@@ -237,7 +239,7 @@ namespace person {
     /// @brief Attributes describing pregnancy
     struct PregnancyDetails {
         PregnancyState pregnancyState = PregnancyState::NONE;
-        int timeOfPregnancyChange = 0;
+        int timeOfPregnancyChange = -1;
         int numInfants = 0;
         int numMiscarriages = 0;
     };
@@ -254,7 +256,7 @@ namespace person {
         MeasuredFibrosisState measuredFibrosisState =
             MeasuredFibrosisState::NONE;
         bool hadSecondTest = false;
-        int timeOfLastStaging = 0;
+        int timeOfLastStaging = -1;
     };
     std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet);
 

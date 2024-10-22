@@ -25,8 +25,13 @@ std::string const INTERVENTION_SCREEN_QUERY =
 
 TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
     // Person Setup
+    ON_CALL(*testPerson, GetLinkState())
+        .WillByDefault(Return(person::LinkageState::UNLINKED));
     ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(0));
-    ON_CALL(*testPerson, GetTimeOfLastScreening()).WillByDefault(Return(-1));
+    EXPECT_CALL(*testPerson, GetTimeOfLastScreening())
+        .WillOnce(Return(-1))
+        .WillRepeatedly(Return(0));
+
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
@@ -34,6 +39,7 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
     ON_CALL(*testPerson, GetBehavior())
         .WillByDefault(Return(person::Behavior::NEVER));
+    ON_CALL(*testPerson, IsBoomer()).WillByDefault(Return(false));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -86,7 +92,9 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
 TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
     // Person Setup
     ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(0));
-    ON_CALL(*testPerson, GetTimeOfLastScreening()).WillByDefault(Return(-1));
+    EXPECT_CALL(*testPerson, GetTimeOfLastScreening())
+        .WillOnce(Return(-1))
+        .WillRepeatedly(Return(0));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
@@ -145,7 +153,9 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
 TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
     // Person Setup
     ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(0));
-    ON_CALL(*testPerson, GetTimeOfLastScreening()).WillByDefault(Return(-1));
+    EXPECT_CALL(*testPerson, GetTimeOfLastScreening())
+        .WillOnce(Return(-1))
+        .WillRepeatedly(Return(0));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));

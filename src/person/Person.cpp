@@ -28,7 +28,7 @@ namespace person {
             int timeLastActiveDrugUse = -1;
             LinkageState linkageState = LinkageState::NEVER;
             int timeOfLinkChange = -1;
-            LinkageType linkageType = LinkageType::BACKGROUND;
+            LinkageType linkageType = LinkageType::INTERVENTION;
             int linkCount = 0;
             MeasuredFibrosisState measuredFibrosisState =
                 MeasuredFibrosisState::NONE;
@@ -133,6 +133,13 @@ namespace person {
             }
             this->moudDetails.currentStateConcurrentMonths = 0;
             this->moudDetails.moudState = moud;
+        }
+
+        int CalculateTimeSince(int lasttime) const {
+            if (lasttime == -1) {
+                return GetCurrentTimestep();
+            }
+            return GetCurrentTimestep() - lasttime;
         }
 
     public:
@@ -260,7 +267,7 @@ namespace person {
             this->health.fibrosisState =
                 static_cast<person::FibrosisState>(std::stoi(icValues[7]));
             if (std::stoi(icValues[8]) == 1) {
-                DiagnoseHCV();
+                this->health.identifiedHCV = true;
             }
             linkStatus.linkState =
                 static_cast<person::LinkageState>(std::stoi(icValues[9]));
@@ -582,7 +589,27 @@ namespace person {
         }
 
         int GetTimeSincePregnancyChange() const {
-            return this->_currentTime - GetTimeOfPregnancyChange();
+            return CalculateTimeSince(GetTimeOfPregnancyChange());
+        }
+
+        int GetTimeSinceLastScreening() const {
+            return CalculateTimeSince(GetTimeOfLastScreening());
+        }
+
+        int GetTimeSinceHCVChanged() const {
+            return CalculateTimeSince(GetTimeHCVChanged());
+        }
+
+        int GetTimeSinceLinkChange() const {
+            return CalculateTimeSince(GetTimeOfLinkChange());
+        }
+
+        int GetTimeSinceTreatmentInitiation() const {
+            return CalculateTimeSince(GetTimeOfTreatmentInitiation());
+        }
+
+        int GetTimeSinceFibrosisStaging() const {
+            return CalculateTimeSince(GetTimeOfFibrosisStaging());
         }
 
         std::vector<Child> GetChildren() const { return this->children; }
@@ -959,7 +986,7 @@ namespace person {
         return pImplPERSON->GetTimeOfLastScreening();
     }
     int Person::GetTimeSinceLastScreening() const {
-        return pImplPERSON->GetCurrentTimestep() - GetTimeOfLastScreening();
+        return pImplPERSON->GetTimeSinceLastScreening();
     }
     bool Person::GetCurrentlyOverdosing() const {
         return pImplPERSON->GetCurrentlyOverdosing();
@@ -983,7 +1010,7 @@ namespace person {
     }
 
     int Person::GetTimeSinceHCVChanged() const {
-        return pImplPERSON->GetCurrentTimestep() - GetTimeHCVChanged();
+        return pImplPERSON->GetTimeSinceHCVChanged();
     }
 
     int Person::GetTimeTrueFibrosisStateChanged() const {
@@ -1002,7 +1029,7 @@ namespace person {
         return pImplPERSON->GetTimeOfLinkChange();
     }
     int Person::GetTimeSinceLinkChange() const {
-        return GetCurrentTimestep() - GetTimeOfLinkChange();
+        return pImplPERSON->GetTimeSinceLinkChange();
     }
     int Person::GetLinkCount() const { return pImplPERSON->GetLinkCount(); }
     void Person::SetLinkageType(LinkageType linkType) {
@@ -1015,7 +1042,7 @@ namespace person {
         return pImplPERSON->GetTimeOfTreatmentInitiation();
     }
     int Person::GetTimeSinceTreatmentInitiation() const {
-        return GetCurrentTimestep() - GetTimeOfTreatmentInitiation();
+        return pImplPERSON->GetTimeSinceTreatmentInitiation();
     }
 
     PregnancyState Person::GetPregnancyState() const {
@@ -1037,8 +1064,7 @@ namespace person {
         return pImplPERSON->GetTimeOfFibrosisStaging();
     }
     int Person::GetTimeSinceFibrosisStaging() const {
-        return pImplPERSON->GetCurrentTimestep() -
-               pImplPERSON->GetTimeOfFibrosisStaging();
+        return pImplPERSON->GetTimeSinceFibrosisStaging();
     }
     MOUD Person::GetMoudState() const { return pImplPERSON->GetMoudState(); }
     MeasuredFibrosisState Person::GetMeasuredFibrosisState() const {

@@ -27,6 +27,19 @@ namespace event {
     private:
         double relink_probability;
         int voluntary_relink_duration;
+        double background_rna_cost;
+        double discount = 0.0;
+
+        /// @brief During a voluntary relink, a new RNA test is run on the
+        /// person. This has no impact outside of costs to the person.
+        /// @param person person who is being relinked
+        void AddRNATest(std::shared_ptr<person::PersonBase> person) {
+            person->AddRnaScreen();
+            double discountAdjustedCost = Event::DiscountEventCost(
+                background_rna_cost, discount, person->GetCurrentTimestep());
+            person->AddCost(discountAdjustedCost,
+                            cost::CostCategory::SCREENING);
+        }
 
     public:
         void doEvent(std::shared_ptr<person::PersonBase> person,
@@ -37,12 +50,19 @@ namespace event {
                 ((person->GetTimeSinceLinkChange()) <
                  voluntary_relink_duration) &&
                 (decider->GetDecision({relink_probability}) == 0)) {
+                AddRNATest(person);
                 person->Link(person::LinkageType::BACKGROUND);
             }
         }
 
         VoluntaryRelinkingIMPL(
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string discount_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
+            if (discount_data.empty()) {
+                this->discount = std::stod(discount_data);
+            }
+
             std::string data;
             dm->GetFromConfig("linking.voluntary_relinkage_probability", data);
             if (data.empty()) {
@@ -60,6 +80,10 @@ namespace event {
                 data = "0";
             }
             voluntary_relink_duration = std::stoi(data);
+
+            data.clear();
+            dm->GetFromConfig("screening_background_rna.cost", data);
+            background_rna_cost = std::stod(data);
         }
     };
 

@@ -87,25 +87,11 @@ namespace event {
         FalsePositive(std::shared_ptr<person::PersonBase> person,
                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
             if (person->GetHCV() == person::HCV::NONE) {
-                person->Unlink();
+                // person->Unlink();
                 this->addLinkingCost(person, dm, "False Positive Linking Cost");
                 return true;
             }
             return false;
-        }
-
-        /// @brief Helper Function to Scale the probabilities if the person is
-        /// relinking
-        /// @param person Person Under Study
-        /// @param dm Data Manager Object
-        /// @param probabilities Linking Probabilities (0: link, 1: unlink)
-        void ScaleIfRelink(std::shared_ptr<person::PersonBase> person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
-                           double &probability) {
-            if (person->GetLinkState() != person::LinkageState::UNLINKED) {
-                return; // Not Relinking
-            }
-            probability *= relink_multiplier;
         }
 
         double ParseDoublesFromConfig(
@@ -129,7 +115,7 @@ namespace event {
             // positive, exit the event
             if (person->GetLinkState() == person::LinkageState::LINKED ||
                 (!person->IsIdentifiedAsHCVInfected()) ||
-                (person->GetTimeSinceLastScreening() > 1) ||
+                (person->GetTimeSinceLastScreening() > 0) ||
                 FalsePositive(person, dm)) {
                 return;
             }
@@ -140,8 +126,6 @@ namespace event {
                                          "background_link_probability")
                     : getLinkProbability(person, dm,
                                          "intervention_link_probability");
-
-            ScaleIfRelink(person, dm, prob);
 
             // draw from link probability
             if (decider->GetDecision({prob}) == 0) {
@@ -164,9 +148,6 @@ namespace event {
 
             false_positive_test_cost =
                 ParseDoublesFromConfig("linking.false_positive_test_cost", dm);
-
-            relink_multiplier =
-                ParseDoublesFromConfig("linking.relink_multiplier", dm);
 
             std::string error;
             rc = dm->SelectCustomCallback(

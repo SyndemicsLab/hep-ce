@@ -60,7 +60,6 @@ TEST_F(LinkingTest, FalsePositive) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Expectations
-    EXPECT_CALL(*testPerson, Unlink()).Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
 
     // Running Test

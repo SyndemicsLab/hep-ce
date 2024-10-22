@@ -106,8 +106,11 @@ namespace person {
         case LinkageType::BACKGROUND:
             os << "background";
             break;
-        default:
+        case LinkageType::INTERVENTION:
             os << "intervention";
+            break;
+        default:
+            os << "NA";
             break;
         }
         return os;
@@ -115,8 +118,10 @@ namespace person {
     LinkageType &operator<<(LinkageType &inst, const std::string &str) {
         if (str == "background") {
             inst = LinkageType::BACKGROUND;
-        } else {
+        } else if (str == "intervention") {
             inst = LinkageType::INTERVENTION;
+        } else {
+            inst = LinkageType::NA;
         }
         return inst;
     }

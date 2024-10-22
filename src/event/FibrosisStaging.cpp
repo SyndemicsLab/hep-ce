@@ -36,8 +36,6 @@ namespace event {
 
         static int callback_fibrosis_test(void *storage, int count, char **data,
                                           char **columns) {
-            // std::unordered_map<int, std::vector<double>> temp =
-            //     (*((std::unordered_map<int, std::vector<double>> *)storage));
             int key = std::stoi(data[0]);
             if ((*((std::unordered_map<int, std::vector<double>> *)storage))
                     .find(key) ==
@@ -54,12 +52,6 @@ namespace event {
 
         std::string FibrosisTestSQL(std::string column) {
             return "SELECT fibrosis_state, " + column + " FROM fibrosis;";
-            // std::stringstream sql;
-            // sql << "SELECT fibrosis_state, " << column << " FROM fibrosis ";
-            // sql << "WHERE fibrosis_state = "
-            //     << ((int)person->GetTrueFibrosisState());
-            // sql << " LIMIT 4;"; // weird issue with returning a bunch hits
-            // return sql.str();
         }
 
         /// @brief Aggregate the fibrosis stage testing probabilities for a
@@ -161,7 +153,7 @@ namespace event {
                 GetMeasurementProbabilities(person, dm, test_one);
 
             // 4. Decide which stage is assigned to the person->
-            int res = decider->GetDecision(probs) + 1;
+            int res = decider->GetDecision(probs);
             if (res >= (int)person::MeasuredFibrosisState::COUNT) {
                 spdlog::get("main")->error(
                     "Measured Fibrosis State Decision returned "
@@ -191,8 +183,7 @@ namespace event {
             person->GiveSecondScreeningTest(true);
 
             person::MeasuredFibrosisState stateTwo =
-                (person::MeasuredFibrosisState)(decider->GetDecision(probs) +
-                                                1);
+                (person::MeasuredFibrosisState)(decider->GetDecision(probs));
 
             // determine whether to use latest test value or greatest
             person::MeasuredFibrosisState measured;

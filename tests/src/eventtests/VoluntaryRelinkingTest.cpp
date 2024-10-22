@@ -21,6 +21,10 @@ TEST_F(VoluntaryRelinkingTest, Relink) {
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.voluntary_relink_duration", _))
         .WillByDefault(DoAll(SetArgReferee<1>("100"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("100"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("screening_background_rna.cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("25.25"), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -46,6 +50,10 @@ TEST_F(VoluntaryRelinkingTest, NotUnlinked) {
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.voluntary_relink_duration", _))
         .WillByDefault(DoAll(SetArgReferee<1>("100"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("100"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("screening_background_rna.cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("25.25"), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -71,6 +79,10 @@ TEST_F(VoluntaryRelinkingTest, TooLongDuration) {
         .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.voluntary_relink_duration", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("100"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("screening_background_rna.cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("25.25"), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -96,6 +108,10 @@ TEST_F(VoluntaryRelinkingTest, DecideNotToRelink) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.voluntary_relink_duration", _))
         .WillByDefault(DoAll(SetArgReferee<1>("100"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("100"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("screening_background_rna.cost", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("25.25"), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(1));
