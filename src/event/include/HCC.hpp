@@ -26,9 +26,9 @@ namespace event {
     private:
         class HCCIMPL;
         std::unique_ptr<HCCIMPL> impl;
-        /// @brief Implementation of Virtual Function doEvent
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) override;
 

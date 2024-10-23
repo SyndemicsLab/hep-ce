@@ -30,6 +30,8 @@ TEST_F(VoluntaryRelinkingTest, Relink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
+    EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(1);
 
     // Running Test
@@ -59,6 +61,8 @@ TEST_F(VoluntaryRelinkingTest, NotUnlinked) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
+    EXPECT_CALL(*testPerson, AddRnaScreen()).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(0);
 
     // Running Test
@@ -88,6 +92,8 @@ TEST_F(VoluntaryRelinkingTest, TooLongDuration) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
+    EXPECT_CALL(*testPerson, AddRnaScreen()).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(0);
 
     // Running Test
@@ -117,6 +123,8 @@ TEST_F(VoluntaryRelinkingTest, DecideNotToRelink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(1));
 
     // Expectations
+    EXPECT_CALL(*testPerson, AddRnaScreen()).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(0);
 
     // Running Test

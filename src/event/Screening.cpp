@@ -70,18 +70,11 @@ namespace event {
         }
 
         std::string ScreenSQL(std::string column) const {
-            // int age_years = person->GetAge() / 12.0; // intentional
-            // truncation std::stringstream sql;
             return "SELECT at.age_years, sl.gender, sl.drug_behavior, " +
                    column +
                    " FROM antibody_testing AS at INNER JOIN "
                    "screening_and_linkage AS sl ON ((at.age_years = "
                    "sl.age_years) AND (at.drug_behavior = sl.drug_behavior));";
-            // sql << " WHERE at.age_years = " << age_years;
-            // sql << " AND sl.gender = " << ((int)person->GetSex());
-            // sql << " AND sl.drug_behavior = " << ((int)person->GetBehavior())
-            //     << ";";
-            // return sql.str();
         }
 
         bool runABTest(std::shared_ptr<person::PersonBase> person,
@@ -211,26 +204,30 @@ namespace event {
             return probability;
         }
 
-        void
+        int
         InterventionScreen(std::shared_ptr<person::PersonBase> person,
                            std::shared_ptr<datamanagement::DataManagerBase> dm,
                            std::shared_ptr<stats::DeciderBase> decider) {
             double interventionProbability = this->GetScreeningProbability(
                 "intervention_screen_probability", person, dm);
-            if (decider->GetDecision({interventionProbability}) == 0) {
+            int decision = decider->GetDecision({interventionProbability});
+            if (decision == 0) {
                 this->Screen("screening_intervention", person, dm, decider);
             }
+            return decision;
         }
 
-        void
+        int
         BackgroundScreen(std::shared_ptr<person::PersonBase> person,
                          std::shared_ptr<datamanagement::DataManagerBase> dm,
                          std::shared_ptr<stats::DeciderBase> decider) {
             double backgroundProbability = this->GetScreeningProbability(
                 "background_screen_probability", person, dm);
-            if (decider->GetDecision({backgroundProbability}) == 0) {
+            int decision = decider->GetDecision({backgroundProbability});
+            if (decision == 0) {
                 this->Screen("screening_background", person, dm, decider);
             }
+            return decision;
         }
 
         /// @brief Insert cost for screening of type \code{type}
@@ -260,7 +257,7 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             // if a person is already linked, skip screening
@@ -281,9 +278,11 @@ namespace event {
 
             // If it is time to do a one-time intervention screen or periodic
             // screen, run an intervention screen
+            int intevention_screen = 1;
             if (do_one_time_screen || do_periodic_screen) {
-                this->InterventionScreen(person, dm, decider);
-            } else if (do_background_screen) {
+                intevention_screen =
+                    this->InterventionScreen(person, dm, decider);
+            } else if (do_background_screen && intevention_screen != 0) {
                 this->BackgroundScreen(person, dm, decider);
             }
         }
@@ -395,10 +394,10 @@ namespace event {
     Screening::Screening(Screening &&) noexcept = default;
     Screening &Screening::operator=(Screening &&) noexcept = default;
 
-    void Screening::doEvent(std::shared_ptr<person::PersonBase> person,
+    void Screening::DoEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 
 } // namespace event

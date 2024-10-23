@@ -60,6 +60,7 @@ TEST_F(LinkingTest, FalsePositive) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Expectations
+    EXPECT_CALL(*testPerson, ClearHCVDiagnosis()).Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
     // Running Test
@@ -67,7 +68,7 @@ TEST_F(LinkingTest, FalsePositive) {
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(LinkingTest, BackgroundRelink) {
+TEST_F(LinkingTest, BackgroundLink) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
@@ -86,8 +87,6 @@ TEST_F(LinkingTest, BackgroundRelink) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
@@ -103,56 +102,6 @@ TEST_F(LinkingTest, BackgroundRelink) {
 
     // Intervention Link Setup
     link_prob = 0.0;
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
-        istorage;
-    istorage[tup_3i] = link_prob;
-    ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
-
-    // Decider Setup
-    ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
-
-    // Expectations
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(1);
-
-    // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
-    event->Execute(testPerson, event_dm, decider);
-}
-
-TEST_F(LinkingTest, BackgroundFirstLink) {
-    // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
-        .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState())
-        .WillByDefault(Return(person::LinkageState::NEVER));
-    ON_CALL(*testPerson, GetLinkageType())
-        .WillByDefault(Return(person::LinkageType::BACKGROUND));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
-    ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
-
-    // Data Setup
-    ON_CALL(*event_dm, GetFromConfig(_, _))
-        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-
-    // Background Link Setup
-    double link_prob = 1.0;
-    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
-        bstorage;
-    bstorage[tup_3i] = link_prob;
-    ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
-
-    // Intervention Link Setup
-    link_prob = 0.5;
     std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
                        Utils::key_equal_3i>
         istorage;
@@ -226,7 +175,7 @@ TEST_F(LinkingTest, InterventionLink) {
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(LinkingTest, DecideToUnlink) {
+TEST_F(LinkingTest, DecideToNotLink) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())

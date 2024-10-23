@@ -131,7 +131,7 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
 
@@ -194,10 +194,10 @@ namespace event {
     BehaviorChanges &
     BehaviorChanges::operator=(BehaviorChanges &&) noexcept = default;
 
-    void BehaviorChanges::doEvent(
+    void BehaviorChanges::DoEvent(
         std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 } // namespace event

@@ -43,7 +43,7 @@ namespace event {
     class Event {
     protected:
         virtual void
-        doEvent(std::shared_ptr<person::PersonBase> person,
+        DoEvent(std::shared_ptr<person::PersonBase> person,
                 std::shared_ptr<datamanagement::DataManagerBase> dm,
                 std::shared_ptr<stats::DeciderBase> decider) = 0;
 

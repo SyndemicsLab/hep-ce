@@ -339,6 +339,7 @@ namespace person {
                 this->linkStatus.timeOfLinkChange = this->_currentTime;
             }
             this->treatmentDetails.initiatedTreatment = false;
+            this->ClearHCVDiagnosis();
         }
 
         /// @brief Reset a PersonIMPL's Link State to Linked
@@ -356,6 +357,11 @@ namespace person {
         void DiagnoseHCV() {
             this->health.identifiedHCV = true;
             this->health.timeIdentified = this->_currentTime;
+        }
+
+        int ClearHCVDiagnosis() {
+            this->health.identifiedHCV = false;
+            return 0;
         }
 
         /// @brief Add a cost to the person's CostTracker object
@@ -918,6 +924,7 @@ namespace person {
         pImplPERSON->DiagnoseHCV();
         return 0;
     }
+    int Person::ClearHCVDiagnosis() { return pImplPERSON->ClearHCVDiagnosis(); }
     int Person::AddCost(double base_cost, double discount_cost,
                         cost::CostCategory category) {
         pImplPERSON->AddCost(base_cost, discount_cost, category);

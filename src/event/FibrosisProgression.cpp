@@ -97,7 +97,7 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             // can only progress in fibrosis state if actively infected with HCV
@@ -185,10 +185,10 @@ namespace event {
     FibrosisProgression &
     FibrosisProgression::operator=(FibrosisProgression &&) noexcept = default;
 
-    void FibrosisProgression::doEvent(
+    void FibrosisProgression::DoEvent(
         std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 } // namespace event

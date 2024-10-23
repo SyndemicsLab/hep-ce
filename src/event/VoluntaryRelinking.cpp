@@ -42,7 +42,7 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             // if linked or never linked OR too long since last linked
@@ -99,10 +99,10 @@ namespace event {
     VoluntaryRelinking &
     VoluntaryRelinking::operator=(VoluntaryRelinking &&) noexcept = default;
 
-    void VoluntaryRelinking::doEvent(
+    void VoluntaryRelinking::DoEvent(
         std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm,
         std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 } // namespace event

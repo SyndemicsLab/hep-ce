@@ -47,6 +47,7 @@ namespace person {
         virtual void SetSeropositivity(bool seropositive) = 0;
 
         virtual int DiagnoseHCV() = 0;
+        virtual int ClearHCVDiagnosis() = 0;
         virtual bool IsIdentifiedAsHCVInfected() const = 0;
 
         virtual int GetTimeHCVIdentified() const = 0;
@@ -206,6 +207,7 @@ namespace person {
         void SetSeropositivity(bool seropositive);
 
         int DiagnoseHCV();
+        int ClearHCVDiagnosis();
         bool IsIdentifiedAsHCVInfected() const;
 
         int GetTimeHCVIdentified() const;

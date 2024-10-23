@@ -26,7 +26,7 @@ namespace event {
         double clearanceProbability;
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             // if person isn't infected or is chronic, nothing to do
@@ -58,9 +58,9 @@ namespace event {
     Clearance::Clearance(Clearance &&) noexcept = default;
     Clearance &Clearance::operator=(Clearance &&) noexcept = default;
 
-    void Clearance::doEvent(std::shared_ptr<person::PersonBase> person,
+    void Clearance::DoEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 } // namespace event

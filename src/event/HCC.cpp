@@ -25,7 +25,7 @@ namespace event {
     class HCC::HCCIMPL {
     private:
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             person::FibrosisState current = person->GetTrueFibrosisState();
@@ -55,9 +55,9 @@ namespace event {
     HCC::HCC(HCC &&) noexcept = default;
     HCC &HCC::operator=(HCC &&) noexcept = default;
 
-    void HCC::doEvent(std::shared_ptr<person::PersonBase> person,
+    void HCC::DoEvent(std::shared_ptr<person::PersonBase> person,
                       std::shared_ptr<datamanagement::DataManagerBase> dm,
                       std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 } // namespace event

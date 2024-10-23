@@ -224,7 +224,7 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             if (ReachedMaxAge(person)) {
@@ -290,9 +290,9 @@ namespace event {
     Death::Death(Death &&) noexcept = default;
     Death &Death::operator=(Death &&) noexcept = default;
 
-    void Death::doEvent(std::shared_ptr<person::PersonBase> person,
+    void Death::DoEvent(std::shared_ptr<person::PersonBase> person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 } // namespace event

@@ -29,6 +29,7 @@ namespace person {
         MOCK_METHOD(void, SetSeropositivity, (bool seropositive), (override));
 
         MOCK_METHOD(int, DiagnoseHCV, (), (override));
+        MOCK_METHOD(int, ClearHCVDiagnosis, (), (override));
         MOCK_METHOD(bool, IsIdentifiedAsHCVInfected, (), (const, override));
 
         MOCK_METHOD(int, GetTimeHCVIdentified, (), (const, override));
@@ -135,7 +136,8 @@ namespace person {
         MOCK_METHOD(
             (std::unordered_map<cost::CostCategory, std::pair<double, double>>),
             GetCosts, (), (const, override));
-        MOCK_METHOD((std::pair<double, double>), GetCostTotals, (), (const, override));
+        MOCK_METHOD((std::pair<double, double>), GetCostTotals, (),
+                    (const, override));
         MOCK_METHOD(Health, GetHealth, (), (const, override));
 
         // TODO

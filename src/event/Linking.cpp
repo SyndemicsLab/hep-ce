@@ -50,7 +50,7 @@ namespace event {
         }
 
         double
-        getLinkProbability(std::shared_ptr<person::PersonBase> person,
+        GetLinkProbability(std::shared_ptr<person::PersonBase> person,
                            std::shared_ptr<datamanagement::DataManagerBase> dm,
                            std::string columnKey) {
             int age_years = (int)(person->GetAge() / 12.0);
@@ -66,7 +66,7 @@ namespace event {
             return 0.0;
         }
 
-        void addLinkingCost(std::shared_ptr<person::PersonBase> person,
+        void AddLinkingCost(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::string name) {
             double cost;
@@ -89,7 +89,8 @@ namespace event {
                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
             if (person->GetHCV() == person::HCV::NONE) {
                 // person->Unlink();
-                this->addLinkingCost(person, dm, "False Positive Linking Cost");
+                person->ClearHCVDiagnosis();
+                this->AddLinkingCost(person, dm, "False Positive Linking Cost");
                 return true;
             }
             return false;
@@ -108,24 +109,26 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            // If the person is already linked, is not identifed as infected,
-            // has been longer than one month since screening, or a false
-            // positive, exit the event
-            if (person->GetLinkState() == person::LinkageState::LINKED ||
-                (!person->IsIdentifiedAsHCVInfected()) ||
-                (person->GetTimeSinceLastScreening() > 0) ||
-                FalsePositive(person, dm)) {
+            bool is_linked =
+                (person->GetLinkState() == person::LinkageState::LINKED);
+            bool is_not_identified = (!person->IsIdentifiedAsHCVInfected());
+            bool not_screened_this_month =
+                (person->GetTimeSinceLastScreening() > 0);
+            bool false_positive = FalsePositive(person, dm);
+
+            if (is_linked || is_not_identified || not_screened_this_month ||
+                false_positive) {
                 return;
             }
 
             double prob =
                 (person->GetLinkageType() == person::LinkageType::BACKGROUND)
-                    ? getLinkProbability(person, dm,
+                    ? GetLinkProbability(person, dm,
                                          "background_link_probability")
-                    : getLinkProbability(person, dm,
+                    : GetLinkProbability(person, dm,
                                          "intervention_link_probability");
 
             // draw from link probability
@@ -133,7 +136,7 @@ namespace event {
                 person->Link(person->GetLinkageType());
                 if (person->GetLinkageType() ==
                     person::LinkageType::INTERVENTION) {
-                    this->addLinkingCost(person, dm,
+                    this->AddLinkingCost(person, dm,
                                          "Intervention Linking Cost");
                 }
             }
@@ -182,9 +185,9 @@ namespace event {
     Linking::Linking(Linking &&) noexcept = default;
     Linking &Linking::operator=(Linking &&) noexcept = default;
 
-    void Linking::doEvent(std::shared_ptr<person::PersonBase> person,
+    void Linking::DoEvent(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                           std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 } // namespace event

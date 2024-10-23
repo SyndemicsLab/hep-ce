@@ -43,7 +43,7 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             // if not using, return
@@ -82,10 +82,10 @@ namespace event {
     Overdose::Overdose(Overdose &&) noexcept = default;
     Overdose &Overdose::operator=(Overdose &&) noexcept = default;
 
-    void Overdose::doEvent(std::shared_ptr<person::PersonBase> person,
+    void Overdose::DoEvent(std::shared_ptr<person::PersonBase> person,
                            std::shared_ptr<datamanagement::DataManagerBase> dm,
                            std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 
 } // namespace event

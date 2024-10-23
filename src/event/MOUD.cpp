@@ -43,7 +43,7 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             // if the person has never used, no MOUD change
@@ -81,9 +81,9 @@ namespace event {
     MOUD::MOUD(MOUD &&) noexcept = default;
     MOUD &MOUD::operator=(MOUD &&) noexcept = default;
 
-    void MOUD::doEvent(std::shared_ptr<person::PersonBase> person,
+    void MOUD::DoEvent(std::shared_ptr<person::PersonBase> person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 } // namespace event

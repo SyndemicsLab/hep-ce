@@ -388,7 +388,7 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             // 1. Check if the Person is Lost To Follow Up (LTFU)
@@ -462,10 +462,10 @@ namespace event {
     Treatment::Treatment(Treatment &&) noexcept = default;
     Treatment &Treatment::operator=(Treatment &&) noexcept = default;
 
-    void Treatment::doEvent(std::shared_ptr<person::PersonBase> person,
+    void Treatment::DoEvent(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm, decider);
+        impl->DoEvent(person, dm, decider);
     }
 
 } // namespace event

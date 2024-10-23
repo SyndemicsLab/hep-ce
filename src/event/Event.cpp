@@ -6,7 +6,7 @@ namespace event {
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::shared_ptr<stats::DeciderBase> decider) {
         if (person->IsAlive()) {
-            this->doEvent(person, dm, decider);
+            this->DoEvent(person, dm, decider);
         }
         return 0;
     }

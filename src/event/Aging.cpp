@@ -89,7 +89,7 @@ namespace event {
         }
 
     public:
-        void doEvent(std::shared_ptr<person::PersonBase> person,
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
             person->Grow();
             this->addBackgroundCostAndUtility(person, dm);
@@ -120,10 +120,10 @@ namespace event {
     Aging::Aging(Aging &&) noexcept = default;
     Aging &Aging::operator=(Aging &&) noexcept = default;
 
-    void Aging::doEvent(std::shared_ptr<person::PersonBase> person,
+    void Aging::DoEvent(std::shared_ptr<person::PersonBase> person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::shared_ptr<stats::DeciderBase> decider) {
-        impl->doEvent(person, dm);
+        impl->DoEvent(person, dm);
     }
 
 } // namespace event
