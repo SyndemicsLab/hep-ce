@@ -32,7 +32,7 @@ def extractor(df: pds.DataFrame) -> None:
         data[st] = value
 
     fibrosis_states = df["fibrosisState"].value_counts()
-    cirrhotic_count = fibrosis_states["f4"]  # + fibrosis_states["decomp"]
+    cirrhotic_count = fibrosis_states["f4"] + fibrosis_states["decomp"]
     data["number of cirrhotic people"] = cirrhotic_count
     data["number of liver related deaths"] = df["deathReason"].value_counts()[
         "liver"]

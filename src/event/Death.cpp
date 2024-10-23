@@ -25,8 +25,10 @@
 namespace event {
     class Death::DeathIMPL {
     private:
-        double f4_probability;
-        double decomp_probability;
+        double f4_infected_probability;
+        double f4_uninfected_probability;
+        double decomp_infected_probability;
+        double decomp_uninfected_probability;
 
         struct background_smr {
             double back_mort = 0.0;
@@ -142,15 +144,22 @@ namespace event {
         void getFibrosisMortalityProb(
             std::shared_ptr<person::PersonBase> person,
             std::shared_ptr<datamanagement::DataManagerBase> dm, double &prob) {
-            std::string data;
-            switch (person->GetTrueFibrosisState()) {
-            case person::FibrosisState::F4:
-                prob = f4_probability;
-                break;
-            case person::FibrosisState::DECOMP:
-                prob = decomp_probability;
-                break;
-            default:
+
+            if (person->GetTrueFibrosisState() == person::FibrosisState::F4) {
+                if (person->GetHCV() == person::HCV::NONE) {
+                    prob = f4_uninfected_probability;
+                } else {
+                    prob = f4_infected_probability;
+                }
+
+            } else if (person->GetTrueFibrosisState() ==
+                       person::FibrosisState::DECOMP) {
+                if (person->GetHCV() == person::HCV::NONE) {
+                    prob = decomp_uninfected_probability;
+                } else {
+                    prob = decomp_infected_probability;
+                }
+            } else {
                 prob = 0;
             }
         }
@@ -253,12 +262,20 @@ namespace event {
         DeathIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string data;
             data.clear();
-            dm->GetFromConfig("mortality.f4", data);
-            this->f4_probability = std::stod(data);
+            dm->GetFromConfig("mortality.f4_infected", data);
+            this->f4_infected_probability = std::stod(data);
 
             data.clear();
-            dm->GetFromConfig("mortality.decomp", data);
-            this->decomp_probability = std::stod(data);
+            dm->GetFromConfig("mortality.f4_uninfected", data);
+            this->f4_uninfected_probability = std::stod(data);
+
+            data.clear();
+            dm->GetFromConfig("mortality.decomp_infected", data);
+            this->decomp_infected_probability = std::stod(data);
+
+            data.clear();
+            dm->GetFromConfig("mortality.decomp_uninfected", data);
+            this->decomp_uninfected_probability = std::stod(data);
 
             int rc = LoadOverdoseData(dm);
             rc = LoadBackgroundMortality(dm);

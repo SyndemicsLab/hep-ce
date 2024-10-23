@@ -18,9 +18,13 @@ TEST_F(DeathTest, Death_OldAge) {
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(1200));
 
     // Data Setup
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4", _))
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
         .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp", _))
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_infected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_uninfected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_uninfected", _))
         .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Mortality Setup
@@ -56,11 +60,16 @@ TEST_F(DeathTest, Death_Liver_F4) {
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetTrueFibrosisState())
         .WillByDefault(Return(person::FibrosisState::F4));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::CHRONIC));
 
     // Data Setup
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4", _))
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
         .WillOnce(DoAll(SetArgReferee<1>("1.0"), Return(0)));
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp", _))
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_infected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_uninfected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_uninfected", _))
         .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Mortality Setup
@@ -98,9 +107,16 @@ TEST_F(DeathTest, Death_Liver_DECOMP) {
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetTrueFibrosisState())
         .WillByDefault(Return(person::FibrosisState::DECOMP));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::CHRONIC));
 
     // Data Setup
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4", _))
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_infected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_uninfected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_uninfected", _))
         .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Mortality Setup
@@ -125,8 +141,6 @@ TEST_F(DeathTest, Death_Liver_DECOMP) {
 
     // Expectations
     std::vector<double> probs = {0.0, 1.0, 0.0};
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp", _))
-        .WillOnce(DoAll(SetArgReferee<1>("1.0"), Return(0)));
     EXPECT_CALL(*decider, GetDecision(probs)).WillOnce(Return(1));
     EXPECT_CALL(*testPerson, Die(person::DeathReason::LIVER)).Times(1);
 
@@ -142,9 +156,13 @@ TEST_F(DeathTest, Death_Background) {
         .WillByDefault(Return(person::FibrosisState::F0));
 
     // Data Setup
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4", _))
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
         .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp", _))
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_infected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_uninfected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_uninfected", _))
         .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Mortality Setup
@@ -183,9 +201,13 @@ TEST_F(DeathTest, Death_NoDeath) {
         .WillByDefault(Return(person::FibrosisState::F0));
 
     // Data Setup
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4", _))
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
         .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp", _))
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_infected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_uninfected", _))
+        .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    EXPECT_CALL(*event_dm, GetFromConfig("mortality.decomp_uninfected", _))
         .WillOnce(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Mortality Setup
