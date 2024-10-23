@@ -107,7 +107,8 @@ namespace person {
         MOCK_METHOD(int, GetTimeSinceFibrosisStaging, (), (const, override));
 
         // Cost Effectiveness
-        MOCK_METHOD(int, AddCost, (double, cost::CostCategory), (override));
+        MOCK_METHOD(int, AddCost, (double, double, cost::CostCategory),
+                    (override));
         MOCK_METHOD(void, SetUtility, (double util), (override));
 
         // General Data Handling
@@ -131,8 +132,10 @@ namespace person {
         MOCK_METHOD(int, GetCurrentTimestep, (), (const, override));
         MOCK_METHOD(Sex, GetSex, (), (const, override));
         MOCK_METHOD(UtilityTracker, GetUtility, (), (const, override));
-        MOCK_METHOD((std::unordered_map<cost::CostCategory, double>), GetCosts,
-                    (), (const, override));
+        MOCK_METHOD(
+            (std::unordered_map<cost::CostCategory, std::pair<double, double>>),
+            GetCosts, (), (const, override));
+        MOCK_METHOD((std::pair<double, double>), GetCostTotals, (), (const, override));
         MOCK_METHOD(Health, GetHealth, (), (const, override));
 
         // TODO

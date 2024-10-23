@@ -89,7 +89,7 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F01) {
     // Expectations
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F1))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -137,7 +137,7 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F12) {
     // Expectations
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F2))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -185,7 +185,7 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F23) {
     // Expectations
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F3))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -233,7 +233,7 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F34) {
     // Expectations
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F4))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -281,7 +281,7 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F4D) {
     // Expectations
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::DECOMP))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -328,7 +328,7 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_DECOMP) {
 
     // Expectations
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(_)).Times(0);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =

@@ -123,7 +123,7 @@ namespace event {
 
             double discountAdjustedCost = Event::DiscountEventCost(
                 cost, discount, person->GetCurrentTimestep());
-            person->AddCost(discountAdjustedCost,
+            person->AddCost(cost, discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
 
             person->SetUtility(util);
@@ -149,7 +149,7 @@ namespace event {
                           std::shared_ptr<datamanagement::DataManagerBase> dm) {
             double discountAdjustedCost = Event::DiscountEventCost(
                 treatment_cost, discount, person->GetCurrentTimestep());
-            person->AddCost(discountAdjustedCost,
+            person->AddCost(treatment_cost, discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
         }
 
@@ -163,7 +163,7 @@ namespace event {
             double discountAdjustedCost =
                 Event::DiscountEventCost(cost_data[GetTuple(person)], discount,
                                          person->GetCurrentTimestep());
-            person->AddCost(discountAdjustedCost,
+            person->AddCost(cost_data[GetTuple(person)], discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
             person->SetUtility(treatment_utility);
         }
@@ -202,7 +202,7 @@ namespace event {
 
             double discountAdjustedCost = Event::DiscountEventCost(
                 toxicity_cost, discount, person->GetCurrentTimestep());
-            person->AddCost(discountAdjustedCost,
+            person->AddCost(toxicity_cost, discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
             person->SetUtility(toxicity_utility);
             return true;
@@ -428,7 +428,7 @@ namespace event {
         TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-            if (discount_data.empty()) {
+            if (!discount_data.empty()) {
                 this->discount = std::stod(discount_data);
             }
             lost_to_follow_up_probability =

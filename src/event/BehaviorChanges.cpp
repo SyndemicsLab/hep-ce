@@ -90,7 +90,8 @@ namespace event {
 
             double discountAdjustedCost = Event::DiscountEventCost(
                 cost_data[tup].cost, discount, person->GetCurrentTimestep());
-            person->AddCost(discountAdjustedCost, cost::CostCategory::BEHAVIOR);
+            person->AddCost(cost_data[tup].cost, discountAdjustedCost,
+                            cost::CostCategory::BEHAVIOR);
             person->SetUtility(cost_data[tup].util);
         }
 
@@ -169,7 +170,7 @@ namespace event {
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-            if (discount_data.empty()) {
+            if (!discount_data.empty()) {
                 this->discount = std::stod(discount_data);
             }
             if (dm == nullptr) {

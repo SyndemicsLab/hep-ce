@@ -1,52 +1,60 @@
 #include "Cost.hpp"
 #include <cmath>
 #include <iostream>
-#include <unordered_map>
 
 namespace cost {
     class CostTracker::CostTrackerIMPL {
     private:
-        std::unordered_map<CostCategory, double> costs;
+        std::unordered_map<CostCategory, std::pair<double, double>> costs;
 
     public:
         CostTrackerIMPL() {
-            costs[CostCategory::MISC] = 0.0;
-            costs[CostCategory::BEHAVIOR] = 0.0;
-            costs[CostCategory::SCREENING] = 0.0;
-            costs[CostCategory::LINKING] = 0.0;
-            costs[CostCategory::STAGING] = 0.0;
-            costs[CostCategory::LIVER] = 0.0;
-            costs[CostCategory::TREATMENT] = 0.0;
-            costs[CostCategory::BACKGROUND] = 0.0;
+            costs[CostCategory::MISC] = {0.0, 0.0};
+            costs[CostCategory::BEHAVIOR] = {0.0, 0.0};
+            costs[CostCategory::SCREENING] = {0.0, 0.0};
+            costs[CostCategory::LINKING] = {0.0, 0.0};
+            costs[CostCategory::STAGING] = {0.0, 0.0};
+            costs[CostCategory::LIVER] = {0.0, 0.0};
+            costs[CostCategory::TREATMENT] = {0.0, 0.0};
+            costs[CostCategory::BACKGROUND] = {0.0, 0.0};
         }
         ~CostTrackerIMPL() {};
-        double GetTotal() const {
-            double sum = 0.0;
-            for (auto const &pair : costs) {
-                sum += pair.second;
+        std::pair<double, double> GetTotals() const {
+            double base_sum = 0.0;
+            double discount_sum = 0.0;
+            for (auto const &kv : costs) {
+                base_sum += kv.second.first;
+                discount_sum += kv.second.second;
             }
-            return sum;
+            return {base_sum, discount_sum};
         }
 
-        std::unordered_map<CostCategory, double> GetCosts() const {
+        std::unordered_map<CostCategory, std::pair<double, double>>
+        GetCosts() const {
             return costs;
         }
 
-        void AddCost(double cost, CostCategory category) {
-            this->costs[category] += cost;
+        void AddCost(double base_cost, double discount_cost,
+                     CostCategory category) {
+            this->costs[category].first += base_cost;
+            this->costs[category].second += discount_cost;
         }
     };
 
     CostTracker::CostTracker() { impl = std::make_unique<CostTrackerIMPL>(); }
 
-    double CostTracker::GetTotal() const { return impl->GetTotal(); }
+    std::pair<double, double> CostTracker::GetTotals() const {
+        return impl->GetTotals();
+    }
 
-    std::unordered_map<CostCategory, double> CostTracker::GetCosts() const {
+    std::unordered_map<CostCategory, std::pair<double, double>>
+    CostTracker::GetCosts() const {
         return impl->GetCosts();
     }
 
-    void CostTracker::AddCost(double cost, CostCategory category) {
-        return impl->AddCost(cost, category);
+    void CostTracker::AddCost(double base_cost, double discount_cost,
+                              CostCategory category) {
+        return impl->AddCost(base_cost, discount_cost, category);
     }
 
     CostTracker::~CostTracker() = default;
@@ -60,7 +68,8 @@ namespace cost {
 
     std::ostream &operator<<(std::ostream &os, const CostTracker &cost) {
         for (auto const &pair : cost.GetCosts()) {
-            os << pair.first << " " << std::to_string(pair.second) << std::endl;
+            os << pair.first << " " << std::to_string(pair.second.first) << " "
+               << std::to_string(pair.second.second) << std::endl;
         }
         return os;
     }

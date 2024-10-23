@@ -50,7 +50,7 @@ TEST_F(BehaviorChangesTest, BehaviorChanges) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(2));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(_)).Times(1);
     EXPECT_CALL(*testPerson, SetBehavior(person::Behavior::FORMER_INJECTION))
         .Times(1);

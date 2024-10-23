@@ -255,7 +255,7 @@ namespace event {
 
             double discountAdjustedCost = Event::DiscountEventCost(
                 screeningCost, discount, person->GetCurrentTimestep());
-            person->AddCost(discountAdjustedCost,
+            person->AddCost(screeningCost, discountAdjustedCost,
                             cost::CostCategory::SCREENING);
         }
 
@@ -290,7 +290,7 @@ namespace event {
         ScreeningIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-            if (discount_data.empty()) {
+            if (!discount_data.empty()) {
                 this->discount = std::stod(discount_data);
             }
             std::string data;

@@ -52,7 +52,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_NoFibrosis) {
 
     // Expectations
     EXPECT_CALL(*testPerson, DiagnoseFibrosis(_)).Times(0);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -99,7 +99,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_RecentlyStaged) {
 
     // Expectations
     EXPECT_CALL(*testPerson, DiagnoseFibrosis(_)).Times(0);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -151,7 +151,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
     EXPECT_CALL(*testPerson,
                 DiagnoseFibrosis(person::MeasuredFibrosisState::F01))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -204,7 +204,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
     EXPECT_CALL(*testPerson,
                 DiagnoseFibrosis(person::MeasuredFibrosisState::F23))
         .Times(2);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(2);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(2);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -260,7 +260,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
     EXPECT_CALL(*testPerson,
                 DiagnoseFibrosis(person::MeasuredFibrosisState::F01))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(2);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(2);
 
     // Running Test
     std::shared_ptr<event::Event> event =

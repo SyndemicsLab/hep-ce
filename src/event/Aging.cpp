@@ -65,7 +65,8 @@ namespace event {
 
             double discountAdjustedCost = Event::DiscountEventCost(
                 data[tup].cost, discount, person->GetCurrentTimestep());
-            person->AddCost(discountAdjustedCost, cost::CostCategory::MISC);
+            person->AddCost(data[tup].cost, discountAdjustedCost,
+                            cost::CostCategory::MISC);
             person->SetUtility(data[tup].util);
         }
 
@@ -96,7 +97,7 @@ namespace event {
         AgingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-            if (discount_data.empty()) {
+            if (!discount_data.empty()) {
                 this->discount = std::stod(discount_data);
             }
 

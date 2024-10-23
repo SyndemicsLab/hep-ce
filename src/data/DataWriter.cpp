@@ -84,9 +84,12 @@ namespace writer {
             if (!csvStream) {
                 return -1;
             }
-            csvStream << "id," << person::POPULATION_HEADERS << std::endl;
+            csvStream << "id," << person::POPULATION_HEADERS
+                      << ",cost,discount_cost," << std::endl;
             for (std::shared_ptr<person::PersonBase> &person : new_population) {
+                std::pair<double, double> costTotals = person->GetCostTotals();
                 csvStream << GrabPersonDetailsAsStringInHeaderOrder(person)
+                          << "," << costTotals.first << "," << costTotals.second
                           << std::endl;
             }
             csvStream.close();

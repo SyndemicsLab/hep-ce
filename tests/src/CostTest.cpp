@@ -7,22 +7,27 @@
 TEST(CostTest, AddCost) {
     cost::CostTracker ct;
 
-    double cost = 25.25;
-    ct.AddCost(cost, cost::CostCategory::MISC);
+    double base_cost = 25.25;
+    double discount_cost = 15.00;
+    ct.AddCost(base_cost, discount_cost, cost::CostCategory::MISC);
     auto test = ct.GetCosts();
-    EXPECT_EQ(test[cost::CostCategory::MISC], cost);
+    EXPECT_EQ(test[cost::CostCategory::MISC].first, base_cost);
+    EXPECT_EQ(test[cost::CostCategory::MISC].second, discount_cost);
 }
 
 TEST(CostTest, GetTotalSingleCostCategory) {
     int ELEMENT_COUNT = 10;
     cost::CostTracker ct;
     // populate costtracker
-    double sum = 0.0;
+    double base_sum = 0.0;
+    double discount_sum = 0.0;
     for (int i = 0; i < ELEMENT_COUNT; ++i) {
-        ct.AddCost((double)i, cost::CostCategory::BEHAVIOR);
-        sum += (double)i;
+        ct.AddCost((double)i, ((double)i / 2), cost::CostCategory::BEHAVIOR);
+        base_sum += (double)i;
+        discount_sum += ((double)i / 2);
     }
-    EXPECT_EQ(ct.GetTotal(), sum);
+    EXPECT_EQ(ct.GetTotals().first, base_sum);
+    EXPECT_EQ(ct.GetTotals().second, discount_sum);
 }
 
 TEST(CostTest, GetTotalMultiCostCategory) {
@@ -30,14 +35,18 @@ TEST(CostTest, GetTotalMultiCostCategory) {
     cost::CostTracker ct;
     // populate costtracker
     double sum = 0.0;
+    double discount_sum = 0.0;
     for (int i = 0; i < ELEMENT_COUNT; ++i) {
         if (i % 2 == 0) {
-            ct.AddCost((double)i, cost::CostCategory::MISC);
+            ct.AddCost((double)i, ((double)i / 2), cost::CostCategory::MISC);
         } else {
-            ct.AddCost((double)i, cost::CostCategory::BEHAVIOR);
+            ct.AddCost((double)i, ((double)i / 2),
+                       cost::CostCategory::BEHAVIOR);
         }
 
         sum += (double)i;
+        discount_sum += ((double)i / 2);
     }
-    EXPECT_EQ(ct.GetTotal(), sum);
+    EXPECT_EQ(ct.GetTotals().first, sum);
+    EXPECT_EQ(ct.GetTotals().second, discount_sum);
 }

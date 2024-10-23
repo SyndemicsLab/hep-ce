@@ -124,7 +124,7 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
         .WillRepeatedly(Return(0)); // The Rest
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(2);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(2);
     EXPECT_CALL(*testPerson, SetUtility(_)).Times(1);
     EXPECT_CALL(*testPerson, InitiateTreatment()).Times(1);
     EXPECT_CALL(*testPerson, AddSVR()).Times(1);
@@ -218,7 +218,7 @@ TEST_F(TreatmentTest, FinishTreatment) {
         .WillRepeatedly(Return(0)); // The Rest
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(2);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(2);
     EXPECT_CALL(*testPerson, SetUtility(_)).Times(2);
     EXPECT_CALL(*testPerson, AddSVR()).Times(1);
     EXPECT_CALL(*testPerson, ClearHCV()).Times(1);
@@ -308,7 +308,7 @@ TEST_F(TreatmentTest, LostToFollowUp) {
         .WillOnce(Return(0)); // Lost To Follow-Up
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
     EXPECT_CALL(*testPerson, SetUtility(_)).Times(1);
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
@@ -397,7 +397,7 @@ TEST_F(TreatmentTest, Withdraw) {
     EXPECT_CALL(*decider, GetDecision(_)).WillOnce(Return(0)); // Withdraw
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _))
+    EXPECT_CALL(*testPerson, AddCost(_, _, _))
         .Times(2); // Cost of Visit and Course
     EXPECT_CALL(*testPerson, SetUtility(_)).Times(2); // Cost of Visit and Quit
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
@@ -490,7 +490,7 @@ TEST_F(TreatmentTest, DevelopToxicity) {
         .WillOnce(Return(0)); // Experience Toxicity
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(3);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(3);
     EXPECT_CALL(*testPerson, SetUtility(_)).Times(3); // Visit, Quit, Toxicity
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV()).Times(0);

@@ -37,7 +37,7 @@ namespace event {
             person->AddRnaScreen();
             double discountAdjustedCost = Event::DiscountEventCost(
                 background_rna_cost, discount, person->GetCurrentTimestep());
-            person->AddCost(discountAdjustedCost,
+            person->AddCost(background_rna_cost, discountAdjustedCost,
                             cost::CostCategory::SCREENING);
         }
 
@@ -59,7 +59,7 @@ namespace event {
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-            if (discount_data.empty()) {
+            if (!discount_data.empty()) {
                 this->discount = std::stod(discount_data);
             }
 

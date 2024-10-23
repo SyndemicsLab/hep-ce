@@ -30,7 +30,7 @@ TEST_F(AgingTest, Aging) {
 
     // Expectations
     EXPECT_CALL(*testPerson, Grow()).Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(cost.util)).Times(1);
 
     // Running Test

@@ -60,7 +60,7 @@ TEST_F(LinkingTest, FalsePositive) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
@@ -218,7 +218,7 @@ TEST_F(LinkingTest, InterventionLink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION)).Times(1);
 
     // Running Test
@@ -269,7 +269,7 @@ TEST_F(LinkingTest, DecideToUnlink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(1));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
     EXPECT_CALL(*testPerson, Link(_)).Times(0);
 
     // Running Test

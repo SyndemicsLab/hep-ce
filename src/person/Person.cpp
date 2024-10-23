@@ -361,8 +361,9 @@ namespace person {
         /// @brief Add a cost to the person's CostTracker object
         /// @param cost The cost to be added
         /// @param timestep The timestep during which the cost was accrued
-        void AddCost(double cost, cost::CostCategory category) {
-            // this->costs.AddCost(cost, category);
+        void AddCost(double base_cost, double discount_cost,
+                     cost::CostCategory category) {
+            this->costs.AddCost(base_cost, discount_cost, category);
         }
 
         /// @brief Flips the person's overdose state
@@ -651,8 +652,13 @@ namespace person {
 
         /// @brief Getter for the PersonIMPL's costs
         /// @return cost::CostTracker containing this person's costs
-        std::unordered_map<cost::CostCategory, double> GetCosts() const {
+        std::unordered_map<cost::CostCategory, std::pair<double, double>>
+        GetCosts() const {
             return this->costs.GetCosts();
+        }
+
+        std::pair<double, double> GetCostTotals() const {
+            return this->costs.GetTotals();
         }
 
         Health GetHealth() const { return this->health; }
@@ -912,8 +918,9 @@ namespace person {
         pImplPERSON->DiagnoseHCV();
         return 0;
     }
-    int Person::AddCost(double cost, cost::CostCategory category) {
-        pImplPERSON->AddCost(cost, category);
+    int Person::AddCost(double base_cost, double discount_cost,
+                        cost::CostCategory category) {
+        pImplPERSON->AddCost(base_cost, discount_cost, category);
         return 0;
     }
     int Person::ToggleOverdose() {
@@ -1077,8 +1084,12 @@ namespace person {
     UtilityTracker Person::GetUtility() const {
         return pImplPERSON->GetUtility();
     }
-    std::unordered_map<cost::CostCategory, double> Person::GetCosts() const {
+    std::unordered_map<cost::CostCategory, std::pair<double, double>>
+    Person::GetCosts() const {
         return pImplPERSON->GetCosts();
+    }
+    std::pair<double, double> Person::GetCostTotals() const {
+        return pImplPERSON->GetCostTotals();
     }
     Health Person::GetHealth() const { return pImplPERSON->GetHealth(); }
     BehaviorDetails Person::GetBehaviorDetails() const {
