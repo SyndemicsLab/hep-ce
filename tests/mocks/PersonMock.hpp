@@ -31,6 +31,7 @@ namespace person {
         MOCK_METHOD(int, DiagnoseHCV, (), (override));
         MOCK_METHOD(int, ClearHCVDiagnosis, (), (override));
         MOCK_METHOD(bool, IsIdentifiedAsHCVInfected, (), (const, override));
+        MOCK_METHOD(bool, HistoryOfHCVInfection, (), (const, override));
 
         MOCK_METHOD(int, GetTimeHCVIdentified, (), (const, override));
         MOCK_METHOD(int, GetTimesHCVInfected, (), (const, override));

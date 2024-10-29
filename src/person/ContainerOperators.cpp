@@ -400,6 +400,7 @@ namespace person {
         os << "Number of Times Cleared: " << inst.timesCleared << std::endl;
         os << "Identified as a Positive Infection: " << inst.identifiedHCV
            << std::endl;
+        os << "History of Infections: " << inst.historyOfHCV << std::endl;
         os << "Time Identified: " << inst.timeIdentified << std::endl;
         return os;
     }

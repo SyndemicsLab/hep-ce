@@ -40,6 +40,7 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
     ON_CALL(*testPerson, GetBehavior())
         .WillByDefault(Return(person::Behavior::NEVER));
     ON_CALL(*testPerson, IsBoomer()).WillByDefault(Return(false));
+    ON_CALL(*testPerson, HistoryOfHCVInfection()).WillByDefault(Return(false));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -71,14 +72,13 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_FTTtestResults) {
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
         .WillOnce(Return(0))        // Decide to Intervention Screen
-        .WillOnce(Return(1))        // AB Test is Negative
-        .WillOnce(Return(0))        // Second AB Test is Positive
+        .WillOnce(Return(0))        // AB Test is Positive
         .WillOnce(Return(0))        // RNA Test is Positive
         .WillRepeatedly(Return(0)); // Remainder of Test
 
     // Expectations
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
-    EXPECT_CALL(*testPerson, AddAbScreen()).Times(2);
+    EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
     EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::INTERVENTION))
         .Times(1);

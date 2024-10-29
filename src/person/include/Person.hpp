@@ -49,6 +49,7 @@ namespace person {
         virtual int DiagnoseHCV() = 0;
         virtual int ClearHCVDiagnosis() = 0;
         virtual bool IsIdentifiedAsHCVInfected() const = 0;
+        virtual bool HistoryOfHCVInfection() const = 0;
 
         virtual int GetTimeHCVIdentified() const = 0;
         virtual int GetTimesHCVInfected() const = 0;
@@ -209,6 +210,7 @@ namespace person {
         int DiagnoseHCV();
         int ClearHCVDiagnosis();
         bool IsIdentifiedAsHCVInfected() const;
+        bool HistoryOfHCVInfection() const;
 
         int GetTimeHCVIdentified() const;
         int GetTimesHCVInfected() const;

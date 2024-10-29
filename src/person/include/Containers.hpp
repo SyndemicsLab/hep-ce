@@ -206,6 +206,7 @@ namespace person {
         int timesInfected = 0;
         int timesCleared = 0;
         bool identifiedHCV = false;
+        bool historyOfHCV = false;
         int timeIdentified = -1;
         HCCState hccState = HCCState::NONE;
     };

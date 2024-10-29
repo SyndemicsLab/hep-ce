@@ -268,6 +268,7 @@ namespace person {
                 static_cast<person::FibrosisState>(std::stoi(icValues[7]));
             if (std::stoi(icValues[8]) == 1) {
                 this->health.identifiedHCV = true;
+                this->health.historyOfHCV = true;
             }
             linkStatus.linkState =
                 static_cast<person::LinkageState>(std::stoi(icValues[9]));
@@ -349,7 +350,7 @@ namespace person {
             this->linkStatus.linkState = LinkageState::LINKED;
             this->linkStatus.timeOfLinkChange = this->_currentTime;
             this->linkStatus.linkType = linkType;
-            this->linkStatus.linkCount++;
+            this->linkStatus.linkCount += 1;
         }
 
         /// @brief Mark a PersonIMPL as Identified as Infected
@@ -357,6 +358,7 @@ namespace person {
         void DiagnoseHCV() {
             this->health.identifiedHCV = true;
             this->health.timeIdentified = this->_currentTime;
+            this->health.historyOfHCV = true;
         }
 
         int ClearHCVDiagnosis() {
@@ -449,6 +451,8 @@ namespace person {
         bool IsIdentifiedAsHCVInfected() const {
             return this->health.identifiedHCV;
         }
+
+        bool HistoryOfHCVInfection() const { return this->health.historyOfHCV; }
 
         /// @brief Getter for whether PersonIMPL has initiated treatment
         /// @return Boolean true if PersonIMPL has initiated treatment, false
@@ -961,6 +965,9 @@ namespace person {
     }
     bool Person::IsIdentifiedAsHCVInfected() const {
         return pImplPERSON->IsIdentifiedAsHCVInfected();
+    }
+    bool Person::HistoryOfHCVInfection() const {
+        return pImplPERSON->HistoryOfHCVInfection();
     }
     bool Person::HasInitiatedTreatment() const {
         return pImplPERSON->HasInitiatedTreatment();

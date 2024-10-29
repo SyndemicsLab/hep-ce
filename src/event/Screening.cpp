@@ -163,14 +163,13 @@ namespace event {
                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                     std::shared_ptr<stats::DeciderBase> decider) {
             person->MarkScreened();
-            if ((screenkey == "screening_intervention" &&
-                 !person->IsIdentifiedAsHCVInfected()) ||
-                screenkey == "screening_background") {
-                // if first test is negative, perform a second test
+            // if person has had a history of HCV Infections
+            if (((screenkey == "screening_intervention" &&
+                  !person->IsIdentifiedAsHCVInfected()) ||
+                 screenkey == "screening_background") &&
+                (!person->HistoryOfHCVInfection())) {
                 if (!runABTest(person, dm, screenkey, decider)) {
-                    if (!runABTest(person, dm, screenkey, decider)) {
-                        return; // two negatives
-                    }
+                    return;
                 }
             }
 
