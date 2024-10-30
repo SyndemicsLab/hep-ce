@@ -38,7 +38,6 @@ namespace simulation {
     private:
         std::shared_ptr<datamanagement::DataManager> _dm;
         std::shared_ptr<stats::DeciderBase> decider;
-        int tstep = 0;
         uint64_t _seed;
         int defaultPopulationSize = 0;
         std::vector<std::shared_ptr<person::PersonBase>> population = {};
@@ -272,21 +271,17 @@ namespace simulation {
             // https://stackoverflow.com/questions/52496748/parallel-for-loop-in-c-using-mpi
             clock_t cStartClock = clock();
             spdlog::get("main")->info("Simulation Started.");
-#pragma omp parallel shared(duration, _dm, population, events, decider)
+            int population_size = population.size();
+#pragma omp parallel shared(duration, population_size, events, decider)
             {
 #pragma omp for ordered
-                for (int i = 0; i < population.size(); ++i) {
+                for (int i = 0; i < population_size; ++i) {
                     std::shared_ptr<person::PersonBase> &p = population[i];
-                    if (!p->IsAlive()) {
-                        LogCycle(i);
-                        continue;
-                    }
-                    for (tstep = 0; tstep < duration; ++tstep) {
+                    for (int t = 0; t < duration; ++t) {
                         for (int j = 0; j < events.size(); ++j) {
 #pragma omp ordered
                             {
-                                std::shared_ptr<event::Event> &event =
-                                    events[j];
+                                std::shared_ptr<event::Event> event = events[j];
                                 event->Execute(p, dm_pool[omp_get_thread_num()],
                                                decider);
                             }
@@ -305,10 +300,6 @@ namespace simulation {
         /// sample the pRNG
         /// @return Reference to the simulation's pseudorandom number generator
         std::mt19937_64 &getGenerator() { return generator; }
-
-        /// @brief A getter for the Current Timestep variable
-        /// @return tstep as a int
-        int getCurrentTimestep() { return this->tstep; }
 
         int LoadEvents() {
             this->events.clear();

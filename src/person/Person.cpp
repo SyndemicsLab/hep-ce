@@ -213,9 +213,7 @@ namespace person {
         /// @brief increase a person's Age
         void Grow() {
             UpdateTimers();
-            if (this->isAlive) {
-                this->age++;
-            }
+            SetAge(GetAge() + 1);
         }
 
         /// @brief InfectHCV the person

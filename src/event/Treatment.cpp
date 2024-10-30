@@ -88,7 +88,7 @@ namespace event {
             if (isEligibleFibrosisStage(fibrosisState) &&
                 isEligibleBehavior(behavior) &&
                 (timeSinceLastUse > ineligible_time_since_last_use) &&
-                (timeSinceLinked < ineligible_time_since_linked)) {
+                (timeSinceLinked > ineligible_time_since_linked)) {
                 return true;
             }
             return false;
