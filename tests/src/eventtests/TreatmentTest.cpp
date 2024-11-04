@@ -32,7 +32,7 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetTrueFibrosisState())
         .WillByDefault(Return(person::FibrosisState::NONE));
-    ON_CALL(*testPerson, GetTimeSinceLinkChange()).WillByDefault(Return(0));
+    ON_CALL(*testPerson, GetTimeSinceLinkChange()).WillByDefault(Return(2));
     ON_CALL(*testPerson, GetBehavior())
         .WillByDefault(Return(person::Behavior::FORMER_NONINJECTION));
     ON_CALL(*testPerson, GetTimeBehaviorChange()).WillByDefault(Return(120));
