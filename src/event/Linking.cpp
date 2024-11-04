@@ -117,10 +117,12 @@ namespace event {
             bool is_not_identified = (!person->IsIdentifiedAsHCVInfected());
             bool not_screened_this_month =
                 (person->GetTimeSinceLastScreening() > 0);
-            bool false_positive = FalsePositive(person, dm);
 
-            if (is_linked || is_not_identified || not_screened_this_month ||
-                false_positive) {
+            if (is_linked || is_not_identified || not_screened_this_month) {
+                return;
+            }
+
+            if (FalsePositive(person, dm)) {
                 return;
             }
 

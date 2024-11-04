@@ -242,7 +242,6 @@ namespace person {
                 return;
             }
             this->health.hcv = HCV::NONE;
-            this->health.identifiedHCV = false;
             this->health.timeHCVChanged = this->_currentTime;
             this->AddHCVClearance();
         }
@@ -338,7 +337,7 @@ namespace person {
                 this->linkStatus.timeOfLinkChange = this->_currentTime;
             }
             this->treatmentDetails.initiatedTreatment = false;
-            this->ClearHCVDiagnosis();
+            // this->ClearHCVDiagnosis();
         }
 
         /// @brief Reset a PersonIMPL's Link State to Linked

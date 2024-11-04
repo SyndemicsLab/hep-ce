@@ -264,6 +264,7 @@ namespace event {
             if (decider->GetDecision({svr}) == 0) {
                 person->AddSVR();
                 person->ClearHCV();
+                person->ClearHCVDiagnosis();
             }
             if (person->GetTimeSinceTreatmentInitiation() >= (int)duration) {
                 person->AddCompletedTreatment();
