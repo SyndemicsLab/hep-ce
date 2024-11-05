@@ -33,6 +33,7 @@ namespace event {
         std::string test_two;
         std::unordered_map<int, std::vector<double>> test_two_data;
         std::string multitest_result_method;
+        std::vector<person::FibrosisState> testtwo_eligible_fibs;
 
         static int callback_fibrosis_test(void *storage, int count, char **data,
                                           char **columns) {
@@ -52,6 +53,13 @@ namespace event {
 
         std::string FibrosisTestSQL(std::string column) {
             return "SELECT fibrosis_state, " + column + " FROM fibrosis;";
+        }
+
+        void trim(std::string &str) {
+            while (str[0] == ' ')
+                str.erase(str.begin());
+            while (str[str.size() - 1] == ' ')
+                str.pop_back();
         }
 
         /// @brief Aggregate the fibrosis stage testing probabilities for a
@@ -170,8 +178,12 @@ namespace event {
 
             // 6. Get a vector of the probabilities of each of the possible
             // fibrosis outcomes (test two) provided there is a second test.
-            // If No Second Test Specified, End
-            if (test_two.empty()) {
+            // If No Second Test Specified or not an eligible fibrosis state,
+            // End
+            if (test_two.empty() || std::find(testtwo_eligible_fibs.begin(),
+                                              testtwo_eligible_fibs.end(),
+                                              person->GetTrueFibrosisState()) ==
+                                        testtwo_eligible_fibs.end()) {
                 return;
             }
             probs = GetMeasurementProbabilities(person, dm, test_two);
@@ -238,6 +250,20 @@ namespace event {
             data.clear();
             dm->GetFromConfig("fibrosis_staging.multitest_result_method", data);
             multitest_result_method = data;
+
+            data.clear();
+            dm->GetFromConfig("fibrosis_stating.test_two_eligible_stages",
+                              data);
+            testtwo_eligible_fibs.clear();
+            std::stringstream s(data);
+            while (s.good()) {
+                std::string substr;
+                getline(s, substr, ',');
+                trim(substr);
+                person::FibrosisState temp;
+                temp << substr;
+                testtwo_eligible_fibs.push_back(temp);
+            }
         }
     };
 
