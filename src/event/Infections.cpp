@@ -83,13 +83,15 @@ namespace event {
         void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
-            // Chronic cases cannot be infected. Acute cases progress to chronic
-            // after 6 consecutive months of infection
-            if (person->GetHCV() == person::HCV::CHRONIC) {
-                return;
-            } else if (person->GetHCV() == person::HCV::ACUTE &&
-                       person->GetTimeSinceHCVChanged() >= 6) {
+            // Acute cases progress to chronic after 6 consecutive months of
+            // infection
+            if (person->GetHCV() == person::HCV::ACUTE &&
+                person->GetTimeSinceHCVChanged() == 6) {
                 person->SetHCV(person::HCV::CHRONIC);
+            }
+
+            // If already infected, skip
+            if (person->GetHCV() != person::HCV::NONE) {
                 return;
             }
 

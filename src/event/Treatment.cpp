@@ -40,8 +40,8 @@ namespace event {
         int ineligible_time_since_linked = -2;
         int ineligible_time_since_last_use = -2;
 
-        typedef std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
-                                   Utils::key_equal_2i>
+        typedef std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                                   Utils::key_equal_3i>
             treatmentmap_t;
         treatmentmap_t duration_data;
         treatmentmap_t cost_data;
@@ -58,22 +58,25 @@ namespace event {
 
         static int callback_treament(void *storage, int count, char **data,
                                      char **columns) {
-            Utils::tuple_2i key =
-                std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-            (*((treatmentmap_t *)storage))[key] = std::stod(data[2]);
+            Utils::tuple_3i key = std::make_tuple(
+                std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
+            (*((treatmentmap_t *)storage))[key] = std::stod(data[3]);
             return 0;
         }
 
         std::string TreatmentSQL(std::string column) {
-            return "SELECT genotype_three, cirrhotic, " + column +
+            return "SELECT retreatment, genotype_three, cirrhotic, " + column +
                    " FROM treatments;";
         }
 
-        Utils::tuple_2i
-        GetTuple(std::shared_ptr<person::PersonBase> person) const {
+        Utils::tuple_3i
+        GetThruple(std::shared_ptr<person::PersonBase> person) const {
             int geno3 = (person->IsGenotypeThree()) ? 1 : 0;
             int cirr = (person->IsCirrhotic()) ? 1 : 0;
-            return std::make_tuple(geno3, cirr);
+            int num_treatments =
+                person->GetWithdrawals() + person->GetCompletedTreatments();
+            int retreatment = (num_treatments > 0) ? 1 : 0;
+            return std::make_tuple(retreatment, geno3, cirr);
         }
 
         bool isEligible(std::shared_ptr<person::PersonBase> person) const {
@@ -147,9 +150,12 @@ namespace event {
         void
         ChargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            int num_treatments =
+                person->GetWithdrawals() + person->GetCompletedTreatments();
+            double c = (num_treatments > 0) ? retreatment_cost : treatment_cost;
             double discountAdjustedCost = Event::DiscountEventCost(
-                treatment_cost, discount, person->GetCurrentTimestep());
-            person->AddCost(treatment_cost, discountAdjustedCost,
+                c, discount, person->GetCurrentTimestep());
+            person->AddCost(c, discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
         }
 
@@ -160,10 +166,10 @@ namespace event {
                 spdlog::get("main")->warn("No Treatment Cost Data Found.");
                 return;
             }
-            double discountAdjustedCost =
-                Event::DiscountEventCost(cost_data[GetTuple(person)], discount,
-                                         person->GetCurrentTimestep());
-            person->AddCost(cost_data[GetTuple(person)], discountAdjustedCost,
+            double discountAdjustedCost = Event::DiscountEventCost(
+                cost_data[GetThruple(person)], discount,
+                person->GetCurrentTimestep());
+            person->AddCost(cost_data[GetThruple(person)], discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
             person->SetUtility(treatment_utility);
         }
@@ -176,36 +182,35 @@ namespace event {
                 return false;
             }
 
-            if (decider->GetDecision({withdrawal_data[GetTuple(person)]}) ==
+            if (decider->GetDecision({withdrawal_data[GetThruple(person)]}) ==
                 0) {
                 person->AddWithdrawal();
+                CheckIfExperienceToxicity(person, dm, decider);
                 this->quitEngagement(person);
                 return true;
             }
             return false;
         }
 
-        bool
-        ExperienceToxicity(std::shared_ptr<person::PersonBase> person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
-                           std::shared_ptr<stats::DeciderBase> decider) {
+        void CheckIfExperienceToxicity(
+            std::shared_ptr<person::PersonBase> person,
+            std::shared_ptr<datamanagement::DataManagerBase> dm,
+            std::shared_ptr<stats::DeciderBase> decider) {
             if (toxicity_data.empty()) {
                 spdlog::get("main")->warn("No Toxicity Data Found.");
-                return false;
+                return;
             }
 
-            if (decider->GetDecision({toxicity_data[GetTuple(person)]}) == 1) {
-                return false;
+            if (decider->GetDecision({toxicity_data[GetThruple(person)]}) ==
+                1) {
+                return;
             }
             person->AddToxicReaction();
-            this->quitEngagement(person);
-
             double discountAdjustedCost = Event::DiscountEventCost(
                 toxicity_cost, discount, person->GetCurrentTimestep());
             person->AddCost(toxicity_cost, discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
             person->SetUtility(toxicity_utility);
-            return true;
         }
 
         bool
@@ -253,22 +258,14 @@ namespace event {
             if (svr_data.empty()) {
                 spdlog::get("main")->warn("No SVR Probability Found!");
                 return;
-            } else if (duration_data.empty()) {
-                spdlog::get("main")->warn("No Treatment Duration Found!");
-                return;
             }
 
-            double svr = svr_data[GetTuple(person)];
-            double duration = duration_data[GetTuple(person)];
+            double svr = svr_data[GetThruple(person)];
 
             if (decider->GetDecision({svr}) == 0) {
                 person->AddSVR();
                 person->ClearHCV();
                 person->ClearHCVDiagnosis();
-            }
-            if (person->GetTimeSinceTreatmentInitiation() >= (int)duration) {
-                person->AddCompletedTreatment();
-                this->quitEngagement(person);
             }
         }
 
@@ -304,9 +301,9 @@ namespace event {
         int
         LoadToxicityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string error;
-            int rc = dm->SelectCustomCallback(TreatmentSQL("toxicity"),
-                                              this->callback_treament,
-                                              &toxicity_data, error);
+            int rc = dm->SelectCustomCallback(
+                TreatmentSQL("toxicity_prob_if_withdrawal"),
+                this->callback_treament, &toxicity_data, error);
 
             if (rc != 0) {
                 spdlog::get("main")->warn(
@@ -320,7 +317,8 @@ namespace event {
         int LoadSVRData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string error;
             int rc = dm->SelectCustomCallback(
-                TreatmentSQL("svr"), this->callback_treament, &svr_data, error);
+                TreatmentSQL("svr_prob_if_completed"), this->callback_treament,
+                &svr_data, error);
 
             if (rc != 0) {
                 spdlog::get("main")->warn(
@@ -392,6 +390,10 @@ namespace event {
         void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
+            // 0. Verify the person is linked before starting treatment
+            if (person->GetLinkState() != person::LinkageState::LINKED) {
+                return;
+            }
             // 1. Check if the Person is Lost To Follow Up (LTFU)
             if (LostToFollowUp(person, dm, decider)) {
                 return;
@@ -417,14 +419,18 @@ namespace event {
                 return;
             }
 
-            // 7. Determine if the person has a toxic reaction
-            if (ExperienceToxicity(person, dm, decider)) {
+            // 7. Determine if the person has been treated long enough, if they
+            // achieve SVR
+            if (duration_data.empty()) {
+                spdlog::get("main")->warn("No Treatment Duration Found!");
                 return;
             }
-
-            // 8. Determine if the person has been treated long enough, if they
-            // achieve SVR
-            DecideIfPersonAchievesSVR(person, dm, decider);
+            double duration = duration_data[GetThruple(person)];
+            if (person->GetTimeSinceTreatmentInitiation() >= (int)duration) {
+                person->AddCompletedTreatment();
+                DecideIfPersonAchievesSVR(person, dm, decider);
+                this->quitEngagement(person);
+            }
         }
         TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string discount_data;
