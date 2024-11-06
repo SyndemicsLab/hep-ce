@@ -48,7 +48,8 @@ def extractor(df: pds.DataFrame) -> None:
 
 if __name__ == "__main__":
     # fix for arg path
-    file_path = "/home/matt/population.csv"
-    # file_path = "/home/matt/Repos/TestData/HEP-CE/newinputs/fibrosis/output2/population.csv"
+    # file_path = "/home/matt/population.csv"
+    # file_path = "/home/matt/Repos/TestData/HEP-CE/newinputs/fibrosis/output3/population.csv"
+    file_path = "/projectnb/hep-ce/data/output2/population.csv"
     df = pds.read_csv(file_path)
     extractor(df)

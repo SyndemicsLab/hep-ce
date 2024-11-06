@@ -183,6 +183,10 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
         .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("fibrosis_stating.test_two_eligible_stages", _))
+        .WillByDefault(
+            DoAll(SetArgReferee<1>("f0, f1, f2, f3, f4, decomp"), Return(0)));
 
     // Test One Data Setup
     std::unordered_map<int, std::vector<double>> t1storage;
@@ -236,6 +240,10 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
         .WillByDefault(DoAll(SetArgReferee<1>("latest"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("fibrosis_stating.test_two_eligible_stages", _))
+        .WillByDefault(
+            DoAll(SetArgReferee<1>("f0, f1, f2, f3, f4, decomp"), Return(0)));
 
     // Test One Data Setup
     std::unordered_map<int, std::vector<double>> t1storage;
