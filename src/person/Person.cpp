@@ -270,6 +270,11 @@ namespace person {
             linkStatus.linkState =
                 static_cast<person::LinkageState>(std::stoi(icValues[9]));
             health.hcv = static_cast<person::HCV>(std::stoi(icValues[10]));
+
+            if (icValues.size() == 10) {
+                return 0;
+            }
+
             pregnancyDetails.pregnancyState =
                 static_cast<person::PregnancyState>(std::stoi(icValues[11]));
             if (pregnancyDetails.pregnancyState ==
