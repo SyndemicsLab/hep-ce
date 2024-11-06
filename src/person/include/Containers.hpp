@@ -184,6 +184,7 @@ namespace person {
     /// @brief Pregnancy Classification
     /// @details There are three possible pregnancy states.
     enum class PregnancyState {
+        NA = -1,
         /// Never pregnant
         NONE = 0,
         /// Actively pregnant
