@@ -219,7 +219,6 @@ TEST_F(TreatmentTest, FinishTreatment) {
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
         .WillOnce(Return(1))        // Do Not Withdraw
-        .WillOnce(Return(1))        // Do Not Experience Toxicity
         .WillOnce(Return(0))        // Achieve SVR
         .WillRepeatedly(Return(0)); // The Rest
 
@@ -404,7 +403,9 @@ TEST_F(TreatmentTest, Withdraw) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&wstorage), Return(0)));
 
     // Decider Setup
-    EXPECT_CALL(*decider, GetDecision(_)).WillOnce(Return(0)); // Withdraw
+    EXPECT_CALL(*decider, GetDecision(_))
+        .WillOnce(Return(0))  // Withdraw
+        .WillOnce(Return(1)); // Toxicity
 
     // Expectations
     EXPECT_CALL(*testPerson, AddCost(_, _, _))
@@ -498,7 +499,7 @@ TEST_F(TreatmentTest, DevelopToxicity) {
 
     // Decider Setup
     EXPECT_CALL(*decider, GetDecision(_))
-        .WillOnce(Return(1))  // Do Not Withdraw
+        .WillOnce(Return(0))  // Withdraw
         .WillOnce(Return(0)); // Experience Toxicity
 
     // Expectations
