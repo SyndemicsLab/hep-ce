@@ -34,6 +34,7 @@ namespace event {
         double toxicity_cost;
         double toxicity_utility;
         double treatment_init_probability;
+        bool allow_retreatment = true;
 
         std::vector<std::string> ineligible_behaviors = {};
         std::vector<std::string> ineligible_fibrosis = {};
@@ -80,6 +81,11 @@ namespace event {
         }
 
         bool isEligible(std::shared_ptr<person::PersonBase> person) const {
+            int num_previous_treatments =
+                person->GetCompletedTreatments() + person->GetWithdrawals();
+            if (!allow_retreatment && num_previous_treatments > 0) {
+                return false;
+            }
             person::FibrosisState fibrosisState =
                 person->GetTrueFibrosisState();
             person::Behavior behavior = person->GetBehavior();
@@ -433,11 +439,16 @@ namespace event {
             }
         }
         TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            std::string discount_data;
-            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-            if (!discount_data.empty()) {
-                this->discount = std::stod(discount_data);
+            std::string data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", data);
+            if (!data.empty()) {
+                this->discount = std::stod(data);
             }
+            rc = dm->GetFromConfig("treatment.allow_retreatment", data);
+            if (!data.empty()) {
+                std::istringstream(data) >> allow_retreatment;
+            }
+
             lost_to_follow_up_probability =
                 ParseDoublesFromConfig("treatment.ltfu_probability", dm);
             treatment_cost =

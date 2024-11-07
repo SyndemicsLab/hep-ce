@@ -48,6 +48,8 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
@@ -155,6 +157,8 @@ TEST_F(TreatmentTest, FinishTreatment) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
@@ -249,6 +253,8 @@ TEST_F(TreatmentTest, LostToFollowUp) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
@@ -341,6 +347,8 @@ TEST_F(TreatmentTest, Withdraw) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
@@ -436,6 +444,8 @@ TEST_F(TreatmentTest, DevelopToxicity) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
