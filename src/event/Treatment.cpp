@@ -38,6 +38,7 @@ namespace event {
 
         std::vector<std::string> ineligible_behaviors = {};
         std::vector<std::string> ineligible_fibrosis = {};
+        std::vector<std::string> ineligible_pregnancy = {};
         int ineligible_time_since_linked = -2;
         int ineligible_time_since_last_use = -2;
 
@@ -96,6 +97,7 @@ namespace event {
             // and hasn't used
             if (isEligibleFibrosisStage(fibrosisState) &&
                 isEligibleBehavior(behavior) &&
+                isEligiblePregnancy(person->GetPregnancyState()) &&
                 (timeSinceLastUse > ineligible_time_since_last_use) &&
                 (timeSinceLinked > ineligible_time_since_linked)) {
                 return true;
@@ -120,6 +122,17 @@ namespace event {
                 person::Behavior temp;
                 temp << state;
                 if (behavior == temp) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        bool isEligiblePregnancy(person::PregnancyState pregnancy_state) const {
+            for (std::string state : ineligible_pregnancy) {
+                person::PregnancyState temp;
+                temp << state;
+                if (pregnancy_state == temp) {
                     return false;
                 }
             }
@@ -376,6 +389,11 @@ namespace event {
 
             eligibility_data.clear();
             dm->GetFromConfig("eligibility.ineligible_fibrosis_stages",
+                              eligibility_data);
+            LoadEligibilityVectors(eligibility_data, ineligible_fibrosis);
+
+            eligibility_data.clear();
+            dm->GetFromConfig("eligibility.ineligible_pregnancy_states",
                               eligibility_data);
             LoadEligibilityVectors(eligibility_data, ineligible_fibrosis);
 

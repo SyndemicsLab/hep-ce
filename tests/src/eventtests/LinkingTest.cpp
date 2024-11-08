@@ -42,22 +42,22 @@ TEST_F(LinkingTest, FalsePositive) {
 
     // Background Link Setup
     double link_prob = 0.5;
-    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
+    Utils::tuple_4i tup_4i = std::make_tuple(25, 0, 0, -1);
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
         bstorage;
-    bstorage[tup_3i] = link_prob;
+    bstorage[tup_4i] = link_prob;
     ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&bstorage), Return(0)));
 
     // Intervention Link Setup
     link_prob = 0.5;
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
         istorage;
-    istorage[tup_3i] = link_prob;
+    istorage[tup_4i] = link_prob;
     ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&istorage), Return(0)));
 
     // Expectations
     EXPECT_CALL(*testPerson, ClearHCVDiagnosis()).Times(1);
@@ -92,22 +92,22 @@ TEST_F(LinkingTest, BackgroundLink) {
 
     // Background Link Setup
     double link_prob = 1.0;
-    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
+    Utils::tuple_4i tup_4i = std::make_tuple(25, 0, 0, -1);
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
         bstorage;
-    bstorage[tup_3i] = link_prob;
+    bstorage[tup_4i] = link_prob;
     ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&bstorage), Return(0)));
 
     // Intervention Link Setup
     link_prob = 0.0;
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
         istorage;
-    istorage[tup_3i] = link_prob;
+    istorage[tup_4i] = link_prob;
     ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&istorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -146,22 +146,22 @@ TEST_F(LinkingTest, InterventionLink) {
 
     // Background Link Setup
     double link_prob = 0.0;
-    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
+    Utils::tuple_4i tup_4i = std::make_tuple(25, 0, 0, -1);
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
         bstorage;
-    bstorage[tup_3i] = link_prob;
+    bstorage[tup_4i] = link_prob;
     ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&bstorage), Return(0)));
 
     // Intervention Link Setup
     link_prob = 1.0;
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
         istorage;
-    istorage[tup_3i] = link_prob;
+    istorage[tup_4i] = link_prob;
     ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&istorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -197,22 +197,22 @@ TEST_F(LinkingTest, DecideToNotLink) {
 
     // Background Link Setup
     double link_prob = 0.0;
-    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
+    Utils::tuple_4i tup_4i = std::make_tuple(25, 0, 0, -1);
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
         bstorage;
-    bstorage[tup_3i] = link_prob;
+    bstorage[tup_4i] = link_prob;
     ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&bstorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&bstorage), Return(0)));
 
     // Intervention Link Setup
     link_prob = 0.0;
-    std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                       Utils::key_equal_3i>
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
         istorage;
-    istorage[tup_3i] = link_prob;
+    istorage[tup_4i] = link_prob;
     ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_LINK_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&istorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(1));

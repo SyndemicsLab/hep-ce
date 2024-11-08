@@ -31,22 +31,23 @@ namespace event {
         double false_positive_test_cost;
         double relink_multiplier;
 
-        typedef std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                                   Utils::key_equal_3i>
+        typedef std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                                   Utils::key_equal_4i>
             linkmap_t;
         linkmap_t background_link_data;
         linkmap_t intervention_link_data;
 
         static int callback_link(void *storage, int count, char **data,
                                  char **columns) {
-            Utils::tuple_3i tup = std::make_tuple(
-                std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-            (*((linkmap_t *)storage))[tup] = std::stod(data[3]);
+            Utils::tuple_4i tup =
+                std::make_tuple(std::stoi(data[0]), std::stoi(data[1]),
+                                std::stoi(data[2]), std::stoi(data[3]));
+            (*((linkmap_t *)storage))[tup] = std::stod(data[4]);
             return 0;
         }
         std::string LinkSQL(std::string const column) const {
-            return "SELECT age_years, gender, drug_behavior, " + column +
-                   " FROM screening_and_linkage;";
+            return "SELECT age_years, gender, drug_behavior, pregnancy, " +
+                   column + " FROM screening_and_linkage;";
         }
 
         double
@@ -56,8 +57,9 @@ namespace event {
             int age_years = (int)(person->GetAge() / 12.0);
             int gender = (int)person->GetSex();
             int drug_behavior = (int)person->GetBehavior();
-            Utils::tuple_3i tup =
-                std::make_tuple(age_years, gender, drug_behavior);
+            int pregnancy = (int)person->GetPregnancyState();
+            Utils::tuple_4i tup =
+                std::make_tuple(age_years, gender, drug_behavior, pregnancy);
             if (columnKey == "background_link_probability") {
                 return background_link_data[tup];
             } else if (columnKey == "intervention_link_probability") {

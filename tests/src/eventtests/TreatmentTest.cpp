@@ -44,6 +44,8 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
         .WillByDefault(Return(person::LinkageState::LINKED));
     ON_CALL(*testPerson, GetCompletedTreatments()).WillByDefault(Return(0));
     ON_CALL(*testPerson, GetWithdrawals()).WillByDefault(Return(0));
+    ON_CALL(*testPerson, GetPregnancyState())
+        .WillByDefault(Return(person::PregnancyState::NA));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -75,6 +77,9 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
     ON_CALL(*event_dm,
             GetFromConfig("eligibility.ineligible_time_since_linked", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("eligibility.ineligible_pregnancy_states", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
 
     // Duration Setup
     double duration = 2;
@@ -153,6 +158,8 @@ TEST_F(TreatmentTest, FinishTreatment) {
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetLinkState())
         .WillByDefault(Return(person::LinkageState::LINKED));
+    ON_CALL(*testPerson, GetPregnancyState())
+        .WillByDefault(Return(person::PregnancyState::NA));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -173,6 +180,9 @@ TEST_F(TreatmentTest, FinishTreatment) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("eligibility.ineligible_pregnancy_states", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
 
     // Duration Setup
     double duration = 2;
@@ -249,6 +259,8 @@ TEST_F(TreatmentTest, LostToFollowUp) {
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetLinkState())
         .WillByDefault(Return(person::LinkageState::LINKED));
+    ON_CALL(*testPerson, GetPregnancyState())
+        .WillByDefault(Return(person::PregnancyState::NA));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -269,6 +281,9 @@ TEST_F(TreatmentTest, LostToFollowUp) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("eligibility.ineligible_pregnancy_states", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
 
     // Duration Setup
     double duration = 2;
@@ -343,6 +358,8 @@ TEST_F(TreatmentTest, Withdraw) {
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetLinkState())
         .WillByDefault(Return(person::LinkageState::LINKED));
+    ON_CALL(*testPerson, GetPregnancyState())
+        .WillByDefault(Return(person::PregnancyState::NA));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -363,6 +380,9 @@ TEST_F(TreatmentTest, Withdraw) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("eligibility.ineligible_pregnancy_states", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
 
     // Duration Setup
     double duration = 2;
@@ -440,6 +460,8 @@ TEST_F(TreatmentTest, DevelopToxicity) {
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetLinkState())
         .WillByDefault(Return(person::LinkageState::LINKED));
+    ON_CALL(*testPerson, GetPregnancyState())
+        .WillByDefault(Return(person::PregnancyState::NA));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -460,6 +482,9 @@ TEST_F(TreatmentTest, DevelopToxicity) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("eligibility.ineligible_pregnancy_states", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
 
     // Duration Setup
     double duration = 2;

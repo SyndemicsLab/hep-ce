@@ -163,6 +163,12 @@ ACTION_P(SetArg2ToUM_T3I_Double, value) {
         arg2) = *value;
 }
 
+ACTION_P(SetArg2ToUM_T4I_Double, value) {
+    *reinterpret_cast<std::unordered_map<
+        Utils::tuple_4i, double, Utils::key_hash_4i, Utils::key_equal_4i> *>(
+        arg2) = *value;
+}
+
 ACTION_P(SetArg2ToUM_T4I_BT, value) {
     *reinterpret_cast<
         std::unordered_map<Utils::tuple_4i, struct behavior_transitions,
@@ -171,8 +177,7 @@ ACTION_P(SetArg2ToUM_T4I_BT, value) {
 }
 
 ACTION_P(SetArg2ToUM_Int_VecDouble, value) {
-    *reinterpret_cast<
-        std::unordered_map<int, std::vector<double>> *>(arg2) =
+    *reinterpret_cast<std::unordered_map<int, std::vector<double>> *>(arg2) =
         *value;
 }
 
