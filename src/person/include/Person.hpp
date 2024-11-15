@@ -86,6 +86,7 @@ namespace person {
         virtual int GetToxicReactions() const = 0;
         virtual int AddCompletedTreatment() = 0;
         virtual int GetCompletedTreatments() const = 0;
+        virtual int GetRetreatments() const = 0;
         virtual int AddSVR() = 0;
         virtual int GetSVRs() const = 0;
         virtual TreatmentDetails GetTreatmentDetails() const = 0;
@@ -249,6 +250,7 @@ namespace person {
         int GetToxicReactions() const;
         int AddCompletedTreatment();
         int GetCompletedTreatments() const;
+        int GetRetreatments() const;
         int AddSVR();
         int GetSVRs() const;
         TreatmentDetails GetTreatmentDetails() const;

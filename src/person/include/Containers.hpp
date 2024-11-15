@@ -16,7 +16,7 @@ namespace person {
         "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
         "timeOfTreatmentInitiation,minUtility,multUtility,"
         "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,"
-        "svrs";
+        "svrs,numberOfRetreatments";
 
     /// @brief HEP-C Infection States
     enum class HCV {

@@ -60,7 +60,8 @@ namespace writer {
                 << person->GetUtility().multUtil << ","
                 << person->GetWithdrawals() << ","
                 << person->GetToxicReactions() << ","
-                << person->GetCompletedTreatments() << "," << person->GetSVRs();
+                << person->GetCompletedTreatments() << "," << person->GetSVRs()
+                << "," << person->GetRetreatments();
             return compiled_attributes.str();
         }
 

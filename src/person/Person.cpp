@@ -100,6 +100,7 @@ namespace person {
         int treatmentWithdrawals = 0;
         int treatmentToxicReactions = 0;
         int completedTreatments = 0;
+        int retreatments = 0;
         int svrs = 0;
         bool currentlyOverdosing = false;
         bool hccDiagnosed = false;
@@ -509,6 +510,8 @@ namespace person {
 
         int GetCompletedTreatments() const { return this->completedTreatments; }
 
+        int GetRetreatments() const { return this->retreatments; }
+
         int GetSVRs() const { return this->svrs; }
 
         /// @brief
@@ -773,6 +776,7 @@ namespace person {
                 return;
             } else if (treatmentDetails.initiatedTreatment) {
                 this->treatmentDetails.retreatment = true;
+                retreatments++;
             } else {
                 this->treatmentDetails.initiatedTreatment = true;
             }
@@ -1024,6 +1028,9 @@ namespace person {
     }
     int Person::GetCompletedTreatments() const {
         return pImplPERSON->GetCompletedTreatments();
+    }
+    int Person::GetRetreatments() const {
+        return pImplPERSON->GetRetreatments();
     }
     int Person::GetSVRs() const { return pImplPERSON->GetSVRs(); }
     int Person::GetNumberOfABTests() const {
