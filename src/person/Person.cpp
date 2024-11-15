@@ -45,6 +45,7 @@ namespace person {
             int treatmentWithdrawals = 0;
             int treatmentToxicReactions = 0;
             int completedTreatments = 0;
+            bool retreatment = false;
             int svrs = 0;
         };
         static int callback(void *storage, int count, char **data,
@@ -199,6 +200,7 @@ namespace person {
             treatmentDetails.initiatedTreatment = storage.initiatedTreatment;
             treatmentDetails.timeOfTreatmentInitiation =
                 storage.timeOfTreatmentInitiation;
+            treatmentDetails.retreatment = storage.retreatment;
             utilityTracker.minUtil = storage.minUtility;
             utilityTracker.multUtil = storage.multUtility;
             return 0;
@@ -343,12 +345,8 @@ namespace person {
         /// @brief Reset a PersonIMPL's Link State to Unlinked
         /// @param timestep Timestep during which the PersonIMPL is Unlinked
         void Unlink() {
-            if (this->linkStatus.linkState == LinkageState::LINKED) {
-                this->linkStatus.linkState = LinkageState::UNLINKED;
-                this->linkStatus.timeOfLinkChange = this->_currentTime;
-            }
-            this->treatmentDetails.initiatedTreatment = false;
-            // this->ClearHCVDiagnosis();
+            this->linkStatus.linkState = LinkageState::UNLINKED;
+            this->linkStatus.timeOfLinkChange = this->_currentTime;
         }
 
         /// @brief Reset a PersonIMPL's Link State to Linked
@@ -358,7 +356,12 @@ namespace person {
             this->linkStatus.linkState = LinkageState::LINKED;
             this->linkStatus.timeOfLinkChange = this->_currentTime;
             this->linkStatus.linkType = linkType;
-            this->linkStatus.linkCount += 1;
+            this->linkStatus.linkCount++;
+        }
+
+        void EndTreatment() {
+            this->treatmentDetails.initiatedTreatment = false;
+            this->treatmentDetails.retreatment = false;
         }
 
         /// @brief Mark a PersonIMPL as Identified as Infected
@@ -467,6 +470,10 @@ namespace person {
         /// otherwise
         bool HasInitiatedTreatment() const {
             return this->treatmentDetails.initiatedTreatment;
+        }
+
+        bool IsInRetreatment() const {
+            return this->treatmentDetails.retreatment;
         }
         /// @brief Getter for whether PersonIMPL is genotype three
         /// @return True if genotype three, false otherwise
@@ -761,9 +768,16 @@ namespace person {
         /// @param incompleteTreatment Boolean value for initiated treatment
         /// state to be set
         void InitiateTreatment() {
+            if (treatmentDetails.initiatedTreatment &&
+                treatmentDetails.retreatment) {
+                return;
+            } else if (treatmentDetails.initiatedTreatment) {
+                this->treatmentDetails.retreatment = true;
+            } else {
+                this->treatmentDetails.initiatedTreatment = true;
+            }
             this->treatmentDetails.timeOfTreatmentInitiation =
                 this->_currentTime;
-            this->treatmentDetails.initiatedTreatment = true;
         }
 
         /// @brief Setter for Pregnancy State
@@ -932,6 +946,10 @@ namespace person {
         pImplPERSON->Link(linkType);
         return 0;
     }
+    int Person::EndTreatment() {
+        pImplPERSON->EndTreatment();
+        return 0;
+    }
     int Person::DiagnoseHCV() {
         pImplPERSON->DiagnoseHCV();
         return 0;
@@ -979,6 +997,9 @@ namespace person {
     }
     bool Person::HasInitiatedTreatment() const {
         return pImplPERSON->HasInitiatedTreatment();
+    }
+    bool Person::IsInRetreatment() const {
+        return pImplPERSON->IsInRetreatment();
     }
     bool Person::IsGenotypeThree() const {
         return pImplPERSON->IsGenotypeThree();

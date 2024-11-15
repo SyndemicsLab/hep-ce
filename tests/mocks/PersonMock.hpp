@@ -74,6 +74,8 @@ namespace person {
         MOCK_METHOD(TreatmentDetails, GetTreatmentDetails, (),
                     (const, override));
         MOCK_METHOD(void, InitiateTreatment, (), (override));
+        MOCK_METHOD(int, EndTreatment, (), (override));
+        MOCK_METHOD(bool, IsInRetreatment, (), (const, override));
 
         MOCK_METHOD(bool, HasInitiatedTreatment, (), (const, override));
 

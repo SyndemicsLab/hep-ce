@@ -275,6 +275,7 @@ namespace person {
     struct TreatmentDetails {
         bool initiatedTreatment = false;
         int timeOfTreatmentInitiation = 0;
+        bool retreatment = false;
     };
     std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 

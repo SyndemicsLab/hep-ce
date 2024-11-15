@@ -90,8 +90,10 @@ namespace person {
         virtual int GetSVRs() const = 0;
         virtual TreatmentDetails GetTreatmentDetails() const = 0;
         virtual void InitiateTreatment() = 0;
+        virtual int EndTreatment() = 0;
 
         virtual bool HasInitiatedTreatment() const = 0;
+        virtual bool IsInRetreatment() const = 0;
 
         virtual int GetTimeOfTreatmentInitiation() const = 0;
         virtual int GetTimeSinceTreatmentInitiation() const = 0;
@@ -251,8 +253,10 @@ namespace person {
         int GetSVRs() const;
         TreatmentDetails GetTreatmentDetails() const;
         void InitiateTreatment();
+        int EndTreatment();
 
         bool HasInitiatedTreatment() const;
+        bool IsInRetreatment() const;
 
         int GetTimeOfTreatmentInitiation() const;
         int GetTimeSinceTreatmentInitiation() const;

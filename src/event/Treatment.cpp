@@ -75,9 +75,7 @@ namespace event {
         GetThruple(std::shared_ptr<person::PersonBase> person) const {
             int geno3 = (person->IsGenotypeThree()) ? 1 : 0;
             int cirr = (person->IsCirrhotic()) ? 1 : 0;
-            int num_treatments =
-                person->GetWithdrawals() + person->GetCompletedTreatments();
-            int retreatment = (num_treatments > 0) ? 1 : 0;
+            int retreatment = (int)person->IsInRetreatment();
             return std::make_tuple(retreatment, geno3, cirr);
         }
 
@@ -97,7 +95,8 @@ namespace event {
             // and hasn't used
             if (isEligibleFibrosisStage(fibrosisState) &&
                 isEligibleBehavior(behavior) &&
-                isEligiblePregnancy(person->GetPregnancyState()) &&
+                (pregnancyState == person::PregnancyState::NA ||
+                 isEligiblePregnancy(pregnancyState)) &&
                 (timeSinceLastUse > ineligible_time_since_last_use) &&
                 (timeSinceLinked > ineligible_time_since_linked)) {
                 return true;
@@ -252,7 +251,7 @@ namespace event {
         }
 
         void quitEngagement(std::shared_ptr<person::PersonBase> person) {
-            // unlink from care
+            person->EndTreatment();
             person->Unlink();
             // reset utility
             person->SetUtility(1.0);
@@ -270,22 +269,16 @@ namespace event {
             return std::stod(data);
         }
 
-        void DecideIfPersonAchievesSVR(
-            std::shared_ptr<person::PersonBase> person,
-            std::shared_ptr<datamanagement::DataManagerBase> dm,
-            std::shared_ptr<stats::DeciderBase> decider) {
+        int
+        DecideIfPersonAchievesSVR(std::shared_ptr<person::PersonBase> person,
+                                  std::shared_ptr<stats::DeciderBase> decider) {
             if (svr_data.empty()) {
                 spdlog::get("main")->warn("No SVR Probability Found!");
-                return;
+                return -1;
             }
 
             double svr = svr_data[GetThruple(person)];
-
-            if (decider->GetDecision({svr}) == 0) {
-                person->AddSVR();
-                person->ClearHCV();
-                person->ClearHCVDiagnosis();
-            }
+            return decider->GetDecision({svr});
         }
 
         int LoadCostData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
@@ -450,10 +443,19 @@ namespace event {
                 return;
             }
             double duration = duration_data[GetThruple(person)];
-            if (person->GetTimeSinceTreatmentInitiation() >= (int)duration) {
+            if (person->GetTimeSinceTreatmentInitiation() == (int)duration) {
                 person->AddCompletedTreatment();
-                DecideIfPersonAchievesSVR(person, dm, decider);
-                this->quitEngagement(person);
+                int decision = DecideIfPersonAchievesSVR(person, decider);
+                if (decision == 0) {
+                    person->AddSVR();
+                    person->ClearHCV();
+                    person->ClearHCVDiagnosis();
+                    this->quitEngagement(person);
+                } else if (!person->IsInRetreatment()) {
+                    person->InitiateTreatment();
+                } else {
+                    // Person just goes away apparently?
+                }
             }
         }
         TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
