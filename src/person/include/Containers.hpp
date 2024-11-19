@@ -16,7 +16,7 @@ namespace person {
         "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
         "timeOfTreatmentInitiation,minUtility,multUtility,"
         "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,"
-        "svrs,numberOfRetreatments";
+        "svrs,numberOfTreatmentStarts,numberOfRetreatments";
 
     /// @brief HEP-C Infection States
     enum class HCV {
@@ -276,6 +276,7 @@ namespace person {
         bool initiatedTreatment = false;
         int timeOfTreatmentInitiation = 0;
         bool retreatment = false;
+        int numberOfTreatmentStarts = 0;
     };
     std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 

@@ -27,6 +27,7 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
     EXPECT_CALL(*testPerson, HasInitiatedTreatment())
         .WillOnce(Return(false))       // False Positive
         .WillOnce(Return(false))       // Initiate
+        .WillOnce(Return(false))       // Retreatment
         .WillRepeatedly(Return(true)); // Remainder
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(0));

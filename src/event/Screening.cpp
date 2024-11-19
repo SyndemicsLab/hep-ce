@@ -179,6 +179,7 @@ namespace event {
                         ? person::LinkageType::BACKGROUND
                         : person::LinkageType::INTERVENTION;
                 person->SetLinkageType(type);
+                person->DiagnoseHCV();
             }
         }
 

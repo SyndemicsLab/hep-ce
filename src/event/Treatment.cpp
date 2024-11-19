@@ -80,9 +80,10 @@ namespace event {
         }
 
         bool isEligible(std::shared_ptr<person::PersonBase> person) const {
-            int num_previous_treatments =
-                person->GetCompletedTreatments() + person->GetWithdrawals();
-            if (!allow_retreatment && num_previous_treatments > 0) {
+            // If currently on a treatment, a new eligibility check should
+            // verify retreatment is allows
+            bool check_retreatment = person->HasInitiatedTreatment();
+            if (!allow_retreatment && check_retreatment) {
                 return false;
             }
             person::FibrosisState fibrosisState =
@@ -235,9 +236,6 @@ namespace event {
         InitiateTreatment(std::shared_ptr<person::PersonBase> person,
                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                           std::shared_ptr<stats::DeciderBase> decider) {
-            if (person->HasInitiatedTreatment()) {
-                return true;
-            }
             // Do not start treatment until eligible
             if (!isEligible(person)) {
                 return false;
@@ -419,13 +417,12 @@ namespace event {
             // 2. Charge the Cost of the Visit (varies if this is retreatment)
             ChargeCostOfVisit(person, dm);
 
-            // 3. Attempt to start treatment, if already on treatment nothing
-            // happens
-            InitiateTreatment(person, dm, decider);
-
-            // If the person is not on a treatment, exit
+            // 3. Attempt to start primary treatment, if already on treatment
+            // nothing happens
             if (!person->HasInitiatedTreatment()) {
-                return;
+                if (!InitiateTreatment(person, dm, decider)) {
+                    return;
+                }
             }
 
             // 5. Charge the person for the Course they are on

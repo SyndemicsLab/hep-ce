@@ -45,6 +45,7 @@ namespace person {
             int treatmentWithdrawals = 0;
             int treatmentToxicReactions = 0;
             int completedTreatments = 0;
+            int numberOfTreatmentStarts = 0;
             bool retreatment = false;
             int svrs = 0;
         };
@@ -202,6 +203,8 @@ namespace person {
             treatmentDetails.timeOfTreatmentInitiation =
                 storage.timeOfTreatmentInitiation;
             treatmentDetails.retreatment = storage.retreatment;
+            treatmentDetails.numberOfTreatmentStarts =
+                storage.numberOfTreatmentStarts;
             utilityTracker.minUtil = storage.minUtility;
             utilityTracker.multUtil = storage.multUtility;
             return 0;
@@ -240,10 +243,6 @@ namespace person {
         /// @brief Clear of HCV
         /// @param timestep Current simulation timestep
         void ClearHCV() {
-            // cannot clear if the person is not infected
-            if (GetHCV() == HCV::NONE) {
-                return;
-            }
             this->health.hcv = HCV::NONE;
             this->health.timeHCVChanged = this->_currentTime;
             this->AddHCVClearance();
@@ -714,6 +713,9 @@ namespace person {
         TreatmentDetails GetTreatmentDetails() const {
             return this->treatmentDetails;
         }
+        int GetNumberOfTreatmentStarts() const {
+            return treatmentDetails.numberOfTreatmentStarts;
+        }
 
         std::string GetPersonDataString() const {
             std::stringstream data;
@@ -780,6 +782,7 @@ namespace person {
             } else {
                 this->treatmentDetails.initiatedTreatment = true;
             }
+            this->treatmentDetails.numberOfTreatmentStarts++;
             this->treatmentDetails.timeOfTreatmentInitiation =
                 this->_currentTime;
         }
@@ -1162,6 +1165,9 @@ namespace person {
     }
     TreatmentDetails Person::GetTreatmentDetails() const {
         return pImplPERSON->GetTreatmentDetails();
+    }
+    int Person::GetNumberOfTreatmentStarts() const {
+        return pImplPERSON->GetNumberOfTreatmentStarts();
     }
     std::string Person::GetPersonDataString() const {
         return pImplPERSON->GetPersonDataString();

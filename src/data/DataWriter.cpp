@@ -61,7 +61,8 @@ namespace writer {
                 << person->GetWithdrawals() << ","
                 << person->GetToxicReactions() << ","
                 << person->GetCompletedTreatments() << "," << person->GetSVRs()
-                << "," << person->GetRetreatments();
+                << "," << person->GetNumberOfTreatmentStarts() << ","
+                << person->GetRetreatments();
             return compiled_attributes.str();
         }
 

@@ -90,6 +90,7 @@ namespace person {
         virtual int AddSVR() = 0;
         virtual int GetSVRs() const = 0;
         virtual TreatmentDetails GetTreatmentDetails() const = 0;
+        virtual int GetNumberOfTreatmentStarts() const = 0;
         virtual void InitiateTreatment() = 0;
         virtual int EndTreatment() = 0;
 
@@ -254,6 +255,7 @@ namespace person {
         int AddSVR();
         int GetSVRs() const;
         TreatmentDetails GetTreatmentDetails() const;
+        int GetNumberOfTreatmentStarts() const;
         void InitiateTreatment();
         int EndTreatment();
 

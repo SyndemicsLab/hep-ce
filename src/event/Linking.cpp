@@ -90,7 +90,6 @@ namespace event {
         FalsePositive(std::shared_ptr<person::PersonBase> person,
                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
             if (person->GetHCV() == person::HCV::NONE) {
-                // person->Unlink();
                 person->ClearHCVDiagnosis();
                 this->AddLinkingCost(person, dm, "False Positive Linking Cost");
                 return true;
@@ -118,7 +117,7 @@ namespace event {
                 (person->GetLinkState() == person::LinkageState::LINKED);
             bool is_not_identified = (!person->IsIdentifiedAsHCVInfected());
             bool not_screened_this_month =
-                (person->GetTimeSinceLastScreening() > 0);
+                !(person->GetTimeSinceLastScreening() == 0);
 
             if (is_linked || is_not_identified || not_screened_this_month) {
                 return;

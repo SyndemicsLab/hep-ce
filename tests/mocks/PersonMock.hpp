@@ -82,6 +82,7 @@ namespace person {
         MOCK_METHOD(int, GetTimeOfTreatmentInitiation, (), (const, override));
         MOCK_METHOD(int, GetTimeSinceTreatmentInitiation, (),
                     (const, override));
+        MOCK_METHOD(int, GetNumberOfTreatmentStarts, (), (const, override));
         MOCK_METHOD(int, GetRetreatments, (), (const, override));
 
         // Drug Use Behavior

@@ -462,6 +462,8 @@ namespace person {
         os << "Time Person Initiated Treatment: "
            << tdet.timeOfTreatmentInitiation << std::endl;
         os << "Person is in Retreatment: " << tdet.retreatment << std::endl;
+        os << "Number of Treatment Initializations: "
+           << tdet.numberOfTreatmentStarts << std::endl;
         return os;
     }
 
