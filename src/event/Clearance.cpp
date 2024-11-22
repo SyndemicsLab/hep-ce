@@ -30,8 +30,13 @@ namespace event {
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider) {
             // if person isn't infected or is chronic, nothing to do
-            if (person->GetHCV() == person::HCV::ACUTE &&
-                decider->GetDecision({clearanceProbability}) == 0) {
+            // Also skip if person is already on treatment since we want this to
+            // count as SVR
+            if (person->GetHCV() != person::HCV::ACUTE &&
+                !person->HasInitiatedTreatment()) {
+                return;
+            }
+            if (decider->GetDecision({clearanceProbability}) == 0) {
                 person->ClearHCV();
             }
         }
