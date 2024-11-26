@@ -75,9 +75,10 @@ namespace simulation {
             uint64_t seed =
                 (data.empty()) ? (uint64_t)ms.count() : std::stoi(data);
             _seed = seed;
-            this->generator.seed(_seed);
             spdlog::get("main")->info("Resetting Simulation Seed to {}",
-                                      std::to_string(seed));
+                                      std::to_string(_seed));
+            this->generator.seed(_seed);
+            this->decider->LoadGenerator(this->generator);
             return (uint64_t)seed;
         }
 
@@ -98,8 +99,7 @@ namespace simulation {
         }
 
     public:
-        SimulationIMPL(size_t seed = 1234, std::string const &logfile = "",
-                       bool temp_db = true)
+        SimulationIMPL(size_t seed, std::string const &logfile, bool temp_db)
             : _seed(seed) {
             this->generator.seed(_seed);
             this->decider = std::make_shared<stats::Decider>();
