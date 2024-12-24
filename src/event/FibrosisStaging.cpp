@@ -161,7 +161,7 @@ namespace event {
             std::vector<double> probs =
                 GetMeasurementProbabilities(person, dm, test_one);
 
-            // 4. Decide which stage is assigned to the person->
+            // 4. Decide which stage is assigned to the person
             int res = decider->GetDecision(probs);
             if (res >= (int)person::MeasuredFibrosisState::COUNT) {
                 spdlog::get("main")->error(
