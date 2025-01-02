@@ -21,6 +21,7 @@
 #include "EventFactory.hpp"
 #include "Person.hpp"
 #include "PersonFactory.hpp"
+#include "Utils.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
@@ -43,13 +44,6 @@ namespace simulation {
         std::vector<std::shared_ptr<person::PersonBase>> population = {};
         std::vector<std::shared_ptr<event::Event>> events = {};
         static std::mt19937_64 generator;
-
-        void trim(std::string &str) {
-            while (str[0] == ' ')
-                str.erase(str.begin());
-            while (str[str.size() - 1] == ' ')
-                str.pop_back();
-        }
 
         /// @brief Provide the pRNG seed passed to the simulation object
         /// @return User-defined seed, if provided. Otherwise, a seed based on
@@ -310,7 +304,7 @@ namespace simulation {
             while (s.good()) {
                 std::string substr;
                 getline(s, substr, ',');
-                trim(substr);
+                Utils::trim(substr);
                 eventList.push_back(substr);
             }
 

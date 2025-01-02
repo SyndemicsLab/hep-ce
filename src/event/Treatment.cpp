@@ -42,21 +42,14 @@ namespace event {
         int ineligible_time_since_linked = -2;
         int ineligible_time_since_last_use = -2;
 
-        typedef std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                                   Utils::key_equal_3i>
-            treatmentmap_t;
+        using treatmentmap_t =
+            std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                               Utils::key_equal_3i>;
         treatmentmap_t duration_data;
         treatmentmap_t cost_data;
         treatmentmap_t svr_data;
         treatmentmap_t toxicity_data;
         treatmentmap_t withdrawal_data;
-
-        void trim(std::string &str) {
-            while (str[0] == ' ')
-                str.erase(str.begin());
-            while (str[str.size() - 1] == ' ')
-                str.pop_back();
-        }
 
         static int callback_treament(void *storage, int count, char **data,
                                      char **columns) {
@@ -365,7 +358,7 @@ namespace event {
             while (s.good()) {
                 std::string substr;
                 getline(s, substr, ',');
-                trim(substr);
+                Utils::trim(substr);
                 ineligibility_vec.push_back(substr);
             }
             return 0;
@@ -393,7 +386,6 @@ namespace event {
             ineligible_time_since_linked =
                 (data.empty()) ? -2 : std::stoi(data);
 
-            data.clear();
             dm->GetFromConfig("eligibility.ineligible_time_former_threshold",
                               data);
             ineligible_time_since_last_use =

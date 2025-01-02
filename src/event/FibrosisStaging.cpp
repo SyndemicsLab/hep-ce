@@ -17,6 +17,7 @@
 #include "FibrosisStaging.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
@@ -53,13 +54,6 @@ namespace event {
 
         std::string FibrosisTestSQL(std::string column) {
             return "SELECT fibrosis_state, " + column + " FROM fibrosis;";
-        }
-
-        void trim(std::string &str) {
-            while (str[0] == ' ')
-                str.erase(str.begin());
-            while (str[str.size() - 1] == ' ')
-                str.pop_back();
         }
 
         /// @brief Aggregate the fibrosis stage testing probabilities for a
@@ -221,25 +215,21 @@ namespace event {
                 this->discount = std::stod(discount_data);
             }
             std::string data;
-            data.clear();
+
             dm->GetFromConfig("fibrosis_staging.test_one_cost", data);
             test_one_cost = (!data.empty()) ? std::stod(data) : 0.0;
 
-            data.clear();
             dm->GetFromConfig("fibrosis_staging.test_two_cost", data);
             test_two_cost = (!data.empty()) ? std::stod(data) : 0.0;
 
-            data.clear();
             dm->GetFromConfig("fibrosis_staging.period", data);
             staging_period = std::stoi(data);
 
-            data.clear();
             dm->GetFromConfig("fibrosis_staging.test_one", data);
             test_one = data;
 
             LoadTestOneData(dm);
 
-            data.clear();
             dm->GetFromConfig("fibrosis_staging.test_two", data);
             test_two = data;
 
@@ -247,11 +237,9 @@ namespace event {
                 LoadTestTwoData(dm);
             }
 
-            data.clear();
             dm->GetFromConfig("fibrosis_staging.multitest_result_method", data);
             multitest_result_method = data;
 
-            data.clear();
             dm->GetFromConfig("fibrosis_stating.test_two_eligible_stages",
                               data);
             testtwo_eligible_fibs.clear();
@@ -259,7 +247,7 @@ namespace event {
             while (s.good()) {
                 std::string substr;
                 getline(s, substr, ',');
-                trim(substr);
+                Utils::trim(substr);
                 person::FibrosisState temp;
                 temp << substr;
                 testtwo_eligible_fibs.push_back(temp);

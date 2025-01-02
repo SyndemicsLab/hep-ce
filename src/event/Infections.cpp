@@ -24,9 +24,9 @@
 namespace event {
     class Infections::InfectionsIMPL {
     private:
-        typedef std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                                   Utils::key_equal_3i>
-            incidencemap_t;
+        using incidencemap_t =
+            std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                               Utils::key_equal_3i>;
         incidencemap_t incidence_data;
         static int callback_incidence(void *storage, int count, char **data,
                                       char **columns) {

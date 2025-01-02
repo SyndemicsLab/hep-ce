@@ -31,9 +31,9 @@ namespace event {
         double false_positive_test_cost;
         double relink_multiplier;
 
-        typedef std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
-                                   Utils::key_equal_4i>
-            linkmap_t;
+        using linkmap_t =
+            std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                               Utils::key_equal_4i>;
         linkmap_t background_link_data;
         linkmap_t intervention_link_data;
 

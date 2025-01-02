@@ -35,9 +35,9 @@ namespace event {
             double smr = 0.0;
         };
 
-        typedef std::unordered_map<Utils::tuple_3i, struct background_smr,
-                                   Utils::key_hash_3i, Utils::key_equal_3i>
-            backgroundmap_t;
+        using backgroundmap_t =
+            std::unordered_map<Utils::tuple_3i, struct background_smr,
+                               Utils::key_hash_3i, Utils::key_equal_3i>;
         backgroundmap_t background_data;
 
         std::string BackgroundMortalitySQL() const {
@@ -84,9 +84,9 @@ namespace event {
             return rc;
         }
 
-        typedef std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
-                                   Utils::key_equal_2i>
-            overdosemap_t;
+        using overdosemap_t =
+            std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                               Utils::key_equal_2i>;
         overdosemap_t overdose_data;
 
         std::string OverdoseSQL() const {
@@ -261,19 +261,16 @@ namespace event {
 
         DeathIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string data;
-            data.clear();
+
             dm->GetFromConfig("mortality.f4_infected", data);
             this->f4_infected_probability = std::stod(data);
 
-            data.clear();
             dm->GetFromConfig("mortality.f4_uninfected", data);
             this->f4_uninfected_probability = std::stod(data);
 
-            data.clear();
             dm->GetFromConfig("mortality.decomp_infected", data);
             this->decomp_infected_probability = std::stod(data);
 
-            data.clear();
             dm->GetFromConfig("mortality.decomp_uninfected", data);
             this->decomp_uninfected_probability = std::stod(data);
 

@@ -34,9 +34,9 @@ namespace event {
         double f4d_probability;
         bool costFlag = false;
 
-        typedef std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
-                                   Utils::key_equal_2i>
-            costmap_t;
+        using costmap_t =
+            std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+                               Utils::key_equal_2i>;
         costmap_t cost_data;
 
         std::string CostSQL() {
@@ -136,23 +136,18 @@ namespace event {
 
             dm->GetFromConfig("fibrosis.f01", data);
             this->f01_probability = std::stod(data);
-            data.clear();
 
             dm->GetFromConfig("fibrosis.f12", data);
             this->f12_probability = std::stod(data);
-            data.clear();
 
             dm->GetFromConfig("fibrosis.f23", data);
             this->f23_probability = std::stod(data);
-            data.clear();
 
             dm->GetFromConfig("fibrosis.f34", data);
             this->f34_probability = std::stod(data);
-            data.clear();
 
             dm->GetFromConfig("fibrosis.f4d", data);
             this->f4d_probability = std::stod(data);
-            data.clear();
 
             dm->GetFromConfig("fibrosis.add_cost_only_if_identified", data);
             if (!data.empty()) {

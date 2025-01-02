@@ -59,7 +59,7 @@ namespace Utils {
 
     // tuple_2i definition
 
-    typedef std::tuple<int, int> tuple_2i;
+    using tuple_2i = std::tuple<int, int>;
     struct key_hash_2i {
         std::size_t operator()(const tuple_2i &k) const {
             return std::get<0>(k) ^ std::get<1>(k);
@@ -73,7 +73,7 @@ namespace Utils {
 
     // tuple_3i definition
 
-    typedef std::tuple<int, int, int> tuple_3i;
+    using tuple_3i = std::tuple<int, int, int>;
     struct key_hash_3i {
         std::size_t operator()(const tuple_3i &k) const {
             return std::get<0>(k) ^ std::get<1>(k) ^ std::get<2>(k);
@@ -87,7 +87,7 @@ namespace Utils {
 
     // tuple_4i definition
 
-    typedef std::tuple<int, int, int, int> tuple_4i;
+    using tuple_4i = std::tuple<int, int, int, int>;
     struct key_hash_4i {
         std::size_t operator()(const tuple_4i &k) const {
             return std::get<0>(k) ^ std::get<1>(k) ^ std::get<2>(k) ^
@@ -99,6 +99,13 @@ namespace Utils {
             return v0 == v1;
         }
     };
+
+    inline void trim(std::string &str) {
+        while (str[0] == ' ')
+            str.erase(str.begin());
+        while (str[str.size() - 1] == ' ')
+            str.pop_back();
+    }
 } // namespace Utils
 
 #endif

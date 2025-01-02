@@ -55,9 +55,9 @@ namespace event {
         int screening_period;
         std::string intervention_type;
 
-        typedef std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                                   Utils::key_equal_3i>
-            screenmap_t;
+        using screenmap_t =
+            std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                               Utils::key_equal_3i>;
         screenmap_t intervention_screen_data;
         screenmap_t background_screen_data;
 

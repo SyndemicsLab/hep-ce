@@ -34,9 +34,9 @@ namespace event {
             double util;
         };
 
-        typedef std::unordered_map<Utils::tuple_3i, struct cost_util,
-                                   Utils::key_hash_3i, Utils::key_equal_3i>
-            agemap_t;
+        using agemap_t =
+            std::unordered_map<Utils::tuple_3i, struct cost_util,
+                               Utils::key_hash_3i, Utils::key_equal_3i>;
         agemap_t data;
 
         static int callback(void *storage, int count, char **data,
@@ -102,12 +102,6 @@ namespace event {
             }
 
             data = {};
-            if (dm == nullptr) {
-                spdlog::get("main")->warn(
-                    "No Data Manager Provided during Construction. No Data "
-                    "Loaded to Aging.");
-                return;
-            }
             rc = LoadData(dm);
         }
     };

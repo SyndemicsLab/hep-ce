@@ -34,9 +34,9 @@ namespace event {
             double in = 0.25;
         };
 
-        typedef std::unordered_map<Utils::tuple_4i, struct behavior_transitions,
-                                   Utils::key_hash_4i, Utils::key_equal_4i>
-            behaviormap_t;
+        using behaviormap_t =
+            std::unordered_map<Utils::tuple_4i, struct behavior_transitions,
+                               Utils::key_hash_4i, Utils::key_equal_4i>;
         behaviormap_t behavior_data;
 
         std::string TransitionSQL() const {
@@ -62,9 +62,9 @@ namespace event {
             double util = 0.0;
         };
 
-        typedef std::unordered_map<Utils::tuple_2i, struct cost_util,
-                                   Utils::key_hash_2i, Utils::key_equal_2i>
-            costmap_t;
+        using costmap_t =
+            std::unordered_map<Utils::tuple_2i, struct cost_util,
+                               Utils::key_hash_2i, Utils::key_equal_2i>;
         costmap_t cost_data;
 
         std::string CostSQL() const {
@@ -144,9 +144,10 @@ namespace event {
             int behavior = ((int)person->GetBehavior());
             Utils::tuple_4i tup =
                 std::make_tuple(age_years, gender, moud, behavior);
-            struct behavior_transitions temp = behavior_data[tup];
-            std::vector<double> probs = {temp.never, temp.fni, temp.fi, temp.ni,
-                                         temp.in};
+            std::vector<double> probs = {
+                behavior_data[tup].never, behavior_data[tup].fni,
+                behavior_data[tup].fi, behavior_data[tup].ni,
+                behavior_data[tup].in};
 
             // 2. Draw a behavior state to be transitioned to
             int res = decider->GetDecision(probs);
@@ -172,12 +173,6 @@ namespace event {
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
             if (!discount_data.empty()) {
                 this->discount = std::stod(discount_data);
-            }
-            if (dm == nullptr) {
-                spdlog::get("main")->warn(
-                    "No Data Manager Provided during Construction. No Data "
-                    "Loaded to Behavior Changes.");
-                return;
             }
             rc = LoadCostData(dm);
             rc = LoadBehaviorData(dm);

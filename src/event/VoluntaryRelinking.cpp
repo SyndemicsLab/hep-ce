@@ -72,7 +72,6 @@ namespace event {
             }
             relink_probability = std::stod(data);
 
-            data.clear();
             dm->GetFromConfig("linking.voluntary_relink_duration", data);
             if (data.empty()) {
                 spdlog::get("main")->warn(
@@ -81,7 +80,6 @@ namespace event {
             }
             voluntary_relink_duration = std::stoi(data);
 
-            data.clear();
             dm->GetFromConfig("screening_background_rna.cost", data);
             background_rna_cost = std::stod(data);
         }
