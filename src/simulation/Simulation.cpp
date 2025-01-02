@@ -299,14 +299,9 @@ namespace simulation {
             this->events.clear();
             std::string data;
             _dm->GetFromConfig("simulation.events", data);
-            std::vector<std::string> eventList;
-            std::stringstream s(data);
-            while (s.good()) {
-                std::string substr;
-                getline(s, substr, ',');
-                Utils::trim(substr);
-                eventList.push_back(substr);
-            }
+
+            std::vector<std::string> eventList =
+                Utils::split2vecT<std::string>(data, ',');
 
             event::EventFactory factory;
             for (std::string eventObj : eventList) {

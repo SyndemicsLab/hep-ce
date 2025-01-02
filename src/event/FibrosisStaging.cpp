@@ -242,16 +242,8 @@ namespace event {
 
             dm->GetFromConfig("fibrosis_stating.test_two_eligible_stages",
                               data);
-            testtwo_eligible_fibs.clear();
-            std::stringstream s(data);
-            while (s.good()) {
-                std::string substr;
-                getline(s, substr, ',');
-                Utils::trim(substr);
-                person::FibrosisState temp;
-                temp << substr;
-                testtwo_eligible_fibs.push_back(temp);
-            }
+            testtwo_eligible_fibs =
+                Utils::split2vecT<person::FibrosisState>(data, ',');
         }
     };
 

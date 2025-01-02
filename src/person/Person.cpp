@@ -139,7 +139,7 @@ namespace person {
         }
 
         int CalculateTimeSince(int lasttime) const {
-            if (lasttime == -1) {
+            if (lasttime <= -1) {
                 return GetCurrentTimestep();
             }
             return GetCurrentTimestep() - lasttime;
@@ -249,11 +249,6 @@ namespace person {
         }
 
         int LoadICValues(int id, std::vector<std::string> icValues) {
-            if (icValues.size() < 10) {
-                spdlog::get("main")->warn(
-                    "Incorrect Number of Initial Cohort Values Retrieved!");
-                return -1;
-            }
             this->id = id;
             SetAge(std::stoi(icValues[1]));
             this->sex = static_cast<person::Sex>(std::stoi(icValues[2]));

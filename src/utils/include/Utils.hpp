@@ -22,6 +22,7 @@
 #include <stdexcept>
 #include <string>
 #include <tuple>
+#include <vector>
 
 /// @brief Namespace containing Utility Helper Functions
 namespace Utils {
@@ -105,6 +106,24 @@ namespace Utils {
             str.erase(str.begin());
         while (str[str.size() - 1] == ' ')
             str.pop_back();
+    }
+
+    template <typename T>
+    inline std::vector<T> split2vecT(const std::string &s, char delim) {
+        std::vector<T> elems;
+        std::stringstream ss(s);
+        std::string item;
+        while (std::getline(ss, item, delim)) {
+            T temp;
+            if constexpr (std::is_same_v<T, std::string>) {
+                Utils::trim(item);
+                temp = item;
+            } else {
+                temp << item;
+            }
+            elems.push_back(temp);
+        }
+        return elems;
     }
 } // namespace Utils
 

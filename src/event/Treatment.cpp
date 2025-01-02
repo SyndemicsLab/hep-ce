@@ -65,7 +65,7 @@ namespace event {
         }
 
         Utils::tuple_3i
-        GetThruple(std::shared_ptr<person::PersonBase> person) const {
+        GetTreatmentThruple(std::shared_ptr<person::PersonBase> person) const {
             int geno3 = (person->IsGenotypeThree()) ? 1 : 0;
             int cirr = (person->IsCirrhotic()) ? 1 : 0;
             int retreatment = (int)person->IsInRetreatment();
@@ -74,7 +74,7 @@ namespace event {
 
         bool isEligible(std::shared_ptr<person::PersonBase> person) const {
             // If currently on a treatment, a new eligibility check should
-            // verify retreatment is allows
+            // verify retreatment is allowed
             bool check_retreatment = person->HasInitiatedTreatment();
             if (!allow_retreatment && check_retreatment) {
                 return false;
@@ -179,9 +179,10 @@ namespace event {
                 return;
             }
             double discountAdjustedCost = Event::DiscountEventCost(
-                cost_data[GetThruple(person)], discount,
+                cost_data[GetTreatmentThruple(person)], discount,
                 person->GetCurrentTimestep());
-            person->AddCost(cost_data[GetThruple(person)], discountAdjustedCost,
+            person->AddCost(cost_data[GetTreatmentThruple(person)],
+                            discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
             person->SetUtility(treatment_utility);
         }
@@ -194,8 +195,8 @@ namespace event {
                 return false;
             }
 
-            if (decider->GetDecision({withdrawal_data[GetThruple(person)]}) ==
-                0) {
+            if (decider->GetDecision(
+                    {withdrawal_data[GetTreatmentThruple(person)]}) == 0) {
                 person->AddWithdrawal();
                 CheckIfExperienceToxicity(person, dm, decider);
                 this->quitEngagement(person);
@@ -213,8 +214,8 @@ namespace event {
                 return;
             }
 
-            if (decider->GetDecision({toxicity_data[GetThruple(person)]}) ==
-                1) {
+            if (decider->GetDecision(
+                    {toxicity_data[GetTreatmentThruple(person)]}) == 1) {
                 return;
             }
             person->AddToxicReaction();
@@ -268,7 +269,7 @@ namespace event {
                 return -1;
             }
 
-            double svr = svr_data[GetThruple(person)];
+            double svr = svr_data[GetTreatmentThruple(person)];
             return decider->GetDecision({svr});
         }
 
@@ -354,13 +355,8 @@ namespace event {
             if (data.empty()) {
                 return 0;
             }
-            std::stringstream s(data);
-            while (s.good()) {
-                std::string substr;
-                getline(s, substr, ',');
-                Utils::trim(substr);
-                ineligibility_vec.push_back(substr);
-            }
+
+            ineligibility_vec = Utils::split2vecT<std::string>(data, ',');
             return 0;
         }
 
@@ -431,7 +427,7 @@ namespace event {
                 spdlog::get("main")->warn("No Treatment Duration Found!");
                 return;
             }
-            double duration = duration_data[GetThruple(person)];
+            double duration = duration_data[GetTreatmentThruple(person)];
             if (person->GetTimeSinceTreatmentInitiation() == (int)duration) {
                 person->AddCompletedTreatment();
                 int decision = DecideIfPersonAchievesSVR(person, decider);

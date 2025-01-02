@@ -61,7 +61,8 @@ namespace event {
             std::string error;
             int rc = dm->SelectCustomCallback(query, callback, &storage, error);
             if (rc != 0) {
-                spdlog::get("main")->error("No cost avaliable for Pregnancy!");
+                spdlog::get("main")->error(
+                    "No probabilities avaliable for Pregnancy!");
                 return {};
             }
             std::vector<double> result = {storage, 1 - storage};
