@@ -198,7 +198,6 @@ namespace event {
             if (decider->GetDecision(
                     {withdrawal_data[GetTreatmentThruple(person)]}) == 0) {
                 person->AddWithdrawal();
-                CheckIfExperienceToxicity(person, dm, decider);
                 this->quitEngagement(person);
                 return true;
             }
@@ -416,12 +415,15 @@ namespace event {
             // 5. Charge the person for the Course they are on
             ChargeCostOfCourse(person, dm);
 
-            // 6. Determine if the person withdraws from the treatment
+            // 6. Check if the person experiences toxicity
+            CheckIfExperienceToxicity(person, dm, decider);
+
+            // 7. Determine if the person withdraws from the treatment
             if (Withdraws(person, dm, decider)) {
                 return;
             }
 
-            // 7. Determine if the person has been treated long enough, if they
+            // 8. Determine if the person has been treated long enough, if they
             // achieve SVR
             if (duration_data.empty()) {
                 spdlog::get("main")->warn("No Treatment Duration Found!");
