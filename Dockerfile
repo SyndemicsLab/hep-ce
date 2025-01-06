@@ -3,17 +3,22 @@
 # See https://hub.docker.com/r/library/gcc/ for all supported GCC
 # tags from Docker Hub.
 # See https://docs.docker.com/samples/library/gcc/ for more on how to use this image
-FROM gcc:latest
+FROM ubuntu:22.04 AS builder
 
-# These commands copy your files into the specified directory in the image
-# and set that as the working location
-COPY . /usr/src/myapp
-WORKDIR /usr/src/myapp
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive \
+    apt-get install --assume-yes --no-install-recommends \
+    cmake \
+    libboost-all-dev \
+    sqlite3 
 
-# This command compiles your app using GCC, adjust for your source code
-RUN g++ -o myapp main.cpp
+COPY src .
+COPY scripts .
+RUN mkdir build
+
+RUN ./scripts/build.sh -t Release
 
 # This command runs your application, comment out this line to compile only
-CMD ["./myapp"]
+ENTRYPOINT [ "bin/hepce" ]
 
 LABEL Name=hepcesimulationv2 Version=0.0.1

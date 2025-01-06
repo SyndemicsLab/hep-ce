@@ -3,7 +3,21 @@
 
 #include <ostream>
 
-namespace Person {
+namespace person {
+
+    inline static const std::string POPULATION_HEADERS =
+        "sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,"
+        "HCV,"
+        "fibrosisState,isGenotypeThree,seropositive,timeHCVChanged,"
+        "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,"
+        "linkageState,timeOfLinkChange,linkageType,"
+        "linkCount,measuredFibrosisState,"
+        "timeOfLastStaging,timeOfLastScreening,numABTests,"
+        "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
+        "timeOfTreatmentInitiation,minUtility,multUtility,"
+        "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,"
+        "svrs,numberOfTreatmentStarts,numberOfRetreatments";
+
     /// @brief HEP-C Infection States
     enum class HCV {
         /// No HCV infection
@@ -15,6 +29,21 @@ namespace Person {
 
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const HCV &inst);
+    HCV &operator<<(HCV &inst, const std::string &str);
+
+    enum class DeathReason {
+        /// @brief Not applicable, usually not dead
+        NA = 0,
+        BACKGROUND = 1,
+        LIVER = 2,
+        INFECTION = 3,
+        AGE = 4,
+        OVERDOSE = 5,
+        COUNT = 6
+    };
+    std::ostream &operator<<(std::ostream &os, const DeathReason &inst);
+    DeathReason &operator<<(DeathReason &inst, const std::string &str);
 
     /// @brief Opioid Usage Behavior Classification
     /// @details There are five possible possible usage classifications.
@@ -32,6 +61,8 @@ namespace Person {
 
         COUNT = 5
     };
+    std::ostream &operator<<(std::ostream &os, const Behavior &inst);
+    Behavior &operator<<(Behavior &inst, const std::string &str);
 
     /// @brief Screening type that led to linkage
     enum class LinkageType {
@@ -39,8 +70,11 @@ namespace Person {
         BACKGROUND = 0,
         /// Linked through intervention screening
         INTERVENTION = 1,
-        COUNT = 2
+        NA = 2,
+        COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const LinkageType &inst);
+    LinkageType &operator<<(LinkageType &inst, const std::string &str);
 
     /// @brief Status of Linkage
     enum class LinkageState {
@@ -52,6 +86,8 @@ namespace Person {
         UNLINKED = 2,
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const LinkageState &inst);
+    LinkageState &operator<<(LinkageState &inst, const std::string &str);
 
     /// @brief Classification of Liver Fibrosis Stage
     /// @details HCV infection causes liver fibrosis and cirrhosis and increases
@@ -59,23 +95,27 @@ namespace Person {
     /// These states strictly increase, with the possibility of progressing to
     /// HCC being possible at any time from stage F3 and higher.
     enum class FibrosisState {
-        /// No adverse liver effects
-        NONE = 0,
         /// No scarring
-        F0 = 1,
+        F0 = 0,
         /// Mild liver scarring
-        F1 = 2,
+        F1 = 1,
         /// Scarring has occurred and extends outside the liver area
-        F2 = 3,
+        F2 = 2,
         /// Fibrosis spreading and forming bridges with other fibrotic liver
         /// areas
-        F3 = 4,
+        F3 = 3,
         /// Cirrhosis or advanced scarring
-        F4 = 5,
+        F4 = 4,
         /// Symptomatic cirrhosis; overt complications
-        DECOMP = 6,
+        DECOMP = 5,
+        /// No adverse liver effects
+        NONE = 6,
         COUNT = 7
     };
+    std::ostream &operator<<(std::ostream &os, const FibrosisState &inst);
+    FibrosisState &operator<<(FibrosisState &inst, const std::string &str);
+    FibrosisState &operator++(FibrosisState &inst);
+    FibrosisState operator++(FibrosisState &inst, int);
 
     /// @brief Classification of hepatocellular carcinoma (HCC) state
     /// @details Advanced liver fibrosis and cirrhosis significantly increase
@@ -92,21 +132,30 @@ namespace Person {
         LATE = 2,
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const HCCState &inst);
+    HCCState &operator<<(HCCState &inst, const std::string &str);
 
     /// @brief Clinically staged liver fibrosis stage
     enum class MeasuredFibrosisState {
-        /// Person has never been screened before
-        NONE = 0,
         /// Person is measured to be either F0 or F1
-        F01 = 1,
+        F01 = 0,
         /// Person is measured to be either F2 or F3
-        F23 = 2,
+        F23 = 1,
         /// Person is measured to be F4
-        F4 = 3,
+        F4 = 2,
         /// Person has decompensated liver
-        DECOMP = 4,
+        DECOMP = 3,
+        /// Person has never been screened before
+        NONE = 4,
+
         COUNT = 5
     };
+    std::ostream &operator<<(std::ostream &os,
+                             const MeasuredFibrosisState &inst);
+    MeasuredFibrosisState &operator<<(MeasuredFibrosisState &inst,
+                                      const std::string &str);
+    MeasuredFibrosisState &operator++(MeasuredFibrosisState &inst);
+    MeasuredFibrosisState operator++(MeasuredFibrosisState &inst, int);
 
     /// @brief Opioid Use Disorder Treatment States (MOUDs)
     enum class MOUD {
@@ -118,6 +167,8 @@ namespace Person {
         POST = 2,
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const MOUD &inst);
+    MOUD &operator<<(MOUD &inst, const std::string &str);
 
     /// @brief Biological Sex
     enum class Sex {
@@ -127,10 +178,13 @@ namespace Person {
         FEMALE = 1,
         COUNT = 2
     };
+    std::ostream &operator<<(std::ostream &os, const Sex &inst);
+    Sex &operator<<(Sex &inst, const std::string &str);
 
     /// @brief Pregnancy Classification
     /// @details There are three possible pregnancy states.
     enum class PregnancyState {
+        NA = -1,
         /// Never pregnant
         NONE = 0,
         /// Actively pregnant
@@ -139,6 +193,8 @@ namespace Person {
         POSTPARTUM = 2,
         COUNT = 3
     };
+    std::ostream &operator<<(std::ostream &os, const PregnancyState &inst);
+    PregnancyState &operator<<(PregnancyState &inst, const std::string &str);
 
     /// @brief Attributes describing an Infection
     struct Health {
@@ -146,12 +202,13 @@ namespace Person {
         FibrosisState fibrosisState = FibrosisState::NONE;
         bool isGenotypeThree = false;
         bool seropositive = false;
-        int timeHCVChanged = 0;
-        int timeFibrosisStateChanged = 0;
+        int timeHCVChanged = -1;
+        int timeFibrosisStateChanged = -1;
         int timesInfected = 0;
         int timesCleared = 0;
         bool identifiedHCV = false;
-        int timeIdentified = 0;
+        bool historyOfHCV = false;
+        int timeIdentified = -1;
         HCCState hccState = HCCState::NONE;
     };
     std::ostream &operator<<(std::ostream &os, const Health &inst);
@@ -159,15 +216,15 @@ namespace Person {
     /// @brief Attributes describing drug use behavior
     struct BehaviorDetails {
         Behavior behavior = Behavior::NEVER;
-        int timeLastActive = 0;
+        int timeLastActive = -1;
     };
     std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav);
 
     /// @brief Attributes describing Linkage
     struct LinkageDetails {
         LinkageState linkState = LinkageState::NEVER;
-        int timeOfLinkChange = 0;
-        LinkageType linkType = LinkageType::BACKGROUND;
+        int timeOfLinkChange = -1;
+        LinkageType linkType = LinkageType::NA;
         int linkCount = 0;
     };
     std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet);
@@ -175,32 +232,40 @@ namespace Person {
     /// @brief Attributes describing MOUD status
     struct MOUDDetails {
         MOUD moudState = MOUD::NONE;
-        int timeStartedMoud = 0;
+        int timeStartedMoud = -1;
+        int currentStateConcurrentMonths = 0;
+        int totalMOUDMonths = 0;
     };
     std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 
     /// @brief Attributes describing pregnancy
     struct PregnancyDetails {
         PregnancyState pregnancyState = PregnancyState::NONE;
-        int timeOfPregnancyChange = 0;
+        int timeOfPregnancyChange = -1;
         int numInfants = 0;
         int numMiscarriages = 0;
     };
     std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
+
+    struct Child {
+        HCV hcv = HCV::NONE;
+        bool tested = false;
+    };
+    std::ostream &operator<<(std::ostream &os, Child const &inst);
 
     /// @brief Person attributes describing clinically assessed liver stage
     struct StagingDetails {
         MeasuredFibrosisState measuredFibrosisState =
             MeasuredFibrosisState::NONE;
         bool hadSecondTest = false;
-        int timeOfLastStaging = 0;
+        int timeOfLastStaging = -1;
     };
     std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet);
 
     /// @brief Attributes describing screening status
     struct ScreeningDetails {
         // -1 if never screened, otherwise [0, currentTimestep-1)
-        int timeOfLastScreening = 0;
+        int timeOfLastScreening = -1;
         int numABTests = 0;
         int numRNATests = 0;
     };
@@ -210,6 +275,8 @@ namespace Person {
     struct TreatmentDetails {
         bool initiatedTreatment = false;
         int timeOfTreatmentInitiation = 0;
+        bool retreatment = false;
+        int numberOfTreatmentStarts = 0;
     };
     std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 
@@ -219,6 +286,6 @@ namespace Person {
         double minUtil = 1.0;
     };
     std::ostream &operator<<(std::ostream &os, UtilityTracker const &utra);
-} // namespace Person
+} // namespace person
 
 #endif

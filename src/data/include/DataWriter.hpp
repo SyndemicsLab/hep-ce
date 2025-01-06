@@ -17,32 +17,32 @@
 #ifndef DATAWRITER_HPP_
 #define DATAWRITER_HPP_
 
-#include "Cost.hpp"
-#include "Person.hpp"
-#include "Utils.hpp"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/spdlog.h"
-#include <DataManagement.hpp>
+#include <memory>
+#include <vector>
+
+namespace person {
+    class PersonBase;
+}
+namespace datamanagement {
+    class DataManagerBase;
+}
 
 /// @brief Namespace containing functions for writing simulation output
-namespace DataWriter {
-    /// @brief Write out the population after the simulation is complete
-    /// @param population Vector of shared pointers to all Person objects in the
-    /// simulation
-    /// @param dirpath Path to the output folder
-    void
-    writePopulation(std::vector<std::shared_ptr<Person::Person>> &population,
-                    std::string dirpath);
+namespace writer {
+    class DataWriter {
+    private:
+        class DataWriterIMPL;
+        std::unique_ptr<DataWriterIMPL> impl;
 
-    /// @brief Function that takes attributes from a Person object and places
-    /// them into a DataTable row
-    /// @param person Pointer to the current Person object
-    /// @return Pointer to a DataTable row
-    Data::IDataTablePtr
-    personToDataTable(std::shared_ptr<Person::Person> person);
-
-    void
-    writeGeneralStats(std::vector<std::shared_ptr<Person::Person>> &population,
-                      std::string dirpath, Data::Config &config);
-} // namespace DataWriter
+    public:
+        DataWriter();
+        ~DataWriter();
+        int UpdatePopulation(
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::shared_ptr<datamanagement::DataManagerBase> dm);
+        int WritePopulationToFile(
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::string &filepath);
+    };
+} // namespace writer
 #endif

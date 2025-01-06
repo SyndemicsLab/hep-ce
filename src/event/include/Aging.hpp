@@ -20,25 +20,27 @@
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to Increase the Age of a Person
     class Aging : public Event {
     private:
-        /// @brief Implementation of Virtual Function doEvent
+        class AgingIMPL;
+        std::unique_ptr<AgingIMPL> impl;
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
-        /// @brief Adds person's background cost
-        /// @param person The person to whom cost will be added
-        void
-        addBackgroundCostAndUtility(std::shared_ptr<Person::Person> person);
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Aging(Data::IDataTablePtr table, Data::Config &config,
-              std::shared_ptr<spdlog::logger> logger =
-                  std::make_shared<spdlog::logger>("default"),
-              std::string name = std::string("Aging"))
-            : Event(table, config, logger, name) {}
-        virtual ~Aging() = default;
+        Aging(std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~Aging();
+
+        // Copy Operations
+        Aging(Aging const &) = delete;
+        Aging &operator=(Aging const &) = delete;
+        Aging(Aging &&) noexcept;
+        Aging &operator=(Aging &&) noexcept;
     };
-} // namespace Event
+} // namespace event
 #endif

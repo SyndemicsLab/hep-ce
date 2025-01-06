@@ -2,17 +2,40 @@ cmake_minimum_required(VERSION 3.20)
 
 project(data)
 
-find_package(spdlog REQUIRED)
+include(FetchContent)
+FetchContent_Declare(
+        spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG        v1.x
+)
+FetchContent_GetProperties(spdlog)
+if (NOT spdlog_POPULATED)
+    FetchContent_Populate(spdlog)
+    add_subdirectory(${spdlog_SOURCE_DIR} ${spdlog_BINARY_DIR})
+endif()
 
 find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
 )
 
-add_library(data DataWriter.cpp)
+if(BUILD_SHARED_LIBS)
+  add_library(${PROJECT_NAME} SHARED)
+else()
+  add_library(${PROJECT_NAME} STATIC)
+endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC cost)
-target_link_libraries(${PROJECT_NAME} PUBLIC person)
-target_link_libraries(${PROJECT_NAME} PUBLIC spdlog::spdlog)
-target_link_libraries(${PROJECT_NAME} PUBLIC DataManagement::DataManagement)
+target_sources(${PROJECT_NAME} 
+    PRIVATE
+        DataWriter.cpp
+)
+
+target_link_libraries(${PROJECT_NAME} 
+    PRIVATE
+        cost
+        person
+        spdlog::spdlog
+        DataManagement::DataManagement
+        utils
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "include/")

@@ -20,62 +20,28 @@
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
-    static std::vector<std::string>
-    setupTreatmentSections(std::vector<std::string> vector1,
-                           const std::vector<std::string> &vector2) {
-        vector1.insert(vector1.end(), vector2.begin(), vector2.end());
-        return vector1;
-    }
-
+namespace event {
     /// @brief Subclass of Event used to Provide Treatment to People
-    class Treatment : public ProbEvent {
+    class Treatment : public Event {
     private:
-        /// @brief Implementation of Virtual Function doEvent
+        class TreatmentIMPL;
+        std::unique_ptr<TreatmentIMPL> impl;
+
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
-        bool isEligible(std::shared_ptr<Person::Person> const person) const;
-        bool isEligibleFibrosisStage(Person::FibrosisState fibrosisState) const;
-
-        std::vector<Person::FibrosisState> eligibleFibrosisStates = {
-            Person::FibrosisState::NONE};
-        int eligibleTimeSinceLinked = -1;
-        int eligibleTimeBehaviorChange = -1;
-
-        /// @brief Add the cost associated with a month of treatment
-        /// @param Person the person who accrues the cost
-        /// @param cost the cost associated with Person's treatment
-        void addTreatmentCostAndUtility(std::shared_ptr<Person::Person> person,
-                                        double cost, double util);
-
-        /// @brief If Person is exposed to loss to follow-up, checks if they
-        /// unlink from care
-        /// @param Person the Person who may unlink due to loss to follow-up
-        bool isLostToFollowUp(std::shared_ptr<Person::Person> person);
-
-        bool initiatesTreatment(std::shared_ptr<Person::Person> person);
-
-        bool doesWithdraw(std::shared_ptr<Person::Person> person,
-                          Data::IDataTablePtr course);
-
-        bool experiencedToxicity(std::shared_ptr<Person::Person> person,
-                                 Data::IDataTablePtr course);
-
-        void chargeCostOfVisit(std::shared_ptr<Person::Person> person);
-
-        void chargeCostOfCourse(std::shared_ptr<Person::Person> person,
-                                Data::IDataTablePtr course);
-
-        void quitEngagement(std::shared_ptr<Person::Person> person);
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Treatment(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                  Data::Config &config,
-                  std::shared_ptr<spdlog::logger> logger =
-                      std::make_shared<spdlog::logger>("default"),
-                  std::string name = std::string("Treatment"));
+        Treatment(std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~Treatment();
 
-        virtual ~Treatment() = default;
+        // Copy Operations
+        Treatment(Treatment const &) = delete;
+        Treatment &operator=(Treatment const &) = delete;
+        Treatment(Treatment &&) noexcept;
+        Treatment &operator=(Treatment &&) noexcept;
     };
-} // namespace Event
+} // namespace event
 #endif

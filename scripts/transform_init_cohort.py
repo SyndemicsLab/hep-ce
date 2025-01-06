@@ -22,7 +22,7 @@ def old2new(old_path, new_path, num_rows=-1):
 
 
 if __name__ == "__main__":
-    num_rows = 1000
+    num_rows = 10000000
     old_path = "/home/matt/Repos/TestData/HEP-CE/oldinputs/hepce-inputs/shared_data/init_cohort.csv"
     new_path = f"/home/matt/Repos/TestData/HEP-CE/newinputs/init_cohort_{num_rows}.csv"
     old2new(old_path, new_path, num_rows)

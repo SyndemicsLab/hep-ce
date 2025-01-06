@@ -20,41 +20,33 @@
 
 #include "Event.hpp"
 #include <map>
+#include <memory>
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
 
     /// @brief Subclass of Event used to Progress HCV
-    class FibrosisProgression : public ProbEvent {
+    class FibrosisProgression : public Event {
     private:
-        bool addCostOnlyIfIdentified = false;
-        /// @brief Implementation of Virtual Function doEvent
+        class FibrosisProgressionIMPL;
+        std::unique_ptr<FibrosisProgressionIMPL> impl;
+
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
-
-        std::vector<double> getTransition(Person::FibrosisState fs);
-
-        void addLiverDiseaseCost(std::shared_ptr<Person::Person> person);
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
         FibrosisProgression(
-            std::mt19937_64 &generator, Data::IDataTablePtr table,
-            Data::Config &config,
-            std::shared_ptr<spdlog::logger> logger =
-                std::make_shared<spdlog::logger>("default"),
-            std::string name = std::string("FibrosisProgression"))
-            : ProbEvent(generator, table, config, logger, name) {
-            this->costCategory = Cost::CostCategory::LIVER;
-            std::shared_ptr<Data::ReturnType> toggleCost =
-                this->config.get_optional(
-                    "fibrosis.add_cost_only_if_identified", false);
-            if (toggleCost) {
-                this->addCostOnlyIfIdentified = std::get<bool>(*toggleCost);
-            } else {
-                this->addCostOnlyIfIdentified = false;
-            }
-        }
-        virtual ~FibrosisProgression() = default;
+            std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~FibrosisProgression();
+
+        // Copy Operations
+        FibrosisProgression(FibrosisProgression const &) = delete;
+        FibrosisProgression &operator=(FibrosisProgression const &) = delete;
+        FibrosisProgression(FibrosisProgression &&) noexcept;
+        FibrosisProgression &operator=(FibrosisProgression &&) noexcept;
     };
-} // namespace Event
+} // namespace event
 #endif

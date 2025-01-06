@@ -19,37 +19,28 @@
 
 #include "Event.hpp"
 
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to process medication for opioid use
     /// disorder
-    class MOUD : public ProbEvent {
+    class MOUD : public Event {
     private:
-        /// @brief Implementation of Virtual Function doEvent
+        class MOUDIMPL;
+        std::unique_ptr<MOUDIMPL> impl;
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
-
-        /// @brief Retrieve Transition Rates for MOUD for the
-        /// individual Person from the SQL Table
-        /// @param person Person to retrieve transition rates for
-        /// @return Vector of Transition Rates for each MOUD status
-        std::vector<double>
-        getTransitions(std::shared_ptr<Person::Person> person);
-
-        /// @brief Add cost based on person's current treatment status upon
-        /// "experiencing" this event
-        /// @param person Person accruing cost
-        void insertMOUDCost(std::shared_ptr<Person::Person> person);
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        MOUD(std::mt19937_64 &generator, Data::IDataTablePtr table,
-             Data::Config &config,
-             std::shared_ptr<spdlog::logger> logger =
-                 std::make_shared<spdlog::logger>("default"),
-             std::string name = std::string("MOUD"))
-            : ProbEvent(generator, table, config, logger, name) {
-            this->costCategory = Cost::CostCategory::BEHAVIOR;
-        }
-        virtual ~MOUD() = default;
+        MOUD(std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~MOUD();
+
+        // Copy Operations
+        MOUD(MOUD const &) = delete;
+        MOUD &operator=(MOUD const &) = delete;
+        MOUD(MOUD &&) noexcept;
+        MOUD &operator=(MOUD &&) noexcept;
     };
-} // namespace Event
+} // namespace event
 #endif // EVENT_MOUD_HPP_

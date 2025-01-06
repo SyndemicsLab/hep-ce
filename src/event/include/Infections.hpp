@@ -17,36 +17,32 @@
 #ifndef EVENT_INFECTIONS_HPP_
 #define EVENT_INFECTIONS_HPP_
 
-#include <cmath>
-
 #include "Event.hpp"
+#include <memory>
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
-
+namespace event {
     /// @brief Subclass of Event used to Spread Infections
-    class Infections : public ProbEvent {
+    class Infections : public Event {
     private:
-        /// @brief Implementation of Virtual Function doEvent
+        class InfectionsIMPL;
+        std::unique_ptr<InfectionsIMPL> impl;
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
-
-        /// @brief Retrieve Infection Probabilities for Infection Chances for
-        /// the individual Person from the SQL Table
-        /// @param person Person whom to retrieve Infection Probabilities for
-        /// @return Vector of Infection Probabilities
-        std::vector<double>
-        getInfectProb(std::shared_ptr<Person::Person> person);
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Infections(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                   Data::Config &config,
-                   std::shared_ptr<spdlog::logger> logger =
-                       std::make_shared<spdlog::logger>("default"),
-                   std::string name = std::string("Infections"))
-            : ProbEvent(generator, table, config, logger, name) {}
-        virtual ~Infections() = default;
+        Infections(std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~Infections();
+
+        // Copy Operations
+        Infections(Infections const &) = delete;
+        Infections &operator=(Infections const &) = delete;
+        Infections(Infections &&) noexcept;
+        Infections &operator=(Infections &&) noexcept;
     };
-} // namespace Event
+} // namespace event
 
 #endif

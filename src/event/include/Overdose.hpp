@@ -20,29 +20,28 @@
 
 #include "Event.hpp"
 
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to simulate overdoses among active drug
     /// users.
-    class Overdose : public ProbEvent {
+    class Overdose : public Event {
     private:
-        /// @brief Implementation of Virtual Function doEvent
+        class OverdoseIMPL;
+        std::unique_ptr<OverdoseIMPL> impl;
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
-
-        /// @brief Get the probability that a person will overdose.
-        /// @param person Pointer to the relevant Person::Person object which
-        /// might overdose.
-        /// @return Overdose probability based on person attributes
-        double getProbability(std::shared_ptr<Person::Person> person);
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Overdose(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                 Data::Config &config,
-                 std::shared_ptr<spdlog::logger> logger =
-                     std::make_shared<spdlog::logger>("default"),
-                 std::string name = std::string("Overdose"))
-            : ProbEvent(generator, table, config, logger, name) {}
-        virtual ~Overdose() = default;
+        Overdose(std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~Overdose();
+
+        // Copy Operations
+        Overdose(Overdose const &) = delete;
+        Overdose &operator=(Overdose const &) = delete;
+        Overdose(Overdose &&) noexcept;
+        Overdose &operator=(Overdose &&) noexcept;
     };
-} // namespace Event
+} // namespace event
 #endif // EVENT_OVERDOSE_HPP_

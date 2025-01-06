@@ -20,37 +20,31 @@
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
 
     /// @brief Subclass of Event used to Create Voluntary Relinkage to Treatment
     /// for People
-    class VoluntaryRelinking : public ProbEvent {
+    class VoluntaryRelinking : public Event {
     private:
-        /// @brief Parameter used to set the Total Potential Relink Time
-        int voluntaryRelinkDuration = 1024; // we should set this
-
-        /// @brief Implementation of Virtual Function doEvent
+        class VoluntaryRelinkingIMPL;
+        std::unique_ptr<VoluntaryRelinkingIMPL> impl;
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        VoluntaryRelinking(std::mt19937_64 &generator,
-                           Data::IDataTablePtr table, Data::Config &config,
-                           std::shared_ptr<spdlog::logger> logger =
-                               std::make_shared<spdlog::logger>("default"),
-                           std::string name = std::string("VoluntaryRelinking"))
-            : ProbEvent(generator, table, config, logger, name) {}
-        virtual ~VoluntaryRelinking() = default;
+        VoluntaryRelinking(std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~VoluntaryRelinking();
 
-        void setVoluntaryRelinkDuration(int duration) {
-            this->voluntaryRelinkDuration = duration;
-        }
-
-        int getVoluntaryRelinkDuration() {
-            return this->voluntaryRelinkDuration;
-        }
+        // Copy Operations
+        VoluntaryRelinking(VoluntaryRelinking const &) = delete;
+        VoluntaryRelinking &operator=(VoluntaryRelinking const &) = delete;
+        VoluntaryRelinking(VoluntaryRelinking &&) noexcept;
+        VoluntaryRelinking &operator=(VoluntaryRelinking &&) noexcept;
     };
 
-} // namespace Event
+} // namespace event
 
 #endif

@@ -16,87 +16,181 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Linking.hpp"
+#include "Decider.hpp"
+#include "Person.hpp"
+#include "Utils.hpp"
+#include "spdlog/spdlog.h"
+#include <DataManagement/DataManagerBase.hpp>
+#include <sstream>
 
-namespace Event {
-    void Linking::doEvent(std::shared_ptr<Person::Person> person) {
-        Person::HCV state = person->getHCV();
-        if (state == Person::HCV::NONE) {
-            // add false positive cost
-            person->unlink(this->getCurrentTimestep());
-            this->addLinkingCost(person, "False Positive Linking Cost",
-                                 this->falsePositiveCost);
-            return;
+namespace event {
+    class Linking::LinkingIMPL {
+    private:
+        double discount = 0.0;
+        double intervention_cost;
+        double false_positive_test_cost;
+        double relink_multiplier;
+
+        using linkmap_t =
+            std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                               Utils::key_equal_4i>;
+        linkmap_t background_link_data;
+        linkmap_t intervention_link_data;
+
+        static int callback_link(void *storage, int count, char **data,
+                                 char **columns) {
+            Utils::tuple_4i tup =
+                std::make_tuple(std::stoi(data[0]), std::stoi(data[1]),
+                                std::stoi(data[2]), std::stoi(data[3]));
+            (*((linkmap_t *)storage))[tup] = Utils::stod_positive(data[4]);
+            return 0;
+        }
+        std::string LinkSQL(std::string const column) const {
+            return "SELECT age_years, gender, drug_behavior, pregnancy, " +
+                   column + " FROM screening_and_linkage;";
         }
 
-        if (!person->isIdentifiedAsInfected()) {
-            person->identifyAsInfected(this->getCurrentTimestep());
+        double
+        GetLinkProbability(std::shared_ptr<person::PersonBase> person,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           std::string columnKey) {
+            int age_years = (int)(person->GetAge() / 12.0);
+            int gender = (int)person->GetSex();
+            int drug_behavior = (int)person->GetBehavior();
+            int pregnancy = (int)person->GetPregnancyState();
+            Utils::tuple_4i tup =
+                std::make_tuple(age_years, gender, drug_behavior, pregnancy);
+            if (columnKey == "background_link_probability") {
+                return background_link_data[tup];
+            } else if (columnKey == "intervention_link_probability") {
+                return intervention_link_data[tup];
+            }
+            return 0.0;
         }
 
-        std::vector<double> probs;
-        if (person->getLinkageType() == Person::LinkageType::BACKGROUND) {
-            // link probability
-            probs = getTransitions(person, "background_link_probability");
-        } else {
-            // add intervention cost
-            this->addLinkingCost(person, "Intervention Linking Cost",
-                                 this->interventionCost);
-            // link probability
-            probs = getTransitions(person, "intervention_link_probability");
+        void AddLinkingCost(std::shared_ptr<person::PersonBase> person,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            std::string name) {
+            double cost;
+            if (name == "Intervention Linking Cost") {
+                cost = intervention_cost;
+            } else if (name == "False Positive Linking Cost") {
+                cost = false_positive_test_cost;
+            } else {
+                return;
+            }
+
+            double discountAdjustedCost = Event::DiscountEventCost(
+                cost, discount, person->GetCurrentTimestep());
+            person->AddCost(cost, discountAdjustedCost,
+                            cost::CostCategory::LINKING);
         }
 
-        if (person->getLinkState() == Person::LinkageState::UNLINKED) {
-            // scale by relink multiplier
-            double relinkScalar = std::get<double>(
-                this->config.get("linking.relink_multiplier", 1.0));
-            probs[1] = probs[1] * relinkScalar;
-            probs[0] = 1 - probs[1];
+        bool
+        FalsePositive(std::shared_ptr<person::PersonBase> person,
+                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            if (person->GetHCV() == person::HCV::NONE) {
+                person->ClearHCVDiagnosis();
+                this->AddLinkingCost(person, dm, "False Positive Linking Cost");
+                return true;
+            }
+            return false;
         }
 
-        // draw from link probability
-        bool doLink = (bool)this->getDecision(probs);
-
-        if (doLink) {
-            // need to figure out how to pass in the LinkageType to the event
-            person->link(this->getCurrentTimestep(), person->getLinkageType());
-        } else if (!doLink &&
-                   person->getLinkState() == Person::LinkageState::LINKED) {
-            person->unlink(this->getCurrentTimestep());
+        double ParseDoublesFromConfig(
+            std::string configKey,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string data;
+            dm->GetFromConfig(configKey, data);
+            if (data.empty()) {
+                spdlog::get("main")->warn("No {} Found!", configKey);
+                data = "0.0";
+            }
+            return Utils::stod_positive(data);
         }
+
+    public:
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) {
+            bool is_linked =
+                (person->GetLinkState() == person::LinkageState::LINKED);
+            bool is_not_identified = (!person->IsIdentifiedAsHCVInfected());
+            bool not_screened_this_month =
+                !(person->GetTimeSinceLastScreening() == 0);
+
+            if (is_linked || is_not_identified || not_screened_this_month) {
+                return;
+            }
+
+            if (FalsePositive(person, dm)) {
+                return;
+            }
+
+            double prob =
+                (person->GetLinkageType() == person::LinkageType::BACKGROUND)
+                    ? GetLinkProbability(person, dm,
+                                         "background_link_probability")
+                    : GetLinkProbability(person, dm,
+                                         "intervention_link_probability");
+
+            // draw from link probability
+            if (decider->GetDecision({prob}) == 0) {
+                person->Link(person->GetLinkageType());
+                if (person->GetLinkageType() ==
+                    person::LinkageType::INTERVENTION) {
+                    this->AddLinkingCost(person, dm,
+                                         "Intervention Linking Cost");
+                }
+            }
+        }
+        LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string discount_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
+            if (!discount_data.empty()) {
+                this->discount = Utils::stod_positive(discount_data);
+            }
+            intervention_cost =
+                ParseDoublesFromConfig("linking.intervention_cost", dm);
+
+            false_positive_test_cost =
+                ParseDoublesFromConfig("linking.false_positive_test_cost", dm);
+
+            std::string error;
+            rc = dm->SelectCustomCallback(
+                LinkSQL("background_link_probability"), this->callback_link,
+                &background_link_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Background Linking Data from "
+                    "screening_and_linkage! "
+                    "Error Message: {}",
+                    error);
+            }
+
+            rc = dm->SelectCustomCallback(
+                LinkSQL("intervention_link_probability"), this->callback_link,
+                &intervention_link_data, error);
+            if (rc != 0) {
+                spdlog::get("main")->error(
+                    "Error extracting Intervention Linking Data from "
+                    "screening_and_linkage! "
+                    "Error Message: {}",
+                    error);
+            }
+        }
+    };
+    Linking::Linking(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<LinkingIMPL>(dm);
     }
 
-    std::vector<double>
-    Linking::getTransitions(std::shared_ptr<Person::Person> person,
-                            std::string columnKey) {
-        std::unordered_map<std::string, std::string> selectCriteria;
+    Linking::~Linking() = default;
+    Linking::Linking(Linking &&) noexcept = default;
+    Linking &Linking::operator=(Linking &&) noexcept = default;
 
-        // intentional truncation
-        selectCriteria["age_years"] = std::to_string((int)(person->age / 12.0));
-        selectCriteria["gender"] =
-            Person::Person::sexEnumToStringMap[person->getSex()];
-        selectCriteria["drug_behavior"] =
-            Person::Person::behaviorEnumToStringMap[person->getBehavior()];
-
-        auto resultTable = table->selectWhere(selectCriteria);
-        if (resultTable->empty()) {
-            // error
-            return {};
-        }
-
-        std::vector<std::string> col = resultTable->getColumn(columnKey);
-
-        std::vector<double> doubleVector(col.size());
-        std::transform(col.begin(), col.end(), doubleVector.begin(),
-                       [](const std::string &val) { return std::stod(val); });
-
-        // {0: don't link, 1: link}
-        std::vector<double> result = {1 - doubleVector[0], doubleVector[0]};
-
-        return result;
+    void Linking::DoEvent(std::shared_ptr<person::PersonBase> person,
+                          std::shared_ptr<datamanagement::DataManagerBase> dm,
+                          std::shared_ptr<stats::DeciderBase> decider) {
+        impl->DoEvent(person, dm, decider);
     }
-
-    void Linking::addLinkingCost(std::shared_ptr<Person::Person> person,
-                                 std::string name, double cost) {
-        Cost::Cost linkingCost = {this->costCategory, name, cost};
-        person->addCost(linkingCost, this->getCurrentTimestep());
-    }
-} // namespace Event
+} // namespace event

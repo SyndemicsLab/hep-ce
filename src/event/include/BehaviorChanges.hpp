@@ -19,34 +19,27 @@
 
 #include "Event.hpp"
 
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to process Behavior Changes
-    class BehaviorChanges : public ProbEvent {
+    class BehaviorChanges : public Event {
     private:
-        /// @brief Implementation of Virtual Function doEvent
+        class BehaviorChangesIMPL;
+        std::unique_ptr<BehaviorChangesIMPL> impl;
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
-
-        /// @brief Retrieve Transition Rates for Behavior Changes for the
-        /// individual Person from the SQL Table
-        /// @param person Person to retrieve transition rates for
-        /// @return Vector of Transition Rates for each Behavior State
-        std::vector<double>
-        getTransitions(std::shared_ptr<Person::Person> person);
-
-        void
-        calculateCostAndUtility(std::shared_ptr<Person::Person> person) const;
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        BehaviorChanges(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                        Data::Config &config,
-                        std::shared_ptr<spdlog::logger> logger =
-                            std::make_shared<spdlog::logger>("default"),
-                        std::string name = std::string("BehaviorChanges"))
-            : ProbEvent(generator, table, config, logger, name) {
-            this->costCategory = Cost::CostCategory::BEHAVIOR;
-        }
-        virtual ~BehaviorChanges() = default;
+        BehaviorChanges(std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~BehaviorChanges();
+
+        // Copy Operations
+        BehaviorChanges(BehaviorChanges const &) = delete;
+        BehaviorChanges &operator=(BehaviorChanges const &) = delete;
+        BehaviorChanges(BehaviorChanges &&) noexcept;
+        BehaviorChanges &operator=(BehaviorChanges &&) noexcept;
     };
-} // namespace Event
+} // namespace event
 #endif // EVENT_BEHAVIORCHANGES_HPP_

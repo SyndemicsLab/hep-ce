@@ -18,109 +18,32 @@
 #define EVENT_SCREENING_HPP_
 
 #include "Event.hpp"
-#include <iostream>
+#include <memory>
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
-    /// @brief The type of screening that a person is currently undergoing
-    enum class ScreeningType {
-        // background antibody screening test
-        BACKGROUND_AB = 0,
-        // background RNA screening test
-        BACKGROUND_RNA = 1,
-        // intervention antibody screening test
-        INTERVENTION_AB = 2,
-        // intervention RNA screening test
-        INTERVENTION_RNA = 3,
-        COUNT = 4
-    };
-
-    /// @brief The type/cadence of intervention screening used
-    enum class InterventionType {
-        // no intervention screening
-        NULLSCREEN = 0,
-        // intervention screen once, during the first time step
-        ONETIME = 1,
-        // intervention screen periodically
-        PERIODIC = 2,
-        COUNT = 3
-    };
-
-    static std::unordered_map<std::string, InterventionType> interventionMap = {
-        {"null", InterventionType::NULLSCREEN},
-        {"one-time", InterventionType::ONETIME},
-        {"periodic", InterventionType::PERIODIC}};
-
+namespace event {
     /// @brief Subclass of Event used to Screen People for Diseases
-    class Screening : public ProbEvent {
+    class Screening : public Event {
     private:
-        std::vector<double> backgroundProbability;
-        std::vector<double> interventionProbability;
-        std::vector<double> acceptTestProbability;
-        InterventionType interventionType;
-        int interventionPeriod;
+        class ScreeningIMPL;
+        std::unique_ptr<ScreeningIMPL> impl;
 
-        /// @brief Implementation of Virtual Function doEvent
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
-
-        /// @brief The Background Screening Event Undertaken on a Person
-        /// @param person The Person undergoing a background Screening
-        void backgroundScreen(std::shared_ptr<Person::Person> person);
-
-        /// @brief The Intervention Screening Event Undertaken on a Person
-        /// @param person The Person undergoing an Intervention Screening
-        void interventionScreen(std::shared_ptr<Person::Person> person);
-
-        /// @brief The antibody test to determine if the person is positive for
-        /// HCV
-        /// @param person The Person undergoing an antibody test
-        /// @return Boolean True for a Positive Result, False for a Negative
-        /// Result
-        bool antibodyTest(std::shared_ptr<Person::Person> person,
-                          std::string configKey);
-
-        /// @brief The RNA test to determine if the person is positive for HCV
-        /// @param person The Person undergoing an RNA test
-        /// @return Boolean True for a Positive Result, False for a Negative
-        /// Result
-        bool rnaTest(std::shared_ptr<Person::Person> person,
-                     std::string configKey);
-
-        std::vector<double> getBackgroundScreeningProbability(
-            std::shared_ptr<Person::Person> person);
-
-        std::vector<double> getInterventionScreeningProbability(
-            std::shared_ptr<Person::Person> person);
-
-        void interventionDecision(std::shared_ptr<Person::Person> person);
-
-        /// @brief Insert cost for screening of type \code{type}
-        /// @param person The person who is accruing cost
-        /// @param type The screening type, used to discern the cost to add
-        void insertScreeningCost(std::shared_ptr<Person::Person> person,
-                                 ScreeningType type);
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Screening(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                  Data::Config &config,
-                  std::shared_ptr<spdlog::logger> logger =
-                      std::make_shared<spdlog::logger>("default"),
-                  std::string name = std::string("Screening"))
-            : ProbEvent(generator, table, config, logger, name) {
-            this->costCategory = Cost::CostCategory::SCREENING;
-            this->interventionType = interventionMap[std::get<std::string>(
-                config.get("screening.intervention_type", ""))];
-            if (this->interventionType == InterventionType::PERIODIC) {
-                this->interventionPeriod =
-                    std::get<int>(config.get("screening.period", (int)-1));
-                if (interventionPeriod <= 0) {
-                    // log error
-                }
-            }
-        }
-        virtual ~Screening() = default;
+        Screening(std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~Screening();
+
+        // Copy Operations
+        Screening(Screening const &) = delete;
+        Screening &operator=(Screening const &) = delete;
+        Screening(Screening &&) noexcept;
+        Screening &operator=(Screening &&) noexcept;
     };
-} // namespace Event
+} // namespace event
 
 #endif

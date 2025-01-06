@@ -17,30 +17,31 @@
 #ifndef EVENT_CLEARANCE_HPP_
 #define EVENT_CLEARANCE_HPP_
 #include "Event.hpp"
-#include "Utils.hpp"
+#include <memory>
 
 /// @brief Namespace containing the Events that occur during the simulation
-namespace Event {
+namespace event {
     /// @brief Subclass of Event used to Clear HCV Infections
-    class Clearance : public ProbEvent {
+    class Clearance : public Event {
     private:
-        double clearanceProb;
+        class ClearanceIMPL;
+        std::unique_ptr<ClearanceIMPL> impl;
 
-        /// @brief Implementation of Virtual Function doEvent
+        /// @brief Implementation of Virtual Function DoEvent
         /// @param person Individual Person undergoing Event
-        void doEvent(std::shared_ptr<Person::Person> person) override;
-        /// @brief Returns the probability of acute clearance
-        /// @details Typically, there's a 25% chance of acute hcv clearance in
-        /// the first six months of infection.
-        std::vector<double> getClearanceProb();
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) override;
 
     public:
-        Clearance(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                  Data::Config &config,
-                  std::shared_ptr<spdlog::logger> logger =
-                      std::make_shared<spdlog::logger>("default"),
-                  std::string name = std::string("Clearance"));
-        virtual ~Clearance() = default;
+        Clearance(std::shared_ptr<datamanagement::DataManagerBase> dm);
+        ~Clearance();
+
+        // Copy Operations
+        Clearance(Clearance const &) = delete;
+        Clearance &operator=(Clearance const &) = delete;
+        Clearance(Clearance &&) noexcept;
+        Clearance &operator=(Clearance &&) noexcept;
     };
-} // namespace Event
+} // namespace event
 #endif // EVENT_CLEARANCE_HPP_

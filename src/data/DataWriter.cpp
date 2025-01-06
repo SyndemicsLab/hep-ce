@@ -16,174 +16,101 @@
 //===----------------------------------------------------------------------===//
 #include "DataWriter.hpp"
 
-namespace DataWriter {
-    void
-    writePopulation(std::vector<std::shared_ptr<Person::Person>> &population,
-                    std::string dirpath) {
-        Data::IDataTablePtr newDT = std::make_shared<Data::DataTable>();
-        for (int i = 0; i < population.size(); ++i) {
-            if (newDT->empty()) {
-                newDT = personToDataTable(population[i]);
-            } else {
-                newDT = (*newDT) + (*personToDataTable(population[i]));
+#include "Cost.hpp"
+#include "Person.hpp"
+#include "Utils.hpp"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/spdlog.h"
+#include <DataManagement/DataManagerBase.hpp>
+#include <filesystem>
+#include <fstream>
+
+namespace writer {
+    class DataWriter::DataWriterIMPL {
+    private:
+        std::string GrabPersonDetailsAsStringInHeaderOrder(
+            std::shared_ptr<person::PersonBase> person) {
+            std::stringstream compiled_attributes;
+            compiled_attributes
+                << person->GetID() << "," << std::boolalpha << person->GetSex()
+                << "," << person->GetAge() << "," << person->IsAlive() << ","
+                << person->GetDeathReason() << ","
+                << person->IsIdentifiedAsHCVInfected() << ","
+                << person->GetTimeHCVIdentified() << "," << person->GetHCV()
+                << "," << person->GetTrueFibrosisState() << ","
+                << person->IsGenotypeThree() << ","
+                << person->GetSeropositivity() << ","
+                << person->GetTimeHCVChanged() << ","
+                << person->GetTimeTrueFibrosisStateChanged() << ","
+                << person->GetBehavior() << ","
+                << person->GetTimeBehaviorChange() << ","
+                << person->GetLinkState() << ","
+                << person->GetTimeOfLinkChange() << ","
+                << person->GetLinkageType() << "," << person->GetLinkCount()
+                << "," << person->GetMeasuredFibrosisState() << ","
+                << person->GetTimeOfFibrosisStaging() << ","
+                << person->GetTimeOfLastScreening() << ","
+                << person->GetNumberOfABTests() << ","
+                << person->GetNumberOfRNATests() << ","
+                << person->GetTimesHCVInfected() << ","
+                << person->GetHCVClearances() << ","
+                << person->HasInitiatedTreatment() << ","
+                << person->GetTimeOfTreatmentInitiation() << ","
+                << person->GetUtility().minUtil << ","
+                << person->GetUtility().multUtil << ","
+                << person->GetWithdrawals() << ","
+                << person->GetToxicReactions() << ","
+                << person->GetCompletedTreatments() << "," << person->GetSVRs()
+                << "," << person->GetNumberOfTreatmentStarts() << ","
+                << person->GetRetreatments();
+            return compiled_attributes.str();
+        }
+
+    public:
+        int UpdatePopulation(
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            return -1;
+        }
+        int WriteOutputPopulationToTable(
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            return -1;
+        }
+        int WriteOutputPopulationToFile(
+            std::vector<std::shared_ptr<person::PersonBase>> new_population,
+            std::string &filepath) {
+            std::filesystem::path path = filepath;
+            std::ofstream csvStream;
+            csvStream.open(path, std::ofstream::out);
+            if (!csvStream) {
+                return -1;
             }
+            csvStream << "id," << person::POPULATION_HEADERS
+                      << ",cost,discount_cost," << std::endl;
+            for (std::shared_ptr<person::PersonBase> &person : new_population) {
+                std::pair<double, double> costTotals = person->GetCostTotals();
+                csvStream << GrabPersonDetailsAsStringInHeaderOrder(person)
+                          << "," << costTotals.first << "," << costTotals.second
+                          << std::endl;
+            }
+            csvStream.close();
+            return 0;
         }
-        std::filesystem::path f =
-            ((std::filesystem::path)dirpath) / "population.csv";
+    };
 
-        newDT->toCSV(f.string());
+    DataWriter::DataWriter() { impl = std::make_unique<DataWriterIMPL>(); }
+
+    DataWriter::~DataWriter() = default;
+
+    int DataWriter::UpdatePopulation(
+        std::vector<std::shared_ptr<person::PersonBase>> new_population,
+        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        return impl->UpdatePopulation(new_population, dm);
     }
-
-    Data::IDataTablePtr
-    personToDataTable(std::shared_ptr<Person::Person> person) {
-        std::map<std::string, std::vector<std::string>> data;
-        std::vector<std::string> headerOrder = {"id",
-                                                "sex",
-                                                "age",
-                                                "isAlive",
-                                                "identifiedHCV",
-                                                "timeInfectionIdentified",
-                                                "HCV",
-                                                "fibrosisState",
-                                                "isGenotypeThree",
-                                                "seropositive",
-                                                "timeHCVChanged",
-                                                "timeFibrosisStateChanged",
-                                                "drugBehavior",
-                                                "timeLastActiveDrugUse",
-                                                "linkageState",
-                                                "timeOfLinkChange",
-                                                "linkageType",
-                                                "linkCount",
-                                                "measuredFibrosisState",
-                                                "timeOfLastStaging",
-                                                "timeOfLastScreening",
-                                                "numABTests",
-                                                "numRNATests",
-                                                "timesInfected",
-                                                "timesCleared",
-                                                "hasIncompleteTreatment",
-                                                "initiatedTreatment",
-                                                "timeOfTreatmentInitiation",
-                                                "treatmentCount",
-                                                "backgroundUtility",
-                                                "behaviorUtility",
-                                                "treatmentUtility",
-                                                "liverUtility"};
-        data["id"] = {std::to_string(person->getID())};
-        data["sex"] = {person->sexEnumToStringMap[person->getSex()]};
-        data["age"] = {std::to_string(person->age)};
-        data["isAlive"] = {Utils::boolToString(person->getIsAlive())};
-        data["identifiedHCV"] = {
-            Utils::boolToString(person->isIdentifiedAsInfected())};
-        data["timeInfectionIdentified"] = {
-            std::to_string(person->getTimeIdentified())};
-        data["HCV"] = {person->hcvEnumToStringMap[person->getHCV()]};
-        data["fibrosisState"] = {
-            person->fibrosisStateEnumToStringMap[person->getFibrosisState()]};
-        data["isGenotypeThree"] = {
-            Utils::boolToString(person->isGenotypeThree())};
-        data["seropositive"] = {Utils::boolToString(person->getSeropositive())};
-        data["timeHCVChanged"] = {std::to_string(person->getTimeHCVChanged())};
-        data["timeFibrosisStateChanged"] = {
-            std::to_string(person->getTimeFibrosisStateChanged())};
-        data["drugBehavior"] = {
-            person->behaviorEnumToStringMap[person->getBehavior()]};
-        data["timeLastActiveDrugUse"] = {
-            std::to_string(person->getTimeBehaviorChange())};
-        data["linkageState"] = {
-            person->linkageStateEnumToStringMap[person->getLinkState()]};
-        data["timeOfLinkChange"] = {
-            std::to_string(person->getTimeOfLinkChange())};
-        data["linkageType"] = {
-            person->linkageTypeEnumToStringMap[person->getLinkageType()]};
-        data["linkCount"] = {std::to_string(person->getLinkCount())};
-        data["measuredFibrosisState"] = {
-            person->measuredFibrosisStateEnumToStringMap
-                [person->getMeasuredFibrosisState()]};
-        data["timeOfLastStaging"] = {
-            std::to_string(person->getTimeOfLastStaging())};
-        data["timeOfLastScreening"] = {
-            std::to_string(person->getTimeOfLastScreening())};
-        data["numABTests"] = {std::to_string(person->getNumABTests())};
-        data["numRNATests"] = {std::to_string(person->getNumRNATests())};
-        data["initiatedTreatment"] = {
-            Utils::boolToString(person->hasInitiatedTreatment())};
-        data["timeOfTreatmentInitiation"] = {
-            std::to_string(person->getTimeOfTreatmentInitiation())};
-        data["timesInfected"] = {std::to_string(person->gettimesInfected())};
-        data["timesCleared"] = {std::to_string(person->getClearances())};
-        // auto utility = person->getUtility();
-        // data["backgroundUtility"] = {std::to_string(utility.background)};
-        // data["behaviorUtility"] = {std::to_string(utility.behavior)};
-        // data["treatmentUtility"] = {std::to_string(utility.treatment)};
-        // data["liverUtility"] = {std::to_string(utility.liver)};
-
-        Data::DataTableShape newShape(1, data.size());
-        Data::IDataTablePtr newDT =
-            std::make_shared<Data::DataTable>(data, newShape, headerOrder);
-        return newDT;
+    int DataWriter::WritePopulationToFile(
+        std::vector<std::shared_ptr<person::PersonBase>> new_population,
+        std::string &filepath) {
+        return impl->WriteOutputPopulationToFile(new_population, filepath);
     }
-
-    void
-    writeGeneralStats(std::vector<std::shared_ptr<Person::Person>> &population,
-                      std::string dirpath, Data::Config &config) {
-        // discount fraction
-        double discountRate;
-        std::shared_ptr<Data::ReturnType> dr =
-            config.get_optional("cost.discounting_rate", 0.03);
-        if (dr) {
-            discountRate = std::get<double>(*dr);
-        } else {
-            discountRate = 0.03;
-        }
-
-        // non-tabular values
-        // cohort size
-        int cohortSize = (int)population.size();
-        // avg cost per person
-        double totalCost = 0;
-        double discountedTotal = 0;
-        for (auto person : population) {
-            Cost::CostTracker ct = person->getCosts();
-            const auto &totals = ct.getTotals();
-            const auto &discTotals = ct.getTotals(discountRate);
-            std::for_each(
-                totals.begin(), totals.end(),
-                [&](std::pair<int, double> tot) { totalCost += tot.second; });
-            std::for_each(discTotals.begin(), discTotals.end(),
-                          [&](std::pair<int, double> tot) {
-                              discountedTotal += tot.second;
-                          });
-        }
-        std::cout << cohortSize << std::endl;
-        std::cout << totalCost << std::endl;
-        std::cout << discountedTotal << std::endl;
-        // avg discounted cost per person
-        // avg life span per person
-        // avg discounted life span per person
-        // avg qaly per person (min)
-        // avg discounted qaly per person (min)
-        // avg qaly per person (mult)
-        // avg discounted qaly per person (mult)
-        // num treatment inititations
-        // num svr cases
-        // num eot (includes svr)
-        // num withdrawals (non-toxicity)
-        // num toxicity cases
-        // num cirrhotic (including dead)
-        // num liver-related deaths
-        // num hcv identifications
-        // num hcv infections
-        // num clearances
-        // num ab screenings
-        // num rna screenings
-        // num linkages
-
-        // tabular outcomes
-        // num linkages | num people
-        // num ab tests | num people
-        // num rna tests | num people
-        // num treatment inititations | num people
-    }
-} // namespace DataWriter
+} // namespace writer

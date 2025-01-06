@@ -15,46 +15,57 @@
 ///
 //===----------------------------------------------------------------------===//
 #include "Clearance.hpp"
+#include "Decider.hpp"
+#include "Person.hpp"
+#include "Utils.hpp"
+#include <DataManagement/DataManagerBase.hpp>
 
-namespace Event {
-    Clearance::Clearance(std::mt19937_64 &generator, Data::IDataTablePtr table,
-                         Data::Config &config,
-                         std::shared_ptr<spdlog::logger> logger,
-                         std::string name)
-        : ProbEvent(generator, table, config, logger, name) {
-        std::shared_ptr<Data::ReturnType> clearance =
-            this->config.get_optional("infection.clearance_prob", (double)-1.0);
-        if (clearance) {
-            // if the user provides a clearance probability, use that value
-            // instead
-            this->clearanceProb = std::get<double>(*clearance);
-        } else {
-            // it's basically universally accepted that 25% of acute hcv
-            // infections clear in the 6-month acute infection period
-            this->clearanceProb = Utils::probabilityToRate(0.25) / 6.0;
+namespace event {
+    class Clearance::ClearanceIMPL {
+    private:
+        double clearanceProbability;
+
+    public:
+        void DoEvent(std::shared_ptr<person::PersonBase> person,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     std::shared_ptr<stats::DeciderBase> decider) {
+            // if person isn't infected or is chronic, nothing to do
+            // Also skip if person is already on treatment since we want this to
+            // count as SVR
+            if (person->GetHCV() != person::HCV::ACUTE &&
+                !person->HasInitiatedTreatment()) {
+                return;
+            }
+            if (decider->GetDecision({clearanceProbability}) == 0) {
+                person->ClearHCV();
+            }
         }
+        ClearanceIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+            std::string data;
+            int rc = dm->GetFromConfig("infection.clearance_prob", data);
+            if (data.empty()) {
+                // it's basically universally accepted that 25% of acute hcv
+                // infections clear in the 6-month acute infection period
+                this->clearanceProbability =
+                    Utils::rateToProbability(0.25) / 6.0;
+            } else {
+                // if the user provides a clearance probability, use that value
+                // instead
+                this->clearanceProbability = Utils::stod_positive(data);
+            }
+        }
+    };
+    Clearance::Clearance(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        impl = std::make_unique<ClearanceIMPL>(dm);
     }
 
-    void Clearance::doEvent(std::shared_ptr<Person::Person> person) {
-        // people infected with hcv have some probability of spontaneous
-        // clearance.
+    Clearance::~Clearance() = default;
+    Clearance::Clearance(Clearance &&) noexcept = default;
+    Clearance &Clearance::operator=(Clearance &&) noexcept = default;
 
-        // if person isn't infected or is chronic, nothing to do
-        if (person->getHCV() != Person::HCV::ACUTE) {
-            return;
-        }
-        // 1. Get the probability of acute clearance
-        std::vector<double> prob = this->getClearanceProb();
-        // 2. Decide whether the person clears
-        int doesNotClear = this->getDecision(prob);
-        // if you do not clear, return immediately
-        if (doesNotClear) {
-            return;
-        }
-        person->clearHCV(this->getCurrentTimestep());
+    void Clearance::DoEvent(std::shared_ptr<person::PersonBase> person,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            std::shared_ptr<stats::DeciderBase> decider) {
+        impl->DoEvent(person, dm, decider);
     }
-
-    std::vector<double> Clearance::getClearanceProb() {
-        return {this->clearanceProb};
-    }
-} // namespace Event
+} // namespace event
