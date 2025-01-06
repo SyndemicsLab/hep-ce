@@ -55,7 +55,7 @@ namespace event {
                                      char **columns) {
             Utils::tuple_3i key = std::make_tuple(
                 std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-            (*((treatmentmap_t *)storage))[key] = std::stod(data[3]);
+            (*((treatmentmap_t *)storage))[key] = Utils::stod_positive(data[3]);
             return 0;
         }
 
@@ -258,7 +258,7 @@ namespace event {
                 spdlog::get("main")->warn("No {} Found!", configKey);
                 data = "0.0";
             }
-            return std::stod(data);
+            return Utils::stod_positive(data);
         }
 
         int
@@ -447,7 +447,7 @@ namespace event {
             std::string data;
             int rc = dm->GetFromConfig("cost.discounting_rate", data);
             if (!data.empty()) {
-                this->discount = std::stod(data);
+                this->discount = Utils::stod_positive(data);
             }
             rc = dm->GetFromConfig("treatment.allow_retreatment", data);
             if (!data.empty()) {

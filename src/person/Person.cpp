@@ -79,8 +79,8 @@ namespace person {
             temp->timesCleared = std::stoi(data[24]);
             temp->initiatedTreatment = std::stoi(data[25]);
             temp->timeOfTreatmentInitiation = std::stoi(data[26]);
-            temp->minUtility = std::stod(data[27]);
-            temp->multUtility = std::stod(data[28]);
+            temp->minUtility = Utils::stod_positive(data[27]);
+            temp->multUtility = Utils::stod_positive(data[28]);
             temp->treatmentWithdrawals = std::stoi(data[29]);
             temp->treatmentToxicReactions = std::stoi(data[30]);
             temp->completedTreatments = std::stoi(data[31]);

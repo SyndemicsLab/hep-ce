@@ -17,6 +17,7 @@
 #include "MOUD.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
@@ -27,7 +28,7 @@ namespace event {
         static int callback_double(void *storage, int count, char **data,
                                    char **columns) {
             std::vector<double> *d = (std::vector<double> *)storage;
-            double temp = std::stod(data[0]);
+            double temp = Utils::stod_positive(data[0]);
             d->push_back(temp);
             return 0;
         }

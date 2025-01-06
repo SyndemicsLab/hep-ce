@@ -32,7 +32,7 @@ namespace event {
                                       char **columns) {
             Utils::tuple_3i tup = std::make_tuple(
                 std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-            (*((incidencemap_t *)storage))[tup] = std::stod(data[3]);
+            (*((incidencemap_t *)storage))[tup] = Utils::stod_positive(data[3]);
             return 0;
         }
 

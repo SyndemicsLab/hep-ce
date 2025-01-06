@@ -125,6 +125,14 @@ namespace Utils {
         }
         return elems;
     }
+
+    inline double stod_positive(const std::string &s) {
+        double d = std::stod(s);
+        if (d < 0) {
+            throw std::invalid_argument("Value must be positive");
+        }
+        return d;
+    }
 } // namespace Utils
 
 #endif

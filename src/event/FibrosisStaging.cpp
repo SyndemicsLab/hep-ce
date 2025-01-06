@@ -46,7 +46,7 @@ namespace event {
                 (*((std::unordered_map<int, std::vector<double>> *)
                        storage))[key] = {};
             }
-            double i = std::stod(data[1]);
+            double i = Utils::stod_positive(data[1]);
             (*((std::unordered_map<int, std::vector<double>> *)storage))[key]
                 .push_back(i);
             return 0;
@@ -212,15 +212,15 @@ namespace event {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
             if (!discount_data.empty()) {
-                this->discount = std::stod(discount_data);
+                this->discount = Utils::stod_positive(discount_data);
             }
             std::string data;
 
             dm->GetFromConfig("fibrosis_staging.test_one_cost", data);
-            test_one_cost = (!data.empty()) ? std::stod(data) : 0.0;
+            test_one_cost = (!data.empty()) ? Utils::stod_positive(data) : 0.0;
 
             dm->GetFromConfig("fibrosis_staging.test_two_cost", data);
-            test_two_cost = (!data.empty()) ? std::stod(data) : 0.0;
+            test_two_cost = (!data.empty()) ? Utils::stod_positive(data) : 0.0;
 
             dm->GetFromConfig("fibrosis_staging.period", data);
             staging_period = std::stoi(data);

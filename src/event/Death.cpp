@@ -55,8 +55,8 @@ namespace event {
                                        char **columns) {
             Utils::tuple_3i tup = std::make_tuple(
                 std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-            struct background_smr temp = {std::stod(data[3]),
-                                          std::stod(data[4])};
+            struct background_smr temp = {Utils::stod_positive(data[3]),
+                                          Utils::stod_positive(data[4])};
             (*((backgroundmap_t *)storage))[tup] = temp;
             return 0;
         }
@@ -98,7 +98,7 @@ namespace event {
                                      char **columns) {
             Utils::tuple_2i tup =
                 std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-            (*((overdosemap_t *)storage))[tup] = std::stod(data[2]);
+            (*((overdosemap_t *)storage))[tup] = Utils::stod_positive(data[2]);
             return 0;
         }
 
@@ -263,16 +263,16 @@ namespace event {
             std::string data;
 
             dm->GetFromConfig("mortality.f4_infected", data);
-            this->f4_infected_probability = std::stod(data);
+            this->f4_infected_probability = Utils::stod_positive(data);
 
             dm->GetFromConfig("mortality.f4_uninfected", data);
-            this->f4_uninfected_probability = std::stod(data);
+            this->f4_uninfected_probability = Utils::stod_positive(data);
 
             dm->GetFromConfig("mortality.decomp_infected", data);
-            this->decomp_infected_probability = std::stod(data);
+            this->decomp_infected_probability = Utils::stod_positive(data);
 
             dm->GetFromConfig("mortality.decomp_uninfected", data);
-            this->decomp_uninfected_probability = std::stod(data);
+            this->decomp_uninfected_probability = Utils::stod_positive(data);
 
             int rc = LoadOverdoseData(dm);
             rc = LoadBackgroundMortality(dm);

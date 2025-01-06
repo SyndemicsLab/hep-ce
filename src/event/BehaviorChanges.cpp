@@ -51,8 +51,9 @@ namespace event {
                 std::make_tuple(std::stoi(data[0]), std::stoi(data[1]),
                                 std::stoi(data[2]), std::stoi(data[3]));
             struct behavior_transitions behavior = {
-                std::stod(data[4]), std::stod(data[5]), std::stod(data[6]),
-                std::stod(data[7]), std::stod(data[8])};
+                Utils::stod_positive(data[4]), Utils::stod_positive(data[5]),
+                Utils::stod_positive(data[6]), Utils::stod_positive(data[7]),
+                Utils::stod_positive(data[8])};
             (*((behaviormap_t *)storage))[tup] = behavior;
             return 0;
         }
@@ -76,7 +77,8 @@ namespace event {
                                   char **columns) {
             Utils::tuple_2i tup =
                 std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-            struct cost_util cu = {std::stod(data[0]), std::stod(data[1])};
+            struct cost_util cu = {Utils::stod_positive(data[0]),
+                                   Utils::stod_positive(data[1])};
             (*((costmap_t *)storage))[tup] = cu;
             return 0;
         }
@@ -172,7 +174,7 @@ namespace event {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
             if (!discount_data.empty()) {
-                this->discount = std::stod(discount_data);
+                this->discount = Utils::stod_positive(discount_data);
             }
             rc = LoadCostData(dm);
             rc = LoadBehaviorData(dm);

@@ -42,7 +42,7 @@ namespace event {
             Utils::tuple_4i tup =
                 std::make_tuple(std::stoi(data[0]), std::stoi(data[1]),
                                 std::stoi(data[2]), std::stoi(data[3]));
-            (*((linkmap_t *)storage))[tup] = std::stod(data[4]);
+            (*((linkmap_t *)storage))[tup] = Utils::stod_positive(data[4]);
             return 0;
         }
         std::string LinkSQL(std::string const column) const {
@@ -106,7 +106,7 @@ namespace event {
                 spdlog::get("main")->warn("No {} Found!", configKey);
                 data = "0.0";
             }
-            return std::stod(data);
+            return Utils::stod_positive(data);
         }
 
     public:
@@ -148,7 +148,7 @@ namespace event {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
             if (!discount_data.empty()) {
-                this->discount = std::stod(discount_data);
+                this->discount = Utils::stod_positive(discount_data);
             }
             intervention_cost =
                 ParseDoublesFromConfig("linking.intervention_cost", dm);

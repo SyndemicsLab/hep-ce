@@ -65,7 +65,7 @@ namespace event {
                                    char **columns) {
             Utils::tuple_3i tup = std::make_tuple(
                 std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-            (*((screenmap_t *)storage))[tup] = std::stod(data[3]);
+            (*((screenmap_t *)storage))[tup] = Utils::stod_positive(data[3]);
             return 0;
         }
 
@@ -284,63 +284,63 @@ namespace event {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
             if (!discount_data.empty()) {
-                this->discount = std::stod(discount_data);
+                this->discount = Utils::stod_positive(discount_data);
             }
             std::string data;
 
             // Background RNA
             dm->GetFromConfig("screening_background_rna.acute_sensitivity",
                               data);
-            background_rna_acute_sensitivity = std::stod(data);
+            background_rna_acute_sensitivity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_background_rna.chronic_sensitivity",
                               data);
-            background_rna_chronic_sensitivity = std::stod(data);
+            background_rna_chronic_sensitivity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_background_rna.specificity", data);
-            background_rna_specificity = std::stod(data);
+            background_rna_specificity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_background_rna.cost", data);
-            background_rna_cost = std::stod(data);
+            background_rna_cost = Utils::stod_positive(data);
 
             // Background AB
             dm->GetFromConfig("screening_background_ab.acute_sensitivity",
                               data);
-            background_ab_acute_sensitivity = std::stod(data);
+            background_ab_acute_sensitivity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_background_ab.chronic_sensitivity",
                               data);
-            background_ab_chronic_sensitivity = std::stod(data);
+            background_ab_chronic_sensitivity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_background_ab.specificity", data);
-            background_ab_specificity = std::stod(data);
+            background_ab_specificity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_background_ab.cost", data);
-            background_ab_cost = std::stod(data);
+            background_ab_cost = Utils::stod_positive(data);
 
             // Intervention RNA
             dm->GetFromConfig("screening_intervention_rna.acute_sensitivity",
                               data);
-            intervention_rna_acute_sensitivity = std::stod(data);
+            intervention_rna_acute_sensitivity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_intervention_rna.chronic_sensitivity",
                               data);
-            intervention_rna_chronic_sensitivity = std::stod(data);
+            intervention_rna_chronic_sensitivity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_intervention_rna.specificity", data);
-            intervention_rna_specificity = std::stod(data);
+            intervention_rna_specificity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_intervention_rna.cost", data);
-            intervention_rna_cost = std::stod(data);
+            intervention_rna_cost = Utils::stod_positive(data);
 
             // Intervention AB
             dm->GetFromConfig("screening_intervention_ab.acute_sensitivity",
                               data);
-            intervention_ab_acute_sensitivity = std::stod(data);
+            intervention_ab_acute_sensitivity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_intervention_ab.chronic_sensitivity",
                               data);
-            intervention_ab_chronic_sensitivity = std::stod(data);
+            intervention_ab_chronic_sensitivity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_intervention_ab.specificity", data);
-            intervention_ab_specificity = std::stod(data);
+            intervention_ab_specificity = Utils::stod_positive(data);
             dm->GetFromConfig("screening_intervention_ab.cost", data);
-            intervention_ab_cost = std::stod(data);
+            intervention_ab_cost = Utils::stod_positive(data);
 
             // Other Config Gets
             dm->GetFromConfig("screening.seropositivity_multiplier_boomer",
                               data);
             seropositivity_boomer_multiplier =
-                (data.empty()) ? 1.0 : std::stod(data);
+                (data.empty()) ? 1.0 : Utils::stod_positive(data);
             dm->GetFromConfig("screening.period", data);
             screening_period = (data.empty()) ? 0 : std::stoi(data);
             dm->GetFromConfig("screening.intervention_type", intervention_type);

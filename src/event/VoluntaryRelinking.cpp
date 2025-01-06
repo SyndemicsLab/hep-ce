@@ -18,6 +18,7 @@
 #include "VoluntaryRelinking.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <string>
@@ -60,7 +61,7 @@ namespace event {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
             if (!discount_data.empty()) {
-                this->discount = std::stod(discount_data);
+                this->discount = Utils::stod_positive(discount_data);
             }
 
             std::string data;
@@ -70,7 +71,7 @@ namespace event {
                     "No Voluntary Relinkage Probability Found!");
                 data = "0.00";
             }
-            relink_probability = std::stod(data);
+            relink_probability = Utils::stod_positive(data);
 
             dm->GetFromConfig("linking.voluntary_relink_duration", data);
             if (data.empty()) {
@@ -81,7 +82,7 @@ namespace event {
             voluntary_relink_duration = std::stoi(data);
 
             dm->GetFromConfig("screening_background_rna.cost", data);
-            background_rna_cost = std::stod(data);
+            background_rna_cost = Utils::stod_positive(data);
         }
     };
 

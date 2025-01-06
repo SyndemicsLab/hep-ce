@@ -51,7 +51,7 @@ namespace event {
             } else {
                 // if the user provides a clearance probability, use that value
                 // instead
-                this->clearanceProbability = std::stod(data);
+                this->clearanceProbability = Utils::stod_positive(data);
             }
         }
     };

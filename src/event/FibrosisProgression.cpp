@@ -47,7 +47,7 @@ namespace event {
                                  char **columns) {
             Utils::tuple_2i tup =
                 std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-            (*((costmap_t *)storage))[tup] = std::stod(data[2]);
+            (*((costmap_t *)storage))[tup] = Utils::stod_positive(data[2]);
             return 0;
         }
 
@@ -130,24 +130,24 @@ namespace event {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
             if (!discount_data.empty()) {
-                this->discount = std::stod(discount_data);
+                this->discount = Utils::stod_positive(discount_data);
             }
             std::string data;
 
             dm->GetFromConfig("fibrosis.f01", data);
-            this->f01_probability = std::stod(data);
+            this->f01_probability = Utils::stod_positive(data);
 
             dm->GetFromConfig("fibrosis.f12", data);
-            this->f12_probability = std::stod(data);
+            this->f12_probability = Utils::stod_positive(data);
 
             dm->GetFromConfig("fibrosis.f23", data);
-            this->f23_probability = std::stod(data);
+            this->f23_probability = Utils::stod_positive(data);
 
             dm->GetFromConfig("fibrosis.f34", data);
-            this->f34_probability = std::stod(data);
+            this->f34_probability = Utils::stod_positive(data);
 
             dm->GetFromConfig("fibrosis.f4d", data);
-            this->f4d_probability = std::stod(data);
+            this->f4d_probability = Utils::stod_positive(data);
 
             dm->GetFromConfig("fibrosis.add_cost_only_if_identified", data);
             if (!data.empty()) {

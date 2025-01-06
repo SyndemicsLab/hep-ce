@@ -17,6 +17,7 @@
 #include "Pregnancy.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
@@ -31,7 +32,7 @@ namespace event {
         static int callback(void *storage, int count, char **data,
                             char **columns) {
             double *d = (double *)storage;
-            *d = std::stod(data[0]); // First Column Selected
+            *d = Utils::stod_positive(data[0]); // First Column Selected
             return 0;
         }
         std::string buildSQL(std::shared_ptr<person::PersonBase> person,
@@ -180,7 +181,7 @@ namespace event {
                     "No Multiple Delivery Probability Found! Assuming 0.");
                 storage = "0";
             }
-            multiple_delivery_probability = std::stod(storage);
+            multiple_delivery_probability = Utils::stod_positive(storage);
 
             storage.clear();
             dm->GetFromConfig("pregnancy.infant_hcv_tested_probability",
@@ -190,7 +191,7 @@ namespace event {
                     "No Infant HCV Testing Probability Found! Assuming 0.");
                 storage = "0";
             }
-            infant_hcv_tested_probability = std::stod(storage);
+            infant_hcv_tested_probability = Utils::stod_positive(storage);
 
             storage.clear();
             dm->GetFromConfig("pregnancy.vertical_hcv_transition_probability",
@@ -200,7 +201,7 @@ namespace event {
                                           "Probability Found! Assuming 0.");
                 storage = "0";
             }
-            vertical_hcv_transition_probability = std::stod(storage);
+            vertical_hcv_transition_probability = Utils::stod_positive(storage);
         }
     };
 

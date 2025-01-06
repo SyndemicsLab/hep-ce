@@ -43,7 +43,8 @@ namespace event {
                             char **columns) {
             Utils::tuple_3i tup = std::make_tuple(
                 std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-            struct cost_util cu = {std::stod(data[3]), std::stod(data[4])};
+            struct cost_util cu = {Utils::stod_positive(data[3]),
+                                   Utils::stod_positive(data[4])};
             (*((agemap_t *)storage))[tup] = cu;
             return 0;
         }
@@ -98,7 +99,7 @@ namespace event {
             std::string discount_data;
             int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
             if (!discount_data.empty()) {
-                this->discount = std::stod(discount_data);
+                this->discount = Utils::stod_positive(discount_data);
             }
 
             data = {};
