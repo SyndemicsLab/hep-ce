@@ -12,7 +12,7 @@ class PregnancyTest : public EventTest {};
 TEST_F(PregnancyTest, Males) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NONE));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -41,7 +41,7 @@ TEST_F(PregnancyTest, Males) {
 TEST_F(PregnancyTest, TooYoung) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(10));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(120));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::POSTPARTUM));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -70,7 +70,7 @@ TEST_F(PregnancyTest, TooYoung) {
 TEST_F(PregnancyTest, TooOld) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(75));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(550));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NONE));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -99,7 +99,7 @@ TEST_F(PregnancyTest, TooOld) {
 TEST_F(PregnancyTest, Postpartum) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::POSTPARTUM));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -128,7 +128,7 @@ TEST_F(PregnancyTest, Postpartum) {
 TEST_F(PregnancyTest, EndPostpartum_ReImpregnate) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::POSTPARTUM));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -165,7 +165,7 @@ TEST_F(PregnancyTest, EndPostpartum_ReImpregnate) {
 TEST_F(PregnancyTest, Pregnant_Miscarry) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::PREGNANT));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -201,7 +201,7 @@ TEST_F(PregnancyTest, Pregnant_Miscarry) {
 TEST_F(PregnancyTest, Pregnant_HealthyTimestep) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::PREGNANT));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -237,7 +237,7 @@ TEST_F(PregnancyTest, Pregnant_HealthyTimestep) {
 TEST_F(PregnancyTest, Pregnant_Stillbirth) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::PREGNANT));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -273,7 +273,7 @@ TEST_F(PregnancyTest, Pregnant_Stillbirth) {
 TEST_F(PregnancyTest, Pregnant_Healthy_Birth) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::PREGNANT));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -314,7 +314,7 @@ TEST_F(PregnancyTest, Pregnant_Healthy_Birth) {
 TEST_F(PregnancyTest, Pregnant_Twins) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::PREGNANT));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -354,7 +354,7 @@ TEST_F(PregnancyTest, Pregnant_Twins) {
 TEST_F(PregnancyTest, Pregnant_Test_NoInfect_Child) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::PREGNANT));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -396,7 +396,7 @@ TEST_F(PregnancyTest, Pregnant_Test_NoInfect_Child) {
 TEST_F(PregnancyTest, Pregnant_NoTest_NoInfect_Child) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::PREGNANT));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -438,7 +438,7 @@ TEST_F(PregnancyTest, Pregnant_NoTest_NoInfect_Child) {
 TEST_F(PregnancyTest, Pregnant_Test_Infect_Child) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::PREGNANT));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())
@@ -480,7 +480,7 @@ TEST_F(PregnancyTest, Pregnant_Test_Infect_Child) {
 TEST_F(PregnancyTest, Pregnant_NoTest_Infect_Children) {
     // Person Setup
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::FEMALE));
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(25));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::PREGNANT));
     ON_CALL(*testPerson, GetTimeSincePregnancyChange())

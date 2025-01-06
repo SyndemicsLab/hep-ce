@@ -328,7 +328,7 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_DECOMP) {
 
     // Expectations
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(_)).Times(0);
-    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =

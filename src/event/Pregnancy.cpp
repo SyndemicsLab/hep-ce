@@ -142,7 +142,7 @@ namespace event {
                      std::shared_ptr<stats::DeciderBase> decider) {
 
             if (person->GetSex() == person::Sex::MALE ||
-                person->GetAge() < 15 || person->GetAge() > 45 ||
+                person->GetAge() < 180 || person->GetAge() > 540 ||
                 (person->GetPregnancyState() ==
                      person::PregnancyState::POSTPARTUM &&
                  person->GetTimeSincePregnancyChange() < 3)) {

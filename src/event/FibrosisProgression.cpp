@@ -112,12 +112,11 @@ namespace event {
             // progresses)
             (decider->GetDecision(prob) == 0) ? ++fs : fs;
 
-            if (fs == person->GetTrueFibrosisState()) {
-                return;
+            if (fs != person->GetTrueFibrosisState()) {
+                // 4. Apply the result state
+                person->UpdateTrueFibrosis(fs);
             }
 
-            // 4. Apply the result state
-            person->UpdateTrueFibrosis(fs);
             // insert Person's liver-related disease cost (taking the highest
             // fibrosis state)
             if (!costFlag ||
