@@ -33,6 +33,24 @@ namespace person {
     std::ostream &operator<<(std::ostream &os, const HCV &inst);
     HCV &operator<<(HCV &inst, const std::string &str);
 
+    /// @brief HIV Infection States
+    enum class HIV {
+        /// No HIV infection
+        NONE = 0,
+        /// High CD4 count, unsuppressed
+        HIUN = 1,
+        /// High CD4 count, suppressed
+        HISU = 2,
+        /// Low CD4 count, unsuppressed
+        LOUN = 3,
+        /// Low CD4 count, suppressed
+        LOSU = 4,
+
+        COUNT = 5
+    };
+    std::ostream &operator<<(std::ostream &os, const HIV &inst);
+    HIV &operator<<(HIV &inst, const std::string &str);
+
     enum class DeathReason {
         /// @brief Not applicable, usually not dead
         NA = 0,
@@ -200,14 +218,17 @@ namespace person {
     /// @brief Attributes describing an Infection
     struct Health {
         HCV hcv = HCV::NONE;
+        HIV hiv = HIV::NONE;
         FibrosisState fibrosisState = FibrosisState::NONE;
         bool isGenotypeThree = false;
         bool seropositive = false;
         int timeHCVChanged = -1;
+        int timeHIVChanged = -1;
         int timeFibrosisStateChanged = -1;
         int timesInfected = 0;
         int timesCleared = 0;
         bool identifiedHCV = false;
+        bool identifiedHIV = false;
         bool historyOfHCV = false;
         int timeIdentified = -1;
         HCCState hccState = HCCState::NONE;

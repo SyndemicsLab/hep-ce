@@ -254,7 +254,6 @@ namespace person {
         }
 
         /// @brief InfectHCV the person
-        /// @param timestep Current simulation timestep
         void InfectHCV() {
             // cannot be multiply infected
             if (this->health.hcv != HCV::NONE) {
@@ -272,11 +271,18 @@ namespace person {
         }
 
         /// @brief Clear of HCV
-        /// @param timestep Current simulation timestep
         void ClearHCV() {
             this->health.hcv = HCV::NONE;
             this->health.timeHCVChanged = this->_currentTime;
             this->AddHCVClearance();
+        }
+
+        /// @brief infect the person with HIV
+        void InfectHIV() {
+            // cannot be multiply infected
+            if (this->health.hiv != HIV::NONE) {
+                return;
+            }
         }
 
         int LoadICValues(int id, std::vector<std::string> icValues) {
@@ -743,6 +749,8 @@ namespace person {
 
         MOUDDetails GetMOUDDetails() const { return this->moudDetails; }
 
+        HIV GetHIV() const { return this->health.hiv; }
+
         PregnancyDetails GetPregnancyDetails() const {
             return this->pregnancyDetails;
         }
@@ -1118,6 +1126,7 @@ namespace person {
         return pImplPERSON->GetDeathReason();
     }
     HCV Person::GetHCV() const { return pImplPERSON->GetHCV(); }
+    HIV Person::GetHIV() const { return pImplPERSON->GetHIV(); }
     Behavior Person::GetBehavior() const { return pImplPERSON->GetBehavior(); }
     int Person::GetTimeBehaviorChange() const {
         return pImplPERSON->GetTimeBehaviorChange();
@@ -1159,6 +1168,7 @@ namespace person {
     int Person::GetTimeSinceTreatmentInitiation() const {
         return pImplPERSON->GetTimeSinceTreatmentInitiation();
     }
+    void Person::InfectHIV() { return pImplPERSON->InfectHIV(); }
     PregnancyState Person::GetPregnancyState() const {
         return pImplPERSON->GetPregnancyState();
     }

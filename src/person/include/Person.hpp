@@ -164,6 +164,10 @@ namespace person {
         virtual std::pair<double, double> GetCostTotals() const = 0;
         virtual Health GetHealth() const = 0;
 
+        // HIV
+        virtual HIV GetHIV() const = 0;
+        virtual void InfectHIV() = 0;
+
         // TODO
         virtual PregnancyState GetPregnancyState() const = 0;
         virtual int GetTimeOfPregnancyChange() const = 0;
@@ -334,6 +338,10 @@ namespace person {
         int GetLifeSpan() const;
         double GetDiscountedLifeSpan() const;
         void AddDiscountedLifeSpan(double discounted_life);
+
+        // HIV
+        HIV GetHIV() const;
+        void InfectHIV();
 
         // Pregnancy
         PregnancyState GetPregnancyState() const;

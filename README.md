@@ -1,6 +1,4 @@
-<p align="center">
-<a href="https://www.syndemicslab.org/hep-ce"><img src="https://github.com/SyndemicsLab/.github/blob/main/profile/images/HEPCE.png" alt="HEP-CE Logo" height="200" /></a>
-</p>
+<a href="https://www.syndemicslab.org/hep-ce"><img align="right" src="https://github.com/SyndemicsLab/.github/blob/main/profile/images/HEPCE.png" alt="HEP-CE Logo" height="100" /></a>
 
 The `HEP-CE` (**Hep**atitis C **C**ost **E**ffectiveness) model is a Monte-Carlo health state-transition model which simulates the spread and treatment of Hepatitis C Virus (HCV) in the United States.
 The model uses values and information derived from a variety of sources, including clinical data and relevant literature.
@@ -9,7 +7,6 @@ HEP-CE is used to model the efficacy and cost-effectiveness of treatments, polic
 ## Table of Contents
 - [What's New](#whats-new)
 - [Build Instructions](#build-instructions)
-- [Roadmap](#roadmap)
 
 ## What's New
 The `HEP-CE` model you see here is a rewrite of [an earlier version](https://github.com/SyndemicsLab/hep-ce) of the model. This new, improved version attempts to improve upon key pain points in the previous incarnation, namely:
@@ -91,20 +88,3 @@ git clone git@github.com:SyndemicsLab/HEPCESimulationv2
 cd scripts
 debug-conanbuild.bat
 ```
-
-## Roadmap
-
-- [x] Rewrite Approval [2023-08-14]
-- [ ] Person-Level Events
-  - [ ] Overdose
-  - [ ] Death
-- [ ] Clinical Events
-  - [ ] Screening
-  - [ ] Linking
-  - [ ] VoluntaryRelinking
-  - [ ] FibrosisStaging
-  - [ ] Treatment
-- [ ] Calculation Events
-  - [ ] Transmission
-  - [ ] Utility
-- [x] Functional `main()` [2024-01-03]

@@ -26,6 +26,41 @@ namespace person {
         return inst;
     }
 
+    std::ostream &operator<<(std::ostream &os, const HIV &inst) {
+        switch (inst) {
+        case HIV::HIUN:
+            os << "hi-un";
+            break;
+        case HIV::HISU:
+            os << "hi-su";
+            break;
+        case HIV::LOUN:
+            os << "lo-un";
+            break;
+        case HIV::LOSU:
+            os << "lo-su";
+            break;
+        default:
+            os << "none";
+            break;
+        }
+        return os;
+    }
+    HIV &operator<<(HIV &inst, const std::string &str) {
+        if (str == "hi-un") {
+            inst = HIV::HIUN;
+        } else if (str == "hi-su") {
+            inst = HIV::HISU;
+        } else if (str == "lo-un") {
+            inst = HIV::LOUN;
+        } else if (str == "lo-su") {
+            inst = HIV::LOSU;
+        } else {
+            inst = HIV::NONE;
+        }
+        return inst;
+    }
+
     std::ostream &operator<<(std::ostream &os, const DeathReason &inst) {
         switch (inst) {
         case DeathReason::BACKGROUND:
