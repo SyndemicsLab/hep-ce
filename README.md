@@ -1,4 +1,5 @@
-<a href="https://www.syndemicslab.org/hep-ce"><img align="right" src="https://github.com/SyndemicsLab/.github/blob/main/profile/images/HEPCE.png" alt="HEP-CE Logo" height="100" /></a>
+# HEP-CE: A Hepatitis C Virus Microsimulation
+<a href="https://www.syndemicslab.org/hep-ce"><img align="right" src="https://github.com/SyndemicsLab/.github/blob/main/profile/images/HEPCE.png" alt="HEP-CE Logo" height="150" /></a>
 
 The `HEP-CE` (**Hep**atitis C **C**ost **E**ffectiveness) model is a Monte-Carlo health state-transition model which simulates the spread and treatment of Hepatitis C Virus (HCV) in the United States.
 The model uses values and information derived from a variety of sources, including clinical data and relevant literature.
