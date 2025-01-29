@@ -1,7 +1,7 @@
 # HEP-CE: A Hepatitis C Virus Microsimulation
 <a href="https://www.syndemicslab.org/hep-ce"><img align="right" src="https://github.com/SyndemicsLab/.github/blob/main/profile/images/HEPCE.png" alt="HEP-CE Logo" height="150" /></a>
 
-The `HEP-CE` (**Hep**atitis C **C**ost **E**ffectiveness) model is a Monte-Carlo health state-transition model which simulates the spread and treatment of Hepatitis C Virus (HCV) in the United States.
+The `HEP-CE` (**Hep**atitis C **C**ost **E**ffectiveness) model is a Markov chain Monte Carlo health state-transition model which simulates the spread and treatment of Hepatitis C Virus (HCV) in the United States.
 The model uses values and information derived from a variety of sources, including clinical data and relevant literature.
 HEP-CE is used to model the efficacy and cost-effectiveness of treatments, policies, and interventions aimed at controlling the HCV epidemic on a population-wide basis.
 
@@ -45,47 +45,18 @@ These categories are further broken into discrete events:
   - Transmission (PreVenT)
 
 ### Input Structure
-This version of the model aims to simplify input file structure.
-Currently, the intended input folder structure is
-```ini
-# simple ini config
-sim.conf
-# tabular inputs
-init_cohort.csv
-antibody_testing.csv
-background_costs.csv
-background_mortality.csv
-background_utilities.csv
-behavior_costs.csv
-behavior_transitions.csv
-behavior_utilities.csv
-fibrosis.csv
-liver_disease_costs.csv
-liver_disease_utilities.csv
-incidence.csv
-screening_and_linking.csv
-smr.csv
-```
 
 ## Build Instructions
 
 ### Dependencies
 
-- [conan2](https://conan.io)
 - [DataManagement](https://github.com/SyndemicsLab/DataManagement)
-- [GoogleTest/`gtest`](https://github.com/google/googletest) (optional)
+- [GoogleTest/`gtest`](https://github.com/google/googletest) (optional, used
+  for unit testing)
 
 ### Unix-based Systems
 
 ```sh
 git clone git@github.com:SyndemicsLab/HEPCESimulationv2
-scripts/debug-conanbuild.sh
-```
-
-### Windows
-
-```bat
-git clone git@github.com:SyndemicsLab/HEPCESimulationv2
-cd scripts
-debug-conanbuild.bat
+scripts/build.sh
 ```

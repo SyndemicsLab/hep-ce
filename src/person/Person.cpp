@@ -283,6 +283,9 @@ namespace person {
             if (this->health.hiv != HIV::NONE) {
                 return;
             }
+            // infected start as high CD4, unsuppressed infection
+            this->health.hiv = HIV::HIUN;
+            this->health.timeHIVChanged = this->_currentTime;
         }
 
         int LoadICValues(int id, std::vector<std::string> icValues) {
@@ -592,8 +595,12 @@ namespace person {
         }
 
         /// @brief Getter for timestep in which HCV last changed
-        /// @return Time Since HCV Change
+        /// @return Timestep that HCV last changed
         int GetTimeHCVChanged() const { return this->health.timeHCVChanged; }
+
+        /// @brief Getter for timestep in which HIV last changed
+        /// @return Timestep that HIV last changed
+        int GetTimeHIVChanged() const { return this->health.timeHIVChanged; }
 
         /// @brief Getter for Time since Fibrosis State Change
         /// @return Time Since Fibrosis State Change
@@ -658,6 +665,10 @@ namespace person {
 
         int GetTimeSinceHCVChanged() const {
             return CalculateTimeSince(GetTimeHCVChanged());
+        }
+
+        int GetTimeSinceHIVChanged() const {
+            return CalculateTimeSince(GetTimeHIVChanged());
         }
 
         int GetTimeSinceLinkChange() const {
@@ -820,6 +831,17 @@ namespace person {
         void SetHCV(HCV hcv) {
             this->health.hcv = hcv;
             this->health.timeHCVChanged = this->_currentTime;
+        }
+
+        /// @brief Set HIV infection state -- used to change between states of
+        /// suppression and CD4 count
+        /// @param New HIV infection state
+        void SetHIV(HIV hiv) {
+            if (hiv == this->health.hiv) {
+                return;
+            }
+            this->health.hiv = hiv;
+            this->health.timeHIVChanged = this->_currentTime;
         }
 
         /// @brief Setter for PersonIMPL's treatment initiation state

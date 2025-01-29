@@ -166,7 +166,10 @@ namespace person {
 
         // HIV
         virtual HIV GetHIV() const = 0;
+        virtual void SetHIV(HIV hiv) = 0;
         virtual void InfectHIV() = 0;
+        virtual int GetTimeHIVChanged() = 0;
+        virtual int GetTimeSinceHIVChanged() = 0;
 
         // TODO
         virtual PregnancyState GetPregnancyState() const = 0;
@@ -341,7 +344,10 @@ namespace person {
 
         // HIV
         HIV GetHIV() const;
+        void SetHIV;
         void InfectHIV();
+        int GetTimeHIVChanged() const;
+        int GetTimeSinceHIVChanged() const;
 
         // Pregnancy
         PregnancyState GetPregnancyState() const;
