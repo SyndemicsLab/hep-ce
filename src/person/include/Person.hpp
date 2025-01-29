@@ -170,6 +170,7 @@ namespace person {
         virtual void InfectHIV() = 0;
         virtual int GetTimeHIVChanged() = 0;
         virtual int GetTimeSinceHIVChanged() = 0;
+        virtual bool IsIdentifiedAsHIVInfected() const = 0;
 
         // TODO
         virtual PregnancyState GetPregnancyState() const = 0;
@@ -348,6 +349,7 @@ namespace person {
         void InfectHIV();
         int GetTimeHIVChanged() const;
         int GetTimeSinceHIVChanged() const;
+        bool IsIdentifiedAsHIVInfected() const;
 
         // Pregnancy
         PregnancyState GetPregnancyState() const;

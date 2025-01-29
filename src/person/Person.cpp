@@ -498,6 +498,13 @@ namespace person {
             return this->health.identifiedHCV;
         }
 
+        /// @brief Getter for HIV Identification Status
+        /// @return Boolean describing whether the healthcare system has
+        /// detected HIV in the Person
+        bool IsIdentifiedAsHIVInfected() const {
+            return this->health.identifiedHIV;
+        }
+
         bool HistoryOfHCVInfection() const { return this->health.historyOfHCV; }
 
         /// @brief Getter for whether PersonIMPL has initiated treatment
