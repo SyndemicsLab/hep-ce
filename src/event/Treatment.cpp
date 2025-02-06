@@ -304,9 +304,9 @@ namespace event {
         int
         LoadToxicityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string error;
-            int rc = dm->SelectCustomCallback(
-                TreatmentSQL("toxicity_prob_if_withdrawal"),
-                this->callback_treament, &toxicity_data, error);
+            int rc = dm->SelectCustomCallback(TreatmentSQL("toxicity_prob"),
+                                              this->callback_treament,
+                                              &toxicity_data, error);
 
             if (rc != 0) {
                 spdlog::get("main")->warn(
