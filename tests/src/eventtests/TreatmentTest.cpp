@@ -17,7 +17,7 @@ std::string const SVR_QUERY = "SELECT retreatment, genotype_three, cirrhotic, "
                               "svr_prob_if_completed FROM treatments;";
 std::string const TOXICITY_QUERY =
     "SELECT retreatment, genotype_three, cirrhotic, "
-    "toxicity_prob_if_withdrawal FROM "
+    "toxicity_prob FROM "
     "treatments;";
 std::string const WITHDRAWAL_QUERY = "SELECT retreatment, genotype_three, "
                                      "cirrhotic, withdrawal FROM treatments;";
