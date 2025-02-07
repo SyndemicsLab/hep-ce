@@ -39,7 +39,7 @@ namespace event {
                              std::string column) {
             std::stringstream sql;
             int age_years = (int)(person->GetAge() / 12.0);
-            sql << "SELECT '" + column + "' FROM pregnancy";
+            sql << "SELECT " + column + " FROM pregnancy";
             sql << " WHERE age_years = " << age_years << ";";
             return sql.str();
         }
