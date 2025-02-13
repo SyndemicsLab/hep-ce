@@ -14,6 +14,7 @@ TEST_F(VoluntaryRelinkingTest, Relink) {
     ON_CALL(*testPerson, GetLinkState())
         .WillByDefault(Return(person::LinkageState::UNLINKED));
     ON_CALL(*testPerson, GetTimeSinceLinkChange()).WillByDefault(Return(5));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::CHRONIC));
 
     // Data Setup
     ON_CALL(*event_dm,

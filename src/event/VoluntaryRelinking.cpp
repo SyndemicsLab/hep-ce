@@ -50,7 +50,8 @@ namespace event {
             if ((person->GetLinkState() == person::LinkageState::UNLINKED) &&
                 ((person->GetTimeSinceLinkChange()) <
                  voluntary_relink_duration) &&
-                (decider->GetDecision({relink_probability}) == 0)) {
+                (decider->GetDecision({relink_probability}) == 0) &&
+                (person->GetHCV() != person::HCV::NONE)) {
                 AddRNATest(person);
                 person->Link(person::LinkageType::BACKGROUND);
             }
