@@ -23,7 +23,7 @@ showhelp () {
 
 dminstall () {
     if [[ ! -d "DataManagement" ]]; then
-	git clone -b main git@github.com:SyndemicsLab/DataManagement
+	git clone -b old_dm git@github.com:SyndemicsLab/DataManagement
     fi
     echo "DataManagement clone complete."
 
