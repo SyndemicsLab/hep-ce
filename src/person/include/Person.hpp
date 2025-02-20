@@ -20,6 +20,7 @@
 
 #include "Containers.hpp"
 #include "Cost.hpp"
+#include "Utils.hpp"
 #include <memory>
 
 namespace datamanagement {
@@ -152,6 +153,10 @@ namespace person {
         GetCosts() const = 0;
         virtual std::pair<double, double> GetCostTotals() const = 0;
         virtual Health GetHealth() const = 0;
+
+        virtual int GetLifeSpan() const = 0;
+        virtual double GetDiscountedLifeSpan const = 0;
+        virtual void AddLifeSpan() = 0;
 
         // TODO
         virtual PregnancyState GetPregnancyState() const = 0;
@@ -316,6 +321,10 @@ namespace person {
         GetCosts() const;
         std::pair<double, double> GetCostTotals() const override;
         Health GetHealth() const;
+
+        int GetLifeSpan() const;
+        double GetDiscountedLifeSpan() const;
+        void AddLifeSpan();
 
         // Pregnancy
         PregnancyState GetPregnancyState() const;

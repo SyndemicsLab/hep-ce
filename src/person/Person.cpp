@@ -115,6 +115,23 @@ namespace person {
         bool boomerClassification = false;
         std::vector<Child> children = {};
 
+        // life span tracking
+        int lifeSpan = 0;
+        double discountedLifeSpan = 0;
+
+        /// @brief Get Person's undiscounted life span
+        /// @return Undiscounted life span, in months
+        int GetLifeSpan() const { return this->lifeSpan; }
+
+        /// @brief Get Person's discounted life span
+        /// @return Discounted life span, in months
+        double GetDiscountedLifeSpan() const {
+            return this->discountedLifeSpan;
+        }
+
+        /// @brief Increment undiscounted and discounted life spans
+        void AddLifeSpan() { ++this->lifeSpan; }
+
         int UpdateTimers() {
             this->_currentTime++;
             if (GetBehavior() == person::Behavior::NONINJECTION ||
@@ -1143,6 +1160,11 @@ namespace person {
     BehaviorDetails Person::GetBehaviorDetails() const {
         return pImplPERSON->GetBehaviorDetails();
     }
+    int Person::GetLifeSpan() const { return pImplPERSON->GetLifeSpan(); }
+    double Person::GetDiscountedLifeSpan() const {
+        return pImplPERSON->GetDiscountedLifeSpan();
+    }
+    void Person::AddLifeSpan() { pImplPERSON->AddLifeSpan(); }
     LinkageDetails Person::GetLinkStatus() const {
         return pImplPERSON->GetLinkStatus();
     }
