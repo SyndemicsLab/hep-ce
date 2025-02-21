@@ -141,7 +141,7 @@ namespace event {
             bool recently_screened =
                 (person->GetTimeSinceLastScreening() <= recent_screen_cutoff);
             // apply the multiplier to recently screened persons
-            if (recently_screened) {
+            if (recently_screened && (prob < 1)) {
                 prob = ApplyMultiplier(prob, recent_screen_multiplier);
             }
 
