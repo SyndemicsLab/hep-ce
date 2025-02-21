@@ -37,6 +37,10 @@ TEST_F(LinkingTest, FalsePositive) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_multiplier", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_cutoff", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
@@ -87,6 +91,10 @@ TEST_F(LinkingTest, BackgroundLink) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_multiplier", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_cutoff", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
@@ -141,6 +149,10 @@ TEST_F(LinkingTest, InterventionLink) {
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_multiplier", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_cutoff", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 

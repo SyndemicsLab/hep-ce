@@ -29,7 +29,8 @@ namespace event {
         double discount = 0.0;
         double intervention_cost;
         double false_positive_test_cost;
-        double relink_multiplier;
+        int recent_screen_cutoff;
+        double recent_screen_multiplier;
 
         using linkmap_t =
             std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
@@ -116,10 +117,7 @@ namespace event {
             bool is_linked =
                 (person->GetLinkState() == person::LinkageState::LINKED);
             bool is_not_identified = (!person->IsIdentifiedAsHCVInfected());
-            bool not_screened_this_month =
-                !(person->GetTimeSinceLastScreening() == 0);
-
-            if (is_linked || is_not_identified || not_screened_this_month) {
+            if (is_linked || is_not_identified) {
                 return;
             }
 
@@ -127,12 +125,22 @@ namespace event {
                 return;
             }
 
+            // check if the person was recently screened, for multiplier
+            bool recently_screened =
+                (person->GetTimeSinceLastScreening() <= recent_screen_cutoff);
+
             double prob =
                 (person->GetLinkageType() == person::LinkageType::BACKGROUND)
                     ? GetLinkProbability(person, dm,
                                          "background_link_probability")
                     : GetLinkProbability(person, dm,
                                          "intervention_link_probability");
+
+            // apply the multiplier to recently screened persons
+            if (recently_screened) {
+                prob = Utils::rateToProbability(Utils::probabilityToRate(prob) *
+                                                recent_screen_multiplier);
+            }
 
             // draw from link probability
             if (decider->GetDecision({prob}) == 0) {
@@ -145,16 +153,25 @@ namespace event {
             }
         }
         LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            std::string discount_data;
-            int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-            if (!discount_data.empty()) {
-                this->discount = Utils::stod_positive(discount_data);
+            std::string temp_data;
+            int rc = dm->GetFromConfig("cost.discounting_rate", temp_data);
+            if (!temp_data.empty()) {
+                this->discount = Utils::stod_positive(temp_data);
             }
-            intervention_cost =
+            this->intervention_cost =
                 ParseDoublesFromConfig("linking.intervention_cost", dm);
 
-            false_positive_test_cost =
+            this->false_positive_test_cost =
                 ParseDoublesFromConfig("linking.false_positive_test_cost", dm);
+
+            this->recent_screen_multiplier =
+                ParseDoublesFromConfig("linking.recent_screen_multiplier", dm);
+
+            temp_data.clear();
+            rc = dm->GetFromConfig("linking.recent_screen_cutoff", temp_data);
+            if (!temp_data.empty()) {
+                this->recent_screen_cutoff = std::stoi(temp_data);
+            }
 
             std::string error;
             rc = dm->SelectCustomCallback(
