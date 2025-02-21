@@ -110,6 +110,11 @@ namespace event {
             return Utils::stod_positive(data);
         }
 
+        double ApplyMultiplier(double prob, double mult) {
+            return Utils::rateToProbability(Utils::probabilityToRate(prob) *
+                                            mult);
+        }
+
     public:
         void DoEvent(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<datamanagement::DataManagerBase> dm,
@@ -125,10 +130,6 @@ namespace event {
                 return;
             }
 
-            // check if the person was recently screened, for multiplier
-            bool recently_screened =
-                (person->GetTimeSinceLastScreening() <= recent_screen_cutoff);
-
             double prob =
                 (person->GetLinkageType() == person::LinkageType::BACKGROUND)
                     ? GetLinkProbability(person, dm,
@@ -136,10 +137,12 @@ namespace event {
                     : GetLinkProbability(person, dm,
                                          "intervention_link_probability");
 
+            // check if the person was recently screened, for multiplier
+            bool recently_screened =
+                (person->GetTimeSinceLastScreening() <= recent_screen_cutoff);
             // apply the multiplier to recently screened persons
             if (recently_screened) {
-                prob = Utils::rateToProbability(Utils::probabilityToRate(prob) *
-                                                recent_screen_multiplier);
+                prob = ApplyMultiplier(prob, recent_screen_multiplier);
             }
 
             // draw from link probability
