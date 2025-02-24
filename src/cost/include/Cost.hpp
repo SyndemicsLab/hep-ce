@@ -19,6 +19,7 @@
 #ifndef COST_COST_HPP_
 #define COST_COST_HPP_
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>

@@ -119,19 +119,6 @@ namespace person {
         int lifeSpan = 0;
         double discountedLifeSpan = 0;
 
-        /// @brief Get Person's undiscounted life span
-        /// @return Undiscounted life span, in months
-        int GetLifeSpan() const { return this->lifeSpan; }
-
-        /// @brief Get Person's discounted life span
-        /// @return Discounted life span, in months
-        double GetDiscountedLifeSpan() const {
-            return this->discountedLifeSpan;
-        }
-
-        /// @brief Increment undiscounted and discounted life spans
-        void AddLifeSpan() { ++this->lifeSpan; }
-
         int UpdateTimers() {
             this->_currentTime++;
             if (GetBehavior() == person::Behavior::NONINJECTION ||
@@ -682,6 +669,19 @@ namespace person {
             return this->moudDetails.timeStartedMoud;
         }
 
+        /// @brief Get Person's undiscounted life span
+        /// @return Undiscounted life span, in months
+        int GetLifeSpan() const { return this->lifeSpan; }
+
+        /// @brief Get Person's discounted life span
+        /// @return Discounted life span, in months
+        double GetDiscountedLifeSpan() const {
+            return this->discountedLifeSpan;
+        }
+
+        /// @brief Increment undiscounted and discounted life spans
+        void AddLifeSpan() { ++this->lifeSpan; }
+
         /// @brief Getter for the person's sex
         /// @return PersonIMPL's sex
         Sex GetSex() const { return this->sex; }
@@ -827,9 +827,9 @@ namespace person {
         }
 
         /// @brief Set a value for a person's utility
-        /// @param category The category of the utility to be updated
-        /// @param value The value of the utility to be updated, bounded by
+        /// @param util The value of the utility to be updated, bounded by
         /// 0, 1
+        /// @param category The category of the utility to be updated
         void SetUtility(double util) {
             this->utilityTracker.minUtil =
                 std::min(this->utilityTracker.minUtil, util);

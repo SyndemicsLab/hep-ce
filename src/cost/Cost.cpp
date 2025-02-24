@@ -1,6 +1,5 @@
 #include "Cost.hpp"
 #include <cmath>
-#include <iostream>
 
 namespace cost {
     class CostTracker::CostTrackerIMPL {
@@ -18,7 +17,7 @@ namespace cost {
             costs[CostCategory::TREATMENT] = {0.0, 0.0};
             costs[CostCategory::BACKGROUND] = {0.0, 0.0};
         }
-        ~CostTrackerIMPL() {};
+        ~CostTrackerIMPL(){};
         std::pair<double, double> GetTotals() const {
             double base_sum = 0.0;
             double discount_sum = 0.0;

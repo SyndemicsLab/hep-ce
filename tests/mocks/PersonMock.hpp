@@ -144,6 +144,9 @@ namespace person {
         MOCK_METHOD((std::pair<double, double>), GetCostTotals, (),
                     (const, override));
         MOCK_METHOD(Health, GetHealth, (), (const, override));
+        MOCK_METHOD(int, GetLifeSpan, (), (const, override));
+        MOCK_METHOD(double, GetDiscountedLifeSpan, (), (const, override));
+        MOCK_METHOD(void, AddLifeSpan, (), (override));
 
         // TODO
         MOCK_METHOD(PregnancyState, GetPregnancyState, (), (const, override));

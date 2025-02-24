@@ -155,7 +155,7 @@ namespace person {
         virtual Health GetHealth() const = 0;
 
         virtual int GetLifeSpan() const = 0;
-        virtual double GetDiscountedLifeSpan const = 0;
+        virtual double GetDiscountedLifeSpan() const = 0;
         virtual void AddLifeSpan() = 0;
 
         // TODO
