@@ -848,7 +848,7 @@ namespace person {
 
         /// @brief Get Person's utility values
         /// @return min, mult utility
-        std::pair<double, double> GetUtility() {
+        std::pair<double, double> GetUtility() const {
             return this->utility_tracker.GetUtilities();
         }
 
@@ -1244,7 +1244,7 @@ namespace person {
                                    std::pair<double, double> discount_util) {
         pImplPERSON->AccumulateTotalUtility(util, discount_util);
     }
-    std::pair<double, double> Person::GetUtility() {
+    std::pair<double, double> Person::GetUtility() const {
         return pImplPERSON->GetUtility();
     }
     void Person::SetUtility(double util, utility::UtilityCategory category) {

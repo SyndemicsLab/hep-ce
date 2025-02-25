@@ -56,8 +56,8 @@ namespace writer {
                 << person->GetHCVClearances() << ","
                 << person->HasInitiatedTreatment() << ","
                 << person->GetTimeOfTreatmentInitiation() << ","
-                << person->GetUtility().minUtil << ","
-                << person->GetUtility().multUtil << ","
+                << person->GetTotalUtility().min_util << ","
+                << person->GetTotalUtility().mult_util << ","
                 << person->GetWithdrawals() << ","
                 << person->GetToxicReactions() << ","
                 << person->GetCompletedTreatments() << "," << person->GetSVRs()

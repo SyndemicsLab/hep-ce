@@ -24,7 +24,7 @@ else()
   add_library(${PROJECT_NAME} STATIC)
 endif()
 
-target_sources(${PROJECT_NAME} 
+target_sources(${PROJECT_NAME}
     PRIVATE
         Aging.cpp
         BehaviorChanges.cpp
@@ -44,9 +44,10 @@ target_sources(${PROJECT_NAME}
         Pregnancy.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} 
-    PRIVATE 
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
         cost
+	utility
         person
         stats
         spdlog::spdlog

@@ -133,7 +133,7 @@ namespace person {
         virtual void
         AccumulateTotalUtility(std::pair<double, double> util,
                                std::pair<double, double> discount_util) = 0;
-        virtual std::pair<double, double> GetUtility() = 0;
+        virtual std::pair<double, double> GetUtility() const = 0;
         virtual void SetUtility(double util,
                                 utility::UtilityCategory category) = 0;
         virtual int GetLifeSpan() const = 0;
@@ -330,7 +330,7 @@ namespace person {
         void AccumulateTotalUtility(std::pair<double, double> util,
                                     std::pair<double, double> discount_util);
         void SetUtility(double util, utility::UtilityCategory category);
-        std::pair<double, double> GetUtility();
+        std::pair<double, double> GetUtility() const;
         LifetimeUtility GetTotalUtility() const;
         int GetLifeSpan() const;
         double GetDiscountedLifeSpan() const;

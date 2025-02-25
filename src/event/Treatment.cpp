@@ -18,6 +18,7 @@
 #include "Cost.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utility.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
@@ -26,6 +27,8 @@
 namespace event {
     class Treatment::TreatmentIMPL {
     private:
+        utility::UtilityCategory util_category =
+            utility::UtilityCategory::TREATMENT;
         double discount = 0.0;
         double lost_to_follow_up_probability;
         double treatment_cost;
@@ -141,7 +144,7 @@ namespace event {
             person->AddCost(cost, discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
 
-            person->SetUtility(util);
+            person->SetUtility(util, util_category);
         }
 
         bool LostToFollowUp(std::shared_ptr<person::PersonBase> person,
@@ -184,7 +187,7 @@ namespace event {
             person->AddCost(cost_data[GetTreatmentThruple(person)],
                             discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
-            person->SetUtility(treatment_utility);
+            person->SetUtility(treatment_utility, util_category);
         }
 
         bool Withdraws(std::shared_ptr<person::PersonBase> person,
@@ -222,7 +225,7 @@ namespace event {
                 toxicity_cost, discount, person->GetCurrentTimestep());
             person->AddCost(toxicity_cost, discountAdjustedCost,
                             cost::CostCategory::TREATMENT);
-            person->SetUtility(toxicity_utility);
+            person->SetUtility(toxicity_utility, util_category);
         }
 
         bool
@@ -245,7 +248,7 @@ namespace event {
             person->EndTreatment();
             person->Unlink();
             // reset utility
-            person->SetUtility(1.0);
+            person->SetUtility(1.0, util_category);
         }
 
         double ParseDoublesFromConfig(
