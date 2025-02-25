@@ -45,6 +45,7 @@ add_executable(${PROJECT_NAME}
   src/PersonTest.cpp
   src/SimTest.cpp
   src/CostTest.cpp
+  src/UtilityTest.cpp
   src/eventtests/EventTest.cpp
   src/eventtests/AgingTest.cpp
   src/eventtests/BehaviorChangesTest.cpp
@@ -63,8 +64,8 @@ add_executable(${PROJECT_NAME}
 )
 
 # BE VERY CAREFUL WITH GTEST AS ITS A PAIN IN THE BUTT
-target_link_libraries(${PROJECT_NAME} 
-    PUBLIC 
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
         GTest::gtest_main
         GTest::gmock_main
         fmt # Required for GTest
@@ -73,6 +74,7 @@ target_link_libraries(${PROJECT_NAME}
         event
         utils
         cost
+        utility
         stats
         DataManagement::DataManagement
         spdlog::spdlog

@@ -1,7 +1,6 @@
 #include "Cost.hpp"
 #include <cmath>
 #include <gtest/gtest.h>
-#include <iostream>
 #include <numeric>
 
 TEST(CostTest, AddCost) {
