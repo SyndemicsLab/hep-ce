@@ -24,16 +24,17 @@ else()
   add_library(${PROJECT_NAME} STATIC)
 endif()
 
-target_sources(${PROJECT_NAME} 
+target_sources(${PROJECT_NAME}
     PRIVATE
-        Person.cpp 
+        Person.cpp
         ContainerOperators.cpp
         PersonFactory.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} 
-    PUBLIC 
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC
         cost
+	utility
     PRIVATE
         spdlog::spdlog
         DataManagement::DataManagement

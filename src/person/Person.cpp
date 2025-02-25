@@ -40,8 +40,8 @@ namespace person {
             int timesCleared = 0;
             bool initiatedTreatment = false;
             int timeOfTreatmentInitiation = -1;
-            double minUtility = 1.0;
-            double multUtility = 1.0;
+            double min_utility = 0.0;
+            double mult_utility = 0.0;
             int treatmentWithdrawals = 0;
             int treatmentToxicReactions = 0;
             int completedTreatments = 0;
@@ -79,8 +79,8 @@ namespace person {
             temp->timesCleared = std::stoi(data[24]);
             temp->initiatedTreatment = std::stoi(data[25]);
             temp->timeOfTreatmentInitiation = std::stoi(data[26]);
-            temp->minUtility = Utils::stod_positive(data[27]);
-            temp->multUtility = std::stod(data[28]);
+            temp->min_utility = Utils::stod_positive(data[27]);
+            temp->mult_utility = std::stod(data[28]);
             temp->treatmentWithdrawals = std::stoi(data[29]);
             temp->treatmentToxicReactions = std::stoi(data[30]);
             temp->completedTreatments = std::stoi(data[31]);
@@ -110,10 +110,13 @@ namespace person {
         StagingDetails stagingDetails;
         ScreeningDetails screeningDetails;
         TreatmentDetails treatmentDetails;
-        UtilityTracker utilityTracker;
         cost::CostTracker costs;
         bool boomerClassification = false;
         std::vector<Child> children = {};
+
+        // utility
+        utility::UtilityTracker utility_tracker;
+        LifetimeUtility lifetimeUtility;
 
         // life span tracking
         int lifeSpan = 0;
@@ -209,8 +212,8 @@ namespace person {
             treatmentDetails.retreatment = storage.retreatment;
             treatmentDetails.numberOfTreatmentStarts =
                 storage.numberOfTreatmentStarts;
-            utilityTracker.minUtil = storage.minUtility;
-            utilityTracker.multUtil = storage.multUtility;
+            lifetimeUtility.min_util = storage.min_utility;
+            lifetimeUtility.mult_util = storage.mult_utility;
             return 0;
         }
 
@@ -679,15 +682,24 @@ namespace person {
             return this->discountedLifeSpan;
         }
 
-        /// @brief Increment undiscounted and discounted life spans
+        /// @brief Increment undiscounted life span
         void AddLifeSpan() { ++this->lifeSpan; }
+
+        /// @brief Add discounted life span to person
+        /// @param
+        void AddDiscountedLifeSpan(double discounted_life) {
+            this->discountedLifeSpan += discounted_life;
+        }
 
         /// @brief Getter for the person's sex
         /// @return PersonIMPL's sex
         Sex GetSex() const { return this->sex; }
+
         /// @brief Getter for the person's stratified utilities
         /// @return PersonIMPL's stratified utilities
-        UtilityTracker GetUtility() const { return this->utilityTracker; }
+        LifetimeUtility GetTotalUtility() const {
+            return this->lifetimeUtility;
+        }
 
         /// @brief Getter for the PersonIMPL's costs
         /// @return cost::CostTracker containing this person's costs
@@ -748,8 +760,8 @@ namespace person {
                  << "," << GetHCVClearances() << "," << std::boolalpha
                  << GetTreatmentDetails().initiatedTreatment << ","
                  << GetTimeOfTreatmentInitiation() << ","
-                 << std::to_string(GetUtility().minUtil) << ","
-                 << std::to_string(GetUtility().multUtil);
+                 << std::to_string(GetTotalUtility().min_util) << ","
+                 << std::to_string(GetTotalUtility().mult_util);
             return data.str();
         }
 
@@ -826,14 +838,26 @@ namespace person {
             this->health.isGenotypeThree = genotype;
         }
 
+        void AccumulateTotalUtility(std::pair<double, double> util,
+                                    std::pair<double, double> discount_util) {
+            this->lifetimeUtility.min_util += util.first;
+            this->lifetimeUtility.mult_util += util.second;
+            this->lifetimeUtility.discount_min_util += discount_util.first;
+            this->lifetimeUtility.discount_mult_util += discount_util.second;
+        }
+
+        /// @brief Get Person's utility values
+        /// @return min, mult utility
+        std::pair<double, double> GetUtility() {
+            return this->utility_tracker.GetUtilities();
+        }
+
         /// @brief Set a value for a person's utility
         /// @param util The value of the utility to be updated, bounded by
         /// 0, 1
         /// @param category The category of the utility to be updated
-        void SetUtility(double util) {
-            this->utilityTracker.minUtil =
-                std::min(this->utilityTracker.minUtil, util);
-            this->utilityTracker.multUtil *= util;
+        void SetUtility(double util, utility::UtilityCategory category) {
+            this->utility_tracker.SetUtility(util, category);
         }
 
         void SetBoomer(bool status) { this->boomerClassification = status; }
@@ -874,7 +898,7 @@ namespace person {
         os << person.GetFibrosisStagingDetails() << std::endl;
         os << person.GetScreeningDetails() << std::endl;
         os << person.GetTreatmentDetails() << std::endl;
-        os << person.GetUtility() << std::endl;
+        os << person.GetTotalUtility() << std::endl;
         // os << person.getCosts() << std::endl;
         os << "Is a Baby Boomer: " << std::boolalpha << person.IsBoomer()
            << std::endl;
@@ -1080,11 +1104,9 @@ namespace person {
     int Person::GetTimeHCVChanged() const {
         return pImplPERSON->GetTimeHCVChanged();
     }
-
     int Person::GetTimeSinceHCVChanged() const {
         return pImplPERSON->GetTimeSinceHCVChanged();
     }
-
     int Person::GetTimeTrueFibrosisStateChanged() const {
         return pImplPERSON->GetTimeTrueFibrosisStateChanged();
     }
@@ -1116,7 +1138,6 @@ namespace person {
     int Person::GetTimeSinceTreatmentInitiation() const {
         return pImplPERSON->GetTimeSinceTreatmentInitiation();
     }
-
     PregnancyState Person::GetPregnancyState() const {
         return pImplPERSON->GetPregnancyState();
     }
@@ -1146,8 +1167,8 @@ namespace person {
         return pImplPERSON->GetTimeStartedMoud();
     }
     Sex Person::GetSex() const { return pImplPERSON->GetSex(); }
-    UtilityTracker Person::GetUtility() const {
-        return pImplPERSON->GetUtility();
+    LifetimeUtility Person::GetTotalUtility() const {
+        return pImplPERSON->GetTotalUtility();
     }
     std::unordered_map<cost::CostCategory, std::pair<double, double>>
     Person::GetCosts() const {
@@ -1165,6 +1186,9 @@ namespace person {
         return pImplPERSON->GetDiscountedLifeSpan();
     }
     void Person::AddLifeSpan() { pImplPERSON->AddLifeSpan(); }
+    void Person::AddDiscountedLifeSpan(double discounted_life) {
+        pImplPERSON->AddDiscountedLifeSpan(discounted_life);
+    }
     LinkageDetails Person::GetLinkStatus() const {
         return pImplPERSON->GetLinkStatus();
     }
@@ -1215,9 +1239,18 @@ namespace person {
         pImplPERSON->SetGenotypeThree(genotype);
     }
     void Person::TransitionMOUD() { pImplPERSON->TransitionMOUD(); }
-    void Person::SetUtility(double util) { pImplPERSON->SetUtility(util); }
+    void
+    Person::AccumulateTotalUtility(std::pair<double, double> util,
+                                   std::pair<double, double> discount_util) {
+        pImplPERSON->AccumulateTotalUtility(util, discount_util);
+    }
+    std::pair<double, double> Person::GetUtility() {
+        return pImplPERSON->GetUtility();
+    }
+    void Person::SetUtility(double util, utility::UtilityCategory category) {
+        pImplPERSON->SetUtility(util, category);
+    }
     void Person::SetBoomer(bool status) { pImplPERSON->SetBoomer(status); }
-
     void Person::DevelopHCC(HCCState state) { pImplPERSON->DevelopHCC(state); }
     HCCState Person::GetHCCState() const { return pImplPERSON->GetHCCState(); }
     void Person::DiagnoseHCC() { pImplPERSON->DiagnoseHCC(); }
