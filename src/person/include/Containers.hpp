@@ -289,6 +289,7 @@ namespace person {
         double discount_mult_util = 0.0;
     };
     std::ostream &operator<<(std::ostream &os, LifetimeUtility const &lu);
+    bool operator==(LifetimeUtility const &lhs, LifetimeUtility const &rhs);
 } // namespace person
 
 #endif

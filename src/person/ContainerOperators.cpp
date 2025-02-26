@@ -476,4 +476,11 @@ namespace person {
            << std::endl;
         return os;
     }
+
+    bool operator==(LifetimeUtility const &lhs, LifetimeUtility const &rhs) {
+        return (std::tie(lhs.min_util, lhs.mult_util, lhs.discount_min_util,
+                         lhs.discount_mult_util) ==
+                std::tie(rhs.min_util, rhs.mult_util, rhs.discount_min_util,
+                         rhs.discount_mult_util));
+    }
 } // namespace person

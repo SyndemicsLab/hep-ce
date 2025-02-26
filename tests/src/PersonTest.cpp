@@ -22,6 +22,7 @@
 #include "DataManagerMock.hpp"
 #include "Person.hpp"
 #include "PersonFactory.hpp"
+#include "Utils.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
@@ -329,4 +330,102 @@ TEST_F(PersonTest, TimeSinceTreatmentInitiation) {
     EXPECT_EQ(3, testPerson->GetTimeSinceTreatmentInitiation());
     testPerson->InitiateTreatment();
     EXPECT_EQ(0, testPerson->GetTimeSinceTreatmentInitiation());
+}
+
+TEST_F(PersonTest, CurrentUtility) {
+    // test default utility matches expectations
+    std::pair<double, double> expected_utils = {1.0, 1.0};
+    EXPECT_EQ(expected_utils, testPerson->GetUtility());
+
+    // test setting utilities multiple times
+    expected_utils = {0.8, 0.8};
+    testPerson->SetUtility(0.8, utility::UtilityCategory::BACKGROUND);
+    EXPECT_EQ(expected_utils, testPerson->GetUtility());
+
+    expected_utils = {0.6, 0.48};
+    testPerson->SetUtility(0.6, utility::UtilityCategory::TREATMENT);
+    EXPECT_EQ(expected_utils, testPerson->GetUtility());
+
+    expected_utils = {0.6, 0.6};
+    testPerson->SetUtility(1.0, utility::UtilityCategory::BACKGROUND);
+    EXPECT_EQ(expected_utils, testPerson->GetUtility());
+}
+
+TEST_F(PersonTest, TotalUtility) {
+    // test initialized state
+    // min, mult, discount_min, discount_mult
+    person::LifetimeUtility expected = {0.0, 0.0, 0.0, 0.0};
+    EXPECT_EQ(expected, testPerson->GetTotalUtility());
+
+    double discount_rate = 0.025;
+
+    // simple test of values set by AccumulateTotalUtility
+    std::pair<double, double> undiscounted_utils = testPerson->GetUtility();
+    double discounted_util =
+        Utils::discount(1.0, discount_rate, testPerson->GetCurrentTimestep());
+    std::pair<double, double> discounted_utils = {discounted_util,
+                                                  discounted_util};
+    expected = {1.0, 1.0, discounted_util, discounted_util};
+    testPerson->AccumulateTotalUtility(undiscounted_utils, discounted_utils);
+    EXPECT_EQ(expected, testPerson->GetTotalUtility());
+
+    // slighly more complex case
+    testPerson->Grow();
+    discounted_util =
+        Utils::discount(1.0, discount_rate, testPerson->GetCurrentTimestep());
+    discounted_utils = {discounted_util, discounted_util};
+    expected.min_util += 1.0;
+    expected.mult_util += 1.0;
+    expected.discount_min_util += discounted_util;
+    expected.discount_mult_util += discounted_util;
+    testPerson->AccumulateTotalUtility(undiscounted_utils, discounted_utils);
+    EXPECT_EQ(expected, testPerson->GetTotalUtility());
+
+    // more complex case
+    testPerson->Grow();
+    testPerson->SetUtility(0.8, utility::UtilityCategory::LIVER);
+    testPerson->SetUtility(0.8, utility::UtilityCategory::BEHAVIOR);
+    // { 0.8, 0.64}
+    undiscounted_utils = testPerson->GetUtility();
+    discounted_utils = {Utils::discount(undiscounted_utils.first, discount_rate,
+                                        testPerson->GetCurrentTimestep()),
+                        Utils::discount(undiscounted_utils.second,
+                                        discount_rate,
+                                        testPerson->GetCurrentTimestep())};
+    expected.min_util += 0.8;
+    expected.mult_util += 0.64;
+    expected.discount_min_util += discounted_utils.first;
+    expected.discount_mult_util += discounted_utils.second;
+    testPerson->AccumulateTotalUtility(undiscounted_utils, discounted_utils);
+    EXPECT_EQ(expected, testPerson->GetTotalUtility());
+}
+
+TEST_F(PersonTest, UndiscountedLifeSpan) {
+    // test initialized state
+    int expected = 0;
+    EXPECT_EQ(expected, testPerson->GetLifeSpan());
+
+    // test aging a few timesteps to check lifespan is correctly incremented
+    testPerson->Grow();
+    testPerson->Grow();
+    testPerson->Grow();
+    expected = 3;
+    EXPECT_EQ(expected, testPerson->GetLifeSpan());
+}
+
+TEST_F(PersonTest, DiscountedLifeSpan) {
+    // test initial state
+    double expected = 0.0;
+    EXPECT_EQ(expected, testPerson->GetDiscountedLifeSpan());
+
+    double discount_rate = 0.025;
+    int TIMESTEPS = 10;
+    for (int i = 0; i < TIMESTEPS; ++i) {
+        double discounted_life = Utils::discount(
+            1.0, discount_rate, testPerson->GetCurrentTimestep());
+        expected += discounted_life;
+        testPerson->AddDiscountedLifeSpan(discounted_life);
+        testPerson->Grow();
+    }
+    EXPECT_EQ(expected, testPerson->GetDiscountedLifeSpan());
 }

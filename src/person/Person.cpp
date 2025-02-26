@@ -227,6 +227,7 @@ namespace person {
         void Grow() {
             UpdateTimers();
             SetAge(GetAge() + 1);
+            ++this->lifeSpan;
         }
 
         /// @brief InfectHCV the person
@@ -681,9 +682,6 @@ namespace person {
         double GetDiscountedLifeSpan() const {
             return this->discountedLifeSpan;
         }
-
-        /// @brief Increment undiscounted life span
-        void AddLifeSpan() { ++this->lifeSpan; }
 
         /// @brief Add discounted life span to person
         /// @param
@@ -1185,7 +1183,6 @@ namespace person {
     double Person::GetDiscountedLifeSpan() const {
         return pImplPERSON->GetDiscountedLifeSpan();
     }
-    void Person::AddLifeSpan() { pImplPERSON->AddLifeSpan(); }
     void Person::AddDiscountedLifeSpan(double discounted_life) {
         pImplPERSON->AddDiscountedLifeSpan(discounted_life);
     }

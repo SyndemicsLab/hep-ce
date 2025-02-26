@@ -154,7 +154,6 @@ namespace person {
                     (override));
         MOCK_METHOD(int, GetLifeSpan, (), (const, override));
         MOCK_METHOD(double, GetDiscountedLifeSpan, (), (const, override));
-        MOCK_METHOD(void, AddLifeSpan, (), (override));
         MOCK_METHOD(void, AddDiscountedLifeSpan, (double discounted_life),
                     (override));
 

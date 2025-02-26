@@ -138,7 +138,6 @@ namespace person {
                                 utility::UtilityCategory category) = 0;
         virtual int GetLifeSpan() const = 0;
         virtual double GetDiscountedLifeSpan() const = 0;
-        virtual void AddLifeSpan() = 0;
         virtual void AddDiscountedLifeSpan(double discounted_life) = 0;
 
         // General Data Handling
@@ -334,7 +333,6 @@ namespace person {
         LifetimeUtility GetTotalUtility() const;
         int GetLifeSpan() const;
         double GetDiscountedLifeSpan() const;
-        void AddLifeSpan();
         void AddDiscountedLifeSpan(double discounted_life);
 
         // Pregnancy

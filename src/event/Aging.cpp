@@ -112,7 +112,6 @@ namespace event {
             this->addBackgroundCostAndUtility(person, dm);
 
             // Add life span
-            person->AddLifeSpan();
             person->AddDiscountedLifeSpan(
                 Utils::discount(1, discount, person->GetCurrentTimestep()));
         }
