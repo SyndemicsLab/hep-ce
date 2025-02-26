@@ -42,6 +42,8 @@ namespace person {
             int timeOfTreatmentInitiation = -1;
             double min_utility = 0.0;
             double mult_utility = 0.0;
+            double discount_min_utility = 0.0;
+            double discount_mult_utility = 0.0;
             int treatmentWithdrawals = 0;
             int treatmentToxicReactions = 0;
             int completedTreatments = 0;
@@ -80,11 +82,13 @@ namespace person {
             temp->initiatedTreatment = std::stoi(data[25]);
             temp->timeOfTreatmentInitiation = std::stoi(data[26]);
             temp->min_utility = Utils::stod_positive(data[27]);
-            temp->mult_utility = std::stod(data[28]);
-            temp->treatmentWithdrawals = std::stoi(data[29]);
-            temp->treatmentToxicReactions = std::stoi(data[30]);
-            temp->completedTreatments = std::stoi(data[31]);
-            temp->svrs = std::stoi(data[32]);
+            temp->mult_utility = Utils::stod_positive(data[28]);
+            temp->discount_min_utility = Utils::stod_positive(data[29]);
+            temp->discount_mult_utility = Utils::stod_positive(data[30]);
+            temp->treatmentWithdrawals = std::stoi(data[31]);
+            temp->treatmentToxicReactions = std::stoi(data[32]);
+            temp->completedTreatments = std::stoi(data[33]);
+            temp->svrs = std::stoi(data[34]);
             return 0;
         }
         size_t id = 0;
@@ -214,6 +218,8 @@ namespace person {
                 storage.numberOfTreatmentStarts;
             lifetimeUtility.min_util = storage.min_utility;
             lifetimeUtility.mult_util = storage.mult_utility;
+            lifetimeUtility.discount_min_util = storage.discount_min_utility;
+            lifetimeUtility.discount_mult_util = storage.discount_mult_utility;
             return 0;
         }
 
