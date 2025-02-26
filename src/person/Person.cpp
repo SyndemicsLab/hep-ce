@@ -224,6 +224,15 @@ namespace person {
             lifetimeUtility.mult_util = storage.mult_utility;
             lifetimeUtility.discount_min_util = storage.discount_min_utility;
             lifetimeUtility.discount_mult_util = storage.discount_mult_utility;
+            this->utility_tracker.SetUtility(
+                storage.behaviorUtility, utility::UtilityCategory::BEHAVIOR);
+            this->utility_tracker.SetUtility(storage.liverUtility,
+                                             utility::UtilityCategory::LIVER);
+            this->utility_tracker.SetUtility(
+                storage.treatmentUtility, utility::UtilityCategory::TREATMENT);
+            this->utility_tracker.SetUtility(
+                storage.backgroundUtility,
+                utility::UtilityCategory::BACKGROUND);
             return 0;
         }
 
