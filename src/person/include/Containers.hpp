@@ -14,9 +14,10 @@ namespace person {
         "linkCount,measuredFibrosisState,"
         "timeOfLastStaging,timeOfLastScreening,numABTests,"
         "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
-        "timeOfTreatmentInitiation,minUtility,multUtility,"
-        "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,"
-        "svrs,numberOfTreatmentStarts,numberOfRetreatments";
+        "timeOfTreatmentInitiation,minUtility,multUtility,discountMinUtility,"
+        "discountMultUtility,lifeSpan,discountedLifeSpan,treatmentWithdrawals,"
+        "treatmentToxicReactions,completedTreatments,svrs,"
+        "numberOfTreatmentStarts,numberOfRetreatments";
 
     /// @brief HEP-C Infection States
     enum class HCV {
