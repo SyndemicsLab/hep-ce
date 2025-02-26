@@ -44,6 +44,10 @@ namespace person {
             double mult_utility = 0.0;
             double discount_min_utility = 0.0;
             double discount_mult_utility = 0.0;
+            double behaviorUtility = 1.0;
+            double liverUtility = 1.0;
+            double treatmentUtility = 1.0;
+            double backgroundUtility = 1.0;
             int treatmentWithdrawals = 0;
             int treatmentToxicReactions = 0;
             int completedTreatments = 0;
