@@ -89,10 +89,10 @@ namespace person {
             temp->treatmentToxicReactions = std::stoi(data[32]);
             temp->completedTreatments = std::stoi(data[33]);
             temp->svrs = std::stoi(data[34]);
-            temp->behaviorUtility = std::stod_positive(data[35]);
-            temp->liverUtility = std::stod_positive(data[36]);
-            temp->treatmentUtility = std::stod_positive(data[37]);
-            temp->backgroundUtility = std::stod_positive(data[38]);
+            temp->behaviorUtility = Utils::stod_positive(data[35]);
+            temp->liverUtility = Utils::stod_positive(data[36]);
+            temp->treatmentUtility = Utils::stod_positive(data[37]);
+            temp->backgroundUtility = Utils::stod_positive(data[38]);
             return 0;
         }
         size_t id = 0;
