@@ -250,7 +250,7 @@ namespace person {
         void Grow() {
             UpdateTimers();
             SetAge(GetAge() + 1);
-            ++this->lifeSpan;
+            ++(this->lifeSpan);
         }
 
         /// @brief InfectHCV the person

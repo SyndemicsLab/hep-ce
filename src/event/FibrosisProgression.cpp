@@ -36,35 +36,27 @@ namespace event {
         double f34_probability;
         double f4d_probability;
         bool costFlag = false;
+        struct cost_util {
+            double cost;
+            double util;
+        };
 
         using map_t =
-            std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
-                               Utils::key_equal_2i>;
-        map_t cost_data;
-        map_t util_data;
+            std::unordered_map<Utils::tuple_2i, struct cost_util,
+                               Utils::key_hash_2i, Utils::key_equal_2i>;
+        map_t costutil_data;
 
-        std::string CostSQL() {
-            return "SELECT hcv_status, fibrosis_state, cost FROM hcv_impacts;";
-        }
-
-        std::string UtilSQL() {
-            return "SELECT hcv_status, fibrosis_state, utility FROM "
+        std::string SQLQuery() {
+            return "SELECT hcv_status, fibrosis_state, cost, utility FROM "
                    "hcv_impacts;";
         }
 
-        static int callback_cost(void *storage, int count, char **data,
-                                 char **columns) {
+        static int callback(void *storage, int count, char **data,
+                            char **columns) {
             Utils::tuple_2i tup =
                 std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-            (*((map_t *)storage))[tup] = Utils::stod_positive(data[2]);
-            return 0;
-        }
-
-        static int callback_util(void *storage, int count, char **data,
-                                 char **columns) {
-            Utils::tuple_2i tup =
-                std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-            (*((map_t *)storage))[tup] = Utils::stod_positive(data[2]);
+            (*((map_t *)storage))[tup] = {Utils::stod_positive(data[2]),
+                                          Utils::stod_positive(data[3])};
             return 0;
         }
 
@@ -105,9 +97,10 @@ namespace event {
             int fibrosis_state = (int)person->GetTrueFibrosisState();
             Utils::tuple_2i tup = std::make_tuple(hcv_status, fibrosis_state);
 
-            double discountAdjustedCost = Event::DiscountEventCost(
-                cost_data[tup], discount, person->GetCurrentTimestep());
-            person->AddCost(cost_data[tup], discountAdjustedCost,
+            double discountAdjustedCost =
+                Event::DiscountEventCost(costutil_data[tup].cost, discount,
+                                         person->GetCurrentTimestep());
+            person->AddCost(costutil_data[tup].cost, discountAdjustedCost,
                             cost::CostCategory::LIVER);
         }
 
@@ -116,7 +109,7 @@ namespace event {
             int fibrosis_state = (int)person->GetTrueFibrosisState();
             Utils::tuple_2i tup = std::make_tuple(hcv_status, fibrosis_state);
 
-            person->SetUtility(util_data[tup], util_category);
+            person->SetUtility(costutil_data[tup].util, util_category);
         }
 
     public:
@@ -178,27 +171,17 @@ namespace event {
             }
 
             std::string error;
-            rc = dm->SelectCustomCallback(CostSQL(), callback_cost, &cost_data,
+            rc = dm->SelectCustomCallback(SQLQuery(), callback, &costutil_data,
                                           error);
             if (rc != 0) {
-                spdlog::get("main")->error("No cost avaliable for Fibrosis "
-                                           "Progression! Error Message: {}",
-                                           error);
+                spdlog::get("main")->error(
+                    "No cost and/or utility avaliable for Fibrosis "
+                    "Progression! Error Message: {}",
+                    error);
             }
-            if (cost_data.empty()) {
+            if (costutil_data.empty()) {
                 spdlog::get("main")->warn(
-                    "No cost Found for Fibrosis Progression.");
-            }
-            rc = dm->SelectCustomCallback(UtilSQL(), callback_util, &util_data,
-                                          error);
-            if (rc != 0) {
-                spdlog::get("main")->error("No utility avaliable for Fibrosis "
-                                           "Progression! Error Message: {}",
-                                           error);
-            }
-            if (util_data.empty()) {
-                spdlog::get("main")->warn(
-                    "No utility Found for Fibrosis Progression.");
+                    "No cost and/or utility found for Fibrosis Progression.");
             }
         }
     };
