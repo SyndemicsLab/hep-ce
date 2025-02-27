@@ -9,8 +9,8 @@ using ::testing::SetArgReferee;
 
 class FibrosisProgressionTest : public EventTest {};
 
-std::string const COST_QUERY =
-    "SELECT hcv_status, fibrosis_state, cost FROM hcv_impacts;";
+std::string const SQL_QUERY =
+    "SELECT hcv_status, fibrosis_state, cost, utility FROM hcv_impacts;";
 
 TEST_F(FibrosisProgressionTest, FibrosisProgression_NoHCV) {
     // Data Setup
@@ -29,19 +29,20 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_NoHCV) {
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
-    // Cost Setup
-    double cost = 25.25;
-    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
-    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+    // Cost & Utility Setup
+    cost_util custorage = {25.25, 0.8};
+    Utils::tuple_2i tup_2i = std::make_tuple(0, 6);
+    std::unordered_map<Utils::tuple_2i, struct cost_util, Utils::key_hash_2i,
                        Utils::key_equal_2i>
-        cstorage;
-    cstorage[tup_2i] = cost;
-    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+        storage;
+    storage[tup_2i] = custorage;
+    ON_CALL(*event_dm, SelectCustomCallback(SQL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&storage), Return(0)));
 
     // Expectations
     EXPECT_CALL(*testPerson, GetHCV()).WillOnce(Return(person::HCV::NONE));
     EXPECT_CALL(*testPerson, GetTrueFibrosisState()).Times(0);
+    EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -66,15 +67,15 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F01) {
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
-    // Cost Setup
-    double cost = 25.25;
-    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
-    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+    // Cost & Utility Setup
+    cost_util custorage = {25.25, 0.8};
+    Utils::tuple_2i tup_2i = std::make_tuple(1, 1);
+    std::unordered_map<Utils::tuple_2i, struct cost_util, Utils::key_hash_2i,
                        Utils::key_equal_2i>
-        cstorage;
-    cstorage[tup_2i] = cost;
-    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+        storage;
+    storage[tup_2i] = custorage;
+    ON_CALL(*event_dm, SelectCustomCallback(SQL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&storage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -82,14 +83,19 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F01) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F0));
+        .WillByDefault(Return(person::FibrosisState::F1));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
 
     // Expectations
+    EXPECT_CALL(*testPerson, GetTrueFibrosisState())
+        .WillOnce(Return(person::FibrosisState::F0))
+        .WillOnce(Return(person::FibrosisState::F0))
+        .WillRepeatedly(Return(person::FibrosisState::F1));
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F1))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
+    EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -114,15 +120,15 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F12) {
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
-    // Cost Setup
-    double cost = 25.25;
-    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
-    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+    // Cost & Utility Setup
+    cost_util custorage = {25.25, 0.8};
+    Utils::tuple_2i tup_2i = std::make_tuple(1, 2);
+    std::unordered_map<Utils::tuple_2i, struct cost_util, Utils::key_hash_2i,
                        Utils::key_equal_2i>
-        cstorage;
-    cstorage[tup_2i] = cost;
-    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+        storage;
+    storage[tup_2i] = custorage;
+    ON_CALL(*event_dm, SelectCustomCallback(SQL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&storage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -130,14 +136,19 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F12) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F1));
+        .WillByDefault(Return(person::FibrosisState::F2));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
 
     // Expectations
+    EXPECT_CALL(*testPerson, GetTrueFibrosisState())
+        .WillOnce(Return(person::FibrosisState::F1))
+        .WillOnce(Return(person::FibrosisState::F1))
+        .WillRepeatedly(Return(person::FibrosisState::F2));
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F2))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
+    EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -162,30 +173,33 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F23) {
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
-    // Cost Setup
-    double cost = 25.25;
-    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
-    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+    // Cost & Utility Setup
+    cost_util custorage = {25.25, 0.8};
+    Utils::tuple_2i tup_2i = std::make_tuple(1, 3);
+    std::unordered_map<Utils::tuple_2i, struct cost_util, Utils::key_hash_2i,
                        Utils::key_equal_2i>
-        cstorage;
-    cstorage[tup_2i] = cost;
-    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+        storage;
+    storage[tup_2i] = custorage;
+    ON_CALL(*event_dm, SelectCustomCallback(SQL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&storage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F2));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
 
     // Expectations
+    EXPECT_CALL(*testPerson, GetTrueFibrosisState())
+        .WillOnce(Return(person::FibrosisState::F2))
+        .WillOnce(Return(person::FibrosisState::F2))
+        .WillRepeatedly(Return(person::FibrosisState::F3));
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F3))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
+    EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -210,30 +224,33 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F34) {
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
-    // Cost Setup
-    double cost = 25.25;
-    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
-    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+    // Cost & Utility Setup
+    cost_util custorage = {25.25, 0.8};
+    Utils::tuple_2i tup_2i = std::make_tuple(1, 4);
+    std::unordered_map<Utils::tuple_2i, struct cost_util, Utils::key_hash_2i,
                        Utils::key_equal_2i>
-        cstorage;
-    cstorage[tup_2i] = cost;
-    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+        storage;
+    storage[tup_2i] = custorage;
+    ON_CALL(*event_dm, SelectCustomCallback(SQL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&storage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F3));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
 
     // Expectations
+    EXPECT_CALL(*testPerson, GetTrueFibrosisState())
+        .WillOnce(Return(person::FibrosisState::F3))
+        .WillOnce(Return(person::FibrosisState::F3))
+        .WillRepeatedly(Return(person::FibrosisState::F4));
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F4))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
+    EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -258,30 +275,33 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F4D) {
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
-    // Cost Setup
-    double cost = 25.25;
-    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
-    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+    // Cost & Utility Setup
+    cost_util custorage = {25.25, 0.8};
+    Utils::tuple_2i tup_2i = std::make_tuple(1, 5);
+    std::unordered_map<Utils::tuple_2i, struct cost_util, Utils::key_hash_2i,
                        Utils::key_equal_2i>
-        cstorage;
-    cstorage[tup_2i] = cost;
-    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+        storage;
+    storage[tup_2i] = custorage;
+    ON_CALL(*event_dm, SelectCustomCallback(SQL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&storage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F4));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
 
     // Expectations
+    EXPECT_CALL(*testPerson, GetTrueFibrosisState())
+        .WillOnce(Return(person::FibrosisState::F4))
+        .WillOnce(Return(person::FibrosisState::F4))
+        .WillRepeatedly(Return(person::FibrosisState::DECOMP));
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::DECOMP))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
+    EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -306,15 +326,15 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_DECOMP) {
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
-    // Cost Setup
-    double cost = 25.25;
-    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
-    std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
+    // Cost & Utility Setup
+    cost_util custorage = {25.25, 0.8};
+    Utils::tuple_2i tup_2i = std::make_tuple(1, 5);
+    std::unordered_map<Utils::tuple_2i, struct cost_util, Utils::key_hash_2i,
                        Utils::key_equal_2i>
-        cstorage;
-    cstorage[tup_2i] = cost;
-    ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&cstorage), Return(0)));
+        storage;
+    storage[tup_2i] = custorage;
+    ON_CALL(*event_dm, SelectCustomCallback(SQL_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&storage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
@@ -329,6 +349,7 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_DECOMP) {
     // Expectations
     EXPECT_CALL(*testPerson, UpdateTrueFibrosis(_)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
+    EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =

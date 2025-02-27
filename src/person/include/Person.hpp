@@ -20,6 +20,7 @@
 
 #include "Containers.hpp"
 #include "Cost.hpp"
+#include "Utility.hpp"
 #include <memory>
 
 namespace datamanagement {
@@ -126,7 +127,18 @@ namespace person {
         // Cost Effectiveness
         virtual int AddCost(double base_cost, double discount_cost,
                             cost::CostCategory category) = 0;
-        virtual void SetUtility(double util) = 0;
+
+        // Life, Quality of Life
+        virtual LifetimeUtility GetTotalUtility() const = 0;
+        virtual void
+        AccumulateTotalUtility(std::pair<double, double> util,
+                               std::pair<double, double> discount_util) = 0;
+        virtual std::pair<double, double> GetUtility() const = 0;
+        virtual void SetUtility(double util,
+                                utility::UtilityCategory category) = 0;
+        virtual int GetLifeSpan() const = 0;
+        virtual double GetDiscountedLifeSpan() const = 0;
+        virtual void AddDiscountedLifeSpan(double discounted_life) = 0;
 
         // General Data Handling
         virtual int LoadICValues(int id, std::vector<std::string> icValues) = 0;
@@ -146,7 +158,6 @@ namespace person {
         virtual int GetID() const = 0;
         virtual int GetCurrentTimestep() const = 0;
         virtual Sex GetSex() const = 0;
-        virtual UtilityTracker GetUtility() const = 0;
         virtual std::unordered_map<cost::CostCategory,
                                    std::pair<double, double>>
         GetCosts() const = 0;
@@ -291,7 +302,6 @@ namespace person {
         // Cost Effectiveness
         int AddCost(double base_cost, double discount_cost,
                     cost::CostCategory category = cost::CostCategory::MISC);
-        void SetUtility(double util);
 
         // General Data Handling
         int LoadICValues(int id, std::vector<std::string> icValues);
@@ -311,11 +321,19 @@ namespace person {
         int GetID() const;
         int GetCurrentTimestep() const;
         Sex GetSex() const;
-        UtilityTracker GetUtility() const;
         std::unordered_map<cost::CostCategory, std::pair<double, double>>
         GetCosts() const;
         std::pair<double, double> GetCostTotals() const override;
         Health GetHealth() const;
+
+        void AccumulateTotalUtility(std::pair<double, double> util,
+                                    std::pair<double, double> discount_util);
+        void SetUtility(double util, utility::UtilityCategory category);
+        std::pair<double, double> GetUtility() const;
+        LifetimeUtility GetTotalUtility() const;
+        int GetLifeSpan() const;
+        double GetDiscountedLifeSpan() const;
+        void AddDiscountedLifeSpan(double discounted_life);
 
         // Pregnancy
         PregnancyState GetPregnancyState() const;

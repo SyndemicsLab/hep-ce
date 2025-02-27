@@ -31,7 +31,8 @@ TEST_F(AgingTest, Aging) {
     // Expectations
     EXPECT_CALL(*testPerson, Grow()).Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
-    EXPECT_CALL(*testPerson, SetUtility(cost.util)).Times(1);
+    EXPECT_CALL(*testPerson, SetUtility(cost.util, _)).Times(1);
+    EXPECT_CALL(*testPerson, AddDiscountedLifeSpan(_)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Aging", event_dm);

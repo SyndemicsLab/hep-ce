@@ -17,6 +17,7 @@
 #include "BehaviorChanges.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utility.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
@@ -25,6 +26,8 @@
 namespace event {
     class BehaviorChanges::BehaviorChangesIMPL {
     private:
+        utility::UtilityCategory util_category =
+            utility::UtilityCategory::BEHAVIOR;
         double discount = 0.0;
         struct behavior_transitions {
             double never = 0.0;
@@ -94,7 +97,7 @@ namespace event {
                 cost_data[tup].cost, discount, person->GetCurrentTimestep());
             person->AddCost(cost_data[tup].cost, discountAdjustedCost,
                             cost::CostCategory::BEHAVIOR);
-            person->SetUtility(cost_data[tup].util);
+            person->SetUtility(cost_data[tup].util, util_category);
         }
 
         int LoadCostData(std::shared_ptr<datamanagement::DataManagerBase> dm) {

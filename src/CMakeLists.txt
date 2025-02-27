@@ -25,6 +25,7 @@ add_subdirectory(simulation)
 add_subdirectory(data)
 add_subdirectory(utils)
 add_subdirectory(cost)
+add_subdirectory(utility)
 
 add_executable(hepce main.cpp)
 
@@ -39,7 +40,7 @@ target_include_directories(hepce PRIVATE
 )
 
 target_link_libraries(hepce
-    stats    
+    stats
     event
     person
     simulation

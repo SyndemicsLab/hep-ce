@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.19)
 
-project(person)
+project(utility)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -14,10 +14,6 @@ if (NOT spdlog_POPULATED)
     add_subdirectory(${spdlog_SOURCE_DIR} ${spdlog_BINARY_DIR})
 endif()
 
-find_package(DataManagement 1 REQUIRED
-HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
-)
-
 if(BUILD_SHARED_LIBS)
   add_library(${PROJECT_NAME} SHARED)
 else()
@@ -26,20 +22,9 @@ endif()
 
 target_sources(${PROJECT_NAME}
     PRIVATE
-        Person.cpp
-        ContainerOperators.cpp
-        PersonFactory.cpp
+        Utility.cpp
 )
 
-target_link_libraries(${PROJECT_NAME}
-    PUBLIC
-        cost
-	utility
-    PRIVATE
-        spdlog::spdlog
-        DataManagement::DataManagement
-        utils
-        stats
-)
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
 
 target_include_directories(${PROJECT_NAME} PUBLIC "include/")

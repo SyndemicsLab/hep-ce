@@ -115,7 +115,6 @@ namespace person {
         // Cost Effectiveness
         MOCK_METHOD(int, AddCost, (double, double, cost::CostCategory),
                     (override));
-        MOCK_METHOD(void, SetUtility, (double util), (override));
 
         // General Data Handling
         MOCK_METHOD(int, LoadICValues,
@@ -137,13 +136,26 @@ namespace person {
         MOCK_METHOD(int, GetID, (), (const, override));
         MOCK_METHOD(int, GetCurrentTimestep, (), (const, override));
         MOCK_METHOD(Sex, GetSex, (), (const, override));
-        MOCK_METHOD(UtilityTracker, GetUtility, (), (const, override));
         MOCK_METHOD(
             (std::unordered_map<cost::CostCategory, std::pair<double, double>>),
             GetCosts, (), (const, override));
         MOCK_METHOD((std::pair<double, double>), GetCostTotals, (),
                     (const, override));
         MOCK_METHOD(Health, GetHealth, (), (const, override));
+
+        MOCK_METHOD(LifetimeUtility, GetTotalUtility, (), (const, override));
+        MOCK_METHOD(void, AccumulateTotalUtility,
+                    ((std::pair<double, double> util),
+                     (std::pair<double, double> discount_util)),
+                    (override));
+        MOCK_METHOD((std::pair<double, double>), GetUtility, (),
+                    (const, override));
+        MOCK_METHOD(void, SetUtility, (double util, utility::UtilityCategory),
+                    (override));
+        MOCK_METHOD(int, GetLifeSpan, (), (const, override));
+        MOCK_METHOD(double, GetDiscountedLifeSpan, (), (const, override));
+        MOCK_METHOD(void, AddDiscountedLifeSpan, (double discounted_life),
+                    (override));
 
         // TODO
         MOCK_METHOD(PregnancyState, GetPregnancyState, (), (const, override));

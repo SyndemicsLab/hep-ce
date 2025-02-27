@@ -51,7 +51,7 @@ TEST_F(BehaviorChangesTest, BehaviorChanges) {
 
     // Expectations
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
-    EXPECT_CALL(*testPerson, SetUtility(_)).Times(1);
+    EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(1);
     EXPECT_CALL(*testPerson, SetBehavior(person::Behavior::FORMER_INJECTION))
         .Times(1);
 

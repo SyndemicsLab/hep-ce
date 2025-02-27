@@ -18,6 +18,7 @@
 #include "FibrosisProgression.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utility.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
@@ -26,6 +27,8 @@
 namespace event {
     class FibrosisProgression::FibrosisProgressionIMPL {
     private:
+        utility::UtilityCategory util_category =
+            utility::UtilityCategory::LIVER;
         double discount = 0.0;
         double f01_probability;
         double f12_probability;
@@ -33,21 +36,27 @@ namespace event {
         double f34_probability;
         double f4d_probability;
         bool costFlag = false;
+        struct cost_util {
+            double cost;
+            double util;
+        };
 
-        using costmap_t =
-            std::unordered_map<Utils::tuple_2i, double, Utils::key_hash_2i,
-                               Utils::key_equal_2i>;
-        costmap_t cost_data;
+        using map_t =
+            std::unordered_map<Utils::tuple_2i, struct cost_util,
+                               Utils::key_hash_2i, Utils::key_equal_2i>;
+        map_t costutil_data;
 
-        std::string CostSQL() {
-            return "SELECT hcv_status, fibrosis_state, cost FROM hcv_impacts;";
+        std::string SQLQuery() {
+            return "SELECT hcv_status, fibrosis_state, cost, utility FROM "
+                   "hcv_impacts;";
         }
 
-        static int callback_cost(void *storage, int count, char **data,
-                                 char **columns) {
+        static int callback(void *storage, int count, char **data,
+                            char **columns) {
             Utils::tuple_2i tup =
                 std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-            (*((costmap_t *)storage))[tup] = Utils::stod_positive(data[2]);
+            (*((map_t *)storage))[tup] = {Utils::stod_positive(data[2]),
+                                          Utils::stod_positive(data[3])};
             return 0;
         }
 
@@ -83,17 +92,24 @@ namespace event {
             return {data, 1 - data};
         }
 
-        void AddLiverDiseaseCost(
-            std::shared_ptr<person::PersonBase> person,
-            std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        void AddLiverDiseaseCost(std::shared_ptr<person::PersonBase> person) {
             int hcv_status = (person->GetHCV() == person::HCV::NONE) ? 0 : 1;
             int fibrosis_state = (int)person->GetTrueFibrosisState();
             Utils::tuple_2i tup = std::make_tuple(hcv_status, fibrosis_state);
 
-            double discountAdjustedCost = Event::DiscountEventCost(
-                cost_data[tup], discount, person->GetCurrentTimestep());
-            person->AddCost(cost_data[tup], discountAdjustedCost,
+            double discountAdjustedCost =
+                Event::DiscountEventCost(costutil_data[tup].cost, discount,
+                                         person->GetCurrentTimestep());
+            person->AddCost(costutil_data[tup].cost, discountAdjustedCost,
                             cost::CostCategory::LIVER);
+        }
+
+        void SetLiverUtility(std::shared_ptr<person::PersonBase> person) {
+            int hcv_status = (person->GetHCV() == person::HCV::NONE) ? 0 : 1;
+            int fibrosis_state = (int)person->GetTrueFibrosisState();
+            Utils::tuple_2i tup = std::make_tuple(hcv_status, fibrosis_state);
+
+            person->SetUtility(costutil_data[tup].util, util_category);
         }
 
     public:
@@ -121,8 +137,9 @@ namespace event {
             // fibrosis state)
             if (!costFlag ||
                 (costFlag && person->IsIdentifiedAsHCVInfected())) {
-                this->AddLiverDiseaseCost(person, dm);
+                this->AddLiverDiseaseCost(person);
             }
+            this->SetLiverUtility(person);
         }
         FibrosisProgressionIMPL(
             std::shared_ptr<datamanagement::DataManagerBase> dm) {
@@ -154,16 +171,17 @@ namespace event {
             }
 
             std::string error;
-            rc = dm->SelectCustomCallback(CostSQL(), callback_cost, &cost_data,
+            rc = dm->SelectCustomCallback(SQLQuery(), callback, &costutil_data,
                                           error);
             if (rc != 0) {
-                spdlog::get("main")->error("No cost avaliable for Fibrosis "
-                                           "Progression! Error Message: {}",
-                                           error);
+                spdlog::get("main")->error(
+                    "No cost and/or utility avaliable for Fibrosis "
+                    "Progression! Error Message: {}",
+                    error);
             }
-            if (cost_data.empty()) {
+            if (costutil_data.empty()) {
                 spdlog::get("main")->warn(
-                    "No cost Found for Fibrosis Progression.");
+                    "No cost and/or utility found for Fibrosis Progression.");
             }
         }
     };

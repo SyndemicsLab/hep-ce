@@ -14,9 +14,10 @@ namespace person {
         "linkCount,measuredFibrosisState,"
         "timeOfLastStaging,timeOfLastScreening,numABTests,"
         "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
-        "timeOfTreatmentInitiation,minUtility,multUtility,"
-        "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,"
-        "svrs,numberOfTreatmentStarts,numberOfRetreatments";
+        "timeOfTreatmentInitiation,minUtility,multUtility,discountMinUtility,"
+        "discountMultUtility,lifeSpan,discountedLifeSpan,treatmentWithdrawals,"
+        "treatmentToxicReactions,completedTreatments,svrs,"
+        "numberOfTreatmentStarts,numberOfRetreatments";
 
     /// @brief HEP-C Infection States
     enum class HCV {
@@ -280,12 +281,16 @@ namespace person {
     };
     std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 
-    /// @brief Attributes describing a person's quality of life
-    struct UtilityTracker {
-        double multUtil = 1.0;
-        double minUtil = 1.0;
+    /// @brief Attributes describing a person's quality of life across the
+    /// course of their life
+    struct LifetimeUtility {
+        double mult_util = 0.0;
+        double min_util = 0.0;
+        double discount_min_util = 0.0;
+        double discount_mult_util = 0.0;
     };
-    std::ostream &operator<<(std::ostream &os, UtilityTracker const &utra);
+    std::ostream &operator<<(std::ostream &os, LifetimeUtility const &lu);
+    bool operator==(LifetimeUtility const &lhs, LifetimeUtility const &rhs);
 } // namespace person
 
 #endif

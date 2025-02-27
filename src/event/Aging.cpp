@@ -18,6 +18,7 @@
 #include "Cost.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
+#include "Utility.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
@@ -28,6 +29,8 @@
 namespace event {
     class Aging::AgingIMPL {
     private:
+        utility::UtilityCategory util_category =
+            utility::UtilityCategory::BACKGROUND;
         double discount = 0.0;
         struct cost_util {
             double cost;
@@ -54,6 +57,15 @@ namespace event {
                    "FROM background_impacts;";
         }
 
+        std::pair<double, double>
+        DiscountUtility(std::pair<double, double> &util, int timestep) {
+
+            std::pair<double, double> discounted = {
+                Utils::discount(util.first, discount, timestep),
+                Utils::discount(util.second, discount, timestep)};
+            return discounted;
+        }
+
         /// @brief Adds person's background cost
         /// @param person The person to whom cost will be added
         void addBackgroundCostAndUtility(
@@ -68,7 +80,11 @@ namespace event {
                 data[tup].cost, discount, person->GetCurrentTimestep());
             person->AddCost(data[tup].cost, discountAdjustedCost,
                             cost::CostCategory::MISC);
-            person->SetUtility(data[tup].util);
+            person->SetUtility(data[tup].util, util_category);
+            std::pair<double, double> utilities = person->GetUtility();
+            std::pair<double, double> discount_utilities =
+                DiscountUtility(utilities, person->GetCurrentTimestep());
+            person->AccumulateTotalUtility(utilities, discount_utilities);
         }
 
         int LoadData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
@@ -94,6 +110,10 @@ namespace event {
                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
             person->Grow();
             this->addBackgroundCostAndUtility(person, dm);
+
+            // Add life span
+            person->AddDiscountedLifeSpan(
+                Utils::discount(1, discount, person->GetCurrentTimestep()));
         }
         AgingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             std::string discount_data;

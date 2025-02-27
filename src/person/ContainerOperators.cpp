@@ -467,9 +467,20 @@ namespace person {
         return os;
     }
 
-    std::ostream &operator<<(std::ostream &os, UtilityTracker const &utra) {
-        os << "Multiplier Utility: " << utra.multUtil << std::endl;
-        os << "Minimum Utility: " << utra.minUtil << std::endl;
+    std::ostream &operator<<(std::ostream &os, LifetimeUtility const &lu) {
+        os << "Multiplicative Utility: " << lu.mult_util << std::endl;
+        os << "Minimum Utility: " << lu.min_util << std::endl;
+        os << "Discounted Multiplicative Utility: " << lu.discount_mult_util
+           << std::endl;
+        os << "Discounted Minimum Utility: " << lu.discount_min_util
+           << std::endl;
         return os;
+    }
+
+    bool operator==(LifetimeUtility const &lhs, LifetimeUtility const &rhs) {
+        return (std::tie(lhs.min_util, lhs.mult_util, lhs.discount_min_util,
+                         lhs.discount_mult_util) ==
+                std::tie(rhs.min_util, rhs.mult_util, rhs.discount_min_util,
+                         rhs.discount_mult_util));
     }
 } // namespace person
