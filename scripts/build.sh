@@ -2,7 +2,7 @@
 # only execute these lines if the `module` command is present in the environment
 # used for the BU SCC
 if command -v module &>/dev/null; then
-    module load gcc/12.2.0
+    module load gcc/13.2.0
     module load openmpi/4.1.5
     module load cmake/3.22.2
 fi
