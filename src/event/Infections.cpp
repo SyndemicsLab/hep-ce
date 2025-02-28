@@ -24,6 +24,8 @@
 namespace event {
     class Infections::InfectionsIMPL {
     private:
+        double gt3_prob = 0;
+
         using incidencemap_t =
             std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
                                Utils::key_equal_3i>;
@@ -101,11 +103,25 @@ namespace event {
             // decide whether person is infected; if value == 0, infect
             if (decider->GetDecision(prob) == 0) {
                 person->InfectHCV();
+                // decide whether hcv is genotype three
+                if (decider->GetDecision({gt3_prob}) == 0) {
+                    person->SetGenotypeThree(true);
+                }
             }
         }
 
         InfectionsIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
             int rc = LoadIncidenceData(dm);
+            std::string data;
+            dm->GetFromConfig("infection.genotype_three_prob", data);
+            if (data.empty()) {
+                spdlog::get("main")->warn(
+                    "[Infections] No probability of genotype three infection "
+                    "found. Using default value of {}",
+                    gt3_prob);
+            } else {
+                this->gt3_prob = Utils::stod_positive(data);
+            }
         }
     };
     Infections::Infections(
