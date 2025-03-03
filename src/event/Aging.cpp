@@ -26,8 +26,6 @@
 #include <tuple>
 #include <unordered_map>
 
-#include <iostream>
-
 namespace event {
     class Aging::AgingIMPL {
     private:
