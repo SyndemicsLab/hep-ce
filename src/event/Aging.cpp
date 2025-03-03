@@ -26,6 +26,8 @@
 #include <tuple>
 #include <unordered_map>
 
+#include <iostream>
+
 namespace event {
     class Aging::AgingIMPL {
     private:
@@ -58,8 +60,7 @@ namespace event {
         }
 
         std::pair<double, double>
-        DiscountUtility(std::pair<double, double> &util, int timestep) {
-
+        DiscountUtility(std::pair<double, double> util, int timestep) {
             std::pair<double, double> discounted = {
                 Utils::discount(util.first, discount, timestep),
                 Utils::discount(util.second, discount, timestep)};
@@ -79,7 +80,8 @@ namespace event {
             double discountAdjustedCost = Event::DiscountEventCost(
                 data[tup].cost, discount, person->GetCurrentTimestep());
             person->AddCost(data[tup].cost, discountAdjustedCost,
-                            cost::CostCategory::MISC);
+                            cost::CostCategory::BACKGROUND);
+
             person->SetUtility(data[tup].util, util_category);
             std::pair<double, double> utilities = person->GetUtility();
             std::pair<double, double> discount_utilities =

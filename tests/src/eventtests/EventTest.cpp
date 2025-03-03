@@ -68,7 +68,7 @@ protected:
 
 struct person_select {
     person::Sex sex = person::Sex::MALE;
-    int age = 25;
+    int age = 300;
     bool isAlive = true;
     person::DeathReason deathReason = person::DeathReason::NA;
     int identifiedHCV = false;

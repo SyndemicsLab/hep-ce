@@ -61,7 +61,7 @@ namespace event {
                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                     std::shared_ptr<stats::DeciderBase> decider);
         static double DiscountEventCost(double cost, double discount_rate,
-                                        int timestep);
+                                        int timestep, bool annual = false);
     };
 } // namespace event
 #endif

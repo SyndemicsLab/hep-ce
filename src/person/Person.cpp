@@ -1277,5 +1277,4 @@ namespace person {
     bool Person::IsDiagnosedWithHCC() const {
         return pImplPERSON->IsDiagnosedWithHCC();
     }
-
 } // namespace person
