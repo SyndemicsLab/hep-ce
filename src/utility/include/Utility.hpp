@@ -4,13 +4,9 @@
 // Created Date: 2025-02-24                                                   //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-02-24                                                  //
+// Last Modified: 2025-03-03                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
-// -----                                                                      //
-// HISTORY:                                                                   //
-// Date         By  Comments                                                  //
-// ----------   --- ----------------------------------------------------------//
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef UTILITY_UTILITY_HPP_
