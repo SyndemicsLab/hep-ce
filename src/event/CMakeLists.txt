@@ -34,6 +34,7 @@ target_sources(${PROJECT_NAME}
         EventFactory.cpp
         FibrosisProgression.cpp
         FibrosisStaging.cpp
+	HIVInfections.cpp
         Infections.cpp
         Linking.cpp
         MOUD.cpp

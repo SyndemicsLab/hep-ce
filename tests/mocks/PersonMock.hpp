@@ -157,6 +157,14 @@ namespace person {
         MOCK_METHOD(void, AddDiscountedLifeSpan, (double discounted_life),
                     (override));
 
+        // HIV
+        MOCK_METHOD(HIV, GetHIV, (), (const, override));
+        MOCK_METHOD(void, SetHIV, (HIV hiv), (override));
+        MOCK_METHOD(void, InfectHIV, (), (override));
+        MOCK_METHOD(int, GetTimeHIVChanged, (), (const, override));
+        MOCK_METHOD(int, GetTimeSinceHIVChanged, (), (const, override));
+        MOCK_METHOD(bool, IsIdentifiedAsHIVInfected, (), (const, override));
+
         // TODO
         MOCK_METHOD(PregnancyState, GetPregnancyState, (), (const, override));
         MOCK_METHOD(int, GetTimeOfPregnancyChange, (), (const, override));

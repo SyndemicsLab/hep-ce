@@ -168,8 +168,8 @@ namespace person {
         virtual HIV GetHIV() const = 0;
         virtual void SetHIV(HIV hiv) = 0;
         virtual void InfectHIV() = 0;
-        virtual int GetTimeHIVChanged() = 0;
-        virtual int GetTimeSinceHIVChanged() = 0;
+        virtual int GetTimeHIVChanged() const = 0;
+        virtual int GetTimeSinceHIVChanged() const = 0;
         virtual bool IsIdentifiedAsHIVInfected() const = 0;
 
         // TODO
@@ -345,7 +345,7 @@ namespace person {
 
         // HIV
         HIV GetHIV() const;
-        void SetHIV;
+        void SetHIV(HIV hiv);
         void InfectHIV();
         int GetTimeHIVChanged() const;
         int GetTimeSinceHIVChanged() const;

@@ -8,6 +8,7 @@
 #include "Event.hpp"
 #include "FibrosisProgression.hpp"
 #include "FibrosisStaging.hpp"
+#include "HIVInfections.hpp"
 #include "Infections.hpp"
 #include "Linking.hpp"
 #include "MOUD.hpp"

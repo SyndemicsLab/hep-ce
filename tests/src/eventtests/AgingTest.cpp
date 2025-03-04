@@ -21,12 +21,12 @@ TEST_F(AgingTest, Aging) {
         .WillByDefault(Return(person::Behavior::INJECTION));
 
     // Data Setup
+    struct cost_util cost = {25.00, 0.5};
     double discount_rate = 0.025;
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(
             DoAll(SetArgReferee<1>(std::to_string(discount_rate)), Return(0)));
     Utils::tuple_3i tup = std::make_tuple(25, 0, 4);
-    struct cost_util cu = {25.00, 0.5};
     std::unordered_map<Utils::tuple_3i, struct cost_util, Utils::key_hash_3i,
                        Utils::key_equal_3i>
         custorage;

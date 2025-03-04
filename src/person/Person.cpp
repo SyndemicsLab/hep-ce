@@ -1155,7 +1155,6 @@ namespace person {
         return pImplPERSON->GetDeathReason();
     }
     HCV Person::GetHCV() const { return pImplPERSON->GetHCV(); }
-    HIV Person::GetHIV() const { return pImplPERSON->GetHIV(); }
     Behavior Person::GetBehavior() const { return pImplPERSON->GetBehavior(); }
     int Person::GetTimeBehaviorChange() const {
         return pImplPERSON->GetTimeBehaviorChange();
@@ -1197,7 +1196,6 @@ namespace person {
     int Person::GetTimeSinceTreatmentInitiation() const {
         return pImplPERSON->GetTimeSinceTreatmentInitiation();
     }
-    void Person::InfectHIV() { return pImplPERSON->InfectHIV(); }
     PregnancyState Person::GetPregnancyState() const {
         return pImplPERSON->GetPregnancyState();
     }
@@ -1315,5 +1313,19 @@ namespace person {
     void Person::DiagnoseHCC() { pImplPERSON->DiagnoseHCC(); }
     bool Person::IsDiagnosedWithHCC() const {
         return pImplPERSON->IsDiagnosedWithHCC();
+    }
+
+    // HIV
+    HIV Person::GetHIV() const { return pImplPERSON->GetHIV(); }
+    void Person::SetHIV(HIV hiv) { return pImplPERSON->SetHIV(hiv); }
+    void Person::InfectHIV() { return pImplPERSON->InfectHIV(); }
+    int Person::GetTimeHIVChanged() const {
+        return pImplPERSON->GetTimeHIVChanged();
+    }
+    int Person::GetTimeSinceHIVChanged() const {
+        return pImplPERSON->GetTimeSinceHIVChanged();
+    }
+    bool Person::IsIdentifiedAsHIVInfected() const {
+        return pImplPERSON->IsIdentifiedAsHIVInfected();
     }
 } // namespace person

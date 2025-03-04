@@ -17,7 +17,6 @@ docs/
 build/*
 !build/.gitkeep
 lib/dminstall/
-functionality-testing
 bin
 lib/*.a
 lib/*.so*
