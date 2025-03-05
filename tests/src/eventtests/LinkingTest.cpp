@@ -34,12 +34,15 @@ TEST_F(LinkingTest, FalsePositive) {
         .WillByDefault(Return(person::PregnancyState::NA));
 
     // Data Setup
+    double false_positive_test_cost = 12.00;
     ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+        .WillByDefault(
+            DoAll(SetArgReferee<1>(std::to_string(false_positive_test_cost)),
+                  Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_multiplier", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_cutoff", _))
@@ -68,7 +71,10 @@ TEST_F(LinkingTest, FalsePositive) {
 
     // Expectations
     EXPECT_CALL(*testPerson, ClearHCVDiagnosis()).Times(1);
-    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
+    EXPECT_CALL(*testPerson,
+                AddCost(false_positive_test_cost, false_positive_test_cost,
+                        cost::CostCategory::LINKING))
+        .Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
@@ -126,6 +132,8 @@ TEST_F(LinkingTest, BackgroundLink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
+    std::vector<double> expected_prob = {1.0};
+    EXPECT_CALL(*decider, GetDecision(expected_prob)).Times(1);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(1);
 
     // Running Test
@@ -150,12 +158,14 @@ TEST_F(LinkingTest, InterventionLink) {
         .WillByDefault(Return(person::PregnancyState::NA));
 
     // Data Setup
+    double intervention_cost = 100.00;
     ON_CALL(*event_dm, GetFromConfig("linking.relink_multiplier", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.false_positive_test_cost", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+        .WillByDefault(DoAll(
+            SetArgReferee<1>(std::to_string(intervention_cost)), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_multiplier", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_cutoff", _))
@@ -186,8 +196,12 @@ TEST_F(LinkingTest, InterventionLink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
+    std::vector<double> expected_link_prob = {link_prob};
+    EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
     EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION)).Times(1);
+    EXPECT_CALL(*testPerson, AddCost(intervention_cost, intervention_cost,
+                                     cost::CostCategory::LINKING))
+        .Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
@@ -195,6 +209,67 @@ TEST_F(LinkingTest, InterventionLink) {
 }
 
 TEST_F(LinkingTest, DecideToNotLink) {
+    // Person Setup
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+        .WillByDefault(Return(true));
+    ON_CALL(*testPerson, GetLinkState())
+        .WillByDefault(Return(person::LinkageState::UNLINKED));
+    ON_CALL(*testPerson, GetLinkageType())
+        .WillByDefault(Return(person::LinkageType::INTERVENTION));
+    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetBehavior())
+        .WillByDefault(Return(person::Behavior::NEVER));
+    ON_CALL(*testPerson, GetPregnancyState())
+        .WillByDefault(Return(person::PregnancyState::NA));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(1));
+
+    // Data Setup
+    ON_CALL(*event_dm, GetFromConfig(_, _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_multiplier", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("1.00"), Return(0)));
+    ON_CALL(*event_dm, GetFromConfig("linking.recent_screen_cutoff", _))
+        .WillByDefault(DoAll(SetArgReferee<1>("0"), Return(0)));
+
+    // Background Link Setup
+    double link_prob = 0.0;
+    Utils::tuple_4i tup_4i = std::make_tuple(25, 0, 0, -1);
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
+        bstorage;
+    bstorage[tup_4i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(BACKGROUND_LINK_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&bstorage), Return(0)));
+
+    // Intervention Link Setup
+    link_prob = 0.0;
+    std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
+                       Utils::key_equal_4i>
+        istorage;
+    istorage[tup_4i] = link_prob;
+    ON_CALL(*event_dm, SelectCustomCallback(INTERVENTION_LINK_QUERY, _, _, _))
+        .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&istorage), Return(0)));
+
+    // Decider Setup
+    ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(1));
+
+    // Expectations
+    std::vector<double> expected_link_prob = {0.0};
+    EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
+    EXPECT_CALL(*testPerson, GetLinkageType()).Times(1);
+    EXPECT_CALL(*testPerson, Link(_)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
+
+    // Running Test
+    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
+    event->Execute(testPerson, event_dm, decider);
+}
+
+TEST_F(LinkingTest, AlreadyLinked) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
@@ -209,11 +284,10 @@ TEST_F(LinkingTest, DecideToNotLink) {
         .WillByDefault(Return(person::Behavior::NEVER));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(1));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
-        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
     // Background Link Setup
@@ -239,8 +313,9 @@ TEST_F(LinkingTest, DecideToNotLink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(1));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
+    EXPECT_CALL(*decider, GetDecision(_)).Times(0);
     EXPECT_CALL(*testPerson, Link(_)).Times(0);
+    EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
@@ -298,8 +373,8 @@ TEST_F(LinkingTest, RecentScreen) {
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
-    std::vector<double> expected_probs = {0.96};
     // Expectations
+    std::vector<double> expected_probs = {0.96};
     EXPECT_CALL(*decider, GetDecision(expected_probs)).Times(1);
 
     // Running Test
@@ -358,8 +433,8 @@ TEST_F(LinkingTest, RecentScreenCutoff) {
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
-    std::vector<double> expected_probs = {0.8};
     // Expectations
+    std::vector<double> expected_probs = {0.8};
     EXPECT_CALL(*decider, GetDecision(expected_probs)).Times(1);
 
     // Running Test
