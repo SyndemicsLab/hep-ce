@@ -79,6 +79,8 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
     EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::INTERVENTION))
         .Times(1);
+    EXPECT_CALL(*testPerson, DiagnoseHCV()).Times(1);
+    EXPECT_CALL(*testPerson, Unlink()).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -88,7 +90,7 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
 
 TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
     // Person Setup
-    ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(0));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(7));
     ON_CALL(*testPerson, GetTimeOfLastScreening()).WillByDefault(Return(0));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(false));
@@ -105,6 +107,16 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
         .WillByDefault(DoAll(SetArgReferee<1>("periodic"), Return(0)));
+    double ab_sensitivity = 0.6;
+    ON_CALL(*event_dm,
+            GetFromConfig("screening_intervention_ab.acute_sensitivity", _))
+        .WillByDefault(
+            DoAll(SetArgReferee<1>(std::to_string(ab_sensitivity)), Return(0)));
+    double rna_sensitivity = 0.4;
+    ON_CALL(*event_dm,
+            GetFromConfig("screening_intervention_rna.acute_sensitivity", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(std::to_string(rna_sensitivity)),
+                             Return(0)));
 
     // Background Link Setup
     double link_prob = 0.5;
@@ -126,16 +138,24 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
-    EXPECT_CALL(*decider, GetDecision(_))
-        .WillOnce(Return(0))        // Decide to Intervention Screen
-        .WillOnce(Return(0))        // AB Test is Positive
-        .WillOnce(Return(1))        // RNA Test is Negative
-        .WillRepeatedly(Return(0)); // Remainder of Test
+    ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
+    ON_CALL(*decider, GetDecision(testing::ElementsAre(testing::Lt(0.5))))
+        .WillByDefault(Return(1));
 
     // Expectations
+    // decision to intervention screen
+    std::vector<double> expected_link_prob = {link_prob};
+    EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
+    // antibody screen result -- true
+    std::vector<double> expected_sensitivity = {ab_sensitivity};
+    EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(1);
+    // rna screen result -- false
+    expected_sensitivity = {rna_sensitivity};
+    EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(1);
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
+    // because RNA false, no linking
     EXPECT_CALL(*testPerson, SetLinkageType(_)).Times(0);
 
     // Running Test
@@ -163,6 +183,16 @@ TEST_F(ScreeningTest, BackgroundScreening_TFtestResults) {
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
         .WillByDefault(DoAll(SetArgReferee<1>("periodic"), Return(0)));
+    double ab_sensitivity = 0.6;
+    ON_CALL(*event_dm,
+            GetFromConfig("screening_background_ab.acute_sensitivity", _))
+        .WillByDefault(
+            DoAll(SetArgReferee<1>(std::to_string(ab_sensitivity)), Return(0)));
+    double rna_sensitivity = 0.4;
+    ON_CALL(*event_dm,
+            GetFromConfig("screening_background_rna.acute_sensitivity", _))
+        .WillByDefault(DoAll(SetArgReferee<1>(std::to_string(rna_sensitivity)),
+                             Return(0)));
 
     // Background Link Setup
     double link_prob = 0.5;
@@ -184,13 +214,20 @@ TEST_F(ScreeningTest, BackgroundScreening_TFtestResults) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
-    EXPECT_CALL(*decider, GetDecision(_))
-        .WillOnce(Return(0))        // Do Background Screening
-        .WillOnce(Return(0))        // AB Test is Positive
-        .WillOnce(Return(1))        // RNA Test is Negative
-        .WillRepeatedly(Return(0)); // Remainder of Test
+    ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
+    ON_CALL(*decider, GetDecision(testing::ElementsAre(testing::Lt(0.5))))
+        .WillByDefault(Return(1));
 
     // Expectations
+    // decision to background screen
+    std::vector<double> expected_link_prob = {link_prob};
+    EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
+    // antibody screen result -- true
+    std::vector<double> expected_sensitivity = {ab_sensitivity};
+    EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(1);
+    // rna screen result -- false
+    expected_sensitivity = {rna_sensitivity};
+    EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(1);
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
@@ -215,8 +252,10 @@ TEST_F(ScreeningTest, BackgroundScreening_TTtestResults) {
         .WillByDefault(Return(person::Behavior::NEVER));
 
     // Data Setup
+    double sensitivity = 0.6;
     ON_CALL(*event_dm, GetFromConfig(_, _))
-        .WillByDefault(DoAll(SetArgReferee<1>("0.5"), Return(0)));
+        .WillByDefault(
+            DoAll(SetArgReferee<1>(std::to_string(sensitivity)), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.period", _))
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
@@ -242,18 +281,21 @@ TEST_F(ScreeningTest, BackgroundScreening_TTtestResults) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
-    EXPECT_CALL(*decider, GetDecision(_))
-        .WillOnce(Return(0))        // Do Background Screening
-        .WillOnce(Return(0))        // AB Test is Positive
-        .WillOnce(Return(0))        // RNA Test is Negative
-        .WillRepeatedly(Return(0)); // Remainder of Test
+    ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
+    // Decision to intervention screen
+    std::vector<double> expected_link_prob = {link_prob};
+    EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
+    // Screening test decisions
+    std::vector<double> expected_sensitivity = {sensitivity};
+    EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(2);
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
     EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::BACKGROUND))
         .Times(1);
+    EXPECT_CALL(*testPerson, DiagnoseHCV()).Times(1);
     EXPECT_CALL(*testPerson, Unlink()).Times(0);
 
     // Running Test
@@ -302,8 +344,8 @@ TEST_F(ScreeningTest, NoScreen) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
-    EXPECT_CALL(*decider, GetDecision(_))
-        .WillRepeatedly(Return(1)); // Do Not Background Screen
+    ON_CALL(*decider, GetDecision(_))
+        .WillByDefault(Return(1)); // Do Not Background Screen
 
     // Expectations
     EXPECT_CALL(*testPerson, MarkScreened()).Times(0);
