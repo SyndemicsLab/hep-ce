@@ -84,7 +84,7 @@ namespace event {
             bool test = this->test(
                 person->GetHCV(), dm, prefix + "_ab", decider,
                 [&person]() -> int { return person->AddAbScreen(); });
-            this->insertScreeningCost(person, dm, prefix + "_ab.cost",
+            this->InsertScreeningCost(person, dm, prefix + "_ab.cost",
                                       "Antibody Screening");
             return test;
         }
@@ -96,7 +96,7 @@ namespace event {
             bool test = this->test(
                 person->GetHCV(), dm, prefix + "_rna", decider,
                 [&person]() -> int { return person->AddRnaScreen(); });
-            this->insertScreeningCost(person, dm, prefix + "_rna.cost",
+            this->InsertScreeningCost(person, dm, prefix + "_rna.cost",
                                       "RNA Screening");
             return test;
         }
@@ -234,7 +234,7 @@ namespace event {
         /// @param person The person who is accruing cost
         /// @param type The screening type, used to discern the cost to add
         void
-        insertScreeningCost(std::shared_ptr<person::PersonBase> person,
+        InsertScreeningCost(std::shared_ptr<person::PersonBase> person,
                             std::shared_ptr<datamanagement::DataManagerBase> dm,
                             std::string configKey, std::string screeningName) {
             double screeningCost;

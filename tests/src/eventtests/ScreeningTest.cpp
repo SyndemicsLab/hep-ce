@@ -36,8 +36,10 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
         .WillByDefault(Return(person::Behavior::NEVER));
 
     // Data Setup
+    double sensitivity = 0.6;
     ON_CALL(*event_dm, GetFromConfig(_, _))
-        .WillByDefault(DoAll(SetArgReferee<1>("0.5"), Return(0)));
+        .WillByDefault(
+            DoAll(SetArgReferee<1>(std::to_string(sensitivity)), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.period", _))
         .WillByDefault(DoAll(SetArgReferee<1>("6"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("screening.intervention_type", _))
@@ -63,13 +65,15 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Decider Setup
-    EXPECT_CALL(*decider, GetDecision(_))
-        .WillOnce(Return(0))        // Decide to Intervention Screen
-        .WillOnce(Return(0))        // AB Test is Positive
-        .WillOnce(Return(0))        // RNA Test is Positive
-        .WillRepeatedly(Return(0)); // Remainder of Test
+    ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
+    // Decision to intervention screen
+    std::vector<double> expected_link_prob = {link_prob};
+    EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
+    // Screening test decisions
+    std::vector<double> expected_sensitivity = {sensitivity};
+    EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(2);
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
