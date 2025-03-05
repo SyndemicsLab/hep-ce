@@ -89,8 +89,7 @@ done
     # ensure the `build/` directory exists
     ([[ -d "build/" ]] && rm -rf build/*) || mkdir "build/"
     ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
-    ([[ -d "lib/" ]] && rm -rf lib/*.a && rm -rf lib/*.so)
-    #&& rm -rf lib/dminstall)
+    ([[ -d "lib/" ]] && rm -rf lib/*.a && rm -rf lib/*.so && rm -rf lib/dminstall)
 
     # detect or install DataManagement
     if [[ ! -d "lib/dminstall" ]]; then
