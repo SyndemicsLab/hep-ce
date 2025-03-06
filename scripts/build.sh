@@ -7,6 +7,15 @@ if command -v module &>/dev/null; then
     module load cmake/3.22.2
 fi
 
+# red output
+RED='\033[0;31m'
+# no color
+NC='\033[0m'
+
+err () {
+    echo -e "$RED$1$NC"
+}
+
 # help message to be output either with the -h flag or when using invalid syntax
 showhelp () {
     printf "\033[31m%s\033[0m" "$0 - Build the HEP-CE Model"
