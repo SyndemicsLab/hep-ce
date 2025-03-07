@@ -22,28 +22,28 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-    /// @brief Subclass of Event used to Screen People for Diseases
-    class Screening : public Event {
-    private:
-        class ScreeningIMPL;
-        std::unique_ptr<ScreeningIMPL> impl;
+/// @brief Subclass of Event used to Screen People for Diseases
+class Screening : public Event {
+private:
+    class ScreeningIMPL;
+    std::unique_ptr<ScreeningIMPL> impl;
 
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        Screening(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~Screening();
+public:
+    Screening(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~Screening();
 
-        // Copy Operations
-        Screening(Screening const &) = delete;
-        Screening &operator=(Screening const &) = delete;
-        Screening(Screening &&) noexcept;
-        Screening &operator=(Screening &&) noexcept;
-    };
+    // Copy Operations
+    Screening(Screening const &) = delete;
+    Screening &operator=(Screening const &) = delete;
+    Screening(Screening &&) noexcept;
+    Screening &operator=(Screening &&) noexcept;
+};
 } // namespace event
 
 #endif

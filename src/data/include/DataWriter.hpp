@@ -21,28 +21,28 @@
 #include <vector>
 
 namespace person {
-    class PersonBase;
+class PersonBase;
 }
 namespace datamanagement {
-    class DataManagerBase;
+class DataManagerBase;
 }
 
 /// @brief Namespace containing functions for writing simulation output
 namespace writer {
-    class DataWriter {
-    private:
-        class DataWriterIMPL;
-        std::unique_ptr<DataWriterIMPL> impl;
+class DataWriter {
+private:
+    class DataWriterIMPL;
+    std::unique_ptr<DataWriterIMPL> impl;
 
-    public:
-        DataWriter();
-        ~DataWriter();
-        int UpdatePopulation(
-            std::vector<std::shared_ptr<person::PersonBase>> new_population,
-            std::shared_ptr<datamanagement::DataManagerBase> dm);
-        int WritePopulationToFile(
-            std::vector<std::shared_ptr<person::PersonBase>> new_population,
-            std::string &filepath);
-    };
+public:
+    DataWriter();
+    ~DataWriter();
+    int UpdatePopulation(
+        std::vector<std::shared_ptr<person::PersonBase>> new_population,
+        std::shared_ptr<datamanagement::DataManagerBase> dm);
+    int WritePopulationToFile(
+        std::vector<std::shared_ptr<person::PersonBase>> new_population,
+        std::string &filepath);
+};
 } // namespace writer
 #endif

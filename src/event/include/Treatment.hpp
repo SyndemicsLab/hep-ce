@@ -21,27 +21,27 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-    /// @brief Subclass of Event used to Provide Treatment to People
-    class Treatment : public Event {
-    private:
-        class TreatmentIMPL;
-        std::unique_ptr<TreatmentIMPL> impl;
+/// @brief Subclass of Event used to Provide Treatment to People
+class Treatment : public Event {
+private:
+    class TreatmentIMPL;
+    std::unique_ptr<TreatmentIMPL> impl;
 
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        Treatment(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~Treatment();
+public:
+    Treatment(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~Treatment();
 
-        // Copy Operations
-        Treatment(Treatment const &) = delete;
-        Treatment &operator=(Treatment const &) = delete;
-        Treatment(Treatment &&) noexcept;
-        Treatment &operator=(Treatment &&) noexcept;
-    };
+    // Copy Operations
+    Treatment(Treatment const &) = delete;
+    Treatment &operator=(Treatment const &) = delete;
+    Treatment(Treatment &&) noexcept;
+    Treatment &operator=(Treatment &&) noexcept;
+};
 } // namespace event
 #endif

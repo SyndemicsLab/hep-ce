@@ -19,43 +19,42 @@
 
 // Forward Defining Person to use in Execute
 namespace person {
-    class PersonBase;
+class PersonBase;
 }
 
 // Forward Defining DataManagerBase to require in constructor
 namespace datamanagement {
-    class DataManagerBase;
+class DataManagerBase;
 }
 
 // Forward Defining DeciderBase from stats project
 namespace stats {
-    class DeciderBase;
+class DeciderBase;
 }
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-    class Event {
-    protected:
-        virtual void
-        DoEvent(std::shared_ptr<person::PersonBase> person,
+class Event {
+protected:
+    virtual void DoEvent(std::shared_ptr<person::PersonBase> person,
+                         std::shared_ptr<datamanagement::DataManagerBase> dm,
+                         std::shared_ptr<stats::DeciderBase> decider) = 0;
+
+public:
+    Event();
+    ~Event();
+
+    // Copy Operations
+    Event(Event const &) = delete;
+    Event &operator=(Event const &) = delete;
+    Event(Event &&) noexcept;
+    Event &operator=(Event &&) noexcept;
+
+    int Execute(std::shared_ptr<person::PersonBase> person,
                 std::shared_ptr<datamanagement::DataManagerBase> dm,
-                std::shared_ptr<stats::DeciderBase> decider) = 0;
-
-    public:
-        Event();
-        ~Event();
-
-        // Copy Operations
-        Event(Event const &) = delete;
-        Event &operator=(Event const &) = delete;
-        Event(Event &&) noexcept;
-        Event &operator=(Event &&) noexcept;
-
-        int Execute(std::shared_ptr<person::PersonBase> person,
-                    std::shared_ptr<datamanagement::DataManagerBase> dm,
-                    std::shared_ptr<stats::DeciderBase> decider);
-        static double DiscountEventCost(double cost, double discount_rate,
-                                        int timestep, bool annual = false);
-    };
+                std::shared_ptr<stats::DeciderBase> decider);
+    static double DiscountEventCost(double cost, double discount_rate,
+                                    int timestep, bool annual = false);
+};
 } // namespace event
 #endif

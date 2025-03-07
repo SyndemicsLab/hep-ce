@@ -22,27 +22,27 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-    /// @brief Subclass of Event used to Spread Infections
-    class Infections : public Event {
-    private:
-        class InfectionsIMPL;
-        std::unique_ptr<InfectionsIMPL> impl;
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+/// @brief Subclass of Event used to Spread Infections
+class Infections : public Event {
+private:
+    class InfectionsIMPL;
+    std::unique_ptr<InfectionsIMPL> impl;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        Infections(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~Infections();
+public:
+    Infections(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~Infections();
 
-        // Copy Operations
-        Infections(Infections const &) = delete;
-        Infections &operator=(Infections const &) = delete;
-        Infections(Infections &&) noexcept;
-        Infections &operator=(Infections &&) noexcept;
-    };
+    // Copy Operations
+    Infections(Infections const &) = delete;
+    Infections &operator=(Infections const &) = delete;
+    Infections(Infections &&) noexcept;
+    Infections &operator=(Infections &&) noexcept;
+};
 } // namespace event
 
 #endif

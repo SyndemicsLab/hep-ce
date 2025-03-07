@@ -23,28 +23,28 @@
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
 
-    /// @brief Subclass of Event used to End the Death Process of Individuals
-    class Death : public Event {
-    private:
-        class DeathIMPL;
-        std::unique_ptr<DeathIMPL> impl;
+/// @brief Subclass of Event used to End the Death Process of Individuals
+class Death : public Event {
+private:
+    class DeathIMPL;
+    std::unique_ptr<DeathIMPL> impl;
 
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        Death(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~Death();
+public:
+    Death(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~Death();
 
-        // Copy Operations
-        Death(Death const &) = delete;
-        Death &operator=(Death const &) = delete;
-        Death(Death &&) noexcept;
-        Death &operator=(Death &&) noexcept;
-    };
+    // Copy Operations
+    Death(Death const &) = delete;
+    Death &operator=(Death const &) = delete;
+    Death(Death &&) noexcept;
+    Death &operator=(Death &&) noexcept;
+};
 } // namespace event
 
 #endif

@@ -22,28 +22,28 @@
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
 
-    /// @brief Subclass of Event used to Create Voluntary Relinkage to Treatment
-    /// for People
-    class VoluntaryRelinking : public Event {
-    private:
-        class VoluntaryRelinkingIMPL;
-        std::unique_ptr<VoluntaryRelinkingIMPL> impl;
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+/// @brief Subclass of Event used to Create Voluntary Relinkage to Treatment
+/// for People
+class VoluntaryRelinking : public Event {
+private:
+    class VoluntaryRelinkingIMPL;
+    std::unique_ptr<VoluntaryRelinkingIMPL> impl;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        VoluntaryRelinking(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~VoluntaryRelinking();
+public:
+    VoluntaryRelinking(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~VoluntaryRelinking();
 
-        // Copy Operations
-        VoluntaryRelinking(VoluntaryRelinking const &) = delete;
-        VoluntaryRelinking &operator=(VoluntaryRelinking const &) = delete;
-        VoluntaryRelinking(VoluntaryRelinking &&) noexcept;
-        VoluntaryRelinking &operator=(VoluntaryRelinking &&) noexcept;
-    };
+    // Copy Operations
+    VoluntaryRelinking(VoluntaryRelinking const &) = delete;
+    VoluntaryRelinking &operator=(VoluntaryRelinking const &) = delete;
+    VoluntaryRelinking(VoluntaryRelinking &&) noexcept;
+    VoluntaryRelinking &operator=(VoluntaryRelinking &&) noexcept;
+};
 
 } // namespace event
 

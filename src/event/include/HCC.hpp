@@ -20,27 +20,27 @@
 #include "Event.hpp"
 
 namespace event {
-    /// @brief Subclass of Event used to process medication for opioid use
-    /// disorder
-    class HCC : public Event {
-    private:
-        class HCCIMPL;
-        std::unique_ptr<HCCIMPL> impl;
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+/// @brief Subclass of Event used to process medication for opioid use
+/// disorder
+class HCC : public Event {
+private:
+    class HCCIMPL;
+    std::unique_ptr<HCCIMPL> impl;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        HCC(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~HCC();
+public:
+    HCC(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~HCC();
 
-        // Copy Operations
-        HCC(HCC const &) = delete;
-        HCC &operator=(HCC const &) = delete;
-        HCC(HCC &&) noexcept;
-        HCC &operator=(HCC &&) noexcept;
-    };
+    // Copy Operations
+    HCC(HCC const &) = delete;
+    HCC &operator=(HCC const &) = delete;
+    HCC(HCC &&) noexcept;
+    HCC &operator=(HCC &&) noexcept;
+};
 } // namespace event
 #endif // EVENT_HCC_HPP_

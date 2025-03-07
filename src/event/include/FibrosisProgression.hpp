@@ -25,28 +25,27 @@
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
 
-    /// @brief Subclass of Event used to Progress HCV
-    class FibrosisProgression : public Event {
-    private:
-        class FibrosisProgressionIMPL;
-        std::unique_ptr<FibrosisProgressionIMPL> impl;
+/// @brief Subclass of Event used to Progress HCV
+class FibrosisProgression : public Event {
+private:
+    class FibrosisProgressionIMPL;
+    std::unique_ptr<FibrosisProgressionIMPL> impl;
 
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        FibrosisProgression(
-            std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~FibrosisProgression();
+public:
+    FibrosisProgression(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~FibrosisProgression();
 
-        // Copy Operations
-        FibrosisProgression(FibrosisProgression const &) = delete;
-        FibrosisProgression &operator=(FibrosisProgression const &) = delete;
-        FibrosisProgression(FibrosisProgression &&) noexcept;
-        FibrosisProgression &operator=(FibrosisProgression &&) noexcept;
-    };
+    // Copy Operations
+    FibrosisProgression(FibrosisProgression const &) = delete;
+    FibrosisProgression &operator=(FibrosisProgression const &) = delete;
+    FibrosisProgression(FibrosisProgression &&) noexcept;
+    FibrosisProgression &operator=(FibrosisProgression &&) noexcept;
+};
 } // namespace event
 #endif

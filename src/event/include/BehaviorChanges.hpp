@@ -20,26 +20,26 @@
 #include "Event.hpp"
 
 namespace event {
-    /// @brief Subclass of Event used to process Behavior Changes
-    class BehaviorChanges : public Event {
-    private:
-        class BehaviorChangesIMPL;
-        std::unique_ptr<BehaviorChangesIMPL> impl;
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+/// @brief Subclass of Event used to process Behavior Changes
+class BehaviorChanges : public Event {
+private:
+    class BehaviorChangesIMPL;
+    std::unique_ptr<BehaviorChangesIMPL> impl;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        BehaviorChanges(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~BehaviorChanges();
+public:
+    BehaviorChanges(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~BehaviorChanges();
 
-        // Copy Operations
-        BehaviorChanges(BehaviorChanges const &) = delete;
-        BehaviorChanges &operator=(BehaviorChanges const &) = delete;
-        BehaviorChanges(BehaviorChanges &&) noexcept;
-        BehaviorChanges &operator=(BehaviorChanges &&) noexcept;
-    };
+    // Copy Operations
+    BehaviorChanges(BehaviorChanges const &) = delete;
+    BehaviorChanges &operator=(BehaviorChanges const &) = delete;
+    BehaviorChanges(BehaviorChanges &&) noexcept;
+    BehaviorChanges &operator=(BehaviorChanges &&) noexcept;
+};
 } // namespace event
 #endif // EVENT_BEHAVIORCHANGES_HPP_

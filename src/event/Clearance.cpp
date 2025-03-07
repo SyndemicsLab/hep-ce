@@ -21,51 +21,50 @@
 #include <DataManagement/DataManagerBase.hpp>
 
 namespace event {
-    class Clearance::ClearanceIMPL {
-    private:
-        double clearanceProbability;
+class Clearance::ClearanceIMPL {
+private:
+    double clearanceProbability;
 
-    public:
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) {
-            // if person isn't infected or is chronic, nothing to do
-            // Also skip if person is already on treatment since we want this to
-            // count as SVR
-            if (person->GetHCV() != person::HCV::ACUTE &&
-                !person->HasInitiatedTreatment()) {
-                return;
-            }
-            if (decider->GetDecision({clearanceProbability}) == 0) {
-                person->ClearHCV();
-            }
+public:
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) {
+        // if person isn't infected or is chronic, nothing to do
+        // Also skip if person is already on treatment since we want this to
+        // count as SVR
+        if (person->GetHCV() != person::HCV::ACUTE &&
+            !person->HasInitiatedTreatment()) {
+            return;
         }
-        ClearanceIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-            std::string data;
-            int rc = dm->GetFromConfig("infection.clearance_prob", data);
-            if (data.empty()) {
-                // it's basically universally accepted that 25% of acute hcv
-                // infections clear in the 6-month acute infection period
-                this->clearanceProbability =
-                    Utils::rateToProbability(0.25) / 6.0;
-            } else {
-                // if the user provides a clearance probability, use that value
-                // instead
-                this->clearanceProbability = Utils::stod_positive(data);
-            }
+        if (decider->GetDecision({clearanceProbability}) == 0) {
+            person->ClearHCV();
         }
-    };
-    Clearance::Clearance(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        impl = std::make_unique<ClearanceIMPL>(dm);
     }
-
-    Clearance::~Clearance() = default;
-    Clearance::Clearance(Clearance &&) noexcept = default;
-    Clearance &Clearance::operator=(Clearance &&) noexcept = default;
-
-    void Clearance::DoEvent(std::shared_ptr<person::PersonBase> person,
-                            std::shared_ptr<datamanagement::DataManagerBase> dm,
-                            std::shared_ptr<stats::DeciderBase> decider) {
-        impl->DoEvent(person, dm, decider);
+    ClearanceIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        std::string data;
+        int rc = dm->GetFromConfig("infection.clearance_prob", data);
+        if (data.empty()) {
+            // it's basically universally accepted that 25% of acute hcv
+            // infections clear in the 6-month acute infection period
+            this->clearanceProbability = Utils::rateToProbability(0.25) / 6.0;
+        } else {
+            // if the user provides a clearance probability, use that value
+            // instead
+            this->clearanceProbability = Utils::stod_positive(data);
+        }
     }
+};
+Clearance::Clearance(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    impl = std::make_unique<ClearanceIMPL>(dm);
+}
+
+Clearance::~Clearance() = default;
+Clearance::Clearance(Clearance &&) noexcept = default;
+Clearance &Clearance::operator=(Clearance &&) noexcept = default;
+
+void Clearance::DoEvent(std::shared_ptr<person::PersonBase> person,
+                        std::shared_ptr<datamanagement::DataManagerBase> dm,
+                        std::shared_ptr<stats::DeciderBase> decider) {
+    impl->DoEvent(person, dm, decider);
+}
 } // namespace event

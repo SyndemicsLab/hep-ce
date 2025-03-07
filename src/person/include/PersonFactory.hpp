@@ -5,10 +5,10 @@
 #include <memory>
 
 namespace person {
-    class PersonFactory {
-    public:
-        std::shared_ptr<person::PersonBase> create();
-    };
+class PersonFactory {
+public:
+    std::shared_ptr<person::PersonBase> create();
+};
 } // namespace person
 
 #endif

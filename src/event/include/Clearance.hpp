@@ -21,27 +21,27 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-    /// @brief Subclass of Event used to Clear HCV Infections
-    class Clearance : public Event {
-    private:
-        class ClearanceIMPL;
-        std::unique_ptr<ClearanceIMPL> impl;
+/// @brief Subclass of Event used to Clear HCV Infections
+class Clearance : public Event {
+private:
+    class ClearanceIMPL;
+    std::unique_ptr<ClearanceIMPL> impl;
 
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        Clearance(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~Clearance();
+public:
+    Clearance(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~Clearance();
 
-        // Copy Operations
-        Clearance(Clearance const &) = delete;
-        Clearance &operator=(Clearance const &) = delete;
-        Clearance(Clearance &&) noexcept;
-        Clearance &operator=(Clearance &&) noexcept;
-    };
+    // Copy Operations
+    Clearance(Clearance const &) = delete;
+    Clearance &operator=(Clearance const &) = delete;
+    Clearance(Clearance &&) noexcept;
+    Clearance &operator=(Clearance &&) noexcept;
+};
 } // namespace event
 #endif // EVENT_CLEARANCE_HPP_
