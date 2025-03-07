@@ -1,3 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+// File: Cost.cpp                                                             //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2024-04-10                                                        //
+// Author: Dimitri Baptiste                                                   //
+// -----                                                                      //
+// Last Modified: 2025-03-07                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+////////////////////////////////////////////////////////////////////////////////
+
 #include "Cost.hpp"
 #include <cmath>
 
@@ -18,6 +30,7 @@ public:
         costs[CostCategory::BACKGROUND] = {0.0, 0.0};
     }
     ~CostTrackerIMPL(){};
+
     std::pair<double, double> GetTotals() const {
         double base_sum = 0.0;
         double discount_sum = 0.0;
@@ -57,13 +70,8 @@ void CostTracker::AddCost(double base_cost, double discount_cost,
 }
 
 CostTracker::~CostTracker() = default;
-
 CostTracker::CostTracker(CostTracker &&p) noexcept = default;
 CostTracker &CostTracker::operator=(CostTracker &&) noexcept = default;
-
-// dividing discountRate by 12 because discount rates are annual
-// double denominator =
-//     std::pow(1 + discountRate / 12, timestep.first + 1);
 
 std::ostream &operator<<(std::ostream &os, const CostTracker &cost) {
     for (auto const &pair : cost.GetCosts()) {
