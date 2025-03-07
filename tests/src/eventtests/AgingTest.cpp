@@ -21,7 +21,7 @@ TEST_F(AgingTest, Aging) {
         .WillByDefault(Return(person::Behavior::INJECTION));
 
     // Data Setup
-    struct cost_util cost = {25.00, 0.5};
+    struct cost_util cu = {25.00, 0.5};
     double discount_rate = 0.025;
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(

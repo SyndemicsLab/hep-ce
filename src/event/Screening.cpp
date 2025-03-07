@@ -393,5 +393,4 @@ namespace event {
                             std::shared_ptr<stats::DeciderBase> decider) {
         impl->DoEvent(person, dm, decider);
     }
-
 } // namespace event
