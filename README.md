@@ -54,8 +54,6 @@ These categories are further broken into discrete events:
 - Calculation Events:
   - Transmission (PreVenT)
 
-### Input Structure
-
 ## Build Instructions
 
 ### Dependencies

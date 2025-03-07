@@ -1,20 +1,14 @@
-//===-------------------------------*- C++ -*------------------------------===//
-//-*-===//
-//
-// Part of the HEP-CE Simulation Module, under the AGPLv3 License. See
-// https://www.gnu.org/licenses/ for license information.
-// SPDX-License-Identifier: AGPLv3
-//
-//===----------------------------------------------------------------------===//
-///
-/// \file
-/// This file contains the declaration of the Event and ProbEvent Abstract
-/// Classes.
-///
-/// Created Date: Tuesday, August 15th 2023, 8:50:56 am
-/// Contact: Benjamin.Linas@bmc.org
-///
-//===----------------------------------------------------------------------===//
+////////////////////////////////////////////////////////////////////////////////
+// File: Event.hpp                                                            //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2023-09-13                                                        //
+// Author: Dimitri Baptiste                                                   //
+// -----                                                                      //
+// Last Modified: 2025-03-07                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef EVENT_EVENT_HPP_
 #define EVENT_EVENT_HPP_

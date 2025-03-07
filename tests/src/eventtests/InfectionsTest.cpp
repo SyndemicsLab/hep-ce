@@ -24,6 +24,7 @@ TEST_F(InfectionsTest, Infections_NewInfection) {
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("infection.genotype_three_prob", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.5"), Return(0)));
+
     std::vector<double> storage = {1.0};
     ON_CALL(*event_dm, SelectCustomCallback(INCIDENCE_QUERY, _, _, _))
         .WillByDefault(
@@ -43,6 +44,12 @@ TEST_F(InfectionsTest, Infections_NewInfection) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0)); // Infect
 
     // Expectations
+    // infection probability
+    std::vector<double> expected_infection_prob = {incidence};
+    EXPECT_CALL(*decider, GetDecision(expected_infection_prob)).Times(1);
+    // genotype three probability
+    std::vector<double> genotype_three_prob = {0.5};
+    EXPECT_CALL(*decider, GetDecision(genotype_three_prob)).Times(1);
     EXPECT_CALL(*testPerson, InfectHCV()).Times(1);
 
     // Running Test
