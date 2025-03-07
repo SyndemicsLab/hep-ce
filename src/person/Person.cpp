@@ -254,7 +254,6 @@ namespace person {
         }
 
         /// @brief InfectHCV the person
-        /// @param timestep Current simulation timestep
         void InfectHCV() {
             // cannot be multiply infected
             if (this->health.hcv != HCV::NONE) {
@@ -272,11 +271,21 @@ namespace person {
         }
 
         /// @brief Clear of HCV
-        /// @param timestep Current simulation timestep
         void ClearHCV() {
             this->health.hcv = HCV::NONE;
             this->health.timeHCVChanged = this->_currentTime;
             this->AddHCVClearance();
+        }
+
+        /// @brief infect the person with HIV
+        void InfectHIV() {
+            // cannot be multiply infected
+            if (this->health.hiv != HIV::NONE) {
+                return;
+            }
+            // infected start as high CD4, unsuppressed infection
+            this->health.hiv = HIV::HIUN;
+            this->health.timeHIVChanged = this->_currentTime;
         }
 
         int LoadICValues(int id, std::vector<std::string> icValues) {
@@ -489,6 +498,13 @@ namespace person {
             return this->health.identifiedHCV;
         }
 
+        /// @brief Getter for HIV Identification Status
+        /// @return Boolean describing whether the healthcare system has
+        /// detected HIV in the Person
+        bool IsIdentifiedAsHIVInfected() const {
+            return this->health.identifiedHIV;
+        }
+
         bool HistoryOfHCVInfection() const { return this->health.historyOfHCV; }
 
         /// @brief Getter for whether PersonIMPL has initiated treatment
@@ -586,8 +602,12 @@ namespace person {
         }
 
         /// @brief Getter for timestep in which HCV last changed
-        /// @return Time Since HCV Change
+        /// @return Timestep that HCV last changed
         int GetTimeHCVChanged() const { return this->health.timeHCVChanged; }
+
+        /// @brief Getter for timestep in which HIV last changed
+        /// @return Timestep that HIV last changed
+        int GetTimeHIVChanged() const { return this->health.timeHIVChanged; }
 
         /// @brief Getter for Time since Fibrosis State Change
         /// @return Time Since Fibrosis State Change
@@ -652,6 +672,10 @@ namespace person {
 
         int GetTimeSinceHCVChanged() const {
             return CalculateTimeSince(GetTimeHCVChanged());
+        }
+
+        int GetTimeSinceHIVChanged() const {
+            return CalculateTimeSince(GetTimeHIVChanged());
         }
 
         int GetTimeSinceLinkChange() const {
@@ -743,6 +767,8 @@ namespace person {
 
         MOUDDetails GetMOUDDetails() const { return this->moudDetails; }
 
+        HIV GetHIV() const { return this->health.hiv; }
+
         PregnancyDetails GetPregnancyDetails() const {
             return this->pregnancyDetails;
         }
@@ -812,6 +838,17 @@ namespace person {
         void SetHCV(HCV hcv) {
             this->health.hcv = hcv;
             this->health.timeHCVChanged = this->_currentTime;
+        }
+
+        /// @brief Set HIV infection state -- used to change between states of
+        /// suppression and CD4 count
+        /// @param New HIV infection state
+        void SetHIV(HIV hiv) {
+            if (hiv == this->health.hiv) {
+                return;
+            }
+            this->health.hiv = hiv;
+            this->health.timeHIVChanged = this->_currentTime;
         }
 
         /// @brief Setter for PersonIMPL's treatment initiation state
@@ -1276,5 +1313,19 @@ namespace person {
     void Person::DiagnoseHCC() { pImplPERSON->DiagnoseHCC(); }
     bool Person::IsDiagnosedWithHCC() const {
         return pImplPERSON->IsDiagnosedWithHCC();
+    }
+
+    // HIV
+    HIV Person::GetHIV() const { return pImplPERSON->GetHIV(); }
+    void Person::SetHIV(HIV hiv) { return pImplPERSON->SetHIV(hiv); }
+    void Person::InfectHIV() { return pImplPERSON->InfectHIV(); }
+    int Person::GetTimeHIVChanged() const {
+        return pImplPERSON->GetTimeHIVChanged();
+    }
+    int Person::GetTimeSinceHIVChanged() const {
+        return pImplPERSON->GetTimeSinceHIVChanged();
+    }
+    bool Person::IsIdentifiedAsHIVInfected() const {
+        return pImplPERSON->IsIdentifiedAsHIVInfected();
     }
 } // namespace person

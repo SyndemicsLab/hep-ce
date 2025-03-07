@@ -25,6 +25,9 @@ namespace event {
         if (eventName == "FibrosisStaging") {
             return makeEvent<FibrosisStaging>(dm);
         }
+        if (eventName == "HIVInfections") {
+            return makeEvent<HIVInfections>(dm);
+        }
         if (eventName == "Infections") {
             return makeEvent<Infections>(dm);
         }

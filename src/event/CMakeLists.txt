@@ -34,6 +34,7 @@ target_sources(${PROJECT_NAME}
         EventFactory.cpp
         FibrosisProgression.cpp
         FibrosisStaging.cpp
+        HIVInfections.cpp
         Infections.cpp
         Linking.cpp
         MOUD.cpp
@@ -47,7 +48,7 @@ target_sources(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         cost
-	utility
+        utility
         person
         stats
         spdlog::spdlog

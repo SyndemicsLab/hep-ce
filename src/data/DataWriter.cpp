@@ -60,8 +60,8 @@ namespace writer {
                 << person->GetTotalUtility().mult_util << ","
                 << person->GetTotalUtility().discount_min_util << ","
                 << person->GetTotalUtility().discount_mult_util << ","
-		<< person->GetLifeSpan() << ","
-		<< person->GetDiscountedLifeSpan() << ","
+                << person->GetLifeSpan() << ","
+                << person->GetDiscountedLifeSpan() << ","
                 << person->GetWithdrawals() << ","
                 << person->GetToxicReactions() << ","
                 << person->GetCompletedTreatments() << "," << person->GetSVRs()
