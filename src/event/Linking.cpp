@@ -41,8 +41,23 @@ private:
         (*((linkmap_t *)storage))[tup] = Utils::stod_positive(data[4]);
         return 0;
     }
-    std::string LinkSQL(std::string const column) const {
-        return "SELECT age_years, gender, drug_behavior, pregnancy, " + column +
+
+    std::string
+    LinkSQL(std::string const column,
+            std::shared_ptr<datamanagement::DataManagerBase> dm) const {
+        std::string data;
+        dm->GetFromConfig("simulation.events", data);
+        std::vector<std::string> event_list =
+            Utils::split2vecT<std::string>(data, ',');
+
+        if (std::find(event_list.begin(), event_list.end(), "pregnancy") !=
+            event_list.end()) {
+
+            return "SELECT age_years, gender, drug_behavior, pregnancy, " +
+                   column + " FROM screening_and_linkage;";
+        }
+
+        return "SELECT age_years, gender, drug_behavior, -1, " + column +
                " FROM screening_and_linkage;";
     }
 
@@ -167,9 +182,9 @@ public:
         }
 
         std::string error;
-        rc = dm->SelectCustomCallback(LinkSQL("background_link_probability"),
-                                      this->callback_link,
-                                      &background_link_data, error);
+        rc = dm->SelectCustomCallback(
+            LinkSQL("background_link_probability", dm), this->callback_link,
+            &background_link_data, error);
         if (rc != 0) {
             spdlog::get("main")->error(
                 "Error extracting Background Linking Data from "
@@ -178,9 +193,9 @@ public:
                 error);
         }
 
-        rc = dm->SelectCustomCallback(LinkSQL("intervention_link_probability"),
-                                      this->callback_link,
-                                      &intervention_link_data, error);
+        rc = dm->SelectCustomCallback(
+            LinkSQL("intervention_link_probability", dm), this->callback_link,
+            &intervention_link_data, error);
         if (rc != 0) {
             spdlog::get("main")->error(
                 "Error extracting Intervention Linking Data from "
