@@ -1,48 +1,44 @@
-//===-------------------------------*- C++ -*------------------------------===//
-//-*-===//
-//
-// Part of the HEP-CE Simulation Module, under the AGPLv3 License. See
-// https://www.gnu.org/licenses/ for license information.
-// SPDX-License-Identifier: AGPLv3
-//
-//===----------------------------------------------------------------------===//
-///
-/// \file
-/// This file contains the declaration of the Linking Event Subclass.
-///
-/// Created Date: Tuesday, August 15th 2023, 8:50:56 am
-/// Contact: Benjamin.Linas@bmc.org
-///
-//===----------------------------------------------------------------------===//
-#ifndef EVENT_Linking_HPP_
-#define EVENT_Linking_HPP_
+////////////////////////////////////////////////////////////////////////////////
+// File: Linking.hpp                                                          //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2023-08-14                                                        //
+// Author: Matthew Carroll                                                    //
+// -----                                                                      //
+// Last Modified: 2025-03-10                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
+////////////////////////////////////////////////////////////////////////////////
+
+#ifndef EVENT_LINKING_HPP_
+#define EVENT_LINKING_HPP_
 
 #include "Event.hpp"
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
 
-    /// @brief Subclass of Event used to Link People to Treatment
-    class Linking : public Event {
-    private:
-        class LinkingIMPL;
-        std::unique_ptr<LinkingIMPL> impl;
+/// @brief Subclass of Event used to Link People to Treatment
+class Linking : public Event {
+private:
+    class LinkingIMPL;
+    std::unique_ptr<LinkingIMPL> impl;
 
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        Linking(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~Linking();
+public:
+    Linking(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~Linking();
 
-        // Copy Operations
-        Linking(Linking const &) = delete;
-        Linking &operator=(Linking const &) = delete;
-        Linking(Linking &&) noexcept;
-        Linking &operator=(Linking &&) noexcept;
-    };
+    // Copy Operations
+    Linking(Linking const &) = delete;
+    Linking &operator=(Linking const &) = delete;
+    Linking(Linking &&) noexcept;
+    Linking &operator=(Linking &&) noexcept;
+};
 } // namespace event
 #endif
