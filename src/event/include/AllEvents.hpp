@@ -1,3 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+// File: AllEvents.hpp                                                        //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2023-09-14                                                        //
+// Author: Dimitri Baptiste                                                   //
+// -----                                                                      //
+// Last Modified: 2025-03-10                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef ALL_EVENTS_HPP_
 #define ALL_EVENTS_HPP_
 

@@ -4,10 +4,10 @@
 // Created: 2024-04-10                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-07                                                  //
+// Last Modified: 2025-03-10                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Cost.hpp"

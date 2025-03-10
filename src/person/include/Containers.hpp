@@ -1,3 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+// File: Containers.hpp                                                       //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2023-12-14                                                        //
+// Author: Matthew Carroll                                                    //
+// -----                                                                      //
+// Last Modified: 2025-03-10                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef PERSON_CONTAINERS_HPP_
 #define PERSON_CONTAINERS_HPP_
 

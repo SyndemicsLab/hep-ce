@@ -1,3 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+// File: Utility.cpp                                                          //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2025-02-24                                                        //
+// Author: Dimitri Baptiste                                                   //
+// -----                                                                      //
+// Last Modified: 2025-03-10                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+////////////////////////////////////////////////////////////////////////////////
+
 #include "Utility.hpp"
 
 #include <algorithm>

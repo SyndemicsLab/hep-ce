@@ -1,3 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+// File: Event.cpp                                                            //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2025-01-10                                                        //
+// Author: Matthew Carroll                                                    //
+// -----                                                                      //
+// Last Modified: 2025-03-10                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+////////////////////////////////////////////////////////////////////////////////
+
 #include "Event.hpp"
 #include "Person.hpp"
 #include "spdlog/spdlog.h"

@@ -1,3 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+// File: Pregnancy.hpp                                                        //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2024-06-13                                                        //
+// Author: Matthew Carroll                                                    //
+// -----                                                                      //
+// Last Modified: 2025-03-10                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef EVENT_PREGNANCY_HPP_
 #define EVENT_PREGNANCY_HPP_
 

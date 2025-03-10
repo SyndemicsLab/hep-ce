@@ -1,19 +1,14 @@
-//===-- Person.hpp - Instruction class definition -------*- C++ -*-===//
-//
-// Part of the HEP-CE, under the AGPLv3 License. See
-// https://www.gnu.org/licenses/ for license information.
-// SPDX-License-Identifier: AGPLv3
-//
-//===----------------------------------------------------------------------===//
-///
-/// \file
-/// This file contains the declaration of the Instruction class, which is the
-/// base class for all of the VM instructions.
-///
-/// Created Date: Wednesday, August 2nd 2023, 9:14:16 am
-/// Contact: Benjamin.Linas@bmc.org
-///
-//===----------------------------------------------------------------------===//
+////////////////////////////////////////////////////////////////////////////////
+// File: Person.hpp                                                           //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2023-08-02                                                        //
+// Author: Matthew Carroll                                                    //
+// -----                                                                      //
+// Last Modified: 2025-03-10                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef PERSON_PERSON_HPP_
 #define PERSON_PERSON_HPP_

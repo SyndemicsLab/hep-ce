@@ -4,10 +4,10 @@
 // Created: 2023-08-31                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-07                                                  //
+// Last Modified: 2025-03-10                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Aging.hpp"

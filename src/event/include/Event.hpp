@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: Event.hpp                                                            //
 // Project: HEPCESimulationv2                                                 //
-// Created: 2023-09-13                                                        //
-// Author: Dimitri Baptiste                                                   //
+// Created: 2023-08-02                                                        //
+// Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-07                                                  //
+// Last Modified: 2025-03-10                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //

@@ -1,3 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////
+// File: ContainerOperators.cpp                                               //
+// Project: HEPCESimulationv2                                                 //
+// Created: 2024-09-03                                                        //
+// Author: Matthew Carroll                                                    //
+// -----                                                                      //
+// Last Modified: 2025-03-10                                                  //
+// Modified By: Dimitri Baptiste                                              //
+// -----                                                                      //
+// Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
+////////////////////////////////////////////////////////////////////////////////
+
 #include "Containers.hpp"
 
 namespace person {
