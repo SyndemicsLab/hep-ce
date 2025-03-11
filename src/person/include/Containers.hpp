@@ -4,8 +4,8 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-03-11                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +273,7 @@ std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 
 /// @brief Attributes describing pregnancy
 struct PregnancyDetails {
-    PregnancyState pregnancyState = PregnancyState::NONE;
+    PregnancyState pregnancyState = PregnancyState::NA;
     int timeOfPregnancyChange = -1;
     int numInfants = 0;
     int numMiscarriages = 0;
