@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-03-11                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,11 +22,21 @@ using ::testing::SetArgReferee;
 class LinkingTest : public EventTest {};
 
 std::string const BACKGROUND_LINK_QUERY =
-    "SELECT age_years, gender, drug_behavior, pregnancy, "
+    "SELECT age_years, gender, drug_behavior, -1, "
     "background_link_probability FROM "
     "screening_and_linkage;";
 
 std::string const INTERVENTION_LINK_QUERY =
+    "SELECT age_years, gender, drug_behavior, -1, "
+    "intervention_link_probability FROM "
+    "screening_and_linkage;";
+
+std::string const P_BACKGROUND_LINK_QUERY =
+    "SELECT age_years, gender, drug_behavior, pregnancy, "
+    "background_link_probability FROM "
+    "screening_and_linkage;";
+
+std::string const P_INTERVENTION_LINK_QUERY =
     "SELECT age_years, gender, drug_behavior, pregnancy, "
     "intervention_link_probability FROM "
     "screening_and_linkage;";
