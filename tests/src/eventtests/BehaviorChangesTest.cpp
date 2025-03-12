@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-03-12                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,13 +50,13 @@ TEST_F(BehaviorChangesTest, BehaviorChanges) {
 
     // Cost Setup
     struct cost_util cost = {25.00, 0.5};
-    Utils::tuple_2i tup_2i = std::make_tuple(0, 4);
-    std::unordered_map<Utils::tuple_2i, struct cost_util, Utils::key_hash_2i,
-                       Utils::key_equal_2i>
+    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 4);
+    std::unordered_map<Utils::tuple_3i, struct cost_util, Utils::key_hash_3i,
+                       Utils::key_equal_3i>
         cstorage;
-    cstorage[tup_2i] = cost;
+    cstorage[tup_3i] = cost;
     ON_CALL(*event_dm, SelectCustomCallback(COST_QUERY, _, _, _))
-        .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&cstorage), Return(0)));
+        .WillByDefault(DoAll(SetArg2ToUM_T3I_CU(&cstorage), Return(0)));
 
     // Decider Setup
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(2));
