@@ -46,6 +46,7 @@ add_executable(${PROJECT_NAME}
   src/SimTest.cpp
   src/CostTest.cpp
   src/UtilityTest.cpp
+  src/DataWriterTest.cpp
   src/eventtests/EventTest.cpp
   src/eventtests/AgingTest.cpp
   src/eventtests/BehaviorChangesTest.cpp
@@ -69,6 +70,7 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
         GTest::gtest_main
         GTest::gmock_main
+        data
         fmt # Required for GTest
         person
         simulation

@@ -4,7 +4,7 @@
 // Created: 2024-06-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-12                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -49,17 +49,24 @@ private:
             << person->GetTimesHCVInfected() << ","
             << person->GetHCVClearances() << ","
             << person->HasInitiatedTreatment() << ","
-            << person->GetTimeOfTreatmentInitiation() << ","
-            << person->GetTotalUtility().min_util << ","
-            << person->GetTotalUtility().mult_util << ","
-            << person->GetTotalUtility().discount_min_util << ","
-            << person->GetTotalUtility().discount_mult_util << ","
-            << person->GetLifeSpan() << "," << person->GetDiscountedLifeSpan()
-            << "," << person->GetWithdrawals() << ","
-            << person->GetToxicReactions() << ","
+            << person->GetTimeOfTreatmentInitiation() << ",";
+        const auto &tu = person->GetTotalUtility();
+        compiled_attributes
+            << tu.min_util << "," << tu.mult_util << "," << tu.discount_min_util
+            << "," << tu.discount_mult_util << "," << person->GetWithdrawals()
+            << "," << person->GetToxicReactions() << ","
             << person->GetCompletedTreatments() << "," << person->GetSVRs()
-            << "," << person->GetNumberOfTreatmentStarts() << ","
-            << person->GetRetreatments();
+            << ",";
+        const auto &cu = person->GetCurrentUtilities();
+        compiled_attributes << cu.at(utility::UtilityCategory::BEHAVIOR) << ","
+                            << cu.at(utility::UtilityCategory::LIVER) << ","
+                            << cu.at(utility::UtilityCategory::TREATMENT) << ","
+                            << cu.at(utility::UtilityCategory::BACKGROUND)
+                            << "," << cu.at(utility::UtilityCategory::HIV)
+                            << "," << person->GetLifeSpan() << ","
+                            << person->GetDiscountedLifeSpan() << ","
+                            << person->GetNumberOfTreatmentStarts() << ","
+                            << person->GetRetreatments();
         return compiled_attributes.str();
     }
 
@@ -74,6 +81,19 @@ public:
         std::shared_ptr<datamanagement::DataManagerBase> dm) {
         return -1;
     }
+    std::string PopulationToString(
+        std::vector<std::shared_ptr<person::PersonBase>> population) {
+        std::stringstream population_table;
+        population_table << "id," << person::POPULATION_HEADERS
+                         << ",cost,discount_cost" << std::endl;
+        for (std::shared_ptr<person::PersonBase> &person : population) {
+            std::pair<double, double> costTotals = person->GetCostTotals();
+            population_table << GrabPersonDetailsAsStringInHeaderOrder(person)
+                             << "," << costTotals.first << ","
+                             << costTotals.second << std::endl;
+        }
+        return population_table.str();
+    }
     int WriteOutputPopulationToFile(
         std::vector<std::shared_ptr<person::PersonBase>> new_population,
         std::string &filepath) {
@@ -84,7 +104,7 @@ public:
             return -1;
         }
         csvStream << "id," << person::POPULATION_HEADERS
-                  << ",cost,discount_cost," << std::endl;
+                  << ",cost,discount_cost" << std::endl;
         for (std::shared_ptr<person::PersonBase> &person : new_population) {
             std::pair<double, double> costTotals = person->GetCostTotals();
             csvStream << GrabPersonDetailsAsStringInHeaderOrder(person) << ","
@@ -104,6 +124,11 @@ int DataWriter::UpdatePopulation(
     std::vector<std::shared_ptr<person::PersonBase>> new_population,
     std::shared_ptr<datamanagement::DataManagerBase> dm) {
     return impl->UpdatePopulation(new_population, dm);
+}
+
+std::string DataWriter::PopulationToString(
+    std::vector<std::shared_ptr<person::PersonBase>> population) {
+    return impl->PopulationToString(population);
 }
 int DataWriter::WritePopulationToFile(
     std::vector<std::shared_ptr<person::PersonBase>> new_population,

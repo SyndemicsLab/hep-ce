@@ -4,8 +4,8 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-11                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-03-12                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,18 +18,17 @@
 namespace person {
 
 inline static const std::string POPULATION_HEADERS =
-    "sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,"
-    "HCV,"
+    "sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,HCV,"
     "fibrosisState,isGenotypeThree,seropositive,timeHCVChanged,"
-    "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,"
-    "linkageState,timeOfLinkChange,linkageType,"
-    "linkCount,measuredFibrosisState,"
-    "timeOfLastStaging,timeOfLastScreening,numABTests,"
-    "numRNATests,timesInfected,timesCleared,initiatedTreatment,"
-    "timeOfTreatmentInitiation,minUtility,multUtility,discountMinUtility,"
-    "discountMultUtility,lifeSpan,discountedLifeSpan,treatmentWithdrawals,"
-    "treatmentToxicReactions,completedTreatments,svrs,"
-    "numberOfTreatmentStarts,numberOfRetreatments";
+    "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,linkageState,"
+    "timeOfLinkChange,linkageType,linkCount,measuredFibrosisState,"
+    "timeOfLastStaging,timeOfLastScreening,numABTests,numRNATests,"
+    "timesInfected,timesCleared,initiatedTreatment,timeOfTreatmentInitiation,"
+    "minUtility,multUtility,discountMinUtility,discountMultUtility,"
+    "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,svrs,"
+    "behaviorUtility,liverUtility,treatmentUtility,backgroundUtility,"
+    "hivUtility,lifeSpan,discountedLifeSpan,numberOfTreatmentStarts,"
+    "numberOfRetreatments";
 
 /// @brief HEP-C Infection States
 enum class HCV {

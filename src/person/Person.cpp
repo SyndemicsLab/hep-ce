@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-12                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -60,6 +60,7 @@ private:
         double liverUtility = 1.0;
         double treatmentUtility = 1.0;
         double backgroundUtility = 1.0;
+        double hivUtility = 1.0;
         int treatmentWithdrawals = 0;
         int treatmentToxicReactions = 0;
         int completedTreatments = 0;
@@ -108,6 +109,7 @@ private:
         temp->liverUtility = Utils::stod_positive(data[36]);
         temp->treatmentUtility = Utils::stod_positive(data[37]);
         temp->backgroundUtility = Utils::stod_positive(data[38]);
+        temp->hivUtility = Utils::stod_positive(data[39]);
         return 0;
     }
     size_t id = 0;
@@ -247,6 +249,8 @@ public:
                                          utility::UtilityCategory::TREATMENT);
         this->utility_tracker.SetUtility(storage.backgroundUtility,
                                          utility::UtilityCategory::BACKGROUND);
+        this->utility_tracker.SetUtility(storage.hivUtility,
+                                         utility::UtilityCategory::HIV);
         return 0;
     }
 
@@ -740,6 +744,13 @@ public:
     /// @brief Getter for the person's stratified utilities
     /// @return PersonIMPL's stratified utilities
     LifetimeUtility GetTotalUtility() const { return this->lifetimeUtility; }
+
+    /// @brief Getter for the person's utilities broken down by category
+    /// @return PersonIMPL's category-specific utilities
+    std::unordered_map<utility::UtilityCategory, double>
+    GetCurrentUtilities() const {
+        return this->utility_tracker.GetRawUtilities();
+    }
 
     /// @brief Getter for the PersonIMPL's costs
     /// @return cost::CostTracker containing this person's costs
@@ -1287,6 +1298,10 @@ std::pair<double, double> Person::GetUtility() const {
 }
 void Person::SetUtility(double util, utility::UtilityCategory category) {
     pImplPERSON->SetUtility(util, category);
+}
+std::unordered_map<utility::UtilityCategory, double>
+Person::GetCurrentUtilities() const {
+    return pImplPERSON->GetCurrentUtilities();
 }
 void Person::SetBoomer(bool status) { pImplPERSON->SetBoomer(status); }
 void Person::DevelopHCC(HCCState state) { pImplPERSON->DevelopHCC(state); }

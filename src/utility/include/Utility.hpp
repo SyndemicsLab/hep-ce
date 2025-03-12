@@ -4,7 +4,7 @@
 // Created: 2025-02-24                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-12                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -24,7 +24,8 @@ enum class UtilityCategory {
     LIVER = 1,
     TREATMENT = 2,
     BACKGROUND = 3,
-    COUNT = 4
+    HIV = 4,
+    COUNT = 5
 };
 std::ostream &operator<<(std::ostream &os, const UtilityCategory &uc);
 
