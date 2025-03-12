@@ -14,7 +14,6 @@
 #include <memory>
 #include <vector>
 
-// #include "DataManagerMock.hpp"
 #include "DataWriter.hpp"
 #include "PersonMock.hpp"
 #include "Utility.hpp"
@@ -22,13 +21,52 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
-#include <iostream>
-
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
 
 const int POPULATION_SIZE = 10;
+const std::string EXPECTED_POPULATION =
+    "id,sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,HCV,"
+    "fibrosisState,isGenotypeThree,seropositive,timeHCVChanged,"
+    "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,linkageState,"
+    "timeOfLinkChange,linkageType,linkCount,measuredFibrosisState,"
+    "timeOfLastStaging,timeOfLastScreening,numABTests,numRNATests,"
+    "timesInfected,timesCleared,initiatedTreatment,timeOfTreatmentInitiation,"
+    "minUtility,multUtility,discountMinUtility,discountMultUtility,"
+    "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,svrs,"
+    "behaviorUtility,liverUtility,treatmentUtility,backgroundUtility,"
+    "hivUtility,lifeSpan,discountedLifeSpan,numberOfTreatmentStarts,"
+    "numberOfRetreatments,cost,discount_cost\n1,male,300,false,N/"
+    "A,true,1,none,f0,false,false,-1,1,never,0,never,0,NA,0,f01,0,0,0,0,0,0,"
+    "false,0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0\n2,female,300,false,N/"
+    "A,false,-1,acute,f1,false,false,1,1,former_noninjection,1,linked,1,"
+    "background,1,f23,1,1,1,1,1,1,false,1,0.5,0.5,0.5,0.5,0,1,1,1,0.5,0.5,0.5,"
+    "0.5,0.5,1,1,1,1,0,0\n3,male,300,false,N/"
+    "A,true,1,chronic,f2,false,false,1,1,former_injection,2,unlinked,2,NA,2,f4,"
+    "2,2,2,2,2,2,false,2,0.333333,0.333333,0.333333,0.333333,0,2,2,2,0.333333,"
+    "0.333333,0.333333,0.333333,0.333333,2,2,2,2,0,0\n4,female,300,false,N/"
+    "A,false,-1,none,f3,false,false,-1,1,noninjection,3,never,3,NA,3,decomp,3,"
+    "3,3,3,3,3,false,3,0.25,0.25,0.25,0.25,0,3,3,3,0.25,0.25,0.25,0.25,0.25,3,"
+    "3,3,3,0,0\n5,male,300,false,N/"
+    "A,true,1,acute,f4,false,false,1,1,injection,4,linked,4,background,4,none,"
+    "4,4,4,4,4,4,false,4,0.2,0.2,0.2,0.2,0,4,4,4,0.2,0.2,0.2,0.2,0.2,4,4,4,4,0,"
+    "0\n6,female,300,false,N/"
+    "A,false,-1,chronic,decomp,false,false,1,1,never,5,unlinked,5,NA,5,f01,5,5,"
+    "5,5,5,5,false,5,0.166667,0.166667,0.166667,0.166667,0,5,5,5,0.166667,0."
+    "166667,0.166667,0.166667,0.166667,5,5,5,5,0,0\n7,male,300,false,N/"
+    "A,true,1,none,none,false,false,-1,-1,former_noninjection,6,never,6,NA,6,"
+    "f23,6,6,6,6,6,6,false,6,0.142857,0.142857,0.142857,0.142857,0,6,6,6,0."
+    "142857,0.142857,0.142857,0.142857,0.142857,6,6,6,6,0,0\n8,female,300,"
+    "false,N/"
+    "A,false,-1,acute,f0,false,false,1,1,former_injection,7,linked,7,"
+    "background,7,f4,7,7,7,7,7,7,false,7,0.125,0.125,0.125,0.125,0,7,7,7,0.125,"
+    "0.125,0.125,0.125,0.125,7,7,7,7,0,0\n9,male,300,false,N/"
+    "A,true,1,chronic,f1,false,false,1,1,noninjection,8,unlinked,8,NA,8,decomp,"
+    "8,8,8,8,8,8,false,8,0.111111,0.111111,0.111111,0.111111,0,8,8,8,0.111111,"
+    "0.111111,0.111111,0.111111,0.111111,8,8,8,8,0,0\n10,female,300,false,N/"
+    "A,false,-1,none,f2,false,false,-1,1,injection,9,never,9,NA,9,none,9,9,9,9,"
+    "9,9,false,9,0.1,0.1,0.1,0.1,0,9,9,9,0.1,0.1,0.1,0.1,0.1,9,9,9,9,0,0\n";
 
 class DataWriterTest : public ::testing::Test {
 private:
@@ -157,5 +195,6 @@ TEST_F(DataWriterTest, PopulationString) {
     writer::DataWriter writer;
     std::vector<std::shared_ptr<person::PersonBase>> writable_population(
         testPopulation.begin(), testPopulation.end());
-    std::cout << writer.PopulationToString(writable_population);
+    EXPECT_EQ(EXPECTED_POPULATION,
+              writer.PopulationToString(writable_population));
 }
