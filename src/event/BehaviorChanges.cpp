@@ -62,21 +62,21 @@ private:
     };
 
     using costmap_t =
-        std::unordered_map<Utils::tuple_3i, struct cost_util,
-                           Utils::key_hash_3i, Utils::key_equal_3i>;
+        std::unordered_map<Utils::tuple_2i, struct cost_util,
+                           Utils::key_hash_2i, Utils::key_equal_2i>;
     costmap_t cost_data;
 
     std::string CostSQL() const {
-        return "SELECT age_years, gender, drug_behavior, cost, utility FROM "
+        return "SELECT gender, drug_behavior, cost, utility FROM "
                "behavior_impacts;";
     }
 
     static int callback_costs(void *storage, int count, char **data,
                               char **columns) {
-        Utils::tuple_3i tup = std::make_tuple(
-            std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-        struct cost_util cu = {Utils::stod_positive(data[3]),
-                               Utils::stod_positive(data[4])};
+        Utils::tuple_2i tup =
+            std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
+        struct cost_util cu = {Utils::stod_positive(data[2]),
+                               Utils::stod_positive(data[3])};
         (*((costmap_t *)storage))[tup] = cu;
         return 0;
     }
@@ -84,10 +84,9 @@ private:
     void calculateCostAndUtility(
         std::shared_ptr<person::PersonBase> person,
         std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        int age = (int)(person->GetAge() / 12.0);
         int gender = ((int)person->GetSex());
         int behavior = ((int)person->GetBehavior());
-        Utils::tuple_3i tup = std::make_tuple(age, gender, behavior);
+        Utils::tuple_2i tup = std::make_tuple(gender, behavior);
 
         double discountAdjustedCost = Event::DiscountEventCost(
             cost_data[tup].cost, discount, person->GetCurrentTimestep());
