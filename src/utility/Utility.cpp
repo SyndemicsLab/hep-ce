@@ -4,7 +4,7 @@
 // Created: 2025-02-24                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-12                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -25,24 +25,26 @@ public:
         utilities[UtilityCategory::LIVER] = 1.0;
         utilities[UtilityCategory::TREATMENT] = 1.0;
         utilities[UtilityCategory::BACKGROUND] = 1.0;
+        utilities[UtilityCategory::HIV] = 1.0;
     }
     ~UtilityTrackerIMPL(){};
 
     std::pair<double, double> GetUtilities() const {
-        double minUtility =
+        double minUtility = std::min(
             std::min(std::min(this->utilities.at(UtilityCategory::BEHAVIOR),
                               this->utilities.at(UtilityCategory::LIVER)),
                      std::min(this->utilities.at(UtilityCategory::TREATMENT),
-                              this->utilities.at(UtilityCategory::BACKGROUND)));
+                              this->utilities.at(UtilityCategory::BACKGROUND))),
+            this->utilities.at(UtilityCategory::HIV));
         // avoid numeric overflow by not multiplying if any of the
-        // this->utilities are zero
+        // utilities are zero
         double multUtility =
             minUtility == 0 ? 0.0
                             : (this->utilities.at(UtilityCategory::BEHAVIOR) *
                                this->utilities.at(UtilityCategory::LIVER) *
                                this->utilities.at(UtilityCategory::TREATMENT) *
-                               this->utilities.at(UtilityCategory::BACKGROUND));
-
+                               this->utilities.at(UtilityCategory::BACKGROUND) *
+                               this->utilities.at(UtilityCategory::HIV));
         return {minUtility, multUtility};
     }
 
@@ -99,6 +101,9 @@ std::ostream &operator<<(std::ostream &os, const UtilityCategory &uc) {
         break;
     case UtilityCategory::BACKGROUND:
         os << "BACKGROUND";
+        break;
+    case UtilityCategory::HIV:
+        os << "HIV";
         break;
     default:
         os << "NA";

@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-12                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -155,6 +155,8 @@ public:
     MOCK_METHOD((std::pair<double, double>), GetUtility, (), (const, override));
     MOCK_METHOD(void, SetUtility, (double util, utility::UtilityCategory),
                 (override));
+    MOCK_METHOD((std::unordered_map<utility::UtilityCategory, double>),
+                GetCurrentUtilities, (), (const, override));
     MOCK_METHOD(int, GetLifeSpan, (), (const, override));
     MOCK_METHOD(double, GetDiscountedLifeSpan, (), (const, override));
     MOCK_METHOD(void, AddDiscountedLifeSpan, (double discounted_life),

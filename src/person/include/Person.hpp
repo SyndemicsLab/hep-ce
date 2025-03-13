@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-12                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -130,6 +130,8 @@ public:
                            std::pair<double, double> discount_util) = 0;
     virtual std::pair<double, double> GetUtility() const = 0;
     virtual void SetUtility(double util, utility::UtilityCategory category) = 0;
+    virtual std::unordered_map<utility::UtilityCategory, double>
+    GetCurrentUtilities() const = 0;
     virtual int GetLifeSpan() const = 0;
     virtual double GetDiscountedLifeSpan() const = 0;
     virtual void AddDiscountedLifeSpan(double discounted_life) = 0;
@@ -333,6 +335,8 @@ public:
     void SetUtility(double util, utility::UtilityCategory category);
     std::pair<double, double> GetUtility() const;
     LifetimeUtility GetTotalUtility() const;
+    std::unordered_map<utility::UtilityCategory, double>
+    GetCurrentUtilities() const;
     int GetLifeSpan() const;
     double GetDiscountedLifeSpan() const;
     void AddDiscountedLifeSpan(double discounted_life);
