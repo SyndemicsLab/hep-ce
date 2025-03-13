@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-13                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -89,10 +89,11 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
-    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::INTERVENTION))
+    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::INTERVENTION,
+                                            person::InfectionType::HCV))
         .Times(1);
     EXPECT_CALL(*testPerson, DiagnoseHCV()).Times(1);
-    EXPECT_CALL(*testPerson, Unlink()).Times(0);
+    EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -168,7 +169,7 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
     // because RNA false, no linking
-    EXPECT_CALL(*testPerson, SetLinkageType(_)).Times(0);
+    EXPECT_CALL(*testPerson, SetLinkageType(_, _)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -243,7 +244,7 @@ TEST_F(ScreeningTest, BackgroundScreening_TFtestResults) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
-    EXPECT_CALL(*testPerson, SetLinkageType(_)).Times(0);
+    EXPECT_CALL(*testPerson, SetLinkageType(_, _)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -305,10 +306,11 @@ TEST_F(ScreeningTest, BackgroundScreening_TTtestResults) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(1);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(1);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(1);
-    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::BACKGROUND))
+    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::BACKGROUND,
+                                            person::InfectionType::HCV))
         .Times(1);
     EXPECT_CALL(*testPerson, DiagnoseHCV()).Times(1);
-    EXPECT_CALL(*testPerson, Unlink()).Times(0);
+    EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -363,8 +365,8 @@ TEST_F(ScreeningTest, NoScreen) {
     EXPECT_CALL(*testPerson, MarkScreened()).Times(0);
     EXPECT_CALL(*testPerson, AddAbScreen()).Times(0);
     EXPECT_CALL(*testPerson, AddRnaScreen()).Times(0);
-    EXPECT_CALL(*testPerson, SetLinkageType(_)).Times(0);
-    EXPECT_CALL(*testPerson, Unlink()).Times(0);
+    EXPECT_CALL(*testPerson, SetLinkageType(_, _)).Times(0);
+    EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =

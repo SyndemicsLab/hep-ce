@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-12                                                  //
+// Last Modified: 2025-03-13                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -29,6 +29,18 @@ inline static const std::string POPULATION_HEADERS =
     "behaviorUtility,liverUtility,treatmentUtility,backgroundUtility,"
     "hivUtility,lifeSpan,discountedLifeSpan,numberOfTreatmentStarts,"
     "numberOfRetreatments";
+
+/// @brief Infection types tracked for all Persons
+enum class InfectionType {
+    /// Hepatitis C Virus
+    HCV = 0,
+    /// Human Immunodeficiency Virus
+    HIV = 1,
+    COUNT = 2
+};
+std::ostream &operator<<(std::ostream &os, const InfectionType &inst);
+InfectionType &operator<<(InfectionType &inst, const std::string &str);
+InfectionType &operator++(InfectionType &inst);
 
 /// @brief HEP-C Infection States
 enum class HCV {

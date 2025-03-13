@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-11                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-03-13                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ TEST_F(LinkingTest, FalsePositive) {
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -108,9 +108,9 @@ TEST_F(LinkingTest, BackgroundLink) {
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetLinkageType())
+    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageType::BACKGROUND));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -156,7 +156,9 @@ TEST_F(LinkingTest, BackgroundLink) {
     // Expectations
     std::vector<double> expected_prob = {1.0};
     EXPECT_CALL(*decider, GetDecision(expected_prob)).Times(1);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND)).Times(1);
+    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND,
+                                  person::InfectionType::HCV))
+        .Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
@@ -168,9 +170,9 @@ TEST_F(LinkingTest, InterventionLink) {
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::NEVER));
-    ON_CALL(*testPerson, GetLinkageType())
+    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageType::INTERVENTION));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -220,7 +222,9 @@ TEST_F(LinkingTest, InterventionLink) {
     // Expectations
     std::vector<double> expected_link_prob = {link_prob};
     EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION)).Times(1);
+    EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION,
+                                  person::InfectionType::HCV))
+        .Times(1);
     EXPECT_CALL(*testPerson, AddCost(intervention_cost, intervention_cost,
                                      cost::CostCategory::LINKING))
         .Times(1);
@@ -235,9 +239,9 @@ TEST_F(LinkingTest, DecideToNotLink) {
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetLinkageType())
+    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageType::INTERVENTION));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -282,8 +286,9 @@ TEST_F(LinkingTest, DecideToNotLink) {
     // Expectations
     std::vector<double> expected_link_prob = {0.0};
     EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
-    EXPECT_CALL(*testPerson, GetLinkageType()).Times(1);
-    EXPECT_CALL(*testPerson, Link(_)).Times(0);
+    EXPECT_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
+        .Times(1);
+    EXPECT_CALL(*testPerson, Link(_, _)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
 
     // Running Test
@@ -296,9 +301,9 @@ TEST_F(LinkingTest, AlreadyLinked) {
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::LINKED));
-    ON_CALL(*testPerson, GetLinkageType())
+    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageType::INTERVENTION));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -336,7 +341,7 @@ TEST_F(LinkingTest, AlreadyLinked) {
 
     // Expectations
     EXPECT_CALL(*decider, GetDecision(_)).Times(0);
-    EXPECT_CALL(*testPerson, Link(_)).Times(0);
+    EXPECT_CALL(*testPerson, Link(_, _)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
 
     // Running Test
@@ -349,9 +354,9 @@ TEST_F(LinkingTest, RecentScreen) {
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetLinkageType())
+    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageType::BACKGROUND));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -409,9 +414,9 @@ TEST_F(LinkingTest, RecentScreenCutoff) {
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetLinkageType())
+    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageType::BACKGROUND));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));

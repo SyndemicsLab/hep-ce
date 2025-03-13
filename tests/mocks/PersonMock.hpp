@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-12                                                  //
+// Last Modified: 2025-03-13                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -62,15 +62,22 @@ public:
     MOCK_METHOD(void, GiveSecondScreeningTest, (bool state), (override));
 
     // Linking
-    MOCK_METHOD(int, Unlink, (), (override));
-    MOCK_METHOD(int, Link, (LinkageType linkType), (override));
-    MOCK_METHOD(LinkageState, GetLinkState, (), (const, override));
-    MOCK_METHOD(int, GetTimeOfLinkChange, (), (const, override));
-    MOCK_METHOD(int, GetTimeSinceLinkChange, (), (const, override));
-    MOCK_METHOD(int, GetLinkCount, (), (const, override));
-    MOCK_METHOD(void, SetLinkageType, (LinkageType), (override));
-    MOCK_METHOD(LinkageType, GetLinkageType, (), (const, override));
-    MOCK_METHOD(LinkageDetails, GetLinkStatus, (), (const, override));
+    MOCK_METHOD(int, Unlink, (InfectionType it), (override));
+    MOCK_METHOD(int, Link, (LinkageType linkType, InfectionType it),
+                (override));
+    MOCK_METHOD(LinkageState, GetLinkState, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(int, GetTimeOfLinkChange, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(int, GetTimeSinceLinkChange, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(int, GetLinkCount, (InfectionType it), (const, override));
+    MOCK_METHOD(void, SetLinkageType, (LinkageType linkType, InfectionType it),
+                (override));
+    MOCK_METHOD(LinkageType, GetLinkageType, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(LinkageDetails, GetLinkStatus, (InfectionType it),
+                (const, override));
 
     // Treatment
     MOCK_METHOD(int, AddWithdrawal, (), (override));
