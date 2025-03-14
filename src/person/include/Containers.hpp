@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-13                                                  //
+// Last Modified: 2025-03-14                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -311,6 +311,7 @@ struct ScreeningDetails {
     int timeOfLastScreening = -1;
     int numABTests = 0;
     int numRNATests = 0;
+    bool antibodyPositive = false;
 };
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 

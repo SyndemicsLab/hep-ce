@@ -428,6 +428,10 @@ public:
         this->health.historyOfHCV = true;
     }
 
+    // void Diagnose(InterventionType it) {
+    //     this->health[it].identified = true;
+    // }
+
     int ClearHCVDiagnosis() {
         this->health.identifiedHCV = false;
         return 0;
@@ -801,6 +805,14 @@ public:
 
     ScreeningDetails GetScreeningDetails(InfectionType it) const {
         return this->screeningDetails.at(it);
+    }
+
+    bool CheckAntibodyPositive(InfectionType it) const {
+        return this->screeningDetails.at(it).antibodyPositive;
+    }
+
+    void SetAntibodyPositive(bool result, InfectionType it) {
+        this->screeningDetails[it].antibodyPositive = result;
     }
 
     TreatmentDetails GetTreatmentDetails() const {

@@ -67,6 +67,10 @@ public:
     GetTimeSinceLastScreening(InfectionType it = InfectionType::HCV) const = 0;
     virtual ScreeningDetails
     GetScreeningDetails(InfectionType it = InfectionType::HCV) const = 0;
+    virtual bool
+    CheckAntibodyPositive(InfectionType it = InfectionType::HCV) const = 0;
+    virtual void SetAntibodyPositive(bool result = true,
+                                     InfectionType it = InfectionType::HCV) = 0;
     virtual void GiveSecondScreeningTest(bool state) = 0;
 
     // Linking
@@ -260,6 +264,8 @@ public:
     int GetTimeOfLastScreening(InfectionType it) const;
     int GetTimeSinceLastScreening(InfectionType it) const;
     ScreeningDetails GetScreeningDetails(InfectionType it) const;
+    bool CheckAntibodyPositive(InfectionType it) const;
+    void SetAntibodyPositive(bool result, InfectionType it);
     bool HadSecondScreeningTest() const;
     void GiveSecondScreeningTest(bool state);
 

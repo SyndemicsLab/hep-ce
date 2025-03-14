@@ -4,7 +4,7 @@
 // Created: 2025-02-28                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-07                                                  //
+// Last Modified: 2025-03-14                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -65,7 +65,7 @@ private:
                                           &incidence_data, error);
         if (rc != 0) {
             spdlog::get("main")->error(
-                "Error retrieving Infection Probability! Error Message: "
+                "Error retrieving HIV Infection Probability! Error Message: "
                 "{}",
                 error);
         }
