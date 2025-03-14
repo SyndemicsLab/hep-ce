@@ -4,7 +4,7 @@
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-13                                                  //
+// Last Modified: 2025-03-14                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -152,11 +152,14 @@ TEST_F(DataWriterTest, PopulationString) {
             .WillByDefault(Return(meas));
         ON_CALL(*(testPopulation[id]), GetTimeOfFibrosisStaging())
             .WillByDefault(Return(id));
-        ON_CALL(*(testPopulation[id]), GetTimeOfLastScreening())
+        ON_CALL(*(testPopulation[id]),
+                GetTimeOfLastScreening(person::InfectionType::HCV))
             .WillByDefault(Return(id));
-        ON_CALL(*(testPopulation[id]), GetNumberOfABTests())
+        ON_CALL(*(testPopulation[id]),
+                GetNumberOfABTests(person::InfectionType::HCV))
             .WillByDefault(Return(id));
-        ON_CALL(*(testPopulation[id]), GetNumberOfRNATests())
+        ON_CALL(*(testPopulation[id]),
+                GetNumberOfRNATests(person::InfectionType::HCV))
             .WillByDefault(Return(id));
         ON_CALL(*(testPopulation[id]), GetTimesHCVInfected())
             .WillByDefault(Return(id));

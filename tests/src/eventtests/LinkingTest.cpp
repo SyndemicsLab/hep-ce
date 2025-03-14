@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-13                                                  //
+// Last Modified: 2025-03-14                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -249,7 +249,8 @@ TEST_F(LinkingTest, DecideToNotLink) {
         .WillByDefault(Return(person::Behavior::NEVER));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
-    ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(1));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+        .WillByDefault(Return(1));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -311,7 +312,8 @@ TEST_F(LinkingTest, AlreadyLinked) {
         .WillByDefault(Return(person::Behavior::NEVER));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
-    ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(1));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+        .WillByDefault(Return(1));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -364,7 +366,8 @@ TEST_F(LinkingTest, RecentScreen) {
         .WillByDefault(Return(person::Behavior::NEVER));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
-    ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(0));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+        .WillByDefault(Return(0));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
@@ -424,7 +427,8 @@ TEST_F(LinkingTest, RecentScreenCutoff) {
         .WillByDefault(Return(person::Behavior::NEVER));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
-    ON_CALL(*testPerson, GetTimeSinceLastScreening()).WillByDefault(Return(1));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+        .WillByDefault(Return(1));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))

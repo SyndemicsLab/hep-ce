@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-13                                                  //
+// Last Modified: 2025-03-14                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -53,15 +53,20 @@ public:
     virtual int GetTimeSinceHCVChanged() const = 0;
 
     // Screening
-    virtual int MarkScreened() = 0;
-    virtual int AddAbScreen() = 0;
-    virtual int AddRnaScreen() = 0;
+    virtual int MarkScreened(InfectionType it = InfectionType::HCV) = 0;
+    virtual int AddAbScreen(InfectionType it = InfectionType::HCV) = 0;
+    virtual int AddRnaScreen(InfectionType it = InfectionType::HCV) = 0;
     virtual bool HadSecondScreeningTest() const = 0;
-    virtual int GetNumberOfABTests() const = 0;
-    virtual int GetNumberOfRNATests() const = 0;
-    virtual int GetTimeOfLastScreening() const = 0;
-    virtual int GetTimeSinceLastScreening() const = 0;
-    virtual ScreeningDetails GetScreeningDetails() const = 0;
+    virtual int
+    GetNumberOfABTests(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetNumberOfRNATests(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetTimeOfLastScreening(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetTimeSinceLastScreening(InfectionType it = InfectionType::HCV) const = 0;
+    virtual ScreeningDetails
+    GetScreeningDetails(InfectionType it = InfectionType::HCV) const = 0;
     virtual void GiveSecondScreeningTest(bool state) = 0;
 
     // Linking
@@ -247,15 +252,15 @@ public:
     int GetTimeSinceHCVChanged() const;
 
     // Screening
-    int MarkScreened();
-    int AddAbScreen();
-    int AddRnaScreen();
+    int MarkScreened(InfectionType it);
+    int AddAbScreen(InfectionType it);
+    int AddRnaScreen(InfectionType it);
+    int GetNumberOfABTests(InfectionType it) const;
+    int GetNumberOfRNATests(InfectionType it) const;
+    int GetTimeOfLastScreening(InfectionType it) const;
+    int GetTimeSinceLastScreening(InfectionType it) const;
+    ScreeningDetails GetScreeningDetails(InfectionType it) const;
     bool HadSecondScreeningTest() const;
-    int GetNumberOfABTests() const;
-    int GetNumberOfRNATests() const;
-    int GetTimeOfLastScreening() const;
-    int GetTimeSinceLastScreening() const;
-    ScreeningDetails GetScreeningDetails() const;
     void GiveSecondScreeningTest(bool state);
 
     // Linking

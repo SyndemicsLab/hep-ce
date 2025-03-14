@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-13                                                  //
+// Last Modified: 2025-03-14                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -133,7 +133,7 @@ private:
     MOUDDetails moudDetails;
     PregnancyDetails pregnancyDetails;
     StagingDetails stagingDetails;
-    ScreeningDetails screeningDetails;
+    std::unordered_map<InfectionType, ScreeningDetails> screeningDetails;
     TreatmentDetails treatmentDetails;
     cost::CostTracker costs;
     bool boomerClassification = false;
@@ -182,6 +182,7 @@ public:
         for (InfectionType i = InfectionType::HCV; i < InfectionType::COUNT;
              ++i) {
             this->linkStatus[i] = LinkageDetails();
+            this->screeningDetails[i] = ScreeningDetails();
         }
     }
     int
@@ -232,9 +233,10 @@ public:
         linkStatus[InfectionType::HCV].linkCount = storage.linkCount;
         stagingDetails.measuredFibrosisState = storage.measuredFibrosisState;
         stagingDetails.timeOfLastStaging = storage.timeOfLastStaging;
-        screeningDetails.timeOfLastScreening = storage.timeOfLastScreening;
-        screeningDetails.numABTests = storage.numABTests;
-        screeningDetails.numRNATests = storage.numRNATests;
+        screeningDetails[InfectionType::HCV].timeOfLastScreening =
+            storage.timeOfLastScreening;
+        screeningDetails[InfectionType::HCV].numABTests = storage.numABTests;
+        screeningDetails[InfectionType::HCV].numRNATests = storage.numRNATests;
         health.timesInfected = storage.timesInfected;
         health.timesCleared = storage.timesCleared;
         treatmentDetails.initiatedTreatment = storage.initiatedTreatment;
@@ -380,20 +382,20 @@ public:
     void AddSVR() { this->svrs++; }
 
     /// @brief Mark somebody as having been screened this timestep
-    void MarkScreened() {
-        this->screeningDetails.timeOfLastScreening = this->_currentTime;
+    void MarkScreened(InfectionType it) {
+        this->screeningDetails[it].timeOfLastScreening = this->_currentTime;
     }
 
     /// @brief
-    void AddAbScreen() {
-        this->screeningDetails.timeOfLastScreening = this->_currentTime;
-        this->screeningDetails.numABTests++;
+    void AddAbScreen(InfectionType it) {
+        this->screeningDetails[it].timeOfLastScreening = this->_currentTime;
+        this->screeningDetails[it].numABTests++;
     }
 
     /// @brief
-    void AddRnaScreen() {
-        this->screeningDetails.timeOfLastScreening = this->_currentTime;
-        this->screeningDetails.numRNATests++;
+    void AddRnaScreen(InfectionType it) {
+        this->screeningDetails[it].timeOfLastScreening = this->_currentTime;
+        this->screeningDetails[it].numRNATests++;
     }
 
     /// @brief Reset a PersonIMPL's Link State to Unlinked
@@ -571,17 +573,19 @@ public:
     int GetSVRs() const { return this->svrs; }
 
     /// @brief
-    int GetNumberOfABTests() const { return this->screeningDetails.numABTests; }
+    int GetNumberOfABTests(InfectionType it) const {
+        return this->screeningDetails.at(it).numABTests;
+    }
 
     /// @brief
-    int GetNumberOfRNATests() const {
-        return this->screeningDetails.numRNATests;
+    int GetNumberOfRNATests(InfectionType it) const {
+        return this->screeningDetails.at(it).numRNATests;
     }
 
     /// @brief Getter for the Time Since the Last Screening
     /// @return The Time Since the Last Screening
-    int GetTimeOfLastScreening() const {
-        return this->screeningDetails.timeOfLastScreening;
+    int GetTimeOfLastScreening(InfectionType it) const {
+        return this->screeningDetails.at(it).timeOfLastScreening;
     }
 
     /// @brief Getter for the person's overdose state
@@ -683,8 +687,8 @@ public:
         return CalculateTimeSince(GetTimeOfPregnancyChange());
     }
 
-    int GetTimeSinceLastScreening() const {
-        return CalculateTimeSince(GetTimeOfLastScreening());
+    int GetTimeSinceLastScreening(InfectionType it) const {
+        return CalculateTimeSince(GetTimeOfLastScreening(it));
     }
 
     int GetTimeSinceHCVChanged() const {
@@ -795,8 +799,8 @@ public:
         return this->stagingDetails;
     }
 
-    ScreeningDetails GetScreeningDetails() const {
-        return this->screeningDetails;
+    ScreeningDetails GetScreeningDetails(InfectionType it) const {
+        return this->screeningDetails.at(it);
     }
 
     TreatmentDetails GetTreatmentDetails() const {
@@ -821,11 +825,12 @@ public:
              << GetLinkageType(InfectionType::HCV) << ","
              << GetLinkCount(InfectionType::HCV) << ","
              << GetMeasuredFibrosisState() << "," << GetTimeOfFibrosisStaging()
-             << "," << GetTimeOfLastScreening() << "," << GetNumberOfABTests()
-             << "," << GetNumberOfRNATests() << "," << GetTimesHCVInfected()
-             << "," << GetHCVClearances() << "," << std::boolalpha
-             << GetTreatmentDetails().initiatedTreatment << ","
-             << GetTimeOfTreatmentInitiation() << ","
+             << "," << GetTimeOfLastScreening(InfectionType::HCV) << ","
+             << GetNumberOfABTests(InfectionType::HCV) << ","
+             << GetNumberOfRNATests(InfectionType::HCV) << ","
+             << GetTimesHCVInfected() << "," << GetHCVClearances() << ","
+             << std::boolalpha << GetTreatmentDetails().initiatedTreatment
+             << "," << GetTimeOfTreatmentInitiation() << ","
              << std::to_string(GetTotalUtility().min_util) << ","
              << std::to_string(GetTotalUtility().mult_util);
         return data.str();
@@ -972,7 +977,7 @@ std::ostream &operator<<(std::ostream &os, const Person &person) {
     os << person.GetMOUDDetails() << std::endl;
     os << person.GetPregnancyDetails() << std::endl;
     os << person.GetFibrosisStagingDetails() << std::endl;
-    os << person.GetScreeningDetails() << std::endl;
+    os << person.GetScreeningDetails(InfectionType::HCV) << std::endl;
     os << person.GetTreatmentDetails() << std::endl;
     os << person.GetTotalUtility() << std::endl;
     // os << person.getCosts() << std::endl;
@@ -1045,16 +1050,16 @@ int Person::AddSVR() {
     pImplPERSON->AddSVR();
     return 0;
 }
-int Person::MarkScreened() {
-    pImplPERSON->MarkScreened();
+int Person::MarkScreened(InfectionType it) {
+    pImplPERSON->MarkScreened(it);
     return 0;
 }
-int Person::AddAbScreen() {
-    pImplPERSON->AddAbScreen();
+int Person::AddAbScreen(InfectionType it) {
+    pImplPERSON->AddAbScreen(it);
     return 0;
 }
-int Person::AddRnaScreen() {
-    pImplPERSON->AddRnaScreen();
+int Person::AddRnaScreen(InfectionType it) {
+    pImplPERSON->AddRnaScreen(it);
     return 0;
 }
 int Person::Unlink(InfectionType it) {
@@ -1140,17 +1145,17 @@ int Person::GetCompletedTreatments() const {
 }
 int Person::GetRetreatments() const { return pImplPERSON->GetRetreatments(); }
 int Person::GetSVRs() const { return pImplPERSON->GetSVRs(); }
-int Person::GetNumberOfABTests() const {
-    return pImplPERSON->GetNumberOfABTests();
+int Person::GetNumberOfABTests(InfectionType it) const {
+    return pImplPERSON->GetNumberOfABTests(it);
 }
-int Person::GetNumberOfRNATests() const {
-    return pImplPERSON->GetNumberOfRNATests();
+int Person::GetNumberOfRNATests(InfectionType it) const {
+    return pImplPERSON->GetNumberOfRNATests(it);
 }
-int Person::GetTimeOfLastScreening() const {
-    return pImplPERSON->GetTimeOfLastScreening();
+int Person::GetTimeOfLastScreening(InfectionType it) const {
+    return pImplPERSON->GetTimeOfLastScreening(it);
 }
-int Person::GetTimeSinceLastScreening() const {
-    return pImplPERSON->GetTimeSinceLastScreening();
+int Person::GetTimeSinceLastScreening(InfectionType it) const {
+    return pImplPERSON->GetTimeSinceLastScreening(it);
 }
 bool Person::GetCurrentlyOverdosing() const {
     return pImplPERSON->GetCurrentlyOverdosing();
@@ -1270,8 +1275,8 @@ PregnancyDetails Person::GetPregnancyDetails() const {
 StagingDetails Person::GetFibrosisStagingDetails() const {
     return pImplPERSON->GetFibrosisStagingDetails();
 }
-ScreeningDetails Person::GetScreeningDetails() const {
-    return pImplPERSON->GetScreeningDetails();
+ScreeningDetails Person::GetScreeningDetails(InfectionType it) const {
+    return pImplPERSON->GetScreeningDetails(it);
 }
 TreatmentDetails Person::GetTreatmentDetails() const {
     return pImplPERSON->GetTreatmentDetails();

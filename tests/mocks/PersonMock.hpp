@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-13                                                  //
+// Last Modified: 2025-03-14                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -50,15 +50,19 @@ public:
     MOCK_METHOD(int, GetTimeSinceHCVChanged, (), (const, override));
 
     // Screening
-    MOCK_METHOD(int, MarkScreened, (), (override));
-    MOCK_METHOD(int, AddAbScreen, (), (override));
-    MOCK_METHOD(int, AddRnaScreen, (), (override));
+    MOCK_METHOD(int, MarkScreened, (InfectionType it), (override));
+    MOCK_METHOD(int, AddAbScreen, (InfectionType it), (override));
+    MOCK_METHOD(int, AddRnaScreen, (InfectionType it), (override));
+    MOCK_METHOD(int, GetNumberOfABTests, (InfectionType it), (const, override));
+    MOCK_METHOD(int, GetNumberOfRNATests, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(int, GetTimeOfLastScreening, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(int, GetTimeSinceLastScreening, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(ScreeningDetails, GetScreeningDetails, (InfectionType it),
+                (const, override));
     MOCK_METHOD(bool, HadSecondScreeningTest, (), (const, override));
-    MOCK_METHOD(int, GetNumberOfABTests, (), (const, override));
-    MOCK_METHOD(int, GetNumberOfRNATests, (), (const, override));
-    MOCK_METHOD(int, GetTimeOfLastScreening, (), (const, override));
-    MOCK_METHOD(int, GetTimeSinceLastScreening, (), (const, override));
-    MOCK_METHOD(ScreeningDetails, GetScreeningDetails, (), (const, override));
     MOCK_METHOD(void, GiveSecondScreeningTest, (bool state), (override));
 
     // Linking
