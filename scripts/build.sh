@@ -32,14 +32,14 @@ showhelp () {
 
 dminstall () {
     if [[ ! -d "DataManagement" ]]; then
-	git clone -b old_dm git@github.com:SyndemicsLab/DataManagement
+        git clone -b old_dm git@github.com:SyndemicsLab/DataManagement
     fi
     echo "DataManagement clone complete."
 
     # subshell needed to avoid changing working directory unnecessarily
     (
-	cd "DataManagement" || return 1
-	scripts/build.sh -i "$TOPLEVEL/lib/dminstall"
+        cd "DataManagement" || return 1
+        scripts/build.sh -i "$TOPLEVEL/lib/dminstall"
     )
     rm -rf DataManagement
 }
@@ -52,32 +52,32 @@ BUILD_SHARED_LIBS="OFF"
 # process optional command line flags
 while getopts ":hplt:" option; do
     case $option in
-	h)
-	    showhelp
-	    exit
-	    ;;
-	t)
-	    case "$OPTARG" in
-		"Debug"|"Release")
-		    BUILDTYPE="$OPTARG"
-		    ;;
-		*)
-		    echo "Specified build type is invalid!"
-		    exit
-		    ;;
-	    esac
-	    ;;
-	l)
-        BUILD_SHARED_LIBS="ON"
-        ;;
-    p)
-	    BUILD_TESTS="ON"
-	    ;;
-	\?)
-	    echo "Error: Invalid option flag provided!"
-	    showhelp
-	    exit
-	    ;;
+        h)
+            showhelp
+            exit
+            ;;
+        t)
+            case "$OPTARG" in
+                "Debug"|"Release")
+                    BUILDTYPE="$OPTARG"
+                    ;;
+                *)
+                    echo "Specified build type is invalid!"
+                    exit
+                    ;;
+            esac
+            ;;
+        l)
+            BUILD_SHARED_LIBS="ON"
+            ;;
+        p)
+            BUILD_TESTS="ON"
+            ;;
+        \?)
+            echo "Error: Invalid option flag provided!"
+            showhelp
+            exit
+            ;;
     esac
 done
 
@@ -100,34 +100,34 @@ done
     fi
 
     (
-	cd "build" || exit
+        cd "build" || exit
 
-	CMAKE_COMMAND="cmake .. -DCMAKE_BUILD_TYPE=$BUILDTYPE"
+        CMAKE_COMMAND="cmake .. -DCMAKE_BUILD_TYPE=${BUILDTYPE}"
 
-	# build tests, if specified
-	if [[ -n "$BUILD_TESTS" ]]; then
-	    CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_TESTS=$BUILD_TESTS"
-        if [[ -f "$TOPLEVEL/bin/hepceTest" ]]; then
-            rm "$TOPLEVEL/bin/hepceTest"
+        # build tests, if specified
+        if [[ -n "$BUILD_TESTS" ]]; then
+            CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_TESTS=${BUILD_TESTS}"
+            if [[ -f "$TOPLEVEL/bin/hepceTest" ]]; then
+                rm "$TOPLEVEL/bin/hepceTest"
+            fi
         fi
-	fi
 
-    # build static library if BUILD_STATIC_LIBRARY is on, otherwise build
-	# shared library
-    CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS"
+        # build static library if BUILD_STATIC_LIBRARY is on, otherwise build
+        # shared library
+        CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS"
 
-    err "[EXECUTE] $CMAKE_COMMAND"
+        err "[EXECUTE] $CMAKE_COMMAND"
 
-	$CMAKE_COMMAND
-	(
-	    # determine the number of processing units available
-	    CORES="$(nproc --all)"
-	    # if CORES > 1 compile in parallel where possible
-	    ([[ (-n "$CORES") && ("$CORES" -gt "2") ]] && cmake --build . -j"$(( CORES - 2 ))") || cmake --build .
-	)
+        $CMAKE_COMMAND
+        (
+            # determine the number of processing units available
+            CORES="$(nproc --all)"
+            # if CORES > 1 compile in parallel where possible
+            ([[ (-n "$CORES") && ("$CORES" -gt "2") ]] && cmake --build . -j"$(( CORES - 2 ))") || cmake --build .
+        )
     )
     # run tests, if they built properly
     if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then
-	    bin/hepceTest
+        bin/hepceTest
     fi
 )
