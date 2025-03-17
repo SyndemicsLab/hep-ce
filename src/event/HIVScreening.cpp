@@ -169,8 +169,10 @@ private:
                      SCREEN_TYPE type) {
         // increment antibody screening for person
         person->AddAbScreen(it);
-        // accumulate the cost of screening
-        AddScreeningCost(person, test_data[type].ab_cost);
+        // accumulate the cost of screening if intervention
+        if (type == SCREEN_TYPE::INTERVENTION) {
+            AddScreeningCost(person, test_data[type].ab_cost);
+        }
         double prob_positive;
         if (person->GetHIV() != person::HIV::NONE) {
             // probability of true positive
@@ -193,8 +195,10 @@ private:
                       SCREEN_TYPE type) {
         // increment rna screening for person
         person->AddRnaScreen(it);
-        // accumulate the cost of screening
-        AddScreeningCost(person, test_data[type].rna_cost);
+        // accumulate the cost of screening if intervention
+        if (type == SCREEN_TYPE::INTERVENTION) {
+            AddScreeningCost(person, test_data[type].rna_cost);
+        }
         double prob_positive;
         if (person->GetHIV() != person::HIV::NONE) {
             // probability of true positive
@@ -246,7 +250,7 @@ private:
             // if this was an intervention screen, set linkage type to
             // intervention
             if (type == SCREEN_TYPE::INTERVENTION) {
-                person->SetLinkageType(person::LinkageType::INTERVENTION);
+                person->SetLinkageType(person::LinkageType::INTERVENTION, it);
             }
         }
     }
@@ -310,7 +314,8 @@ public:
                                (person->GetCurrentTimestep() == 1);
         bool periodic_screen =
             (intervention_type == "periodic") &&
-            (person->GetTimeSinceLastScreening() >= screening_period);
+            (person->GetTimeSinceLastScreening(it) >= screening_period);
+
         if (one_time_screen || periodic_screen) {
             this->AttemptScreen(person, dm, decider, SCREEN_TYPE::INTERVENTION);
         } else {

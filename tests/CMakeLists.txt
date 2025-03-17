@@ -55,6 +55,7 @@ add_executable(${PROJECT_NAME}
   src/eventtests/FibrosisProgressionTest.cpp
   src/eventtests/FibrosisStagingTest.cpp
   src/eventtests/HIVInfectionsTest.cpp
+  src/eventtests/HIVScreeningTest.cpp
   src/eventtests/InfectionsTest.cpp
   src/eventtests/LinkingTest.cpp
   src/eventtests/ScreeningTest.cpp
