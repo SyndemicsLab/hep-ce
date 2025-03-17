@@ -4,7 +4,7 @@
 // Created: 2023-09-14                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-17                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -21,6 +21,7 @@
 #include "FibrosisProgression.hpp"
 #include "FibrosisStaging.hpp"
 #include "HIVInfections.hpp"
+#include "HIVScreening.hpp"
 #include "Infections.hpp"
 #include "Linking.hpp"
 #include "MOUD.hpp"

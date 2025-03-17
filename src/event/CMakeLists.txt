@@ -35,6 +35,7 @@ target_sources(${PROJECT_NAME}
         FibrosisProgression.cpp
         FibrosisStaging.cpp
         HIVInfections.cpp
+        HIVScreening.cpp
         Infections.cpp
         Linking.cpp
         MOUD.cpp

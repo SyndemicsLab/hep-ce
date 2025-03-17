@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
+// Last Modified: 2025-03-17                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -428,9 +428,10 @@ public:
         this->health.historyOfHCV = true;
     }
 
-    // void Diagnose(InterventionType it) {
-    //     this->health[it].identified = true;
-    // }
+    void Diagnose(InfectionType it) {
+        this->screeningDetails[it].identified = true;
+        this->screeningDetails[it].timeIdentified = this->_currentTime;
+    }
 
     int ClearHCVDiagnosis() {
         this->health.identifiedHCV = false;
@@ -1306,6 +1307,13 @@ void Person::SetDeathReason(DeathReason deathReason) {
 void Person::SetAge(int age) { pImplPERSON->SetAge(age); }
 void Person::GiveSecondScreeningTest(bool state) {
     pImplPERSON->GiveSecondScreeningTest(state);
+}
+void Person::Diagnose(InfectionType it) { pImplPERSON->Diagnose(it); }
+bool Person::CheckAntibodyPositive(InfectionType it) const {
+    return pImplPERSON->CheckAntibodyPositive(it);
+}
+void Person::SetAntibodyPositive(bool result, InfectionType it) {
+    pImplPERSON->SetAntibodyPositive(result, it);
 }
 void Person::SetSeropositivity(bool seropositive) {
     pImplPERSON->SetSeropositivity(seropositive);

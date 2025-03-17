@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
+// Last Modified: 2025-03-17                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -43,6 +43,7 @@ public:
     virtual void SetSeropositivity(bool seropositive) = 0;
 
     virtual int DiagnoseHCV() = 0;
+    virtual void Diagnose(InfectionType it = InfectionType::HCV) = 0;
     virtual int ClearHCVDiagnosis() = 0;
     virtual bool IsIdentifiedAsHCVInfected() const = 0;
     virtual bool HistoryOfHCVInfection() const = 0;
@@ -246,6 +247,7 @@ public:
     void SetSeropositivity(bool seropositive);
 
     int DiagnoseHCV();
+    void Diagnose(InfectionType it);
     int ClearHCVDiagnosis();
     bool IsIdentifiedAsHCVInfected() const;
     bool HistoryOfHCVInfection() const;

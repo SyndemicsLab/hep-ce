@@ -4,7 +4,7 @@
 // Created: 2024-04-10                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-17                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -30,7 +30,8 @@ enum class CostCategory {
     LIVER = 5,
     TREATMENT = 6,
     BACKGROUND = 7,
-    COUNT = 8
+    HIV = 8,
+    COUNT = 9
 };
 std::ostream &operator<<(std::ostream &os, const CostCategory &inst);
 

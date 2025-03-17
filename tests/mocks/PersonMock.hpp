@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
+// Last Modified: 2025-03-17                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -64,6 +64,11 @@ public:
                 (const, override));
     MOCK_METHOD(bool, HadSecondScreeningTest, (), (const, override));
     MOCK_METHOD(void, GiveSecondScreeningTest, (bool state), (override));
+    MOCK_METHOD(void, Diagnose, (InfectionType it), (override));
+    MOCK_METHOD(bool, CheckAntibodyPositive, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(void, SetAntibodyPositive, (bool result, InfectionType it),
+                (override));
 
     // Linking
     MOCK_METHOD(int, Unlink, (InfectionType it), (override));

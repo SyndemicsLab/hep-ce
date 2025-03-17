@@ -4,7 +4,7 @@
 // Created: 2025-03-06                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
+// Last Modified: 2025-03-17                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -24,10 +24,16 @@ namespace event {
 class HIVScreening::HIVScreeningIMPL {
 private:
     // constants
-    // two types of screening - background and intervention
-    const int TYPE_COUNT = 2;
+    /// @brief
     enum class SCREEN_TYPE { BACKGROUND = 0, INTERVENTION = 1 };
-    person::InfectionType it = person::InfectionType::HIV;
+    // two types of screening - background and intervention
+    /// @brief
+    static const int TYPE_COUNT = 2;
+    /// @brief
+    static const person::InfectionType it = person::InfectionType::HIV;
+    /// @brief
+    static const cost::CostCategory COST_CATEGORY = cost::CostCategory::HIV;
+    /// @brief
     const std::unordered_map<SCREEN_TYPE, std::string> TYPE_COLUMNS = {
         {SCREEN_TYPE::BACKGROUND, "hiv_background_screen_probability"},
         {SCREEN_TYPE::INTERVENTION, "hiv_intervention_screen_probability"}};
@@ -52,7 +58,7 @@ private:
 
     // data for test acceptance
     using hivscreenmap_t =
-        std::unordered_map<Utils::tuple3i, double, Utils::key_hash_3i,
+        std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
                            Utils::key_equal_3i>;
     hivscreenmap_t hiv_background_screen_data;
     hivscreenmap_t hiv_intervention_screen_data;
@@ -94,9 +100,12 @@ private:
         if (positive) {
             return Utils::stod_positive(config_data);
         }
-        return static_cast<double>(config_data);
+        return std::stod(config_data);
     }
 
+    /// @brief
+    /// @param
+    /// @return
     std::string
     GetStringFromConfig(std::string config_key,
                         std::shared_ptr<datamanagement::DataManagerBase> dm) {
@@ -111,35 +120,14 @@ private:
     /// @brief
     /// @param
     /// @return A reference to the map used to store data for the screen type
-    hivscreenmap_t &PickMap(SCREEN_TYPE type) {
+    hivscreenmap_t *PickMap(SCREEN_TYPE type) {
         switch (type) {
         case SCREEN_TYPE::BACKGROUND:
             return &hiv_background_screen_data;
         case SCREEN_TYPE::INTERVENTION:
             return &hiv_intervention_screen_data;
         }
-    }
-
-    /// @brief
-    /// @param
-    void
-    LoadScreeningData(SCREEN_TYPE type,
-                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        hivscreenmap_t &chosen_screenmap = PickMap(type);
-        std::string column = TYPE_COLUMNS.at(type);
-        std::string error;
-        int rc = dm->SelectCustomCallback(HIVScreenSQL(column),
-                                          this->callback_hivscreen,
-                                          chosen_screenmap, error);
-        if (rc != 0) {
-            std::string message =
-                "Error retrieving Screening values for column `" + column
-                "'! Error Message: {}";
-            spdlog::get("main")->error(message, error);
-        }
-        if ((*chosen_screenmap).empty()) {
-            spdlog::get("main")->warn("No " + column + " found.");
-        }
+        return nullptr;
     }
 
     /// @brief
@@ -152,7 +140,7 @@ private:
         int age_years = static_cast<int>(person->GetAge() / 12.0);
         int gender = static_cast<int>(person->GetSex());
         int drug_behavior = static_cast<int>(person->GetBehavior());
-        Utils::tuple_3i tup = std::make_tupe(age_years, gender, drug_behavior);
+        Utils::tuple_3i tup = std::make_tuple(age_years, gender, drug_behavior);
 
         double probability = 0.0;
         switch (type) {
@@ -166,12 +154,60 @@ private:
         return probability;
     }
 
+    void AddScreeningCost(std::shared_ptr<person::PersonBase> person,
+                          double base_cost) {
+        double discounted_cost = DiscountEventCost(
+            base_cost, discount, person->GetCurrentTimestep());
+        person->AddCost(base_cost, discounted_cost, COST_CATEGORY);
+    }
+
     /// @brief
     /// @param
+    /// @return
     bool RunABScreen(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
                      std::shared_ptr<stats::DeciderBase> decider,
-                     SCREEN_TYPE type) {}
+                     SCREEN_TYPE type) {
+        // increment antibody screening for person
+        person->AddAbScreen(it);
+        // accumulate the cost of screening
+        AddScreeningCost(person, test_data[type].ab_cost);
+        double prob_positive;
+        if (person->GetHIV() != person::HIV::NONE) {
+            // probability of true positive
+            prob_positive = test_data[type].ab_sensitivity;
+        } else {
+            // probability of false positive
+            prob_positive = 1 - test_data[type].ab_specificity;
+        }
+        // determine the test outcome -- if decider returns 0, true
+        bool test_outcome =
+            (decider->GetDecision({prob_positive}) == 0) ? true : false;
+        return test_outcome;
+    }
+
+    /// @brief
+    /// @param
+    /// @return
+    bool RunRNAScreen(std::shared_ptr<person::PersonBase> person,
+                      std::shared_ptr<stats::DeciderBase> decider,
+                      SCREEN_TYPE type) {
+        // increment rna screening for person
+        person->AddRnaScreen(it);
+        // accumulate the cost of screening
+        AddScreeningCost(person, test_data[type].rna_cost);
+        double prob_positive;
+        if (person->GetHIV() != person::HIV::NONE) {
+            // probability of true positive
+            prob_positive = test_data[type].rna_sensitivity;
+        } else {
+            // probability of false positive
+            prob_positive = 1 - test_data[type].rna_specificity;
+        }
+        // determine the test outcome -- if decider returns 0, true
+        bool test_outcome =
+            (decider->GetDecision({prob_positive}) == 0) ? true : false;
+        return test_outcome;
+    }
 
     /// @brief
     /// @param
@@ -179,6 +215,7 @@ private:
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::shared_ptr<stats::DeciderBase> decider,
                        SCREEN_TYPE type = SCREEN_TYPE::BACKGROUND) {
+        // get the chance that a person will be screened
         double screen_probability =
             this->GetScreeningProbability(person, dm, type);
         // do not screen if the decision does not evaluate to 0
@@ -191,32 +228,59 @@ private:
 
         // if not already tested positive for antibody, HIV antibody screen
         if (!person->CheckAntibodyPositive(it)) {
-            // add antibody screening to person
-            person->AddAbScreen(it);
             // stop screening if person isn't found antibody positive
-            if (!RunABScreen(person, dm, decider, type)) {
+            if (!RunABScreen(person, decider, type)) {
                 return;
             }
             // mark positive otherwise
-            person->SetAntibodyPositive(true);
+            person->SetAntibodyPositive(true, it);
         }
 
         // if positive for HIV antibody, HIV rna screen
         if (person->CheckAntibodyPositive(it)) {
-            if (!RunRNAScreen(person, dm, decider, type)) {
+            if (!RunRNAScreen(person, decider, type)) {
                 return;
             }
             // if rna positive, mark hiv identified
-            // STILL IN PROGRESS
-            // person->Diagnose(it);
+            person->Diagnose(it);
+            // if this was an intervention screen, set linkage type to
+            // intervention
+            if (type == SCREEN_TYPE::INTERVENTION) {
+                person->SetLinkageType(person::LinkageType::INTERVENTION);
+            }
         }
     }
 
-    void MakeTestCharacteristics(SCREEN_TYPE type) {
+    /// @brief
+    /// @param
+    void
+    LoadScreeningData(SCREEN_TYPE type,
+                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        hivscreenmap_t *chosen_screenmap = PickMap(type);
+        std::string column = TYPE_COLUMNS.at(type);
+        std::string error;
+        int rc = dm->SelectCustomCallback(HIVScreenSQL(column),
+                                          this->callback_hivscreen,
+                                          chosen_screenmap, error);
+        if (rc != 0) {
+            spdlog::get("main")->error("Error retrieving Screening values "
+                                       "for column `{}'! Error Message: {}",
+                                       column, error);
+        }
+        if ((*chosen_screenmap).empty()) {
+            spdlog::get("main")->warn("No `" + column + "' found.");
+        }
+    }
+
+    /// @brief
+    /// @param
+    /// @return
+    void MakeTestCharacteristics(
+        SCREEN_TYPE type, std::shared_ptr<datamanagement::DataManagerBase> dm) {
         std::string prefix = "hiv_screening_";
         if (type == SCREEN_TYPE::BACKGROUND) {
             prefix += "background";
-        } else if {
+        } else if (type == SCREEN_TYPE::INTERVENTION) {
             prefix += "intervention";
         } else {
             // error
@@ -258,16 +322,31 @@ public:
         discount = GetDoubleFromConfig("cost.discounting_rate", dm);
 
         intervention_type =
-            GetStringFromConfig("hiv_screening.intervention_type");
-        std::string temp = GetStringFromConfig("hiv_screening.period");
-        period = temp.empty() ? 0 : std::stoi(temp);
+            GetStringFromConfig("hiv_screening.intervention_type", dm);
+        std::string temp = GetStringFromConfig("hiv_screening.period", dm);
+        screening_period = temp.empty() ? 0 : std::stoi(temp);
 
         // iterate through screening types, defining screening data
-        for (int screen_type = 0; i < TYPE_COUNT; ++screen_type) {
+        for (int screen_type = 0; screen_type < TYPE_COUNT; ++screen_type) {
             SCREEN_TYPE type = static_cast<SCREEN_TYPE>(screen_type);
-            MakeTestCharacteristics(type);
-            LoadScreeningData(type);
+            MakeTestCharacteristics(type, dm);
+            LoadScreeningData(type, dm);
         }
     }
 };
+
+HIVScreening::HIVScreening(
+    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    impl = std::make_unique<HIVScreeningIMPL>(dm);
+}
+
+HIVScreening::~HIVScreening() = default;
+HIVScreening::HIVScreening(HIVScreening &&) noexcept = default;
+HIVScreening &HIVScreening::operator=(HIVScreening &&) noexcept = default;
+
+void HIVScreening::DoEvent(std::shared_ptr<person::PersonBase> person,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           std::shared_ptr<stats::DeciderBase> decider) {
+    impl->DoEvent(person, dm, decider);
+}
 } // namespace event

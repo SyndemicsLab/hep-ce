@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-17                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -39,6 +39,9 @@ EventFactory::create(std::string eventName,
     }
     if (eventName == "HIVInfections") {
         return makeEvent<HIVInfections>(dm);
+    }
+    if (eventName == "HIVScreening") {
+        return makeEvent<HIVScreening>(dm);
     }
     if (eventName == "Infections") {
         return makeEvent<Infections>(dm);
