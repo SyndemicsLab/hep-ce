@@ -4,7 +4,7 @@
 // Created: 2025-03-06                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-17                                                  //
+// Last Modified: 2025-03-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -133,10 +133,8 @@ private:
     /// @brief
     /// @param
     /// @return
-    double
-    GetScreeningProbability(std::shared_ptr<person::PersonBase> person,
-                            std::shared_ptr<datamanagement::DataManagerBase> dm,
-                            SCREEN_TYPE type) {
+    double GetScreeningProbability(std::shared_ptr<person::PersonBase> person,
+                                   SCREEN_TYPE type) {
         int age_years = static_cast<int>(person->GetAge() / 12.0);
         int gender = static_cast<int>(person->GetSex());
         int drug_behavior = static_cast<int>(person->GetBehavior());
@@ -169,10 +167,8 @@ private:
                      SCREEN_TYPE type) {
         // increment antibody screening for person
         person->AddAbScreen(it);
-        // accumulate the cost of screening if intervention
-        if (type == SCREEN_TYPE::INTERVENTION) {
-            AddScreeningCost(person, test_data[type].ab_cost);
-        }
+        // accumulate the cost of screening
+        AddScreeningCost(person, test_data[type].ab_cost);
         double prob_positive;
         if (person->GetHIV() != person::HIV::NONE) {
             // probability of true positive
@@ -195,10 +191,8 @@ private:
                       SCREEN_TYPE type) {
         // increment rna screening for person
         person->AddRnaScreen(it);
-        // accumulate the cost of screening if intervention
-        if (type == SCREEN_TYPE::INTERVENTION) {
-            AddScreeningCost(person, test_data[type].rna_cost);
-        }
+        // accumulate the cost of screening
+        AddScreeningCost(person, test_data[type].rna_cost);
         double prob_positive;
         if (person->GetHIV() != person::HIV::NONE) {
             // probability of true positive
@@ -216,12 +210,10 @@ private:
     /// @brief
     /// @param
     void AttemptScreen(std::shared_ptr<person::PersonBase> person,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm,
                        std::shared_ptr<stats::DeciderBase> decider,
                        SCREEN_TYPE type = SCREEN_TYPE::BACKGROUND) {
         // get the chance that a person will be screened
-        double screen_probability =
-            this->GetScreeningProbability(person, dm, type);
+        double screen_probability = this->GetScreeningProbability(person, type);
         // do not screen if the decision does not evaluate to 0
         if (decider->GetDecision({screen_probability}) != 0) {
             return;
@@ -251,7 +243,9 @@ private:
             // intervention
             if (type == SCREEN_TYPE::INTERVENTION) {
                 person->SetLinkageType(person::LinkageType::INTERVENTION, it);
+                return;
             }
+            person->SetLinkageType(person::LinkageType::BACKGROUND, it);
         }
     }
 
@@ -317,9 +311,9 @@ public:
             (person->GetTimeSinceLastScreening(it) >= screening_period);
 
         if (one_time_screen || periodic_screen) {
-            this->AttemptScreen(person, dm, decider, SCREEN_TYPE::INTERVENTION);
+            this->AttemptScreen(person, decider, SCREEN_TYPE::INTERVENTION);
         } else {
-            this->AttemptScreen(person, dm, decider);
+            this->AttemptScreen(person, decider);
         }
     }
 
