@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-17                                                  //
+// Last Modified: 2025-03-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -520,13 +520,6 @@ public:
     /// @return Boolean Describing Indentified as Positive Status
     bool IsIdentifiedAsHCVInfected() const {
         return this->health.identifiedHCV;
-    }
-
-    /// @brief Getter for HIV Identification Status
-    /// @return Boolean describing whether the healthcare system has
-    /// detected HIV in the Person
-    bool IsIdentifiedAsHIVInfected() const {
-        return this->health.identifiedHIV;
     }
 
     bool HistoryOfHCVInfection() const { return this->health.historyOfHCV; }
@@ -1364,8 +1357,5 @@ int Person::GetTimeHIVChanged() const {
 }
 int Person::GetTimeSinceHIVChanged() const {
     return pImplPERSON->GetTimeSinceHIVChanged();
-}
-bool Person::IsIdentifiedAsHIVInfected() const {
-    return pImplPERSON->IsIdentifiedAsHIVInfected();
 }
 } // namespace person

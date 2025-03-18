@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-17                                                  //
+// Last Modified: 2025-03-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -184,7 +184,6 @@ public:
     MOCK_METHOD(void, InfectHIV, (), (override));
     MOCK_METHOD(int, GetTimeHIVChanged, (), (const, override));
     MOCK_METHOD(int, GetTimeSinceHIVChanged, (), (const, override));
-    MOCK_METHOD(bool, IsIdentifiedAsHIVInfected, (), (const, override));
 
     // TODO
     MOCK_METHOD(PregnancyState, GetPregnancyState, (), (const, override));

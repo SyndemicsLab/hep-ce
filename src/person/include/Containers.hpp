@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-17                                                  //
+// Last Modified: 2025-03-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -250,7 +250,6 @@ struct Health {
     int timesInfected = 0;
     int timesCleared = 0;
     bool identifiedHCV = false;
-    bool identifiedHIV = false;
     bool historyOfHCV = false;
     int timeIdentified = -1;
     HCCState hccState = HCCState::NONE;
