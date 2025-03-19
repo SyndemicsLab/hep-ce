@@ -4,7 +4,7 @@
 // Created: 2025-03-06                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-18                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -30,7 +30,7 @@ private:
     /// @brief
     static const int TYPE_COUNT = 2;
     /// @brief
-    static const person::InfectionType it = person::InfectionType::HIV;
+    static const person::InfectionType INF_TYPE = person::InfectionType::HIV;
     /// @brief
     static const cost::CostCategory COST_CATEGORY = cost::CostCategory::HIV;
     /// @brief
@@ -166,7 +166,7 @@ private:
                      std::shared_ptr<stats::DeciderBase> decider,
                      SCREEN_TYPE type) {
         // increment antibody screening for person
-        person->AddAbScreen(it);
+        person->AddAbScreen(INF_TYPE);
         // accumulate the cost of screening
         AddScreeningCost(person, test_data[type].ab_cost);
         double prob_positive;
@@ -190,7 +190,7 @@ private:
                       std::shared_ptr<stats::DeciderBase> decider,
                       SCREEN_TYPE type) {
         // increment rna screening for person
-        person->AddRnaScreen(it);
+        person->AddRnaScreen(INF_TYPE);
         // accumulate the cost of screening
         AddScreeningCost(person, test_data[type].rna_cost);
         double prob_positive;
@@ -220,32 +220,33 @@ private:
         }
 
         // mark that person has been HIV screened on the current timestep
-        person->MarkScreened(it);
+        person->MarkScreened(INF_TYPE);
 
         // if not already tested positive for antibody, HIV antibody screen
-        if (!person->CheckAntibodyPositive(it)) {
+        if (!person->CheckAntibodyPositive(INF_TYPE)) {
             // stop screening if person isn't found antibody positive
             if (!RunABScreen(person, decider, type)) {
                 return;
             }
             // mark positive otherwise
-            person->SetAntibodyPositive(true, it);
+            person->SetAntibodyPositive(true, INF_TYPE);
         }
 
         // if positive for HIV antibody, HIV rna screen
-        if (person->CheckAntibodyPositive(it)) {
+        if (person->CheckAntibodyPositive(INF_TYPE)) {
             if (!RunRNAScreen(person, decider, type)) {
                 return;
             }
             // if rna positive, mark hiv identified
-            person->Diagnose(it);
+            person->Diagnose(INF_TYPE);
             // if this was an intervention screen, set linkage type to
             // intervention
             if (type == SCREEN_TYPE::INTERVENTION) {
-                person->SetLinkageType(person::LinkageType::INTERVENTION, it);
+                person->SetLinkageType(person::LinkageType::INTERVENTION,
+                                       INF_TYPE);
                 return;
             }
-            person->SetLinkageType(person::LinkageType::BACKGROUND, it);
+            person->SetLinkageType(person::LinkageType::BACKGROUND, INF_TYPE);
         }
     }
 
@@ -300,7 +301,7 @@ public:
                  std::shared_ptr<datamanagement::DataManagerBase> dm,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if Person already linked, skip screening
-        if (person->GetLinkState(it) == person::LinkageState::LINKED) {
+        if (person->GetLinkState(INF_TYPE) == person::LinkageState::LINKED) {
             return;
         }
 
@@ -308,7 +309,7 @@ public:
                                (person->GetCurrentTimestep() == 1);
         bool periodic_screen =
             (intervention_type == "periodic") &&
-            (person->GetTimeSinceLastScreening(it) >= screening_period);
+            (person->GetTimeSinceLastScreening(INF_TYPE) >= screening_period);
 
         if (one_time_screen || periodic_screen) {
             this->AttemptScreen(person, decider, SCREEN_TYPE::INTERVENTION);

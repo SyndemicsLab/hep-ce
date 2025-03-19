@@ -183,11 +183,11 @@ enum class MeasuredFibrosisState {
     F01 = 0,
     /// Person is measured to be either F2 or F3
     F23 = 1,
-    /// Person is measured to be F4
+    /// Person is measured to be F4 fibrosis, compensated cirrhosis
     F4 = 2,
-    /// Person has decompensated liver
+    /// Person has decompensated liver cirrhosis
     DECOMP = 3,
-    /// Person has never been screened before
+    /// Person has never been staged before
     NONE = 4,
 
     COUNT = 5
