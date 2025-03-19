@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: Treatment.cpp                                                        //
+// File: HCVTreatment.cpp                                                        //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Treatment.hpp"
+#include "HCVTreatment.hpp"
 #include "Cost.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
@@ -21,7 +21,7 @@
 #include <sstream>
 
 namespace event {
-class Treatment::TreatmentIMPL {
+class HCVTreatment::HCVTreatmentIMPL {
 private:
     utility::UtilityCategory util_category =
         utility::UtilityCategory::TREATMENT;
@@ -429,7 +429,7 @@ public:
             }
         }
     }
-    TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    HCVTreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
         std::string data;
         int rc = dm->GetFromConfig("cost.discounting_rate", data);
         if (!data.empty()) {
@@ -461,17 +461,18 @@ public:
         rc = LoadDurationData(dm);
     }
 };
-Treatment::Treatment(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    impl = std::make_unique<TreatmentIMPL>(dm);
+HCVTreatment::HCVTreatment(
+    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    impl = std::make_unique<HCVTreatmentIMPL>(dm);
 }
 
-Treatment::~Treatment() = default;
-Treatment::Treatment(Treatment &&) noexcept = default;
-Treatment &Treatment::operator=(Treatment &&) noexcept = default;
+HCVTreatment::~HCVTreatment() = default;
+HCVTreatment::HCVTreatment(HCVTreatment &&) noexcept = default;
+HCVTreatment &HCVTreatment::operator=(HCVTreatment &&) noexcept = default;
 
-void Treatment::DoEvent(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        std::shared_ptr<stats::DeciderBase> decider) {
+void HCVTreatment::DoEvent(std::shared_ptr<person::PersonBase> person,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }
 

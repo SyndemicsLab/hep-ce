@@ -34,13 +34,14 @@ target_sources(${PROJECT_NAME}
         EventFactory.cpp
         FibrosisProgression.cpp
         FibrosisStaging.cpp
+        HCVInfections.cpp
+        HCVLinking.cpp
+        HCVScreening.cpp
+        HCVTreatment.cpp
         HIVInfections.cpp
-        Infections.cpp
-        Linking.cpp
+        HIVScreening.cpp
         MOUD.cpp
         Overdose.cpp
-        Screening.cpp
-        Treatment.cpp
         VoluntaryRelinking.cpp
         Pregnancy.cpp
 )

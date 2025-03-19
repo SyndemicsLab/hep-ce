@@ -1,17 +1,17 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: Linking.hpp                                                          //
+// File: HCVLinking.hpp                                                          //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef EVENT_LINKING_HPP_
-#define EVENT_LINKING_HPP_
+#ifndef EVENT_HCVLINKING_HPP_
+#define EVENT_HCVLINKING_HPP_
 
 #include "Event.hpp"
 
@@ -19,10 +19,10 @@
 namespace event {
 
 /// @brief Subclass of Event used to Link People to Treatment
-class Linking : public Event {
+class HCVLinking : public Event {
 private:
-    class LinkingIMPL;
-    std::unique_ptr<LinkingIMPL> impl;
+    class HCVLinkingIMPL;
+    std::unique_ptr<HCVLinkingIMPL> impl;
 
     /// @brief Implementation of Virtual Function DoEvent
     /// @param person Individual Person undergoing Event
@@ -31,14 +31,14 @@ private:
                  std::shared_ptr<stats::DeciderBase> decider) override;
 
 public:
-    Linking(std::shared_ptr<datamanagement::DataManagerBase> dm);
-    ~Linking();
+    HCVLinking(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~HCVLinking();
 
     // Copy Operations
-    Linking(Linking const &) = delete;
-    Linking &operator=(Linking const &) = delete;
-    Linking(Linking &&) noexcept;
-    Linking &operator=(Linking &&) noexcept;
+    HCVLinking(HCVLinking const &) = delete;
+    HCVLinking &operator=(HCVLinking const &) = delete;
+    HCVLinking(HCVLinking &&) noexcept;
+    HCVLinking &operator=(HCVLinking &&) noexcept;
 };
 } // namespace event
 #endif

@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-12                                                  //
+// Last Modified: 2025-03-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -29,6 +29,18 @@ inline static const std::string POPULATION_HEADERS =
     "behaviorUtility,liverUtility,treatmentUtility,backgroundUtility,"
     "hivUtility,lifeSpan,discountedLifeSpan,numberOfTreatmentStarts,"
     "numberOfRetreatments";
+
+/// @brief Infection types tracked for all Persons
+enum class InfectionType {
+    /// Hepatitis C Virus
+    HCV = 0,
+    /// Human Immunodeficiency Virus
+    HIV = 1,
+    COUNT = 2
+};
+std::ostream &operator<<(std::ostream &os, const InfectionType &inst);
+InfectionType &operator<<(InfectionType &inst, const std::string &str);
+InfectionType &operator++(InfectionType &inst);
 
 /// @brief HEP-C Infection States
 enum class HCV {
@@ -171,11 +183,11 @@ enum class MeasuredFibrosisState {
     F01 = 0,
     /// Person is measured to be either F2 or F3
     F23 = 1,
-    /// Person is measured to be F4
+    /// Person is measured to be F4 fibrosis, compensated cirrhosis
     F4 = 2,
-    /// Person has decompensated liver
+    /// Person has decompensated liver cirrhosis
     DECOMP = 3,
-    /// Person has never been screened before
+    /// Person has never been staged before
     NONE = 4,
 
     COUNT = 5
@@ -238,7 +250,6 @@ struct Health {
     int timesInfected = 0;
     int timesCleared = 0;
     bool identifiedHCV = false;
-    bool identifiedHIV = false;
     bool historyOfHCV = false;
     int timeIdentified = -1;
     HCCState hccState = HCCState::NONE;
@@ -299,6 +310,9 @@ struct ScreeningDetails {
     int timeOfLastScreening = -1;
     int numABTests = 0;
     int numRNATests = 0;
+    bool antibodyPositive = false;
+    bool identified = false;
+    int timeIdentified = -1;
 };
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 

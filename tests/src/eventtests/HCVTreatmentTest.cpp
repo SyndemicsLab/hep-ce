@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: TreatmentTest.cpp                                                    //
+// File: HCVTreatmentTest.cpp                                                    //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Treatment.hpp"
+#include "HCVTreatment.hpp"
 #include "EventTest.cpp"
 
 using ::testing::_;
@@ -19,7 +19,7 @@ using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
 
-class TreatmentTest : public EventTest {};
+class HCVTreatmentTest : public EventTest {};
 
 std::string const DURATION_QUERY =
     "SELECT retreatment, genotype_three, cirrhotic, duration FROM treatments;";
@@ -34,7 +34,7 @@ std::string const TOXICITY_QUERY =
 std::string const WITHDRAWAL_QUERY = "SELECT retreatment, genotype_three, "
                                      "cirrhotic, withdrawal FROM treatments;";
 
-TEST_F(TreatmentTest, NewTreatmentInitiation) {
+TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
     // Person Setup
     EXPECT_CALL(*testPerson, HasInitiatedTreatment())
         .WillOnce(Return(false))       // False Positive
@@ -47,13 +47,14 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetTrueFibrosisState())
         .WillByDefault(Return(person::FibrosisState::NONE));
-    ON_CALL(*testPerson, GetTimeSinceLinkChange()).WillByDefault(Return(2));
+    ON_CALL(*testPerson, GetTimeSinceLinkChange(person::InfectionType::HCV))
+        .WillByDefault(Return(2));
     ON_CALL(*testPerson, GetBehavior())
         .WillByDefault(Return(person::Behavior::FORMER_NONINJECTION));
     ON_CALL(*testPerson, GetTimeBehaviorChange()).WillByDefault(Return(120));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NONE));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::LINKED));
     ON_CALL(*testPerson, GetCompletedTreatments()).WillByDefault(Return(0));
     ON_CALL(*testPerson, GetWithdrawals()).WillByDefault(Return(0));
@@ -155,22 +156,22 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
-    EXPECT_CALL(*testPerson, Unlink()).Times(0);
+    EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, FinishTreatment) {
+TEST_F(HCVTreatmentTest, FinishTreatment) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(2));
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::LINKED));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
@@ -257,22 +258,22 @@ TEST_F(TreatmentTest, FinishTreatment) {
     EXPECT_CALL(*testPerson, AddSVR()).Times(1);
     EXPECT_CALL(*testPerson, ClearHCV()).Times(1);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(1);
-    EXPECT_CALL(*testPerson, Unlink()).Times(1);
+    EXPECT_CALL(*testPerson, Unlink(person::InfectionType::HCV)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, FinishTreatmentNoSVR) {
+TEST_F(HCVTreatmentTest, FinishTreatmentNoSVR) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(2));
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::LINKED));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
@@ -363,18 +364,18 @@ TEST_F(TreatmentTest, FinishTreatmentNoSVR) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, LostToFollowUp) {
+TEST_F(HCVTreatmentTest, LostToFollowUp) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(0));
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::LINKED));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
@@ -458,22 +459,22 @@ TEST_F(TreatmentTest, LostToFollowUp) {
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
-    EXPECT_CALL(*testPerson, Unlink()).Times(1);
+    EXPECT_CALL(*testPerson, Unlink(person::InfectionType::HCV)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, Withdraw) {
+TEST_F(HCVTreatmentTest, Withdraw) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(5));
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::LINKED));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
@@ -560,23 +561,23 @@ TEST_F(TreatmentTest, Withdraw) {
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
-    EXPECT_CALL(*testPerson, Unlink()).Times(1);
+    EXPECT_CALL(*testPerson, Unlink(person::InfectionType::HCV)).Times(1);
     EXPECT_CALL(*testPerson, AddWithdrawal()).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, DevelopToxicity) {
+TEST_F(HCVTreatmentTest, DevelopToxicity) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(5));
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetLinkState())
+    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::LINKED));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
@@ -662,11 +663,11 @@ TEST_F(TreatmentTest, DevelopToxicity) {
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
-    EXPECT_CALL(*testPerson, Unlink()).Times(1);
+    EXPECT_CALL(*testPerson, Unlink(person::InfectionType::HCV)).Times(1);
     EXPECT_CALL(*testPerson, AddToxicReaction()).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

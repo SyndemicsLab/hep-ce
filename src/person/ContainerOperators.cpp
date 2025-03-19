@@ -4,7 +4,7 @@
 // Created: 2024-09-03                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -13,6 +13,42 @@
 #include "Containers.hpp"
 
 namespace person {
+std::ostream &operator<<(std::ostream &os, const InfectionType &inst) {
+    switch (inst) {
+    case InfectionType::HCV:
+        os << "HCV";
+        break;
+    case InfectionType::HIV:
+        os << "HIV";
+        break;
+    default:
+        os << "INVALID";
+        break;
+    }
+    return os;
+}
+InfectionType &operator<<(InfectionType &inst, const std::string &str) {
+    if (str == "HIV") {
+        inst = InfectionType::HIV;
+    } else {
+        inst = InfectionType::HCV;
+    }
+    return inst;
+}
+InfectionType &operator++(InfectionType &inst) {
+    switch (inst) {
+    case InfectionType::HCV:
+        inst = InfectionType::HIV;
+        break;
+    case InfectionType::HIV:
+        inst = InfectionType::COUNT;
+        break;
+    default:
+        break;
+    }
+    return inst;
+}
+
 std::ostream &operator<<(std::ostream &os, const HCV &inst) {
     switch (inst) {
     case HCV::ACUTE:
@@ -498,6 +534,8 @@ std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet) {
     os << "Time of Last Screening: " << sdet.timeOfLastScreening << std::endl;
     os << "AB Test Counts: " << sdet.numABTests << std::endl;
     os << "RNA Testing Counts: " << sdet.numRNATests << std::endl;
+    os << "Antibody Positive: " << std::boolalpha << sdet.antibodyPositive
+       << std::endl;
     return os;
 }
 

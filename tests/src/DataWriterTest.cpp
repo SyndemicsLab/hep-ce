@@ -4,7 +4,7 @@
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-12                                                  //
+// Last Modified: 2025-03-14                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -134,16 +134,16 @@ TEST_F(DataWriterTest, PopulationString) {
             .WillByDefault(Return(id));
         person::LinkageState ls = static_cast<person::LinkageState>(
             id % static_cast<int>(person::LinkageState::COUNT));
-        ON_CALL(*(testPopulation[id]), GetLinkState())
+        ON_CALL(*(testPopulation[id]), GetLinkState(_))
             .WillByDefault(Return(ls));
-        ON_CALL(*(testPopulation[id]), GetTimeOfLinkChange())
+        ON_CALL(*(testPopulation[id]), GetTimeOfLinkChange(_))
             .WillByDefault(Return(id));
         person::LinkageType lt = (ls == person::LinkageState::LINKED)
                                      ? person::LinkageType::BACKGROUND
                                      : person::LinkageType::NA;
-        ON_CALL(*(testPopulation[id]), GetLinkageType())
+        ON_CALL(*(testPopulation[id]), GetLinkageType(_))
             .WillByDefault(Return(lt));
-        ON_CALL(*(testPopulation[id]), GetLinkCount())
+        ON_CALL(*(testPopulation[id]), GetLinkCount(_))
             .WillByDefault(Return(id));
         person::MeasuredFibrosisState meas =
             static_cast<person::MeasuredFibrosisState>(
@@ -152,11 +152,14 @@ TEST_F(DataWriterTest, PopulationString) {
             .WillByDefault(Return(meas));
         ON_CALL(*(testPopulation[id]), GetTimeOfFibrosisStaging())
             .WillByDefault(Return(id));
-        ON_CALL(*(testPopulation[id]), GetTimeOfLastScreening())
+        ON_CALL(*(testPopulation[id]),
+                GetTimeOfLastScreening(person::InfectionType::HCV))
             .WillByDefault(Return(id));
-        ON_CALL(*(testPopulation[id]), GetNumberOfABTests())
+        ON_CALL(*(testPopulation[id]),
+                GetNumberOfABTests(person::InfectionType::HCV))
             .WillByDefault(Return(id));
-        ON_CALL(*(testPopulation[id]), GetNumberOfRNATests())
+        ON_CALL(*(testPopulation[id]),
+                GetNumberOfRNATests(person::InfectionType::HCV))
             .WillByDefault(Return(id));
         ON_CALL(*(testPopulation[id]), GetTimesHCVInfected())
             .WillByDefault(Return(id));

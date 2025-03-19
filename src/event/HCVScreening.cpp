@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: Screening.cpp                                                        //
+// File: HCVScreening.cpp                                                        //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Screening.hpp"
+#include "HCVScreening.hpp"
 #include "Cost.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
@@ -23,7 +23,7 @@
 #include <unordered_map>
 
 namespace event {
-class Screening::ScreeningIMPL {
+class HCVScreening::HCVScreeningIMPL {
 private:
     double discount = 0.0;
 
@@ -269,7 +269,7 @@ public:
             this->BackgroundScreen(person, dm, decider);
         }
     }
-    ScreeningIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    HCVScreeningIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
         std::string discount_data;
         int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
         if (!discount_data.empty()) {
@@ -362,17 +362,18 @@ public:
     }
 };
 
-Screening::Screening(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    impl = std::make_unique<ScreeningIMPL>(dm);
+HCVScreening::HCVScreening(
+    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    impl = std::make_unique<HCVScreeningIMPL>(dm);
 }
 
-Screening::~Screening() = default;
-Screening::Screening(Screening &&) noexcept = default;
-Screening &Screening::operator=(Screening &&) noexcept = default;
+HCVScreening::~HCVScreening() = default;
+HCVScreening::HCVScreening(HCVScreening &&) noexcept = default;
+HCVScreening &HCVScreening::operator=(HCVScreening &&) noexcept = default;
 
-void Screening::DoEvent(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        std::shared_ptr<stats::DeciderBase> decider) {
+void HCVScreening::DoEvent(std::shared_ptr<person::PersonBase> person,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }
 } // namespace event

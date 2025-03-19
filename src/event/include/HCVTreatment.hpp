@@ -1,28 +1,27 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: Screening.hpp                                                        //
+// File: HCVTreatment.hpp                                                        //
 // Project: HEPCESimulationv2                                                 //
-// Created: 2023-08-14                                                        //
+// Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef EVENT_SCREENING_HPP_
-#define EVENT_SCREENING_HPP_
+#ifndef EVENT_HCVTREATMENT_HPP_
+#define EVENT_HCVTREATMENT_HPP_
 
 #include "Event.hpp"
-#include <memory>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-/// @brief Subclass of Event used to Screen People for Diseases
-class Screening : public Event {
+/// @brief Subclass of Event used to Provide Treatment to People
+class HCVTreatment : public Event {
 private:
-    class ScreeningIMPL;
-    std::unique_ptr<ScreeningIMPL> impl;
+    class HCVTreatmentIMPL;
+    std::unique_ptr<HCVTreatmentIMPL> impl;
 
     /// @brief Implementation of Virtual Function DoEvent
     /// @param person Individual Person undergoing Event
@@ -31,15 +30,14 @@ private:
                  std::shared_ptr<stats::DeciderBase> decider) override;
 
 public:
-    Screening(std::shared_ptr<datamanagement::DataManagerBase> dm);
-    ~Screening();
+    HCVTreatment(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~HCVTreatment();
 
     // Copy Operations
-    Screening(Screening const &) = delete;
-    Screening &operator=(Screening const &) = delete;
-    Screening(Screening &&) noexcept;
-    Screening &operator=(Screening &&) noexcept;
+    HCVTreatment(HCVTreatment const &) = delete;
+    HCVTreatment &operator=(HCVTreatment const &) = delete;
+    HCVTreatment(HCVTreatment &&) noexcept;
+    HCVTreatment &operator=(HCVTreatment &&) noexcept;
 };
 } // namespace event
-
 #endif

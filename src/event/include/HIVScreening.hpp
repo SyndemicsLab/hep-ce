@@ -16,29 +16,29 @@
 #include "Event.hpp"
 
 namespace event {
-    class HIVScreening : public Event {
-    private:
-        class HIVScreeningIMPL;
-        std::unique_ptr<HIVScreeningIMPL> impl;
+class HIVScreening : public Event {
+private:
+    class HIVScreeningIMPL;
+    std::unique_ptr<HIVScreeningIMPL> impl;
 
-        /// @brief Implementation of Virtual Function DoEvent
-        /// @param person Individual Person undergoing Event
-        /// @param dm DataManager object containing data for the event
-        /// @param decider Pseudorandom number generator for decision-making
-        void DoEvent(std::shared_ptr<person::PersonBase> person,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                     std::shared_ptr<stats::DeciderBase> decider) override;
+    /// @brief Implementation of Virtual Function DoEvent
+    /// @param person Individual Person undergoing Event
+    /// @param dm DataManager object containing data for the event
+    /// @param decider Pseudorandom number generator for decision-making
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) override;
 
-    public:
-        HIVScreening(std::shared_ptr<datamanagement::DataManagerBase> dm);
-        ~HIVScreening();
+public:
+    HIVScreening(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~HIVScreening();
 
-        // Copy Operations
-        HIVScreening(HIVScreening const &) = delete;
-        HIVScreening &operator=(HIVScreening const &) = delete;
-        HIVScreening(HIVScreening &&) noexcept;
-        HIVScreening &operator=(HIVScreening &&) noexcept;
-    };
+    // Copy Operations
+    HIVScreening(HIVScreening const &) = delete;
+    HIVScreening &operator=(HIVScreening const &) = delete;
+    HIVScreening(HIVScreening &&) noexcept;
+    HIVScreening &operator=(HIVScreening &&) noexcept;
+};
 } // namespace event
 
 #endif

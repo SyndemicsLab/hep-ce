@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: InfectionsTest.cpp                                                   //
+// File: HCVInfectionsTest.cpp                                                   //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Infections.hpp"
+#include "HCVInfections.hpp"
 #include "EventTest.cpp"
 
 using ::testing::_;
@@ -19,13 +19,13 @@ using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
 
-class InfectionsTest : public EventTest {};
+class HCVInfectionsTest : public EventTest {};
 
 std::string const INCIDENCE_QUERY =
     "SELECT age_years, gender, drug_behavior, incidence FROM "
     "incidence;";
 
-TEST_F(InfectionsTest, Infections_NewInfection) {
+TEST_F(HCVInfectionsTest, HCVInfections_NewInfection) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -66,11 +66,11 @@ TEST_F(InfectionsTest, Infections_NewInfection) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Infections", event_dm);
+        efactory.create("HCVInfections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(InfectionsTest, Infections_DoNotInfect) {
+TEST_F(HCVInfectionsTest, HCVInfections_DoNotInfect) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -100,11 +100,11 @@ TEST_F(InfectionsTest, Infections_DoNotInfect) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Infections", event_dm);
+        efactory.create("HCVInfections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(InfectionsTest, Infections_AcuteProgression) {
+TEST_F(HCVInfectionsTest, HCVInfections_AcuteProgression) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -133,11 +133,11 @@ TEST_F(InfectionsTest, Infections_AcuteProgression) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Infections", event_dm);
+        efactory.create("HCVInfections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(InfectionsTest, Infections_NoAcuteProgression) {
+TEST_F(HCVInfectionsTest, HCVInfections_NoAcuteProgression) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -169,11 +169,11 @@ TEST_F(InfectionsTest, Infections_NoAcuteProgression) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Infections", event_dm);
+        efactory.create("HCVInfections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(InfectionsTest, Infections_HandleChronicHCV) {
+TEST_F(HCVInfectionsTest, HCVInfections_HandleChronicHCV) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -202,11 +202,11 @@ TEST_F(InfectionsTest, Infections_HandleChronicHCV) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Infections", event_dm);
+        efactory.create("HCVInfections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(InfectionsTest, Infections_NewInfectionGenotype3) {
+TEST_F(HCVInfectionsTest, HCVInfections_NewInfectionGenotype3) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -241,11 +241,11 @@ TEST_F(InfectionsTest, Infections_NewInfectionGenotype3) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Infections", event_dm);
+        efactory.create("HCVInfections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(InfectionsTest, Infections_NewInfectionNotGenotype3) {
+TEST_F(HCVInfectionsTest, HCVInfections_NewInfectionNotGenotype3) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
@@ -282,6 +282,6 @@ TEST_F(InfectionsTest, Infections_NewInfectionNotGenotype3) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Infections", event_dm);
+        efactory.create("HCVInfections", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

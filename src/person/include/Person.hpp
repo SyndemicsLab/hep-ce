@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-12                                                  //
+// Last Modified: 2025-03-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -43,6 +43,7 @@ public:
     virtual void SetSeropositivity(bool seropositive) = 0;
 
     virtual int DiagnoseHCV() = 0;
+    virtual void Diagnose(InfectionType it = InfectionType::HCV) = 0;
     virtual int ClearHCVDiagnosis() = 0;
     virtual bool IsIdentifiedAsHCVInfected() const = 0;
     virtual bool HistoryOfHCVInfection() const = 0;
@@ -53,27 +54,43 @@ public:
     virtual int GetTimeSinceHCVChanged() const = 0;
 
     // Screening
-    virtual int MarkScreened() = 0;
-    virtual int AddAbScreen() = 0;
-    virtual int AddRnaScreen() = 0;
+    virtual int MarkScreened(InfectionType it = InfectionType::HCV) = 0;
+    virtual int AddAbScreen(InfectionType it = InfectionType::HCV) = 0;
+    virtual int AddRnaScreen(InfectionType it = InfectionType::HCV) = 0;
     virtual bool HadSecondScreeningTest() const = 0;
-    virtual int GetNumberOfABTests() const = 0;
-    virtual int GetNumberOfRNATests() const = 0;
-    virtual int GetTimeOfLastScreening() const = 0;
-    virtual int GetTimeSinceLastScreening() const = 0;
-    virtual ScreeningDetails GetScreeningDetails() const = 0;
+    virtual int
+    GetNumberOfABTests(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetNumberOfRNATests(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetTimeOfLastScreening(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetTimeSinceLastScreening(InfectionType it = InfectionType::HCV) const = 0;
+    virtual ScreeningDetails
+    GetScreeningDetails(InfectionType it = InfectionType::HCV) const = 0;
+    virtual bool
+    CheckAntibodyPositive(InfectionType it = InfectionType::HCV) const = 0;
+    virtual void SetAntibodyPositive(bool result = true,
+                                     InfectionType it = InfectionType::HCV) = 0;
     virtual void GiveSecondScreeningTest(bool state) = 0;
 
     // Linking
-    virtual int Unlink() = 0;
-    virtual int Link(LinkageType linkType) = 0;
-    virtual LinkageState GetLinkState() const = 0;
-    virtual int GetTimeOfLinkChange() const = 0;
-    virtual int GetTimeSinceLinkChange() const = 0;
-    virtual int GetLinkCount() const = 0;
-    virtual void SetLinkageType(LinkageType) = 0;
-    virtual LinkageType GetLinkageType() const = 0;
-    virtual LinkageDetails GetLinkStatus() const = 0;
+    virtual int Unlink(InfectionType it = InfectionType::HCV) = 0;
+    virtual int Link(LinkageType linkType,
+                     InfectionType it = InfectionType::HCV) = 0;
+    virtual LinkageState
+    GetLinkState(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetTimeOfLinkChange(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetTimeSinceLinkChange(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int GetLinkCount(InfectionType it = InfectionType::HCV) const = 0;
+    virtual void SetLinkageType(LinkageType linkType,
+                                InfectionType it = InfectionType::HCV) = 0;
+    virtual LinkageType
+    GetLinkageType(InfectionType it = InfectionType::HCV) const = 0;
+    virtual LinkageDetails
+    GetLinkStatus(InfectionType it = InfectionType::HCV) const = 0;
 
     // Treatment
     virtual int AddWithdrawal() = 0;
@@ -159,13 +176,14 @@ public:
     virtual std::pair<double, double> GetCostTotals() const = 0;
     virtual Health GetHealth() const = 0;
 
-    // HIV
+    /// HIV
+    // getter/setter
     virtual HIV GetHIV() const = 0;
     virtual void SetHIV(HIV hiv) = 0;
+    // infection
     virtual void InfectHIV() = 0;
     virtual int GetTimeHIVChanged() const = 0;
     virtual int GetTimeSinceHIVChanged() const = 0;
-    virtual bool IsIdentifiedAsHIVInfected() const = 0;
 
     // TODO
     virtual PregnancyState GetPregnancyState() const = 0;
@@ -227,6 +245,7 @@ public:
     void SetSeropositivity(bool seropositive);
 
     int DiagnoseHCV();
+    void Diagnose(InfectionType it);
     int ClearHCVDiagnosis();
     bool IsIdentifiedAsHCVInfected() const;
     bool HistoryOfHCVInfection() const;
@@ -237,27 +256,29 @@ public:
     int GetTimeSinceHCVChanged() const;
 
     // Screening
-    int MarkScreened();
-    int AddAbScreen();
-    int AddRnaScreen();
+    int MarkScreened(InfectionType it);
+    int AddAbScreen(InfectionType it);
+    int AddRnaScreen(InfectionType it);
+    int GetNumberOfABTests(InfectionType it) const;
+    int GetNumberOfRNATests(InfectionType it) const;
+    int GetTimeOfLastScreening(InfectionType it) const;
+    int GetTimeSinceLastScreening(InfectionType it) const;
+    ScreeningDetails GetScreeningDetails(InfectionType it) const;
+    bool CheckAntibodyPositive(InfectionType it) const;
+    void SetAntibodyPositive(bool result, InfectionType it);
     bool HadSecondScreeningTest() const;
-    int GetNumberOfABTests() const;
-    int GetNumberOfRNATests() const;
-    int GetTimeOfLastScreening() const;
-    int GetTimeSinceLastScreening() const;
-    ScreeningDetails GetScreeningDetails() const;
     void GiveSecondScreeningTest(bool state);
 
     // Linking
-    int Unlink();
-    int Link(LinkageType linkType);
-    LinkageState GetLinkState() const;
-    int GetTimeOfLinkChange() const;
-    int GetTimeSinceLinkChange() const;
-    int GetLinkCount() const;
-    void SetLinkageType(LinkageType linkType);
-    LinkageType GetLinkageType() const;
-    LinkageDetails GetLinkStatus() const;
+    int Unlink(InfectionType it);
+    int Link(LinkageType linkType, InfectionType it);
+    LinkageState GetLinkState(InfectionType it) const;
+    int GetTimeOfLinkChange(InfectionType it) const;
+    int GetTimeSinceLinkChange(InfectionType it) const;
+    int GetLinkCount(InfectionType it) const;
+    void SetLinkageType(LinkageType linkType, InfectionType it);
+    LinkageType GetLinkageType(InfectionType it) const;
+    LinkageDetails GetLinkStatus(InfectionType it) const;
 
     // Treatment
     int AddWithdrawal();
@@ -341,13 +362,14 @@ public:
     double GetDiscountedLifeSpan() const;
     void AddDiscountedLifeSpan(double discounted_life);
 
-    // HIV
+    /// HIV
+    // getter/setter
     HIV GetHIV() const;
     void SetHIV(HIV hiv);
+    // infection
     void InfectHIV();
     int GetTimeHIVChanged() const;
     int GetTimeSinceHIVChanged() const;
-    bool IsIdentifiedAsHIVInfected() const;
 
     // Pregnancy
     PregnancyState GetPregnancyState() const;

@@ -4,7 +4,7 @@
 // Created: 2023-09-14                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -20,13 +20,14 @@
 #include "Event.hpp"
 #include "FibrosisProgression.hpp"
 #include "FibrosisStaging.hpp"
+#include "HCVInfections.hpp"
+#include "HCVLinking.hpp"
+#include "HCVScreening.hpp"
+#include "HCVTreatment.hpp"
 #include "HIVInfections.hpp"
-#include "Infections.hpp"
-#include "Linking.hpp"
+#include "HIVScreening.hpp"
 #include "MOUD.hpp"
 #include "Overdose.hpp"
 #include "Pregnancy.hpp"
-#include "Screening.hpp"
-#include "Treatment.hpp"
 #include "VoluntaryRelinking.hpp"
 #endif // ALL_EVENTS_HPP_
