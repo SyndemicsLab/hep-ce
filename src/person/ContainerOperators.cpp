@@ -4,7 +4,7 @@
 // Created: 2024-09-03                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -42,6 +42,8 @@ InfectionType &operator++(InfectionType &inst) {
         break;
     case InfectionType::HIV:
         inst = InfectionType::COUNT;
+        break;
+    default:
         break;
     }
     return inst;
