@@ -148,6 +148,8 @@ private:
         case SCREEN_TYPE::INTERVENTION:
             probability = hiv_intervention_screen_data[tup];
             break;
+        default:
+            break;
         }
         return probability;
     }
@@ -165,19 +167,15 @@ private:
     bool RunABScreen(std::shared_ptr<person::PersonBase> person,
                      std::shared_ptr<stats::DeciderBase> decider,
                      SCREEN_TYPE type) {
-        // increment antibody screening for person
         person->AddAbScreen(INF_TYPE);
-        // accumulate the cost of screening
         AddScreeningCost(person, test_data[type].ab_cost);
-        double prob_positive;
-        if (person->GetHIV() != person::HIV::NONE) {
-            // probability of true positive
-            prob_positive = test_data[type].ab_sensitivity;
-        } else {
-            // probability of false positive
-            prob_positive = 1 - test_data[type].ab_specificity;
-        }
-        // determine the test outcome -- if decider returns 0, true
+        // if person is HIV infected, use sensitivity for this probability.
+        // otherwise, use (1 - sensitivity), i.e. rate of false positive
+        double prob_positive = (person->GetHIV() != person::HIV::NONE)
+                                   ? test_data[type].ab_sensitivity
+                                   : 1 - test_data[type].ab_specificity;
+
+        // determine the test outcome -- if decider returns 0, positive
         bool test_outcome =
             (decider->GetDecision({prob_positive}) == 0) ? true : false;
         return test_outcome;
@@ -193,14 +191,11 @@ private:
         person->AddRnaScreen(INF_TYPE);
         // accumulate the cost of screening
         AddScreeningCost(person, test_data[type].rna_cost);
-        double prob_positive;
-        if (person->GetHIV() != person::HIV::NONE) {
-            // probability of true positive
-            prob_positive = test_data[type].rna_sensitivity;
-        } else {
-            // probability of false positive
-            prob_positive = 1 - test_data[type].rna_specificity;
-        }
+        // if person is HIV infected, use sensitivity for this probability.
+        // otherwise, use (1 - sensitivity), i.e. rate of false positive
+        double prob_positive = (person->GetHIV() != person::HIV::NONE)
+                                   ? test_data[type].ab_sensitivity
+                                   : 1 - test_data[type].ab_specificity;
         // determine the test outcome -- if decider returns 0, true
         bool test_outcome =
             (decider->GetDecision({prob_positive}) == 0) ? true : false;
@@ -232,22 +227,19 @@ private:
             person->SetAntibodyPositive(true, INF_TYPE);
         }
 
-        // if positive for HIV antibody, HIV rna screen
-        if (person->CheckAntibodyPositive(INF_TYPE)) {
-            if (!RunRNAScreen(person, decider, type)) {
-                return;
-            }
-            // if rna positive, mark hiv identified
-            person->Diagnose(INF_TYPE);
-            // if this was an intervention screen, set linkage type to
-            // intervention
-            if (type == SCREEN_TYPE::INTERVENTION) {
-                person->SetLinkageType(person::LinkageType::INTERVENTION,
-                                       INF_TYPE);
-                return;
-            }
-            person->SetLinkageType(person::LinkageType::BACKGROUND, INF_TYPE);
+        // if person reaches this part, they are ab positive. rna screen.
+        if (!RunRNAScreen(person, decider, type)) {
+            return;
         }
+        // if rna positive, mark hiv identified
+        person->Diagnose(INF_TYPE);
+        // if this was an intervention screen, set linkage type to
+        // intervention
+        if (type == SCREEN_TYPE::INTERVENTION) {
+            person->SetLinkageType(person::LinkageType::INTERVENTION, INF_TYPE);
+            return;
+        }
+        person->SetLinkageType(person::LinkageType::BACKGROUND, INF_TYPE);
     }
 
     /// @brief

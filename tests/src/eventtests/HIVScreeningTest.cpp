@@ -4,7 +4,7 @@
 // Created: 2025-03-17                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-18                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -156,9 +156,8 @@ TEST_F(HIVScreeningTest, PeriodicScreening_T_AB_T_RNA) {
     // returns false so that antibody screen runs, then returns true after
     // antibody screen tests positive
     EXPECT_CALL(*testPerson, CheckAntibodyPositive(it))
-        .Times(2)
-        .WillOnce(Return(false))
-        .WillOnce(Return(true));
+        .Times(1)
+        .WillOnce(Return(false));
     double discounted_cost = Utils::discount(cost.second, 0.025, 1);
     // called both for antibody and rna screening tests
     EXPECT_CALL(*testPerson,
@@ -214,9 +213,8 @@ TEST_F(HIVScreeningTest, PeriodicScreening_T_AB_F_RNA) {
     // returns false so that antibody screen runs, then returns true after
     // antibody screen tests positive
     EXPECT_CALL(*testPerson, CheckAntibodyPositive(it))
-        .Times(2)
-        .WillOnce(Return(false))
-        .WillOnce(Return(true));
+        .Times(1)
+        .WillOnce(Return(false));
     double discounted_cost = Utils::discount(cost.second, 0.025, 1);
     // called both for antibody and rna screening tests
     EXPECT_CALL(*testPerson,
@@ -345,9 +343,8 @@ TEST_F(HIVScreeningTest, PeriodicScreening_TooSoonToScreen) {
     // returns false so that antibody screen runs, then returns true after
     // antibody screen tests positive
     EXPECT_CALL(*testPerson, CheckAntibodyPositive(it))
-        .Times(2)
-        .WillOnce(Return(false))
-        .WillOnce(Return(true));
+        .Times(1)
+        .WillOnce(Return(false));
     double discounted_cost = Utils::discount(cost.first, 0.025, 1);
     // called both for antibody and rna screening tests
     // must use cost.first here because it's background screening
@@ -402,9 +399,8 @@ TEST_F(HIVScreeningTest, OneTimeScreening) {
     // returns false so that antibody screen runs, then returns true after
     // antibody screen tests positive
     EXPECT_CALL(*testPerson, CheckAntibodyPositive(it))
-        .Times(2)
-        .WillOnce(Return(false))
-        .WillOnce(Return(true));
+        .Times(1)
+        .WillOnce(Return(false));
     double discounted_cost = Utils::discount(cost.second, 0.025, 1);
     // called both for antibody and rna screening tests
     EXPECT_CALL(*testPerson,
@@ -467,9 +463,8 @@ TEST_F(HIVScreeningTest, OneTimeScreening_NotFirstTimeStep) {
     // returns false so that antibody screen runs, then returns true after
     // antibody screen tests positive
     EXPECT_CALL(*testPerson, CheckAntibodyPositive(it))
-        .Times(2)
-        .WillOnce(Return(false))
-        .WillOnce(Return(true));
+        .Times(1)
+        .WillOnce(Return(false));
     double discounted_cost = Utils::discount(cost.first, 0.025, 2);
     // called both for antibody and rna screening tests
     // must use cost.first here because it's background screening
@@ -525,9 +520,8 @@ TEST_F(HIVScreeningTest, BackgroundScreening_T_AB_T_RNA) {
     // returns false so that antibody screen runs, then returns true after
     // antibody screen tests positive
     EXPECT_CALL(*testPerson, CheckAntibodyPositive(it))
-        .Times(2)
-        .WillOnce(Return(false))
-        .WillOnce(Return(true));
+        .Times(1)
+        .WillOnce(Return(false));
     double discounted_cost = Utils::discount(cost.first, 0.025, 1);
     // called both for antibody and rna screening tests
     EXPECT_CALL(*testPerson,
@@ -580,9 +574,8 @@ TEST_F(HIVScreeningTest, BackgroundScreening_T_AB_F_RNA) {
     // returns false so that antibody screen runs, then returns true after
     // antibody screen tests positive
     EXPECT_CALL(*testPerson, CheckAntibodyPositive(it))
-        .Times(2)
-        .WillOnce(Return(false))
-        .WillOnce(Return(true));
+        .Times(1)
+        .WillOnce(Return(false));
     double discounted_cost = Utils::discount(cost.first, 0.025, 1);
     // called both for antibody and rna screening tests
     EXPECT_CALL(*testPerson,
