@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-17                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,26 +37,26 @@ EventFactory::create(std::string eventName,
     if (eventName == "FibrosisStaging") {
         return makeEvent<FibrosisStaging>(dm);
     }
+    if (eventName == "HCVInfections") {
+        return makeEvent<HCVInfections>(dm);
+    }
+    if (eventName == "HCVLinking") {
+        return makeEvent<HCVLinking>(dm);
+    }
+    if (eventName == "HCVScreening") {
+        return makeEvent<HCVScreening>(dm);
+    }
+    if (eventName == "HCVTreatment") {
+        return makeEvent<HCVTreatment>(dm);
+    }
     if (eventName == "HIVInfections") {
         return makeEvent<HIVInfections>(dm);
     }
     if (eventName == "HIVScreening") {
         return makeEvent<HIVScreening>(dm);
     }
-    if (eventName == "Infections") {
-        return makeEvent<Infections>(dm);
-    }
-    if (eventName == "Linking") {
-        return makeEvent<Linking>(dm);
-    }
     if (eventName == "Overdose") {
         return makeEvent<Overdose>(dm);
-    }
-    if (eventName == "Screening") {
-        return makeEvent<Screening>(dm);
-    }
-    if (eventName == "Treatment") {
-        return makeEvent<Treatment>(dm);
     }
     if (eventName == "VoluntaryRelinking") {
         return makeEvent<VoluntaryRelinking>(dm);

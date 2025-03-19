@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: Linking.cpp                                                          //
+// File: HCVLinking.cpp                                                          //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-11                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-03-19                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Linking.hpp"
+#include "HCVLinking.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "Utils.hpp"
@@ -19,7 +19,7 @@
 #include <sstream>
 
 namespace event {
-class Linking::LinkingIMPL {
+class HCVLinking::HCVLinkingIMPL {
 private:
     double discount = 0.0;
     double intervention_cost;
@@ -160,7 +160,7 @@ public:
             }
         }
     }
-    LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    HCVLinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
         std::string temp_data;
         int rc = dm->GetFromConfig("cost.discounting_rate", temp_data);
         if (!temp_data.empty()) {
@@ -205,17 +205,17 @@ public:
         }
     }
 };
-Linking::Linking(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    impl = std::make_unique<LinkingIMPL>(dm);
+HCVLinking::HCVLinking(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    impl = std::make_unique<HCVLinkingIMPL>(dm);
 }
 
-Linking::~Linking() = default;
-Linking::Linking(Linking &&) noexcept = default;
-Linking &Linking::operator=(Linking &&) noexcept = default;
+HCVLinking::~HCVLinking() = default;
+HCVLinking::HCVLinking(HCVLinking &&) noexcept = default;
+HCVLinking &HCVLinking::operator=(HCVLinking &&) noexcept = default;
 
-void Linking::DoEvent(std::shared_ptr<person::PersonBase> person,
-                      std::shared_ptr<datamanagement::DataManagerBase> dm,
-                      std::shared_ptr<stats::DeciderBase> decider) {
+void HCVLinking::DoEvent(std::shared_ptr<person::PersonBase> person,
+                         std::shared_ptr<datamanagement::DataManagerBase> dm,
+                         std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }
 } // namespace event

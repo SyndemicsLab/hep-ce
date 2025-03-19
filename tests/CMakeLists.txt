@@ -54,12 +54,12 @@ add_executable(${PROJECT_NAME}
   src/eventtests/DeathTest.cpp
   src/eventtests/FibrosisProgressionTest.cpp
   src/eventtests/FibrosisStagingTest.cpp
+  src/eventtests/HCVInfectionsTest.cpp
+  src/eventtests/HCVLinkingTest.cpp
+  src/eventtests/HCVScreeningTest.cpp
+  src/eventtests/HCVTreatmentTest.cpp
   src/eventtests/HIVInfectionsTest.cpp
   src/eventtests/HIVScreeningTest.cpp
-  src/eventtests/InfectionsTest.cpp
-  src/eventtests/LinkingTest.cpp
-  src/eventtests/ScreeningTest.cpp
-  src/eventtests/TreatmentTest.cpp
   src/eventtests/VoluntaryRelinkingTest.cpp
   src/eventtests/PregnancyTest.cpp
   src/eventtests/OverdoseTest.cpp

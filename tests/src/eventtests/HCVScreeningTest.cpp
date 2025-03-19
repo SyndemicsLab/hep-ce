@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: ScreeningTest.cpp                                                    //
+// File: HCVScreeningTest.cpp                                                    //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Screening.hpp"
+#include "HCVScreening.hpp"
 #include "EventTest.cpp"
 
 using ::testing::_;
@@ -19,7 +19,7 @@ using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
 
-class ScreeningTest : public EventTest {};
+class HCVScreeningTest : public EventTest {};
 
 std::string const BACKGROUND_SCREEN_QUERY =
     "SELECT at.age_years, sl.gender, sl.drug_behavior, "
@@ -35,7 +35,7 @@ std::string const INTERVENTION_SCREEN_QUERY =
     "screening_and_linkage AS sl ON ((at.age_years = "
     "sl.age_years) AND (at.drug_behavior = sl.drug_behavior));";
 
-TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
+TEST_F(HCVScreeningTest, FirstPeriodicScreening_TTtestResults) {
     // Person Setup
     ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(12));
@@ -99,11 +99,11 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TTtestResults) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Screening", event_dm);
+        efactory.create("HCVScreening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
+TEST_F(HCVScreeningTest, FirstPeriodicScreening_TFtestResults) {
     // Person Setup
     ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(7));
@@ -177,11 +177,11 @@ TEST_F(ScreeningTest, FirstPeriodicScreening_TFtestResults) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Screening", event_dm);
+        efactory.create("HCVScreening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(ScreeningTest, BackgroundScreening_TFtestResults) {
+TEST_F(HCVScreeningTest, BackgroundScreening_TFtestResults) {
     // Person Setup
     ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(3));
@@ -254,11 +254,11 @@ TEST_F(ScreeningTest, BackgroundScreening_TFtestResults) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Screening", event_dm);
+        efactory.create("HCVScreening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(ScreeningTest, BackgroundScreening_TTtestResults) {
+TEST_F(HCVScreeningTest, BackgroundScreening_TTtestResults) {
     // Person Setup
     ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(3));
@@ -322,11 +322,11 @@ TEST_F(ScreeningTest, BackgroundScreening_TTtestResults) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Screening", event_dm);
+        efactory.create("HCVScreening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(ScreeningTest, NoScreen) {
+TEST_F(HCVScreeningTest, NoScreen) {
     // Person Setup
     ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(3));
@@ -380,6 +380,6 @@ TEST_F(ScreeningTest, NoScreen) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Screening", event_dm);
+        efactory.create("HCVScreening", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

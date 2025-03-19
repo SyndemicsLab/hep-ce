@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: LinkingTest.cpp                                                      //
+// File: HCVLinkingTest.cpp                                                      //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Linking.hpp"
+#include "HCVLinking.hpp"
 #include "EventTest.cpp"
 
 using ::testing::_;
@@ -19,7 +19,7 @@ using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
 
-class LinkingTest : public EventTest {};
+class HCVLinkingTest : public EventTest {};
 
 std::string const BACKGROUND_LINK_QUERY =
     "SELECT age_years, gender, drug_behavior, -1, "
@@ -41,7 +41,7 @@ std::string const P_INTERVENTION_LINK_QUERY =
     "intervention_link_probability FROM "
     "screening_and_linkage;";
 
-TEST_F(LinkingTest, FalsePositive) {
+TEST_F(HCVLinkingTest, FalsePositive) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
@@ -99,11 +99,12 @@ TEST_F(LinkingTest, FalsePositive) {
         .Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
+    std::shared_ptr<event::Event> event =
+        efactory.create("HCVLinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(LinkingTest, BackgroundLink) {
+TEST_F(HCVLinkingTest, BackgroundLink) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
@@ -161,11 +162,12 @@ TEST_F(LinkingTest, BackgroundLink) {
         .Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
+    std::shared_ptr<event::Event> event =
+        efactory.create("HCVLinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(LinkingTest, InterventionLink) {
+TEST_F(HCVLinkingTest, InterventionLink) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
@@ -230,11 +232,12 @@ TEST_F(LinkingTest, InterventionLink) {
         .Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
+    std::shared_ptr<event::Event> event =
+        efactory.create("HCVLinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(LinkingTest, DecideToNotLink) {
+TEST_F(HCVLinkingTest, DecideToNotLink) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
@@ -293,11 +296,12 @@ TEST_F(LinkingTest, DecideToNotLink) {
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
+    std::shared_ptr<event::Event> event =
+        efactory.create("HCVLinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(LinkingTest, AlreadyLinked) {
+TEST_F(HCVLinkingTest, AlreadyLinked) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
@@ -347,11 +351,12 @@ TEST_F(LinkingTest, AlreadyLinked) {
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
+    std::shared_ptr<event::Event> event =
+        efactory.create("HCVLinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(LinkingTest, RecentScreen) {
+TEST_F(HCVLinkingTest, RecentScreen) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
@@ -408,11 +413,12 @@ TEST_F(LinkingTest, RecentScreen) {
     EXPECT_CALL(*decider, GetDecision(expected_probs)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
+    std::shared_ptr<event::Event> event =
+        efactory.create("HCVLinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(LinkingTest, RecentScreenCutoff) {
+TEST_F(HCVLinkingTest, RecentScreenCutoff) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
@@ -469,6 +475,7 @@ TEST_F(LinkingTest, RecentScreenCutoff) {
     EXPECT_CALL(*decider, GetDecision(expected_probs)).Times(1);
 
     // Running Test
-    std::shared_ptr<event::Event> event = efactory.create("Linking", event_dm);
+    std::shared_ptr<event::Event> event =
+        efactory.create("HCVLinking", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

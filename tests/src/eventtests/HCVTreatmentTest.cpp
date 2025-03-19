@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: TreatmentTest.cpp                                                    //
+// File: HCVTreatmentTest.cpp                                                    //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-13                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Treatment.hpp"
+#include "HCVTreatment.hpp"
 #include "EventTest.cpp"
 
 using ::testing::_;
@@ -19,7 +19,7 @@ using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
 
-class TreatmentTest : public EventTest {};
+class HCVTreatmentTest : public EventTest {};
 
 std::string const DURATION_QUERY =
     "SELECT retreatment, genotype_three, cirrhotic, duration FROM treatments;";
@@ -34,7 +34,7 @@ std::string const TOXICITY_QUERY =
 std::string const WITHDRAWAL_QUERY = "SELECT retreatment, genotype_three, "
                                      "cirrhotic, withdrawal FROM treatments;";
 
-TEST_F(TreatmentTest, NewTreatmentInitiation) {
+TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
     // Person Setup
     EXPECT_CALL(*testPerson, HasInitiatedTreatment())
         .WillOnce(Return(false))       // False Positive
@@ -160,11 +160,11 @@ TEST_F(TreatmentTest, NewTreatmentInitiation) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, FinishTreatment) {
+TEST_F(HCVTreatmentTest, FinishTreatment) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
@@ -262,11 +262,11 @@ TEST_F(TreatmentTest, FinishTreatment) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, FinishTreatmentNoSVR) {
+TEST_F(HCVTreatmentTest, FinishTreatmentNoSVR) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
@@ -364,11 +364,11 @@ TEST_F(TreatmentTest, FinishTreatmentNoSVR) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, LostToFollowUp) {
+TEST_F(HCVTreatmentTest, LostToFollowUp) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
@@ -463,11 +463,11 @@ TEST_F(TreatmentTest, LostToFollowUp) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, Withdraw) {
+TEST_F(HCVTreatmentTest, Withdraw) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
@@ -566,11 +566,11 @@ TEST_F(TreatmentTest, Withdraw) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(TreatmentTest, DevelopToxicity) {
+TEST_F(HCVTreatmentTest, DevelopToxicity) {
     // Person Setup
     ON_CALL(*testPerson, HasInitiatedTreatment()).WillByDefault(Return(true));
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
@@ -668,6 +668,6 @@ TEST_F(TreatmentTest, DevelopToxicity) {
 
     // Running Test
     std::shared_ptr<event::Event> event =
-        efactory.create("Treatment", event_dm);
+        efactory.create("HCVTreatment", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }

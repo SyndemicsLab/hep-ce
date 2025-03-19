@@ -1,28 +1,28 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: Treatment.hpp                                                        //
+// File: HCVInfections.hpp                                                       //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef EVENT_TREATMENT_HPP_
-#define EVENT_TREATMENT_HPP_
+#ifndef EVENT_HCVINFECTIONS_HPP_
+#define EVENT_HCVINFECTIONS_HPP_
 
 #include "Event.hpp"
+#include <memory>
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-/// @brief Subclass of Event used to Provide Treatment to People
-class Treatment : public Event {
+/// @brief Subclass of Event used to Spread Infections
+class HCVInfections : public Event {
 private:
-    class TreatmentIMPL;
-    std::unique_ptr<TreatmentIMPL> impl;
-
+    class HCVInfectionsIMPL;
+    std::unique_ptr<HCVInfectionsIMPL> impl;
     /// @brief Implementation of Virtual Function DoEvent
     /// @param person Individual Person undergoing Event
     void DoEvent(std::shared_ptr<person::PersonBase> person,
@@ -30,14 +30,15 @@ private:
                  std::shared_ptr<stats::DeciderBase> decider) override;
 
 public:
-    Treatment(std::shared_ptr<datamanagement::DataManagerBase> dm);
-    ~Treatment();
+    HCVInfections(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~HCVInfections();
 
     // Copy Operations
-    Treatment(Treatment const &) = delete;
-    Treatment &operator=(Treatment const &) = delete;
-    Treatment(Treatment &&) noexcept;
-    Treatment &operator=(Treatment &&) noexcept;
+    HCVInfections(HCVInfections const &) = delete;
+    HCVInfections &operator=(HCVInfections const &) = delete;
+    HCVInfections(HCVInfections &&) noexcept;
+    HCVInfections &operator=(HCVInfections &&) noexcept;
 };
 } // namespace event
+
 #endif

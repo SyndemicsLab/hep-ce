@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: Infections.cpp                                                       //
+// File: HCVInfections.cpp                                                       //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-19                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Infections.hpp"
+#include "HCVInfections.hpp"
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "Utils.hpp"
@@ -18,7 +18,7 @@
 #include <DataManagement/DataManagerBase.hpp>
 #include <sstream>
 namespace event {
-class Infections::InfectionsIMPL {
+class HCVInfections::HCVInfectionsIMPL {
 private:
     double gt3_prob = 0;
 
@@ -102,7 +102,7 @@ public:
         }
     }
 
-    InfectionsIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    HCVInfectionsIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
         int rc = LoadIncidenceData(dm);
         std::string data;
         dm->GetFromConfig("infection.genotype_three_prob", data);
@@ -116,17 +116,18 @@ public:
         }
     }
 };
-Infections::Infections(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    impl = std::make_unique<InfectionsIMPL>(dm);
+HCVInfections::HCVInfections(
+    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    impl = std::make_unique<HCVInfectionsIMPL>(dm);
 }
 
-Infections::~Infections() = default;
-Infections::Infections(Infections &&) noexcept = default;
-Infections &Infections::operator=(Infections &&) noexcept = default;
+HCVInfections::~HCVInfections() = default;
+HCVInfections::HCVInfections(HCVInfections &&) noexcept = default;
+HCVInfections &HCVInfections::operator=(HCVInfections &&) noexcept = default;
 
-void Infections::DoEvent(std::shared_ptr<person::PersonBase> person,
-                         std::shared_ptr<datamanagement::DataManagerBase> dm,
-                         std::shared_ptr<stats::DeciderBase> decider) {
+void HCVInfections::DoEvent(std::shared_ptr<person::PersonBase> person,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }
 
