@@ -4,7 +4,7 @@
 // Created: 2025-03-06                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-03-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -82,39 +82,6 @@ private:
                " FROM antibody_testing AS at INNER JOIN "
                "screening_and_linkage AS sl ON ((at.age_years = "
                "sl.age_years) AND (at.drug_behavior = sl.drug_behavior));";
-    }
-
-    /// @brief
-    /// @param
-    /// @return
-    double
-    GetDoubleFromConfig(std::string config_key,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        bool positive = true) {
-        std::string config_data;
-        dm->GetFromConfig(config_key, config_data);
-        if (config_data.empty()) {
-            spdlog::get("main")->warn("No {} Found!", config_key);
-            config_data = "0.0";
-        }
-        if (positive) {
-            return Utils::stod_positive(config_data);
-        }
-        return std::stod(config_data);
-    }
-
-    /// @brief
-    /// @param
-    /// @return
-    std::string
-    GetStringFromConfig(std::string config_key,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string config_data;
-        dm->GetFromConfig(config_key, config_data);
-        if (config_data.empty()) {
-            spdlog::get("main")->warn("No {} Found!", config_key);
-        }
-        return config_data;
     }
 
     /// @brief

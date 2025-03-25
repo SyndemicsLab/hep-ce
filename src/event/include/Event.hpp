@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -13,6 +13,7 @@
 #ifndef EVENT_EVENT_HPP_
 #define EVENT_EVENT_HPP_
 
+#include <DataManagement/DataManagerBase.hpp>
 #include <memory>
 #include <random>
 #include <vector>
@@ -20,11 +21,6 @@
 // Forward Defining Person to use in Execute
 namespace person {
 class PersonBase;
-}
-
-// Forward Defining DataManagerBase to require in constructor
-namespace datamanagement {
-class DataManagerBase;
 }
 
 // Forward Defining DeciderBase from stats project
@@ -55,6 +51,13 @@ public:
                 std::shared_ptr<stats::DeciderBase> decider);
     static double DiscountEventCost(double cost, double discount_rate,
                                     int timestep, bool annual = false);
+    static double
+    GetDoubleFromConfig(std::string config_key,
+                        std::shared_ptr<datamanagement::DataManagerBase> dm,
+                        bool positive = true);
+    static std::string
+    GetStringFromConfig(std::string config_key,
+                        std::shared_ptr<datamanagement::DataManagerBase> dm);
 };
 } // namespace event
 #endif
