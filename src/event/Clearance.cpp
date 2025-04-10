@@ -4,7 +4,7 @@
 // Created: 2023-09-13                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-04-07                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -33,7 +33,7 @@ public:
             return;
         }
         if (decider->GetDecision({clearanceProbability}) == 0) {
-            person->ClearHCV();
+            person->ClearHCV(true);
         }
     }
     ClearanceIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {

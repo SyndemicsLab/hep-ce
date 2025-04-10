@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-25                                                  //
+// Last Modified: 2025-03-26                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -51,6 +51,15 @@ public:
                 std::shared_ptr<stats::DeciderBase> decider);
     static double DiscountEventCost(double cost, double discount_rate,
                                     int timestep, bool annual = false);
+
+    static bool
+    GetBoolFromConfig(std::string config_key,
+                      std::shared_ptr<datamanagement::DataManagerBase> dm);
+
+    static int
+    GetIntFromConfig(std::string config_key,
+                     std::shared_ptr<datamanagement::DataManagerBase> dm);
+
     static double
     GetDoubleFromConfig(std::string config_key,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,

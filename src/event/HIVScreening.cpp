@@ -4,7 +4,7 @@
 // Created: 2025-03-06                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-25                                                  //
+// Last Modified: 2025-04-09                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -24,11 +24,13 @@ namespace event {
 class HIVScreening::HIVScreeningIMPL {
 private:
     // constants
-    /// @brief
-    enum class SCREEN_TYPE { BACKGROUND = 0, INTERVENTION = 1 };
     // two types of screening - background and intervention
     /// @brief
-    static const int TYPE_COUNT = 2;
+    enum class SCREEN_TYPE : int {
+        BACKGROUND = 0,
+        INTERVENTION = 1,
+        COUNT = 2
+    };
     /// @brief
     static const person::InfectionType INF_TYPE = person::InfectionType::HIV;
     /// @brief
@@ -93,6 +95,8 @@ private:
             return &hiv_background_screen_data;
         case SCREEN_TYPE::INTERVENTION:
             return &hiv_intervention_screen_data;
+        default:
+            break;
         }
         return nullptr;
     }
@@ -221,7 +225,7 @@ private:
                                           this->callback_hivscreen,
                                           chosen_screenmap, error);
         if (rc != 0) {
-            spdlog::get("main")->error("Error retrieving Screening values "
+            spdlog::get("main")->error("Error retrieving HIV Screening values "
                                        "for column `{}'! Error Message: {}",
                                        column, error);
         }
@@ -282,11 +286,12 @@ public:
 
         intervention_type =
             GetStringFromConfig("hiv_screening.intervention_type", dm);
-        std::string temp = GetStringFromConfig("hiv_screening.period", dm);
-        screening_period = temp.empty() ? 0 : std::stoi(temp);
+        screening_period = GetIntFromConfig("hiv_screening.period", dm);
 
         // iterate through screening types, defining screening data
-        for (int screen_type = 0; screen_type < TYPE_COUNT; ++screen_type) {
+        for (int screen_type = 0;
+             screen_type < static_cast<int>(SCREEN_TYPE::COUNT);
+             ++screen_type) {
             SCREEN_TYPE type = static_cast<SCREEN_TYPE>(screen_type);
             MakeTestCharacteristics(type, dm);
             LoadScreeningData(type, dm);

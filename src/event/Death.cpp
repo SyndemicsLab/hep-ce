@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-26                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -253,22 +253,17 @@ public:
     }
 
     DeathIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string data;
+        this->f4_infected_probability =
+            GetDoubleFromConfig("mortality.f4_infected", dm);
+        this->f4_uninfected_probability =
+            GetDoubleFromConfig("mortality.f4_uninfected", dm);
+        this->decomp_infected_probability =
+            GetDoubleFromConfig("mortality.decomp_infected", dm);
+        this->decomp_uninfected_probability =
+            GetDoubleFromConfig("mortality.decomp_uninfected", dm);
 
-        dm->GetFromConfig("mortality.f4_infected", data);
-        this->f4_infected_probability = Utils::stod_positive(data);
-
-        dm->GetFromConfig("mortality.f4_uninfected", data);
-        this->f4_uninfected_probability = Utils::stod_positive(data);
-
-        dm->GetFromConfig("mortality.decomp_infected", data);
-        this->decomp_infected_probability = Utils::stod_positive(data);
-
-        dm->GetFromConfig("mortality.decomp_uninfected", data);
-        this->decomp_uninfected_probability = Utils::stod_positive(data);
-
-        int rc = LoadOverdoseData(dm);
-        rc = LoadBackgroundMortality(dm);
+        LoadOverdoseData(dm);
+        LoadBackgroundMortality(dm);
     }
 };
 

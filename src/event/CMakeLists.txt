@@ -39,7 +39,9 @@ target_sources(${PROJECT_NAME}
         HCVScreening.cpp
         HCVTreatment.cpp
         HIVInfections.cpp
+        HIVLinking.cpp
         HIVScreening.cpp
+        Linking.cpp
         MOUD.cpp
         Overdose.cpp
         VoluntaryRelinking.cpp

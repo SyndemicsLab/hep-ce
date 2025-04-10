@@ -4,7 +4,7 @@
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-09                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -100,7 +100,7 @@ private:
     bool FalsePositive(std::shared_ptr<person::PersonBase> person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm) {
         if (person->GetHCV() == person::HCV::NONE) {
-            person->ClearHCVDiagnosis();
+            person->ClearDiagnosis();
             this->AddLinkingCost(person, dm, "False Positive Linking Cost");
             return true;
         }
@@ -129,7 +129,7 @@ public:
                  std::shared_ptr<stats::DeciderBase> decider) {
         bool is_linked =
             (person->GetLinkState() == person::LinkageState::LINKED);
-        bool is_not_identified = (!person->IsIdentifiedAsHCVInfected());
+        bool is_not_identified = (!person->IsIdentifiedAsInfected());
         if (is_linked || is_not_identified) {
             return;
         }
@@ -161,26 +161,17 @@ public:
         }
     }
     HCVLinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string temp_data;
-        int rc = dm->GetFromConfig("cost.discounting_rate", temp_data);
-        if (!temp_data.empty()) {
-            this->discount = Utils::stod_positive(temp_data);
-        }
+        this->discount = GetDoubleFromConfig("cost.discounting_rate", dm);
         this->intervention_cost =
-            ParseDoublesFromConfig("linking.intervention_cost", dm);
-
+            GetDoubleFromConfig("linking.intervention_cost", dm);
         this->false_positive_test_cost =
-            ParseDoublesFromConfig("linking.false_positive_test_cost", dm);
-
+            GetDoubleFromConfig("linking.false_positive_test_cost", dm);
         this->recent_screen_multiplier =
-            ParseDoublesFromConfig("linking.recent_screen_multiplier", dm);
+            GetDoubleFromConfig("linking.recent_screen_multiplier", dm);
+        this->recent_screen_cutoff =
+            GetIntFromConfig("linking.recent_screen_cutoff", dm);
 
-        temp_data.clear();
-        rc = dm->GetFromConfig("linking.recent_screen_cutoff", temp_data);
-        if (!temp_data.empty()) {
-            this->recent_screen_cutoff = std::stoi(temp_data);
-        }
-
+        int rc;
         std::string error;
         rc = dm->SelectCustomCallback(
             LinkSQL("background_link_probability", dm), this->callback_link,

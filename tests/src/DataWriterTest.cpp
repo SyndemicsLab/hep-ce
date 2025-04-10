@@ -4,7 +4,7 @@
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
+// Last Modified: 2025-04-08                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -103,7 +103,8 @@ TEST_F(DataWriterTest, PopulationString) {
         ON_CALL(*(testPopulation[id]), GetDeathReason())
             .WillByDefault(Return(person::DeathReason::NA));
         bool hcv_id = (id % 2 == 0) ? true : false;
-        ON_CALL(*(testPopulation[id]), IsIdentifiedAsHCVInfected())
+        ON_CALL(*(testPopulation[id]),
+                IsIdentifiedAsInfected(person::InfectionType::HCV))
             .WillByDefault(Return(hcv_id));
         int hcv_time = (id % 2 == 0) ? 1 : -1;
         ON_CALL(*(testPopulation[id]), GetTimeHCVIdentified())

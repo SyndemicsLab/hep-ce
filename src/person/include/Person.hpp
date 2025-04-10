@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-18                                                  //
+// Last Modified: 2025-04-08                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -34,7 +34,7 @@ public:
 
     // HCV
     virtual int InfectHCV() = 0;
-    virtual int ClearHCV() = 0;
+    virtual int ClearHCV(bool acute = false) = 0;
     virtual HCV GetHCV() const = 0;
     virtual void SetHCV(HCV hcv) = 0;
     virtual int AddHCVClearance() = 0;
@@ -42,11 +42,10 @@ public:
     virtual bool GetSeropositivity() const = 0;
     virtual void SetSeropositivity(bool seropositive) = 0;
 
-    virtual int DiagnoseHCV() = 0;
     virtual void Diagnose(InfectionType it = InfectionType::HCV) = 0;
-    virtual int ClearHCVDiagnosis() = 0;
-    virtual bool IsIdentifiedAsHCVInfected() const = 0;
-    virtual bool HistoryOfHCVInfection() const = 0;
+    virtual void ClearDiagnosis(InfectionType it = InfectionType::HCV) = 0;
+    virtual bool
+    IsIdentifiedAsInfected(InfectionType it = InfectionType::HCV) const = 0;
 
     virtual int GetTimeHCVIdentified() const = 0;
     virtual int GetTimesHCVInfected() const = 0;
@@ -174,7 +173,9 @@ public:
     virtual std::unordered_map<cost::CostCategory, std::pair<double, double>>
     GetCosts() const = 0;
     virtual std::pair<double, double> GetCostTotals() const = 0;
-    virtual Health GetHealth() const = 0;
+    virtual HCVDetails GetHCVDetails() const = 0;
+    virtual HIVDetails GetHIVDetails() const = 0;
+    virtual HCCDetails GetHCCDetails() const = 0;
 
     /// HIV
     // getter/setter
@@ -236,7 +237,7 @@ public:
 
     // HCV
     int InfectHCV();
-    int ClearHCV();
+    int ClearHCV(bool acute);
     HCV GetHCV() const;
     void SetHCV(HCV hcv);
     int AddHCVClearance();
@@ -244,11 +245,9 @@ public:
     bool GetSeropositivity() const;
     void SetSeropositivity(bool seropositive);
 
-    int DiagnoseHCV();
     void Diagnose(InfectionType it);
-    int ClearHCVDiagnosis();
-    bool IsIdentifiedAsHCVInfected() const;
-    bool HistoryOfHCVInfection() const;
+    void ClearDiagnosis(InfectionType it);
+    bool IsIdentifiedAsInfected(InfectionType it) const;
 
     int GetTimeHCVIdentified() const;
     int GetTimesHCVInfected() const;
@@ -349,7 +348,9 @@ public:
     std::unordered_map<cost::CostCategory, std::pair<double, double>>
     GetCosts() const;
     std::pair<double, double> GetCostTotals() const override;
-    Health GetHealth() const;
+    HCVDetails GetHCVDetails() const;
+    HIVDetails GetHIVDetails() const;
+    HCCDetails GetHCCDetails() const;
 
     void AccumulateTotalUtility(std::pair<double, double> util,
                                 std::pair<double, double> discount_util);

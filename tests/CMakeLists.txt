@@ -59,6 +59,7 @@ add_executable(${PROJECT_NAME}
   src/eventtests/HCVScreeningTest.cpp
   src/eventtests/HCVTreatmentTest.cpp
   src/eventtests/HIVInfectionsTest.cpp
+  src/eventtests/HIVLinkingTest.cpp
   src/eventtests/HIVScreeningTest.cpp
   src/eventtests/VoluntaryRelinkingTest.cpp
   src/eventtests/PregnancyTest.cpp

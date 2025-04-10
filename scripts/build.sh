@@ -123,7 +123,7 @@ done
             # determine the number of processing units available
             CORES="$(nproc --all)"
             # if CORES > 1 compile in parallel where possible
-            ([[ (-n "$CORES") && ("$CORES" -gt "2") ]] && cmake --build . -j"$(( CORES - 2 ))") || cmake --build .
+            ([[ (-n "$CORES") && ("$CORES" -gt "3") ]] && cmake --build . -j"$(( CORES * 2 / 3 ))") || cmake --build .
         )
     )
     # run tests, if they built properly

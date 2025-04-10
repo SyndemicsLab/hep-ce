@@ -4,7 +4,7 @@
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-08                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -158,9 +158,9 @@ private:
         person->MarkScreened();
         // if person has had a history of HCV Infections
         if (((screenkey == "screening_intervention" &&
-              !person->IsIdentifiedAsHCVInfected()) ||
+              !person->IsIdentifiedAsInfected()) ||
              screenkey == "screening_background") &&
-            (!person->HistoryOfHCVInfection())) {
+            (!person->CheckAntibodyPositive())) {
             if (!runABTest(person, dm, screenkey, decider)) {
                 return;
             }
@@ -171,7 +171,7 @@ private:
                                            ? person::LinkageType::BACKGROUND
                                            : person::LinkageType::INTERVENTION;
             person->SetLinkageType(type);
-            person->DiagnoseHCV();
+            person->Diagnose();
         }
     }
 

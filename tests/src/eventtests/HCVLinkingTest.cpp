@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-08                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -44,7 +44,7 @@ std::string const P_INTERVENTION_LINK_QUERY =
 TEST_F(HCVLinkingTest, FalsePositive) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(true));
     ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));
@@ -92,7 +92,8 @@ TEST_F(HCVLinkingTest, FalsePositive) {
         .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&istorage), Return(0)));
 
     // Expectations
-    EXPECT_CALL(*testPerson, ClearHCVDiagnosis()).Times(1);
+    EXPECT_CALL(*testPerson, ClearDiagnosis(person::InfectionType::HCV))
+        .Times(1);
     EXPECT_CALL(*testPerson,
                 AddCost(false_positive_test_cost, false_positive_test_cost,
                         cost::CostCategory::LINKING))
@@ -107,7 +108,7 @@ TEST_F(HCVLinkingTest, FalsePositive) {
 TEST_F(HCVLinkingTest, BackgroundLink) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(true));
     ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));
@@ -170,7 +171,7 @@ TEST_F(HCVLinkingTest, BackgroundLink) {
 TEST_F(HCVLinkingTest, InterventionLink) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(true));
     ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::NEVER));
@@ -240,7 +241,7 @@ TEST_F(HCVLinkingTest, InterventionLink) {
 TEST_F(HCVLinkingTest, DecideToNotLink) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(true));
     ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));
@@ -304,7 +305,7 @@ TEST_F(HCVLinkingTest, DecideToNotLink) {
 TEST_F(HCVLinkingTest, AlreadyLinked) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(true));
     ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::LINKED));
@@ -359,7 +360,7 @@ TEST_F(HCVLinkingTest, AlreadyLinked) {
 TEST_F(HCVLinkingTest, RecentScreen) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(true));
     ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));
@@ -421,7 +422,7 @@ TEST_F(HCVLinkingTest, RecentScreen) {
 TEST_F(HCVLinkingTest, RecentScreenCutoff) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(true));
     ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
         .WillByDefault(Return(person::LinkageState::UNLINKED));

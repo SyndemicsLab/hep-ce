@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-18                                                  //
+// Last Modified: 2025-04-08                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -31,18 +31,17 @@ public:
 
     // HCV
     MOCK_METHOD(int, InfectHCV, (), (override));
-    MOCK_METHOD(int, ClearHCV, (), (override));
+    MOCK_METHOD(int, ClearHCV, (bool acute), (override));
     MOCK_METHOD(HCV, GetHCV, (), (const, override));
     MOCK_METHOD(void, SetHCV, (HCV hcv), (override));
     MOCK_METHOD(int, AddHCVClearance, (), (override));
     MOCK_METHOD(int, GetHCVClearances, (), (const, override));
     MOCK_METHOD(bool, GetSeropositivity, (), (const, override));
     MOCK_METHOD(void, SetSeropositivity, (bool seropositive), (override));
-
-    MOCK_METHOD(int, DiagnoseHCV, (), (override));
-    MOCK_METHOD(int, ClearHCVDiagnosis, (), (override));
-    MOCK_METHOD(bool, IsIdentifiedAsHCVInfected, (), (const, override));
-    MOCK_METHOD(bool, HistoryOfHCVInfection, (), (const, override));
+    MOCK_METHOD(void, Diagnose, (InfectionType it), (override));
+    MOCK_METHOD(void, ClearDiagnosis, (InfectionType it), (override));
+    MOCK_METHOD(bool, IsIdentifiedAsInfected, (InfectionType it),
+                (const, override));
 
     MOCK_METHOD(int, GetTimeHCVIdentified, (), (const, override));
     MOCK_METHOD(int, GetTimesHCVInfected, (), (const, override));
@@ -64,7 +63,6 @@ public:
                 (const, override));
     MOCK_METHOD(bool, HadSecondScreeningTest, (), (const, override));
     MOCK_METHOD(void, GiveSecondScreeningTest, (bool state), (override));
-    MOCK_METHOD(void, Diagnose, (InfectionType it), (override));
     MOCK_METHOD(bool, CheckAntibodyPositive, (InfectionType it),
                 (const, override));
     MOCK_METHOD(void, SetAntibodyPositive, (bool result, InfectionType it),
@@ -161,7 +159,9 @@ public:
         GetCosts, (), (const, override));
     MOCK_METHOD((std::pair<double, double>), GetCostTotals, (),
                 (const, override));
-    MOCK_METHOD(Health, GetHealth, (), (const, override));
+    MOCK_METHOD(HCVDetails, GetHCVDetails, (), (const, override));
+    MOCK_METHOD(HIVDetails, GetHIVDetails, (), (const, override));
+    MOCK_METHOD(HCCDetails, GetHCCDetails, (), (const, override));
 
     MOCK_METHOD(LifetimeUtility, GetTotalUtility, (), (const, override));
     MOCK_METHOD(void, AccumulateTotalUtility,

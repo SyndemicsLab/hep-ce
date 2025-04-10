@@ -4,7 +4,7 @@
 // Created: 2025-03-17                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-09                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -12,7 +12,6 @@
 
 #include "HIVScreening.hpp"
 #include "EventTest.cpp"
-#include "Utils.hpp"
 
 using ::testing::_;
 using ::testing::DoAll;

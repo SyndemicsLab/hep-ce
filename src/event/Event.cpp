@@ -4,7 +4,7 @@
 // Created: 2025-01-10                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-25                                                  //
+// Last Modified: 2025-03-26                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,6 +37,39 @@ double Event::DiscountEventCost(double cost, double discount_rate, int timestep,
     discount_rate = annual ? discount_rate / 12 : discount_rate;
     double denominator = std::pow(1 + discount_rate, timestep);
     return cost / denominator;
+}
+
+/// @brief
+/// @param
+/// @return
+bool Event::GetBoolFromConfig(
+    std::string config_key,
+    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::string config_data;
+    dm->GetFromConfig(config_key, config_data);
+    if (config_data.empty()) {
+        spdlog::get("main")->warn("No {} Found! Returning `false`...",
+                                  config_key);
+        return false;
+    }
+    bool to_return;
+    std::istringstream(config_data) >> std::boolalpha >> to_return;
+    return to_return;
+}
+
+/// @brief
+/// @param
+/// @return
+int Event::GetIntFromConfig(
+    std::string config_key,
+    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::string config_data;
+    dm->GetFromConfig(config_key, config_data);
+    if (config_data.empty()) {
+        spdlog::get("main")->warn("No {} Found!", config_key);
+        config_data = "0";
+    }
+    return std::stoi(config_data);
 }
 
 /// @brief
