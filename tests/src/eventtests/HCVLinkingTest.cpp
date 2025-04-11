@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -19,7 +19,15 @@ using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
 
-class HCVLinkingTest : public EventTest {};
+class HCVLinkingTest : public EventTest {
+protected:
+    void SetUp() override {
+        EventTest::SetUp();
+        // DataManager setup
+        ON_CALL(*event_dm, GetFromConfig("simulation.events", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("HCVLinking"), Return(0)));
+    }
+};
 
 std::string const BACKGROUND_LINK_QUERY =
     "SELECT age_years, gender, drug_behavior, -1, "
@@ -238,7 +246,7 @@ TEST_F(HCVLinkingTest, InterventionLink) {
     event->Execute(testPerson, event_dm, decider);
 }
 
-TEST_F(HCVLinkingTest, DecideToNotLink) {
+TEST_F(HCVLinkingTest, DecideNotToLink) {
     // Person Setup
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))

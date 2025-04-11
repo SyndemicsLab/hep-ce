@@ -89,7 +89,7 @@ done
     # ensure the `build/` directory exists
     ([[ -d "build/" ]] && rm -rf build/*) || mkdir "build/"
     ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
-    ([[ -d "lib/" ]] && rm -rf lib/*.a && rm -rf lib/*.so && rm -rf lib/dminstall)
+    ([[ -d "lib/" ]] && rm -rf lib/*.a && rm -rf lib/*.so)
 
     # detect or install DataManagement
     if [[ ! -d "lib/dminstall" ]]; then
@@ -123,7 +123,7 @@ done
             # determine the number of processing units available
             CORES="$(nproc --all)"
             # if CORES > 1 compile in parallel where possible
-            ([[ (-n "$CORES") && ("$CORES" -gt "3") ]] && cmake --build . -j"$(( CORES * 2 / 3 ))") || cmake --build .
+            ([[ (-n "$CORES") && ("$CORES" -gt "4") ]] && cmake --build . -j"$(( CORES * 1 / 4 ))") || cmake --build .
         )
     )
     # run tests, if they built properly

@@ -4,7 +4,7 @@
 // Created: 2023-09-14                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-10                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -25,6 +25,7 @@
 #include "HCVScreening.hpp"
 #include "HCVTreatment.hpp"
 #include "HIVInfections.hpp"
+#include "HIVLinking.hpp"
 #include "HIVScreening.hpp"
 #include "MOUD.hpp"
 #include "Overdose.hpp"

@@ -4,7 +4,7 @@
 // Created: 2025-01-10                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-26                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -48,7 +48,7 @@ bool Event::GetBoolFromConfig(
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No {} Found! Returning `false`...",
+        spdlog::get("main")->warn("No `{}' Found! Returning `false`...",
                                   config_key);
         return false;
     }
@@ -66,7 +66,7 @@ int Event::GetIntFromConfig(
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No {} Found!", config_key);
+        spdlog::get("main")->warn("No `{}' Found!", config_key);
         config_data = "0";
     }
     return std::stoi(config_data);
@@ -82,7 +82,7 @@ Event::GetDoubleFromConfig(std::string config_key,
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No {} Found!", config_key);
+        spdlog::get("main")->warn("No `{}' Found!", config_key);
         config_data = "0.0";
     }
     if (positive) {
@@ -100,7 +100,7 @@ std::string Event::GetStringFromConfig(
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No {} Found!", config_key);
+        spdlog::get("main")->warn("No `{}' Found!", config_key);
     }
     return config_data;
 }

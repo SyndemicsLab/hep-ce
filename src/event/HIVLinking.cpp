@@ -4,29 +4,27 @@
 // Created: 2025-03-25                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-09                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "HIVLinking.hpp"
-#include "Cost.hpp"
 #include "Decider.hpp"
 #include "Linking.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
-#include <iostream>
 #include <string>
 
 namespace event {
 class HIVLinkingIMPL : public LinkingIMPL {
 private:
     // constants
+    // redefining cost category for HIV Linking
+    cost::CostCategory COST_CATEGORY = cost::CostCategory::HIV;
     /// @brief
     static const person::InfectionType INF_TYPE = person::InfectionType::HIV;
-    /// @brief
-    static const cost::CostCategory COST_CATEGORY = cost::CostCategory::HIV;
     /// @brief
     const std::unordered_map<person::LinkageType, std::string> LINK_COLUMNS = {
         {person::LinkageType::BACKGROUND, "hiv_background_link_probability"},
@@ -48,7 +46,8 @@ private:
     bool FalsePositive(std::shared_ptr<person::PersonBase> person) {
         if (person->GetHIV() == person::HIV::NONE) {
             person->ClearDiagnosis(INF_TYPE);
-            this->AddLinkingCost(person, LINK_COST::FALSE_POSITIVE);
+            this->AddLinkingCost(person, LINK_COST::FALSE_POSITIVE,
+                                 COST_CATEGORY);
             return true;
         }
         return false;
@@ -106,11 +105,12 @@ public:
             prob = ApplyMultiplier(prob, recent_screen_multiplier);
         }
 
-        person::LinkageType lt = person->GetLinkageType(INF_TYPE);
         if (decider->GetDecision({prob}) == 0) {
+            person::LinkageType lt = person->GetLinkageType(INF_TYPE);
             person->Link(lt, INF_TYPE);
             if (lt == person::LinkageType::INTERVENTION) {
-                this->AddLinkingCost(person, LINK_COST::INTERVENTION);
+                this->AddLinkingCost(person, LINK_COST::INTERVENTION,
+                                     COST_CATEGORY);
             }
         }
     }
@@ -125,7 +125,6 @@ public:
             "hiv_linking.recent_screen_multiplier", dm);
         this->recent_screen_cutoff =
             Event::GetIntFromConfig("hiv_linking.recent_screen_cutoff", dm);
-        this->pregnancy_strata = this->CheckForPregnancyEvent(dm);
 
         for (int link_type = 0;
              link_type < static_cast<int>(person::LinkageType::NA);

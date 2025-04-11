@@ -4,14 +4,13 @@
 // Created: 2025-04-02                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-09                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Linking.hpp"
-#include "Cost.hpp"
 #include "Decider.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
@@ -46,7 +45,7 @@ LinkingIMPL::GetLinkProbability(std::shared_ptr<person::PersonBase> person,
 }
 
 void LinkingIMPL::AddLinkingCost(std::shared_ptr<person::PersonBase> person,
-                                 LINK_COST type) {
+                                 LINK_COST type, cost::CostCategory category) {
     double cost;
     if (type == LINK_COST::INTERVENTION) {
         cost = this->intervention_cost;
@@ -58,7 +57,7 @@ void LinkingIMPL::AddLinkingCost(std::shared_ptr<person::PersonBase> person,
 
     double discountAdjustedCost =
         Event::DiscountEventCost(cost, discount, person->GetCurrentTimestep());
-    person->AddCost(cost, discountAdjustedCost, cost::CostCategory::LINKING);
+    person->AddCost(cost, discountAdjustedCost, category);
 }
 
 double LinkingIMPL::ApplyMultiplier(double prob, double mult) {
@@ -76,5 +75,6 @@ bool LinkingIMPL::CheckForPregnancyEvent(
 
 LinkingIMPL::LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
     this->discount = Event::GetDoubleFromConfig("cost.discounting_rate", dm);
+    this->pregnancy_strata = CheckForPregnancyEvent(dm);
 }
 } // namespace event

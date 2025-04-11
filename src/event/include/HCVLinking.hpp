@@ -4,7 +4,7 @@
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -17,15 +17,17 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
+class HCVLinkingIMPL;
 
 /// @brief Subclass of Event used to Link People to Treatment
 class HCVLinking : public Event {
 private:
-    class HCVLinkingIMPL;
     std::unique_ptr<HCVLinkingIMPL> impl;
 
     /// @brief Implementation of Virtual Function DoEvent
     /// @param person Individual Person undergoing Event
+    /// @param dm DataManager object containing data for the event
+    /// @param decider Pseudorandom number generator for decision-making
     void DoEvent(std::shared_ptr<person::PersonBase> person,
                  std::shared_ptr<datamanagement::DataManagerBase> dm,
                  std::shared_ptr<stats::DeciderBase> decider) override;
