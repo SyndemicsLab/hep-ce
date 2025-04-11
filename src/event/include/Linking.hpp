@@ -40,7 +40,8 @@ protected:
     linkmap_t background_link_data;
     linkmap_t intervention_link_data;
 
-    int callback_link(void *storage, int count, char **data, char **columns);
+    static int callback_link(void *storage, int count, char **data,
+                             char **columns);
     double
     GetLinkProbability(std::shared_ptr<person::PersonBase> person,
                        person::InfectionType it = person::InfectionType::HCV);
