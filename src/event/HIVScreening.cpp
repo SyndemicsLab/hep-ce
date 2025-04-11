@@ -250,12 +250,12 @@ private:
 
         // define test characteristics
         TestCharacteristics temp = {
-            GetDoubleFromConfig(prefix + ".ab_sensitivity", dm),
-            GetDoubleFromConfig(prefix + ".ab_specificity", dm),
-            GetDoubleFromConfig(prefix + ".ab_cost", dm),
-            GetDoubleFromConfig(prefix + ".rna_sensitivity", dm),
-            GetDoubleFromConfig(prefix + ".rna_specificity", dm),
-            GetDoubleFromConfig(prefix + ".rna_cost", dm)};
+            Utils::GetDoubleFromConfig(prefix + ".ab_sensitivity", dm),
+            Utils::GetDoubleFromConfig(prefix + ".ab_specificity", dm),
+            Utils::GetDoubleFromConfig(prefix + ".ab_cost", dm),
+            Utils::GetDoubleFromConfig(prefix + ".rna_sensitivity", dm),
+            Utils::GetDoubleFromConfig(prefix + ".rna_specificity", dm),
+            Utils::GetDoubleFromConfig(prefix + ".rna_cost", dm)};
         test_data[type] = temp;
     }
 
@@ -282,11 +282,11 @@ public:
     }
 
     HIVScreeningIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        discount = GetDoubleFromConfig("cost.discounting_rate", dm);
+        discount = Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
 
         intervention_type =
-            GetStringFromConfig("hiv_screening.intervention_type", dm);
-        screening_period = GetIntFromConfig("hiv_screening.period", dm);
+            Utils::GetStringFromConfig("hiv_screening.intervention_type", dm);
+        screening_period = Utils::GetIntFromConfig("hiv_screening.period", dm);
 
         // iterate through screening types, defining screening data
         for (int screen_type = 0;

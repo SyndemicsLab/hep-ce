@@ -17,21 +17,12 @@
 #include <DataManagement/DataManagerBase.hpp>
 
 namespace event {
-class HCVLinkingIMPL : LinkingIMPL {
+class HCVLinkingIMPL : public LinkingIMPL {
 private:
     // constants
     const std::unordered_map<person::LinkageType, std::string> LINK_COLUMNS = {
         {person::LinkageType::BACKGROUND, "background_link_probability"},
         {person::LinkageType::INTERVENTION, "intervention_link_probability"}};
-
-    std::string LinkSQL(std::string const column) const {
-        if (this->pregnancy_strata) {
-            return "SELECT age_years, gender, drug_behavior, pregnancy, " +
-                   column + " FROM screening_and_linkage;";
-        }
-        return "SELECT age_years, gender, drug_behavior, -1, " + column +
-               " FROM screening_and_linkage;";
-    }
 
     bool FalsePositive(std::shared_ptr<person::PersonBase> person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm) {
@@ -42,35 +33,6 @@ private:
             return true;
         }
         return false;
-    }
-
-    linkmap_t *PickMap(person::LinkageType type) {
-        switch (type) {
-        case person::LinkageType::BACKGROUND:
-            return &this->background_link_data;
-        case person::LinkageType::INTERVENTION:
-            return &this->intervention_link_data;
-        default:
-            break;
-        }
-        return nullptr;
-    }
-
-    void LoadLinkingData(person::LinkageType type,
-                         std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        linkmap_t *chosen_linkmap = PickMap(type);
-        std::string column = LINK_COLUMNS.at(type);
-        std::string error;
-        int rc = dm->SelectCustomCallback(LinkSQL(column), this->callback_link,
-                                          chosen_linkmap, error);
-        if (rc != 0) {
-            spdlog::get("main")->error("Error retrieving HCV Linking values "
-                                       "for column `{};! Error Message: {}",
-                                       column, error);
-        }
-        if ((*chosen_linkmap).empty()) {
-            spdlog::get("main")->warn("No `" + column + "' found.");
-        }
     }
 
 public:
@@ -111,13 +73,13 @@ public:
     HCVLinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
         : LinkingIMPL(dm) {
         this->intervention_cost =
-            Event::GetDoubleFromConfig("linking.intervention_cost", dm);
+            Utils::GetDoubleFromConfig("linking.intervention_cost", dm);
         this->false_positive_test_cost =
-            Event::GetDoubleFromConfig("linking.false_positive_test_cost", dm);
+            Utils::GetDoubleFromConfig("linking.false_positive_test_cost", dm);
         this->recent_screen_multiplier =
-            Event::GetDoubleFromConfig("linking.recent_screen_multiplier", dm);
+            Utils::GetDoubleFromConfig("linking.recent_screen_multiplier", dm);
         this->recent_screen_cutoff =
-            Event::GetIntFromConfig("linking.recent_screen_cutoff", dm);
+            Utils::GetIntFromConfig("linking.recent_screen_cutoff", dm);
 
         for (int link_type = 0;
              link_type < static_cast<int>(person::LinkageType::NA);

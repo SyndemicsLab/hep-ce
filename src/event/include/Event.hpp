@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-26                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -13,7 +13,7 @@
 #ifndef EVENT_EVENT_HPP_
 #define EVENT_EVENT_HPP_
 
-#include <DataManagement/DataManagerBase.hpp>
+#include "ConfigUtils.hpp"
 #include <memory>
 #include <random>
 #include <vector>
@@ -51,22 +51,6 @@ public:
                 std::shared_ptr<stats::DeciderBase> decider);
     static double DiscountEventCost(double cost, double discount_rate,
                                     int timestep, bool annual = false);
-
-    static bool
-    GetBoolFromConfig(std::string config_key,
-                      std::shared_ptr<datamanagement::DataManagerBase> dm);
-
-    static int
-    GetIntFromConfig(std::string config_key,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm);
-
-    static double
-    GetDoubleFromConfig(std::string config_key,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        bool positive = true);
-    static std::string
-    GetStringFromConfig(std::string config_key,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm);
 };
 } // namespace event
 #endif

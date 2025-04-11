@@ -23,6 +23,7 @@ protected:
     // two types of linking - background and intervention
     /// @brief
     enum class LINK_COST : int { INTERVENTION = 0, FALSE_POSITIVE = 1 };
+    std::unordered_map<person::LinkageType, std::string> LINK_COLUMNS;
 
     // user-provided values
     double discount = 0.0;
@@ -42,6 +43,7 @@ protected:
 
     static int callback_link(void *storage, int count, char **data,
                              char **columns);
+    std::string LinkSQL(std::string column) const;
     double
     GetLinkProbability(std::shared_ptr<person::PersonBase> person,
                        person::InfectionType it = person::InfectionType::HCV);
@@ -52,6 +54,8 @@ protected:
 
     bool
     CheckForPregnancyEvent(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    void LoadLinkingData(person::LinkageType type,
+                         std::shared_ptr<datamanagement::DataManagerBase> dm);
 
 public:
     LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm);

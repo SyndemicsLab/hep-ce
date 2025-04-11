@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-26                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -254,13 +254,13 @@ public:
 
     DeathIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
         this->f4_infected_probability =
-            GetDoubleFromConfig("mortality.f4_infected", dm);
+            Utils::GetDoubleFromConfig("mortality.f4_infected", dm);
         this->f4_uninfected_probability =
-            GetDoubleFromConfig("mortality.f4_uninfected", dm);
+            Utils::GetDoubleFromConfig("mortality.f4_uninfected", dm);
         this->decomp_infected_probability =
-            GetDoubleFromConfig("mortality.decomp_infected", dm);
+            Utils::GetDoubleFromConfig("mortality.decomp_infected", dm);
         this->decomp_uninfected_probability =
-            GetDoubleFromConfig("mortality.decomp_uninfected", dm);
+            Utils::GetDoubleFromConfig("mortality.decomp_uninfected", dm);
 
         LoadOverdoseData(dm);
         LoadBackgroundMortality(dm);

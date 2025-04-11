@@ -26,6 +26,18 @@ int LinkingIMPL::callback_link(void *storage, int count, char **data,
     return 0;
 }
 
+/// @brief
+/// @param
+/// @return
+std::string LinkingIMPL::LinkSQL(std::string column) const {
+    if (this->pregnancy_strata) {
+        return "SELECT age_years, gender, drug_behavior, pregnancy, " + column +
+               " FROM screening_and_linkage;";
+    }
+    return "SELECT age_years, gender, drug_behavior, -1, " + column +
+           " FROM screening_and_linkage;";
+}
+
 double
 LinkingIMPL::GetLinkProbability(std::shared_ptr<person::PersonBase> person,
                                 person::InfectionType it) {
@@ -67,14 +79,36 @@ double LinkingIMPL::ApplyMultiplier(double prob, double mult) {
 bool LinkingIMPL::CheckForPregnancyEvent(
     std::shared_ptr<datamanagement::DataManagerBase> dm) {
     std::vector<std::string> event_list = Utils::split2vecT<std::string>(
-        Event::GetStringFromConfig("simulation.events", dm), ',');
+        Utils::GetStringFromConfig("simulation.events", dm), ',');
 
     return (std::find(event_list.begin(), event_list.end(), "pregnancy") !=
             event_list.end());
 }
 
+void LinkingIMPL::LoadLinkingData(
+    person::LinkageType type,
+    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::string infection =
+        (this->COST_CATEGORY == cost::CostCategory::LINKING) ? "HCV" : "HIV";
+    linkmap_t *chosen_linkmap = (type == person::LinkageType::BACKGROUND)
+                                    ? &this->background_link_data
+                                    : &this->intervention_link_data;
+    std::string column = this->LINK_COLUMNS.at(type);
+    std::string error;
+    int rc = dm->SelectCustomCallback(LinkSQL(column), this->callback_link,
+                                      chosen_linkmap, error);
+    if (rc != 0) {
+        spdlog::get("main")->error("Error retrieving {} Linking values "
+                                   "for column `{};! Error Message: {}",
+                                   infection, column, error);
+    }
+    if ((*chosen_linkmap).empty()) {
+        spdlog::get("main")->warn("No `" + column + "' found.");
+    }
+}
+
 LinkingIMPL::LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    this->discount = Event::GetDoubleFromConfig("cost.discounting_rate", dm);
+    this->discount = Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
     this->pregnancy_strata = CheckForPregnancyEvent(dm);
 }
 } // namespace event

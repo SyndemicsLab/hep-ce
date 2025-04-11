@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-26                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -202,22 +202,26 @@ public:
         this->addStagingCost(person, dm, true);
     }
     FibrosisStagingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        this->discount = GetDoubleFromConfig("cost.discounting_rate", dm);
+        this->discount =
+            Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
 
-        this->staging_period = GetIntFromConfig("fibrosis_staging.period", dm);
+        this->staging_period =
+            Utils::GetIntFromConfig("fibrosis_staging.period", dm);
 
-        this->test_one = GetStringFromConfig("fibrosis_staging.test_one", dm);
+        this->test_one =
+            Utils::GetStringFromConfig("fibrosis_staging.test_one", dm);
         this->test_one_cost =
-            GetDoubleFromConfig("fibrosis_staging.test_one_cost", dm);
-        this->test_two = GetStringFromConfig("fibrosis_staging.test_two", dm);
+            Utils::GetDoubleFromConfig("fibrosis_staging.test_one_cost", dm);
+        this->test_two =
+            Utils::GetStringFromConfig("fibrosis_staging.test_two", dm);
         this->test_two_cost =
-            GetDoubleFromConfig("fibrosis_staging.test_two_cost", dm);
+            Utils::GetDoubleFromConfig("fibrosis_staging.test_two_cost", dm);
         this->testtwo_eligible_fibs = Utils::split2vecT<person::FibrosisState>(
-            GetStringFromConfig("fibrosis_staging.test_two_eligible_stages",
-                                dm),
+            Utils::GetStringFromConfig(
+                "fibrosis_staging.test_two_eligible_stages", dm),
             ',');
-        this->multitest_result_method =
-            GetStringFromConfig("fibrosis_staging.multitest_result_method", dm);
+        this->multitest_result_method = Utils::GetStringFromConfig(
+            "fibrosis_staging.multitest_result_method", dm);
 
         LoadTestOneData(dm);
         if (!test_two.empty()) {

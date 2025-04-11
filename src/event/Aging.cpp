@@ -4,7 +4,7 @@
 // Created: 2023-08-31                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-25                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -110,7 +110,8 @@ public:
             Utils::discount(1, discount, person->GetCurrentTimestep()));
     }
     AgingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        this->discount = GetDoubleFromConfig("cost.discounting_rate", dm);
+        this->discount =
+            Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
         this->data.clear();
         LoadData(dm);
     }

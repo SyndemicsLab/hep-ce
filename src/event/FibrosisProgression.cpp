@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -150,16 +150,17 @@ public:
     }
     FibrosisProgressionIMPL(
         std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        this->discount = GetDoubleFromConfig("cost.discounting_rate", dm);
+        this->discount =
+            Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
 
-        this->f01_probability = GetDoubleFromConfig("fibrosis.f01", dm);
-        this->f12_probability = GetDoubleFromConfig("fibrosis.f12", dm);
-        this->f23_probability = GetDoubleFromConfig("fibrosis.f23", dm);
-        this->f34_probability = GetDoubleFromConfig("fibrosis.f34", dm);
-        this->f4d_probability = GetDoubleFromConfig("fibrosis.f4d", dm);
+        this->f01_probability = Utils::GetDoubleFromConfig("fibrosis.f01", dm);
+        this->f12_probability = Utils::GetDoubleFromConfig("fibrosis.f12", dm);
+        this->f23_probability = Utils::GetDoubleFromConfig("fibrosis.f23", dm);
+        this->f34_probability = Utils::GetDoubleFromConfig("fibrosis.f34", dm);
+        this->f4d_probability = Utils::GetDoubleFromConfig("fibrosis.f4d", dm);
 
-        this->costFlag =
-            GetBoolFromConfig("fibrosis.add_cost_only_if_identified", dm);
+        this->costFlag = Utils::GetBoolFromConfig(
+            "fibrosis.add_cost_only_if_identified", dm);
 
         GetLiverFibrosisData(dm);
     }
