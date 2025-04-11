@@ -4,7 +4,7 @@
 // Created: 2025-03-06                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-09                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -32,9 +32,9 @@ private:
         COUNT = 2
     };
     /// @brief
-    static const person::InfectionType INF_TYPE = person::InfectionType::HIV;
+    const person::InfectionType INF_TYPE = person::InfectionType::HIV;
     /// @brief
-    static const cost::CostCategory COST_CATEGORY = cost::CostCategory::HIV;
+    const cost::CostCategory COST_CATEGORY = cost::CostCategory::HIV;
     /// @brief
     const std::unordered_map<SCREEN_TYPE, std::string> TYPE_COLUMNS = {
         {SCREEN_TYPE::BACKGROUND, "hiv_background_screen_probability"},
