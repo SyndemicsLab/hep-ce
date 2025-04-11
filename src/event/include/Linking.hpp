@@ -40,17 +40,16 @@ protected:
     linkmap_t background_link_data;
     linkmap_t intervention_link_data;
 
-    static int callback_link(void *storage, int count, char **data,
-                             char **columns);
+    int callback_link(void *storage, int count, char **data, char **columns);
     double
     GetLinkProbability(std::shared_ptr<person::PersonBase> person,
                        person::InfectionType it = person::InfectionType::HCV);
     void
     AddLinkingCost(std::shared_ptr<person::PersonBase> person, LINK_COST type,
                    cost::CostCategory category = cost::CostCategory::LINKING);
-    static double ApplyMultiplier(double prob, double mult);
+    double ApplyMultiplier(double prob, double mult);
 
-    static bool
+    bool
     CheckForPregnancyEvent(std::shared_ptr<datamanagement::DataManagerBase> dm);
 
 public:
