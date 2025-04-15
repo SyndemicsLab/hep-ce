@@ -43,7 +43,7 @@ target_link_libraries(${PROJECT_NAME}
         GTest::gtest_main
         GTest::gmock_main
         data
-        fmt # Required for GTest
+#        fmt # Required for GTest
         person
         simulation
         event
