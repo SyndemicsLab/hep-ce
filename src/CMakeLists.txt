@@ -6,8 +6,6 @@ project(
     DESCRIPTION "A Microsimulation for Hepatitis C Treatment Cost Effectiveness"
     )
 
-find_package(spdlog)
-
 add_subdirectory(event)
 add_subdirectory(stats)
 add_subdirectory(person)

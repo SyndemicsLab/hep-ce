@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.19)
 
 project(cost)
-find_package(spdlog)
 
 if(BUILD_SHARED_LIBS)
   add_library(${PROJECT_NAME} SHARED)

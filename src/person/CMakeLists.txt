@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
 project(person)
-find_package(spdlog)
 
 find_package(DataManagement 1 REQUIRED
 HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"

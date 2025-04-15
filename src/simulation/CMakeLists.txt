@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.20)
 
 project(simulation)
 
-find_package(spdlog)
 find_package(OpenMP REQUIRED)
 
 find_package(DataManagement 1 REQUIRED
