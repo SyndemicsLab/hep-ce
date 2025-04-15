@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-18                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -23,12 +23,12 @@ inline static const std::string POPULATION_HEADERS =
     "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,linkageState,"
     "timeOfLinkChange,linkageType,linkCount,measuredFibrosisState,"
     "timeOfLastStaging,timeOfLastScreening,numABTests,numRNATests,"
-    "timesInfected,timesCleared,initiatedTreatment,timeOfTreatmentInitiation,"
-    "minUtility,multUtility,discountMinUtility,discountMultUtility,"
-    "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,svrs,"
-    "behaviorUtility,liverUtility,treatmentUtility,backgroundUtility,"
-    "hivUtility,lifeSpan,discountedLifeSpan,numberOfTreatmentStarts,"
-    "numberOfRetreatments";
+    "timesInfected,timesAcuteCleared,initiatedTreatment,"
+    "timeOfTreatmentInitiation,minUtility,multUtility,discountMinUtility,"
+    "discountMultUtility,treatmentWithdrawals,treatmentToxicReactions,"
+    "completedTreatments,svrs,behaviorUtility,liverUtility,treatmentUtility,"
+    "backgroundUtility,hivUtility,lifeSpan,discountedLifeSpan,"
+    "numberOfTreatmentStarts,numberOfRetreatments";
 
 /// @brief Infection types tracked for all Persons
 enum class InfectionType {
@@ -82,7 +82,8 @@ enum class DeathReason {
     INFECTION = 3,
     AGE = 4,
     OVERDOSE = 5,
-    COUNT = 6
+    HIV = 6,
+    COUNT = 7
 };
 std::ostream &operator<<(std::ostream &os, const DeathReason &inst);
 DeathReason &operator<<(DeathReason &inst, const std::string &str);
@@ -109,11 +110,11 @@ Behavior &operator<<(Behavior &inst, const std::string &str);
 /// @brief Screening type that led to linkage
 enum class LinkageType {
     /// Linked through background screening
+    NA = -1,
     BACKGROUND = 0,
     /// Linked through intervention screening
     INTERVENTION = 1,
-    NA = 2,
-    COUNT = 3
+    COUNT = 2
 };
 std::ostream &operator<<(std::ostream &os, const LinkageType &inst);
 LinkageType &operator<<(LinkageType &inst, const std::string &str);
@@ -237,24 +238,34 @@ enum class PregnancyState {
 std::ostream &operator<<(std::ostream &os, const PregnancyState &inst);
 PregnancyState &operator<<(PregnancyState &inst, const std::string &str);
 
-/// @brief Attributes describing an Infection
-struct Health {
+/// @brief Attributes describing an HCV Infection
+struct HCVDetails {
+    // Active statuses
     HCV hcv = HCV::NONE;
-    HIV hiv = HIV::NONE;
     FibrosisState fibrosisState = FibrosisState::NONE;
     bool isGenotypeThree = false;
     bool seropositive = false;
-    int timeHCVChanged = -1;
-    int timeHIVChanged = -1;
+    // Time step of change tracking
+    int timeChanged = -1;
     int timeFibrosisStateChanged = -1;
+    // Counters
     int timesInfected = 0;
-    int timesCleared = 0;
-    bool identifiedHCV = false;
-    bool historyOfHCV = false;
-    int timeIdentified = -1;
+    int timesAcuteCleared = 0;
+};
+std::ostream &operator<<(std::ostream &os, const HCVDetails &inst);
+
+struct HIVDetails {
+    // Active statuses
+    HIV hiv = HIV::NONE;
+    // Time step of change tracking
+    int timeChanged = -1;
+};
+std::ostream &operator<<(std::ostream &os, const HIVDetails &inst);
+
+struct HCCDetails {
     HCCState hccState = HCCState::NONE;
 };
-std::ostream &operator<<(std::ostream &os, const Health &inst);
+std::ostream &operator<<(std::ostream &os, const HCCDetails &inst);
 
 /// @brief Attributes describing drug use behavior
 struct BehaviorDetails {

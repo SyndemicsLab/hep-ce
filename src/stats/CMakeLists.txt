@@ -8,7 +8,7 @@ else()
   add_library(${PROJECT_NAME} STATIC)
 endif()
 
-target_sources(${PROJECT_NAME} 
+target_sources(${PROJECT_NAME}
     PRIVATE
         Decider.cpp
 )

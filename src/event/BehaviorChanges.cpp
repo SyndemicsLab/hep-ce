@@ -4,8 +4,8 @@
 // Created: 2023-09-13                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-12                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-04-11                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,13 +167,10 @@ public:
     }
 
     BehaviorChangesIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string discount_data;
-        int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-        if (!discount_data.empty()) {
-            this->discount = Utils::stod_positive(discount_data);
-        }
-        rc = LoadCostData(dm);
-        rc = LoadBehaviorData(dm);
+        this->discount =
+            Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
+        LoadCostData(dm);
+        LoadBehaviorData(dm);
     }
 };
 

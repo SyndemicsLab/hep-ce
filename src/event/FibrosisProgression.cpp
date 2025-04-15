@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -103,6 +103,23 @@ private:
         person->SetUtility(costutil_data[tup].util, util_category);
     }
 
+    void
+    GetLiverFibrosisData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        std::string error;
+        int rc = dm->SelectCustomCallback(SQLQuery(), callback, &costutil_data,
+                                          error);
+        if (rc != 0) {
+            spdlog::get("main")->error(
+                "No cost and/or utility avaliable for Fibrosis "
+                "Progression! Error Message: {}",
+                error);
+        }
+        if (costutil_data.empty()) {
+            spdlog::get("main")->warn(
+                "No cost and/or utility found for Fibrosis Progression.");
+        }
+    }
+
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
                  std::shared_ptr<datamanagement::DataManagerBase> dm,
@@ -125,54 +142,27 @@ public:
         }
 
         // insert Person's liver-related disease cost (taking the highest
-        // fibrosis state)
-        if (!costFlag || (costFlag && person->IsIdentifiedAsHCVInfected())) {
+        // fibrosis state) only if the person is identified as infected
+        if (costFlag && person->IsIdentifiedAsInfected()) {
             this->AddLiverDiseaseCost(person);
         }
         this->SetLiverUtility(person);
     }
     FibrosisProgressionIMPL(
         std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string discount_data;
-        int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-        if (!discount_data.empty()) {
-            this->discount = Utils::stod_positive(discount_data);
-        }
-        std::string data;
+        this->discount =
+            Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
 
-        dm->GetFromConfig("fibrosis.f01", data);
-        this->f01_probability = Utils::stod_positive(data);
+        this->f01_probability = Utils::GetDoubleFromConfig("fibrosis.f01", dm);
+        this->f12_probability = Utils::GetDoubleFromConfig("fibrosis.f12", dm);
+        this->f23_probability = Utils::GetDoubleFromConfig("fibrosis.f23", dm);
+        this->f34_probability = Utils::GetDoubleFromConfig("fibrosis.f34", dm);
+        this->f4d_probability = Utils::GetDoubleFromConfig("fibrosis.f4d", dm);
 
-        dm->GetFromConfig("fibrosis.f12", data);
-        this->f12_probability = Utils::stod_positive(data);
+        this->costFlag = Utils::GetBoolFromConfig(
+            "fibrosis.add_cost_only_if_identified", dm);
 
-        dm->GetFromConfig("fibrosis.f23", data);
-        this->f23_probability = Utils::stod_positive(data);
-
-        dm->GetFromConfig("fibrosis.f34", data);
-        this->f34_probability = Utils::stod_positive(data);
-
-        dm->GetFromConfig("fibrosis.f4d", data);
-        this->f4d_probability = Utils::stod_positive(data);
-
-        dm->GetFromConfig("fibrosis.add_cost_only_if_identified", data);
-        if (!data.empty()) {
-            std::istringstream(data) >> std::boolalpha >> costFlag;
-        }
-
-        std::string error;
-        rc = dm->SelectCustomCallback(SQLQuery(), callback, &costutil_data,
-                                      error);
-        if (rc != 0) {
-            spdlog::get("main")->error(
-                "No cost and/or utility avaliable for Fibrosis "
-                "Progression! Error Message: {}",
-                error);
-        }
-        if (costutil_data.empty()) {
-            spdlog::get("main")->warn(
-                "No cost and/or utility found for Fibrosis Progression.");
-        }
+        GetLiverFibrosisData(dm);
     }
 };
 

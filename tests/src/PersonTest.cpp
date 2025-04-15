@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -75,9 +75,9 @@ TEST_F(PersonTest, TimesInfected) {
 }
 
 TEST_F(PersonTest, Clearances) {
-    EXPECT_EQ(0, testPerson->GetHCVClearances());
-    testPerson->AddHCVClearance();
-    EXPECT_EQ(1, testPerson->GetHCVClearances());
+    EXPECT_EQ(0, testPerson->GetAcuteHCVClearances());
+    testPerson->AddAcuteHCVClearance();
+    EXPECT_EQ(1, testPerson->GetAcuteHCVClearances());
 }
 
 TEST_F(PersonTest, Withdrawals) {
@@ -255,7 +255,7 @@ TEST_F(PersonTest, TimeHCVIdentified) {
     testPerson->Grow();
     testPerson->Grow();
     EXPECT_EQ(-1, testPerson->GetTimeHCVIdentified());
-    testPerson->DiagnoseHCV();
+    testPerson->Diagnose();
     EXPECT_EQ(3, testPerson->GetTimeHCVIdentified());
 }
 

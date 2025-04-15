@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-08                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -41,7 +41,7 @@ TEST_F(HCVScreeningTest, FirstPeriodicScreening_TTtestResults) {
         .WillByDefault(Return(12));
     ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(0));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
@@ -94,7 +94,7 @@ TEST_F(HCVScreeningTest, FirstPeriodicScreening_TTtestResults) {
     EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::INTERVENTION,
                                             person::InfectionType::HCV))
         .Times(1);
-    EXPECT_CALL(*testPerson, DiagnoseHCV()).Times(1);
+    EXPECT_CALL(*testPerson, Diagnose(person::InfectionType::HCV)).Times(1);
     EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 
     // Running Test
@@ -109,7 +109,7 @@ TEST_F(HCVScreeningTest, FirstPeriodicScreening_TFtestResults) {
         .WillByDefault(Return(7));
     ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(0));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
@@ -187,7 +187,7 @@ TEST_F(HCVScreeningTest, BackgroundScreening_TFtestResults) {
         .WillByDefault(Return(3));
     ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(1));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
@@ -264,7 +264,7 @@ TEST_F(HCVScreeningTest, BackgroundScreening_TTtestResults) {
         .WillByDefault(Return(3));
     ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(1));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
@@ -317,7 +317,7 @@ TEST_F(HCVScreeningTest, BackgroundScreening_TTtestResults) {
     EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::BACKGROUND,
                                             person::InfectionType::HCV))
         .Times(1);
-    EXPECT_CALL(*testPerson, DiagnoseHCV()).Times(1);
+    EXPECT_CALL(*testPerson, Diagnose(person::InfectionType::HCV)).Times(1);
     EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 
     // Running Test
@@ -332,7 +332,7 @@ TEST_F(HCVScreeningTest, NoScreen) {
         .WillByDefault(Return(3));
     ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
         .WillByDefault(Return(1));
-    ON_CALL(*testPerson, IsIdentifiedAsHCVInfected())
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
         .WillByDefault(Return(false));
     ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));

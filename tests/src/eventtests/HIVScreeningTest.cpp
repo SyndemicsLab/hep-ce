@@ -4,7 +4,7 @@
 // Created: 2025-03-17                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-10                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -12,7 +12,6 @@
 
 #include "HIVScreening.hpp"
 #include "EventTest.cpp"
-#include "Utils.hpp"
 
 using ::testing::_;
 using ::testing::DoAll;
@@ -23,6 +22,8 @@ using ::testing::SetArgReferee;
 class HIVScreeningTest : public EventTest {
 protected:
     person::InfectionType it = person::InfectionType::HIV;
+    // person strata used throughout
+    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
     // pair representing background, intervention
     // actual values don't matter for probabilities because the decider is
     // set up for the intended outcomes
@@ -132,7 +133,6 @@ TEST_F(HIVScreeningTest, PeriodicScreening_T_AB_T_RNA) {
     ON_CALL(*event_dm, GetFromConfig("hiv_screening.intervention_type", _))
         .WillByDefault(DoAll(SetArgReferee<1>("periodic"), Return(0)));
     // Intervention screening
-    Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
     std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
                        Utils::key_equal_3i>
         instorage;

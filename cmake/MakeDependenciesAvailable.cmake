@@ -1,0 +1,10 @@
+include(FetchContent)
+include(LoadSpdlog)
+
+if(BUILD_TESTS STREQUAL "ON")
+    include(LoadGtest)
+    FetchContent_MakeAvailable(spdlog googletest)
+    # include(GoogleTest)
+elseif(RESPOND_BUILD_TESTS STREQUAL "OFF")
+    FetchContent_MakeAvailable(spdlog)
+endif()

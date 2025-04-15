@@ -4,7 +4,7 @@
 // Created: 2023-08-31                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -85,14 +85,15 @@ private:
     int LoadData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
         std::string query = this->buildSQL();
         std::string error;
-        int rc = dm->SelectCustomCallback(query, this->callback, &data, error);
+        int rc =
+            dm->SelectCustomCallback(query, this->callback, &this->data, error);
         if (rc != 0) {
             spdlog::get("main")->error(
                 "Error extracting Aging Data from background costs and "
                 "background behaviors! Error Message: {}",
                 error);
         }
-        if (data.empty()) {
+        if (this->data.empty()) {
             spdlog::get("main")->warn("No Background Cost found for Aging!");
         }
         return rc;
@@ -109,14 +110,10 @@ public:
             Utils::discount(1, discount, person->GetCurrentTimestep()));
     }
     AgingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string discount_data;
-        int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
-        if (!discount_data.empty()) {
-            this->discount = Utils::stod_positive(discount_data);
-        }
-
-        data = {};
-        rc = LoadData(dm);
+        this->discount =
+            Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
+        this->data.clear();
+        LoadData(dm);
     }
 };
 

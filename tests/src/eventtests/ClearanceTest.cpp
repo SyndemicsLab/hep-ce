@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-04-07                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -33,7 +33,7 @@ TEST_F(ClearanceTest, Clearance) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*testPerson, ClearHCV()).Times(1);
+    EXPECT_CALL(*testPerson, ClearHCV(true)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =

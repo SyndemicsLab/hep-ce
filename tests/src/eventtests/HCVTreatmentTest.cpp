@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-07                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -154,7 +154,7 @@ TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(1);
     EXPECT_CALL(*testPerson, InitiateTreatment()).Times(1);
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
-    EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
+    EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
     EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 
@@ -256,7 +256,7 @@ TEST_F(HCVTreatmentTest, FinishTreatment) {
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(2);
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(2);
     EXPECT_CALL(*testPerson, AddSVR()).Times(1);
-    EXPECT_CALL(*testPerson, ClearHCV()).Times(1);
+    EXPECT_CALL(*testPerson, ClearHCV(false)).Times(1);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(1);
     EXPECT_CALL(*testPerson, Unlink(person::InfectionType::HCV)).Times(1);
 
@@ -358,7 +358,7 @@ TEST_F(HCVTreatmentTest, FinishTreatmentNoSVR) {
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(2);
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(1);
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
-    EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
+    EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(1);
     EXPECT_CALL(*testPerson, InitiateTreatment()).Times(1);
 
@@ -457,7 +457,7 @@ TEST_F(HCVTreatmentTest, LostToFollowUp) {
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(1);
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
-    EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
+    EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
     EXPECT_CALL(*testPerson, Unlink(person::InfectionType::HCV)).Times(1);
 
@@ -559,7 +559,7 @@ TEST_F(HCVTreatmentTest, Withdraw) {
     EXPECT_CALL(*testPerson, SetUtility(_, _))
         .Times(2); // Cost of Visit and Quit
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
-    EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
+    EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
     EXPECT_CALL(*testPerson, Unlink(person::InfectionType::HCV)).Times(1);
     EXPECT_CALL(*testPerson, AddWithdrawal()).Times(1);
@@ -661,7 +661,7 @@ TEST_F(HCVTreatmentTest, DevelopToxicity) {
     EXPECT_CALL(*testPerson, SetUtility(_, _))
         .Times(3); // Visit, Quit, Toxicity
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
-    EXPECT_CALL(*testPerson, ClearHCV()).Times(0);
+    EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
     EXPECT_CALL(*testPerson, Unlink(person::InfectionType::HCV)).Times(1);
     EXPECT_CALL(*testPerson, AddToxicReaction()).Times(1);

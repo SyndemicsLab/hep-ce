@@ -1,28 +1,26 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: HCVLinking.hpp                                                          //
+// File: HIVLinking.hpp                                                       //
 // Project: HEPCESimulationv2                                                 //
-// Created: 2023-08-14                                                        //
-// Author: Matthew Carroll                                                    //
+// Created: 2025-03-25                                                        //
+// Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
+// Last Modified: 2025-04-09                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
-// Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
+// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef EVENT_HCVLINKING_HPP_
-#define EVENT_HCVLINKING_HPP_
+#ifndef EVENT_HIVLINKING_HPP_
+#define EVENT_HIVLINKING_HPP_
 
 #include "Event.hpp"
 
-/// @brief Namespace containing the Events that occur during the simulation
 namespace event {
-class HCVLinkingIMPL;
+class HIVLinkingIMPL;
 
-/// @brief Subclass of Event used to Link People to Treatment
-class HCVLinking : public Event {
+class HIVLinking : public Event {
 private:
-    std::unique_ptr<HCVLinkingIMPL> impl;
+    std::unique_ptr<HIVLinkingIMPL> impl;
 
     /// @brief Implementation of Virtual Function DoEvent
     /// @param person Individual Person undergoing Event
@@ -33,14 +31,14 @@ private:
                  std::shared_ptr<stats::DeciderBase> decider) override;
 
 public:
-    HCVLinking(std::shared_ptr<datamanagement::DataManagerBase> dm);
-    ~HCVLinking();
+    HIVLinking(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    ~HIVLinking();
 
     // Copy Operations
-    HCVLinking(HCVLinking const &) = delete;
-    HCVLinking &operator=(HCVLinking const &) = delete;
-    HCVLinking(HCVLinking &&) noexcept;
-    HCVLinking &operator=(HCVLinking &&) noexcept;
+    HIVLinking(HIVLinking const &) = delete;
+    HIVLinking &operator=(HIVLinking const &) = delete;
+    HIVLinking(HIVLinking &&) noexcept;
+    HIVLinking &operator=(HIVLinking &&) noexcept;
 };
 } // namespace event
 #endif

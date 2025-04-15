@@ -4,7 +4,7 @@
 // Created: 2025-03-06                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -24,15 +24,17 @@ namespace event {
 class HIVScreening::HIVScreeningIMPL {
 private:
     // constants
-    /// @brief
-    enum class SCREEN_TYPE { BACKGROUND = 0, INTERVENTION = 1 };
     // two types of screening - background and intervention
     /// @brief
-    static const int TYPE_COUNT = 2;
+    enum class SCREEN_TYPE : int {
+        BACKGROUND = 0,
+        INTERVENTION = 1,
+        COUNT = 2
+    };
     /// @brief
-    static const person::InfectionType INF_TYPE = person::InfectionType::HIV;
+    const person::InfectionType INF_TYPE = person::InfectionType::HIV;
     /// @brief
-    static const cost::CostCategory COST_CATEGORY = cost::CostCategory::HIV;
+    const cost::CostCategory COST_CATEGORY = cost::CostCategory::HIV;
     /// @brief
     const std::unordered_map<SCREEN_TYPE, std::string> TYPE_COLUMNS = {
         {SCREEN_TYPE::BACKGROUND, "hiv_background_screen_probability"},
@@ -86,39 +88,6 @@ private:
 
     /// @brief
     /// @param
-    /// @return
-    double
-    GetDoubleFromConfig(std::string config_key,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        bool positive = true) {
-        std::string config_data;
-        dm->GetFromConfig(config_key, config_data);
-        if (config_data.empty()) {
-            spdlog::get("main")->warn("No {} Found!", config_key);
-            config_data = "0.0";
-        }
-        if (positive) {
-            return Utils::stod_positive(config_data);
-        }
-        return std::stod(config_data);
-    }
-
-    /// @brief
-    /// @param
-    /// @return
-    std::string
-    GetStringFromConfig(std::string config_key,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string config_data;
-        dm->GetFromConfig(config_key, config_data);
-        if (config_data.empty()) {
-            spdlog::get("main")->warn("No {} Found!", config_key);
-        }
-        return config_data;
-    }
-
-    /// @brief
-    /// @param
     /// @return A reference to the map used to store data for the screen type
     hivscreenmap_t *PickMap(SCREEN_TYPE type) {
         switch (type) {
@@ -126,6 +95,8 @@ private:
             return &hiv_background_screen_data;
         case SCREEN_TYPE::INTERVENTION:
             return &hiv_intervention_screen_data;
+        default:
+            break;
         }
         return nullptr;
     }
@@ -254,7 +225,7 @@ private:
                                           this->callback_hivscreen,
                                           chosen_screenmap, error);
         if (rc != 0) {
-            spdlog::get("main")->error("Error retrieving Screening values "
+            spdlog::get("main")->error("Error retrieving HIV Screening values "
                                        "for column `{}'! Error Message: {}",
                                        column, error);
         }
@@ -279,12 +250,12 @@ private:
 
         // define test characteristics
         TestCharacteristics temp = {
-            GetDoubleFromConfig(prefix + ".ab_sensitivity", dm),
-            GetDoubleFromConfig(prefix + ".ab_specificity", dm),
-            GetDoubleFromConfig(prefix + ".ab_cost", dm),
-            GetDoubleFromConfig(prefix + ".rna_sensitivity", dm),
-            GetDoubleFromConfig(prefix + ".rna_specificity", dm),
-            GetDoubleFromConfig(prefix + ".rna_cost", dm)};
+            Utils::GetDoubleFromConfig(prefix + ".ab_sensitivity", dm),
+            Utils::GetDoubleFromConfig(prefix + ".ab_specificity", dm),
+            Utils::GetDoubleFromConfig(prefix + ".ab_cost", dm),
+            Utils::GetDoubleFromConfig(prefix + ".rna_sensitivity", dm),
+            Utils::GetDoubleFromConfig(prefix + ".rna_specificity", dm),
+            Utils::GetDoubleFromConfig(prefix + ".rna_cost", dm)};
         test_data[type] = temp;
     }
 
@@ -311,15 +282,16 @@ public:
     }
 
     HIVScreeningIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        discount = GetDoubleFromConfig("cost.discounting_rate", dm);
+        discount = Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
 
         intervention_type =
-            GetStringFromConfig("hiv_screening.intervention_type", dm);
-        std::string temp = GetStringFromConfig("hiv_screening.period", dm);
-        screening_period = temp.empty() ? 0 : std::stoi(temp);
+            Utils::GetStringFromConfig("hiv_screening.intervention_type", dm);
+        screening_period = Utils::GetIntFromConfig("hiv_screening.period", dm);
 
         // iterate through screening types, defining screening data
-        for (int screen_type = 0; screen_type < TYPE_COUNT; ++screen_type) {
+        for (int screen_type = 0;
+             screen_type < static_cast<int>(SCREEN_TYPE::COUNT);
+             ++screen_type) {
             SCREEN_TYPE type = static_cast<SCREEN_TYPE>(screen_type);
             MakeTestCharacteristics(type, dm);
             LoadScreeningData(type, dm);

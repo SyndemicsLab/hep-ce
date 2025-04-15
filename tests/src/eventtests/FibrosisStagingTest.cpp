@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-03-26                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -47,6 +47,10 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_NoFibrosis) {
     ON_CALL(*event_dm,
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("fibrosis_staging.test_two_eligible_stages", _))
+        .WillByDefault(
+            DoAll(SetArgReferee<1>("f0, f1, f2, f3, f4, decomp"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
@@ -94,6 +98,10 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_RecentlyStaged) {
     ON_CALL(*event_dm,
             GetFromConfig("fibrosis_staging.multitest_result_method", _))
         .WillByDefault(DoAll(SetArgReferee<1>("maximum"), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("fibrosis_staging.test_two_eligible_stages", _))
+        .WillByDefault(
+            DoAll(SetArgReferee<1>("f0, f1, f2, f3, f4, decomp"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
@@ -141,6 +149,10 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
         .WillByDefault(DoAll(SetArgReferee<1>("30.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("fibrosis_staging.test_two", _))
         .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+    ON_CALL(*event_dm,
+            GetFromConfig("fibrosis_staging.test_two_eligible_stages", _))
+        .WillByDefault(
+            DoAll(SetArgReferee<1>("f0, f1, f2, f3, f4, decomp"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
 
@@ -176,7 +188,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
     ON_CALL(*testPerson, GetTrueFibrosisState())
         .WillByDefault(Return(person::FibrosisState::F0));
     ON_CALL(*testPerson, GetTimeSinceFibrosisStaging())
-        .WillByDefault(Return(2));
+        .WillByDefault(Return(13));
     ON_CALL(*testPerson, GetTimeOfFibrosisStaging()).WillByDefault(Return(-1));
 
     // Data Setup
@@ -196,7 +208,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm,
-            GetFromConfig("fibrosis_stating.test_two_eligible_stages", _))
+            GetFromConfig("fibrosis_staging.test_two_eligible_stages", _))
         .WillByDefault(
             DoAll(SetArgReferee<1>("f0, f1, f2, f3, f4, decomp"), Return(0)));
 
@@ -233,7 +245,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
     ON_CALL(*testPerson, GetTrueFibrosisState())
         .WillByDefault(Return(person::FibrosisState::F0));
     ON_CALL(*testPerson, GetTimeSinceFibrosisStaging())
-        .WillByDefault(Return(2));
+        .WillByDefault(Return(13));
     ON_CALL(*testPerson, GetTimeOfFibrosisStaging()).WillByDefault(Return(-1));
 
     // Data Setup
@@ -253,7 +265,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
         .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
     ON_CALL(*event_dm,
-            GetFromConfig("fibrosis_stating.test_two_eligible_stages", _))
+            GetFromConfig("fibrosis_staging.test_two_eligible_stages", _))
         .WillByDefault(
             DoAll(SetArgReferee<1>("f0, f1, f2, f3, f4, decomp"), Return(0)));
 
