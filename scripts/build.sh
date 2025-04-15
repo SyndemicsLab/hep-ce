@@ -117,7 +117,6 @@ done
         CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS"
 
         err "[EXECUTE] $CMAKE_COMMAND"
-
         $CMAKE_COMMAND
         (
             # determine the number of processing units available

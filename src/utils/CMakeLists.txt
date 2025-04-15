@@ -2,18 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 set (CMAKE_CXX_STANDARD 20)
 
 project(utils)
-
-include(FetchContent)
-FetchContent_Declare(
-        spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG        v1.x
-)
-FetchContent_GetProperties(spdlog)
-if (NOT spdlog_POPULATED)
-    FetchContent_MakeAvailable(spdlog)
-    add_subdirectory(${spdlog_SOURCE_DIR} ${spdlog_BINARY_DIR})
-endif()
+find_package(spdlog)
 
 find_package(DataManagement 1 REQUIRED
   HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"

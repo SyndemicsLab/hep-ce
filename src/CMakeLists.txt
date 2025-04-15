@@ -1,22 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
 
-include(FetchContent)
-FetchContent_Declare(
-        spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG        v1.x
-)
-FetchContent_GetProperties(spdlog)
-if (NOT spdlog_POPULATED)
-    FetchContent_MakeAvailable(spdlog)
-    add_subdirectory(${spdlog_SOURCE_DIR} ${spdlog_BINARY_DIR})
-endif()
-
 project(
     hepce
     VERSION 2.0.0
     DESCRIPTION "A Microsimulation for Hepatitis C Treatment Cost Effectiveness"
     )
+
+find_package(spdlog)
 
 add_subdirectory(event)
 add_subdirectory(stats)
