@@ -4,7 +4,7 @@
 // Created: 2024-09-03                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-07                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -479,7 +479,8 @@ std::ostream &operator<<(std::ostream &os, HCVDetails const &inst) {
     os << "Last Time the Fibrosis State Changed: "
        << inst.timeFibrosisStateChanged << std::endl;
     os << "Number of Times Infected: " << inst.timesInfected << std::endl;
-    os << "Number of Times Cleared: " << inst.timesCleared << std::endl;
+    os << "Number of Times Spontaneously Cleared: " << inst.timesAcuteCleared
+       << std::endl;
     return os;
 }
 

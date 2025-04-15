@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,8 +34,8 @@ public:
     MOCK_METHOD(int, ClearHCV, (bool acute), (override));
     MOCK_METHOD(HCV, GetHCV, (), (const, override));
     MOCK_METHOD(void, SetHCV, (HCV hcv), (override));
-    MOCK_METHOD(int, AddHCVClearance, (), (override));
-    MOCK_METHOD(int, GetHCVClearances, (), (const, override));
+    MOCK_METHOD(int, AddAcuteHCVClearance, (), (override));
+    MOCK_METHOD(int, GetAcuteHCVClearances, (), (const, override));
     MOCK_METHOD(bool, GetSeropositivity, (), (const, override));
     MOCK_METHOD(void, SetSeropositivity, (bool seropositive), (override));
     MOCK_METHOD(void, Diagnose, (InfectionType it), (override));

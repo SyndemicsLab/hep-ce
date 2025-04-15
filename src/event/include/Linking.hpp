@@ -4,7 +4,7 @@
 // Created: 2025-04-09                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -23,7 +23,6 @@ protected:
     // two types of linking - background and intervention
     /// @brief
     enum class LINK_COST : int { INTERVENTION = 0, FALSE_POSITIVE = 1 };
-    std::unordered_map<person::LinkageType, std::string> LINK_COLUMNS;
 
     // user-provided values
     double discount = 0.0;
@@ -32,7 +31,13 @@ protected:
     int recent_screen_cutoff = -1;
     double recent_screen_multiplier = 1.0;
     bool pregnancy_strata = false;
+    // defaults to "regular" hcv linking cost category, overwritten in events
+    // for other infections
     cost::CostCategory COST_CATEGORY = cost::CostCategory::LINKING;
+
+    // event-specific values
+    std::unordered_map<person::LinkageType, std::string> LINK_COLUMNS;
+    person::InfectionType INF_TYPE;
 
     using linkmap_t =
         std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
@@ -51,13 +56,16 @@ protected:
     AddLinkingCost(std::shared_ptr<person::PersonBase> person, LINK_COST type,
                    cost::CostCategory category = cost::CostCategory::LINKING);
     double ApplyMultiplier(double prob, double mult);
-
+    bool FalsePositive(std::shared_ptr<person::PersonBase> person);
     bool
     CheckForPregnancyEvent(std::shared_ptr<datamanagement::DataManagerBase> dm);
     void LoadLinkingData(person::LinkageType type,
                          std::shared_ptr<datamanagement::DataManagerBase> dm);
 
 public:
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider);
     LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm);
 };
 } // namespace event

@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -37,8 +37,8 @@ public:
     virtual int ClearHCV(bool acute = false) = 0;
     virtual HCV GetHCV() const = 0;
     virtual void SetHCV(HCV hcv) = 0;
-    virtual int AddHCVClearance() = 0;
-    virtual int GetHCVClearances() const = 0;
+    virtual int AddAcuteHCVClearance() = 0;
+    virtual int GetAcuteHCVClearances() const = 0;
     virtual bool GetSeropositivity() const = 0;
     virtual void SetSeropositivity(bool seropositive) = 0;
 
@@ -240,8 +240,8 @@ public:
     int ClearHCV(bool acute);
     HCV GetHCV() const;
     void SetHCV(HCV hcv);
-    int AddHCVClearance();
-    int GetHCVClearances() const;
+    int AddAcuteHCVClearance();
+    int GetAcuteHCVClearances() const;
     bool GetSeropositivity() const;
     void SetSeropositivity(bool seropositive);
 

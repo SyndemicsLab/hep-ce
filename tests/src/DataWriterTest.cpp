@@ -4,7 +4,7 @@
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -32,14 +32,15 @@ const std::string EXPECTED_POPULATION =
     "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,linkageState,"
     "timeOfLinkChange,linkageType,linkCount,measuredFibrosisState,"
     "timeOfLastStaging,timeOfLastScreening,numABTests,numRNATests,"
-    "timesInfected,timesCleared,initiatedTreatment,timeOfTreatmentInitiation,"
-    "minUtility,multUtility,discountMinUtility,discountMultUtility,"
-    "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,svrs,"
-    "behaviorUtility,liverUtility,treatmentUtility,backgroundUtility,"
-    "hivUtility,lifeSpan,discountedLifeSpan,numberOfTreatmentStarts,"
-    "numberOfRetreatments,cost,discount_cost\n1,male,300,false,N/"
-    "A,true,1,none,f0,false,false,-1,1,never,0,never,0,NA,0,f01,0,0,0,0,0,0,"
-    "false,0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0\n2,female,300,false,N/"
+    "timesInfected,timesAcuteCleared,initiatedTreatment,"
+    "timeOfTreatmentInitiation,minUtility,multUtility,discountMinUtility,"
+    "discountMultUtility,treatmentWithdrawals,treatmentToxicReactions,"
+    "completedTreatments,svrs,behaviorUtility,liverUtility,treatmentUtility,"
+    "backgroundUtility,hivUtility,lifeSpan,discountedLifeSpan,"
+    "numberOfTreatmentStarts,numberOfRetreatments,cost,discount_cost\n"
+    "1,male,300,false,N/A,true,1,none,f0,false,false,-1,1,never,0,never,0,NA,0,"
+    "f01,0,0,0,0,0,0,false,0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0\n2,female,"
+    "300,false,N/"
     "A,false,-1,acute,f1,false,false,1,1,former_noninjection,1,linked,1,"
     "background,1,f23,1,1,1,1,1,1,false,1,0.5,0.5,0.5,0.5,0,1,1,1,0.5,0.5,0.5,"
     "0.5,0.5,1,1,1,1,0,0\n3,male,300,false,N/"
@@ -164,7 +165,7 @@ TEST_F(DataWriterTest, PopulationString) {
             .WillByDefault(Return(id));
         ON_CALL(*(testPopulation[id]), GetTimesHCVInfected())
             .WillByDefault(Return(id));
-        ON_CALL(*(testPopulation[id]), GetHCVClearances())
+        ON_CALL(*(testPopulation[id]), GetAcuteHCVClearances())
             .WillByDefault(Return(id));
         ON_CALL(*(testPopulation[id]), HasInitiatedTreatment())
             .WillByDefault(Return(false));

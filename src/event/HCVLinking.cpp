@@ -18,55 +18,10 @@
 
 namespace event {
 class HCVLinkingIMPL : public LinkingIMPL {
-private:
-    bool FalsePositive(std::shared_ptr<person::PersonBase> person,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        if (person->GetHCV() == person::HCV::NONE) {
-            person->ClearDiagnosis();
-            this->AddLinkingCost(person, LINK_COST::FALSE_POSITIVE,
-                                 COST_CATEGORY);
-            return true;
-        }
-        return false;
-    }
-
 public:
-    void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
-                 std::shared_ptr<stats::DeciderBase> decider) {
-        bool is_linked =
-            (person->GetLinkState() == person::LinkageState::LINKED);
-        bool is_not_identified = (!person->IsIdentifiedAsInfected());
-        if (is_linked || is_not_identified) {
-            return;
-        }
-
-        if (FalsePositive(person, dm)) {
-            return;
-        }
-
-        double prob = GetLinkProbability(person);
-
-        // check if the person was recently screened, for multiplier
-        bool recently_screened =
-            (person->GetTimeSinceLastScreening() <= recent_screen_cutoff);
-        // apply the multiplier to recently screened persons
-        if (recently_screened && (prob < 1)) {
-            prob = ApplyMultiplier(prob, recent_screen_multiplier);
-        }
-
-        // draw from link probability
-        if (decider->GetDecision({prob}) == 0) {
-            person::LinkageType lt = person->GetLinkageType();
-            person->Link(lt);
-            if (lt == person::LinkageType::INTERVENTION) {
-                this->AddLinkingCost(person, LINK_COST::INTERVENTION,
-                                     COST_CATEGORY);
-            }
-        }
-    }
     HCVLinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
         : LinkingIMPL(dm) {
+        this->INF_TYPE = person::InfectionType::HCV;
         this->LINK_COLUMNS = {
             {person::LinkageType::BACKGROUND, "background_link_probability"},
             {person::LinkageType::INTERVENTION,
@@ -82,7 +37,7 @@ public:
             Utils::GetIntFromConfig("linking.recent_screen_cutoff", dm);
 
         for (int link_type = 0;
-             link_type < static_cast<int>(person::LinkageType::NA);
+             link_type < static_cast<int>(person::LinkageType::COUNT);
              ++link_type) {
             person::LinkageType type =
                 static_cast<person::LinkageType>(link_type);

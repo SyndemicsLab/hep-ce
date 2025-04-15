@@ -4,7 +4,7 @@
 // Created: 2024-06-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -47,7 +47,7 @@ private:
             << person->GetNumberOfABTests() << ","
             << person->GetNumberOfRNATests() << ","
             << person->GetTimesHCVInfected() << ","
-            << person->GetHCVClearances() << ","
+            << person->GetAcuteHCVClearances() << ","
             << person->HasInitiatedTreatment() << ","
             << person->GetTimeOfTreatmentInitiation() << ",";
         const auto &tu = person->GetTotalUtility();

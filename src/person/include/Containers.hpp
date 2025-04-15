@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-07                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -23,12 +23,12 @@ inline static const std::string POPULATION_HEADERS =
     "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,linkageState,"
     "timeOfLinkChange,linkageType,linkCount,measuredFibrosisState,"
     "timeOfLastStaging,timeOfLastScreening,numABTests,numRNATests,"
-    "timesInfected,timesCleared,initiatedTreatment,timeOfTreatmentInitiation,"
-    "minUtility,multUtility,discountMinUtility,discountMultUtility,"
-    "treatmentWithdrawals,treatmentToxicReactions,completedTreatments,svrs,"
-    "behaviorUtility,liverUtility,treatmentUtility,backgroundUtility,"
-    "hivUtility,lifeSpan,discountedLifeSpan,numberOfTreatmentStarts,"
-    "numberOfRetreatments";
+    "timesInfected,timesAcuteCleared,initiatedTreatment,"
+    "timeOfTreatmentInitiation,minUtility,multUtility,discountMinUtility,"
+    "discountMultUtility,treatmentWithdrawals,treatmentToxicReactions,"
+    "completedTreatments,svrs,behaviorUtility,liverUtility,treatmentUtility,"
+    "backgroundUtility,hivUtility,lifeSpan,discountedLifeSpan,"
+    "numberOfTreatmentStarts,numberOfRetreatments";
 
 /// @brief Infection types tracked for all Persons
 enum class InfectionType {
@@ -110,11 +110,11 @@ Behavior &operator<<(Behavior &inst, const std::string &str);
 /// @brief Screening type that led to linkage
 enum class LinkageType {
     /// Linked through background screening
+    NA = -1,
     BACKGROUND = 0,
     /// Linked through intervention screening
     INTERVENTION = 1,
-    NA = 2,
-    COUNT = 3
+    COUNT = 2
 };
 std::ostream &operator<<(std::ostream &os, const LinkageType &inst);
 LinkageType &operator<<(LinkageType &inst, const std::string &str);
@@ -250,7 +250,7 @@ struct HCVDetails {
     int timeFibrosisStateChanged = -1;
     // Counters
     int timesInfected = 0;
-    int timesCleared = 0;
+    int timesAcuteCleared = 0;
 };
 std::ostream &operator<<(std::ostream &os, const HCVDetails &inst);
 

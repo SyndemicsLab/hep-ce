@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -49,7 +49,7 @@ private:
         int numABTests = 0;
         int numRNATests = 0;
         int timesInfected = 0;
-        int timesCleared = 0;
+        int timesAcuteCleared = 0;
         bool initiatedTreatment = false;
         int timeOfTreatmentInitiation = -1;
         double min_utility = 0.0;
@@ -94,7 +94,7 @@ private:
         temp->numABTests = std::stoi(data[21]);
         temp->numRNATests = std::stoi(data[22]);
         temp->timesInfected = std::stoi(data[23]);
-        temp->timesCleared = std::stoi(data[24]);
+        temp->timesAcuteCleared = std::stoi(data[24]);
         temp->initiatedTreatment = std::stoi(data[25]);
         temp->timeOfTreatmentInitiation = std::stoi(data[26]);
         temp->min_utility = Utils::stod_positive(data[27]);
@@ -241,7 +241,7 @@ public:
         screeningDetails[InfectionType::HCV].numABTests = storage.numABTests;
         screeningDetails[InfectionType::HCV].numRNATests = storage.numRNATests;
         hcvDetails.timesInfected = storage.timesInfected;
-        hcvDetails.timesCleared = storage.timesCleared;
+        hcvDetails.timesAcuteCleared = storage.timesAcuteCleared;
         treatmentDetails.initiatedTreatment = storage.initiatedTreatment;
         treatmentDetails.timeOfTreatmentInitiation =
             storage.timeOfTreatmentInitiation;
@@ -300,7 +300,7 @@ public:
         this->hcvDetails.hcv = HCV::NONE;
         this->hcvDetails.timeChanged = this->_currentTime;
         if (acute) {
-            this->AddHCVClearance();
+            this->AddAcuteHCVClearance();
         }
     }
 
@@ -376,7 +376,7 @@ public:
     }
 
     /// @brief Add an acute clearance to the running count
-    void AddHCVClearance() { this->hcvDetails.timesCleared++; };
+    void AddAcuteHCVClearance() { this->hcvDetails.timesAcuteCleared++; };
 
     void AddWithdrawal() { this->treatmentWithdrawals++; }
 
@@ -553,7 +553,9 @@ public:
     int GetTimesHCVInfected() const { return this->hcvDetails.timesInfected; }
 
     /// @brief Get the running total of clearances for PersonIMPL
-    int GetHCVClearances() const { return this->hcvDetails.timesCleared; };
+    int GetAcuteHCVClearances() const {
+        return this->hcvDetails.timesAcuteCleared;
+    };
 
     int GetWithdrawals() const { return this->treatmentWithdrawals; }
 
@@ -833,7 +835,7 @@ public:
              << "," << GetTimeOfLastScreening(InfectionType::HCV) << ","
              << GetNumberOfABTests(InfectionType::HCV) << ","
              << GetNumberOfRNATests(InfectionType::HCV) << ","
-             << GetTimesHCVInfected() << "," << GetHCVClearances() << ","
+             << GetTimesHCVInfected() << "," << GetAcuteHCVClearances() << ","
              << std::boolalpha << GetTreatmentDetails().initiatedTreatment
              << "," << GetTimeOfTreatmentInitiation() << ","
              << std::to_string(GetTotalUtility().min_util) << ","
@@ -1035,8 +1037,8 @@ int Person::LoadICValues(int id, std::vector<std::string> icValues) {
     pImplPERSON->LoadICValues(id, icValues);
     return 0;
 }
-int Person::AddHCVClearance() {
-    pImplPERSON->AddHCVClearance();
+int Person::AddAcuteHCVClearance() {
+    pImplPERSON->AddAcuteHCVClearance();
     return 0;
 }
 int Person::AddWithdrawal() {
@@ -1135,7 +1137,9 @@ int Person::GetAge() const { return pImplPERSON->GetAge(); }
 int Person::GetTimesHCVInfected() const {
     return pImplPERSON->GetTimesHCVInfected();
 }
-int Person::GetHCVClearances() const { return pImplPERSON->GetHCVClearances(); }
+int Person::GetAcuteHCVClearances() const {
+    return pImplPERSON->GetAcuteHCVClearances();
+}
 int Person::GetWithdrawals() const { return pImplPERSON->GetWithdrawals(); }
 int Person::GetToxicReactions() const {
     return pImplPERSON->GetToxicReactions();

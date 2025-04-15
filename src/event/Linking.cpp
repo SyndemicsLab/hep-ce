@@ -4,7 +4,7 @@
 // Created: 2025-04-02                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -104,6 +104,59 @@ void LinkingIMPL::LoadLinkingData(
     }
     if ((*chosen_linkmap).empty()) {
         spdlog::get("main")->warn("No `" + column + "' found.");
+    }
+}
+
+bool LinkingIMPL::FalsePositive(std::shared_ptr<person::PersonBase> person) {
+    if (this->INF_TYPE == person::InfectionType::HCV) {
+        if (person->GetHCV() == person::HCV::NONE) {
+            person->ClearDiagnosis();
+            this->AddLinkingCost(person, LINK_COST::FALSE_POSITIVE,
+                                 this->COST_CATEGORY);
+            return true;
+        }
+    } else if (this->INF_TYPE == person::InfectionType::HIV) {
+        if (person->GetHIV() == person::HIV::NONE) {
+            person->ClearDiagnosis(INF_TYPE);
+            this->AddLinkingCost(person, LINK_COST::FALSE_POSITIVE,
+                                 this->COST_CATEGORY);
+            return true;
+        }
+    }
+    return false;
+}
+
+void LinkingIMPL::DoEvent(std::shared_ptr<person::PersonBase> person,
+                          std::shared_ptr<datamanagement::DataManagerBase> dm,
+                          std::shared_ptr<stats::DeciderBase> decider) {
+    bool is_linked =
+        (person->GetLinkState(this->INF_TYPE) == person::LinkageState::LINKED);
+    bool is_not_identified = (!person->IsIdentifiedAsInfected(this->INF_TYPE));
+    if (is_linked || is_not_identified) {
+        return;
+    }
+
+    if (FalsePositive(person)) {
+        return;
+    }
+
+    double prob = GetLinkProbability(person, this->INF_TYPE);
+    // check if the person was recently screened, for multiplier
+    bool recently_screened = (person->GetTimeSinceLastScreening(
+                                  this->INF_TYPE) <= recent_screen_cutoff);
+    // apply the multiplier to recently screened persons
+    if (recently_screened && (prob < 1)) {
+        prob = ApplyMultiplier(prob, recent_screen_multiplier);
+    }
+
+    // draw from link probability
+    if (decider->GetDecision({prob}) == 0) {
+        person::LinkageType lt = person->GetLinkageType(this->INF_TYPE);
+        person->Link(lt, this->INF_TYPE);
+        if (lt == person::LinkageType::INTERVENTION) {
+            this->AddLinkingCost(person, LINK_COST::INTERVENTION,
+                                 this->COST_CATEGORY);
+        }
     }
 }
 
