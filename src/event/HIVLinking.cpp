@@ -4,7 +4,7 @@
 // Created: 2025-03-25                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -26,10 +26,6 @@ private:
     /// @brief
     static const person::InfectionType INF_TYPE = person::InfectionType::HIV;
     /// @brief
-    const std::unordered_map<person::LinkageType, std::string> LINK_COLUMNS = {
-        {person::LinkageType::BACKGROUND, "hiv_background_link_probability"},
-        {person::LinkageType::INTERVENTION,
-         "hiv_intervention_link_probability"}};
 
     bool FalsePositive(std::shared_ptr<person::PersonBase> person) {
         if (person->GetHIV() == person::HIV::NONE) {
@@ -39,26 +35,6 @@ private:
             return true;
         }
         return false;
-    }
-
-    void
-    LoadHIVLinkingData(person::LinkageType type,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        linkmap_t *chosen_linkmap = (type == person::LinkageType::BACKGROUND)
-                                        ? &this->background_link_data
-                                        : &this->intervention_link_data;
-        std::string column = LINK_COLUMNS.at(type);
-        std::string error;
-        int rc = dm->SelectCustomCallback(LinkSQL(column), this->callback_link,
-                                          chosen_linkmap, error);
-        if (rc != 0) {
-            spdlog::get("main")->error("Error retrieving HIV Linking values "
-                                       "for column `{};! Error Message: {}",
-                                       column, error);
-        }
-        if ((*chosen_linkmap).empty()) {
-            spdlog::get("main")->warn("No `" + column + "' found.");
-        }
     }
 
 public:
@@ -95,6 +71,11 @@ public:
 
     HIVLinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
         : LinkingIMPL(dm) {
+        this->LINK_COLUMNS = {{person::LinkageType::BACKGROUND,
+                               "hiv_background_link_probability"},
+                              {person::LinkageType::INTERVENTION,
+                               "hiv_intervention_link_probability"}};
+
         this->intervention_cost =
             Utils::GetDoubleFromConfig("hiv_linking.intervention_cost", dm);
         this->false_positive_test_cost = Utils::GetDoubleFromConfig(

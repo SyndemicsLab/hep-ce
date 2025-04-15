@@ -4,7 +4,7 @@
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
+// Last Modified: 2025-04-15                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -19,11 +19,6 @@
 namespace event {
 class HCVLinkingIMPL : public LinkingIMPL {
 private:
-    // constants
-    const std::unordered_map<person::LinkageType, std::string> LINK_COLUMNS = {
-        {person::LinkageType::BACKGROUND, "background_link_probability"},
-        {person::LinkageType::INTERVENTION, "intervention_link_probability"}};
-
     bool FalsePositive(std::shared_ptr<person::PersonBase> person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm) {
         if (person->GetHCV() == person::HCV::NONE) {
@@ -72,6 +67,11 @@ public:
     }
     HCVLinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
         : LinkingIMPL(dm) {
+        this->LINK_COLUMNS = {
+            {person::LinkageType::BACKGROUND, "background_link_probability"},
+            {person::LinkageType::INTERVENTION,
+             "intervention_link_probability"}};
+
         this->intervention_cost =
             Utils::GetDoubleFromConfig("linking.intervention_cost", dm);
         this->false_positive_test_cost =
