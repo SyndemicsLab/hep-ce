@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: utility.hpp                                                          //
+// File: sampler.hpp                                                          //
 // Project: HEPCESimulationv2                                                 //
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
@@ -9,23 +9,24 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef HEPCE_MODEL_UTILITY_HPP_
-#define HEPCE_MODEL_UTILITY_HPP_
+#ifndef HEPCE_MODEL_SAMPLER_HPP_
+#define HEPCE_MODEL_SAMPLER_HPP_
 
-#include <ostream>
+#include <memory>
+#include <random>
+#include <string>
 
 namespace hepce {
 namespace model {
-enum class UtilityCategory {
-    BEHAVIOR = 0,
-    LIVER = 1,
-    TREATMENT = 2,
-    BACKGROUND = 3,
-    HIV = 4,
-    COUNT = 5
+class Sampler {
+public:
+    virtual ~Sampler() = default;
+    virtual int GetDecision(std::vector<double> probs) = 0;
+
+    static std::unique_ptr<Sampler>
+    Create(const int &seed, const std::string &log_name = "console");
 };
-std::ostream &operator<<(std::ostream &os, const UtilityCategory &uc);
 } // namespace model
 } // namespace hepce
 
-#endif // HEPCE_MODEL_UTILITY_HPP_
+#endif // HEPCE_MODEL_SAMPLER_HPP_

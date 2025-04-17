@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: utility.hpp                                                          //
+// File: event.hpp                                                            //
 // Project: HEPCESimulationv2                                                 //
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
@@ -9,23 +9,27 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef HEPCE_MODEL_UTILITY_HPP_
-#define HEPCE_MODEL_UTILITY_HPP_
+#ifndef HEPCE_EVENT_EVENT_HPP_
+#define HEPCE_EVENT_EVENT_HPP_
 
-#include <ostream>
+#include <memory>
+#include <string>
+
+#include <DataManagement/DataManagerBase.hpp>
+
+#include <hepce/model/person.hpp>
+#include <hepce/model/sampler.hpp>
 
 namespace hepce {
-namespace model {
-enum class UtilityCategory {
-    BEHAVIOR = 0,
-    LIVER = 1,
-    TREATMENT = 2,
-    BACKGROUND = 3,
-    HIV = 4,
-    COUNT = 5
+namespace event {
+class Event {
+public:
+    virtual ~Event() = default;
+    virtual int Execute(model::Person person,
+                        std::shared_ptr<datamanagement::DataManagerBase> dm,
+                        model::Sampler sampler) = 0;
 };
-std::ostream &operator<<(std::ostream &os, const UtilityCategory &uc);
-} // namespace model
+} // namespace event
 } // namespace hepce
 
-#endif // HEPCE_MODEL_UTILITY_HPP_
+#endif // HEPCE_EVENT_EVENT_HPP_
