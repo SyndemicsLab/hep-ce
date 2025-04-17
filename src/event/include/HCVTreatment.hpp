@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
+// Last Modified: 2025-04-16                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -17,10 +17,11 @@
 
 /// @brief Namespace containing the Events that occur during the simulation
 namespace event {
+class HCVTreatmentIMPL;
+
 /// @brief Subclass of Event used to Provide Treatment to People
 class HCVTreatment : public Event {
 private:
-    class HCVTreatmentIMPL;
     std::unique_ptr<HCVTreatmentIMPL> impl;
 
     /// @brief Implementation of Virtual Function DoEvent

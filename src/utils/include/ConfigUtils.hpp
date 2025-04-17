@@ -4,7 +4,7 @@
 // Created: 2025-04-11                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
+// Last Modified: 2025-04-17                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -50,7 +50,7 @@ GetIntFromConfig(std::string config_key,
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
         spdlog::get("main")->warn("No `{}' Found!", config_key);
-        config_data = "0";
+        config_data = "-2";
     }
     return std::stoi(config_data);
 }
