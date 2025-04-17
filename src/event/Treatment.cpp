@@ -13,6 +13,41 @@
 #include "Treatment.hpp"
 
 namespace event {
+bool TreatmentIMPL::isEligibleFibrosisStage(
+    person::FibrosisState fibrosisState) const {
+    for (std::string state : this->ineligible_fibrosis) {
+        person::FibrosisState temp;
+        temp << state;
+        if (fibrosisState == temp) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool TreatmentIMPL::isEligibleBehavior(person::Behavior behavior) const {
+    for (std::string state : this->ineligible_behaviors) {
+        person::Behavior temp;
+        temp << state;
+        if (behavior == temp) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool TreatmentIMPL::isEligiblePregnancy(
+    person::PregnancyState pregnancy_state) const {
+    for (std::string state : this->ineligible_pregnancy) {
+        person::PregnancyState temp;
+        temp << state;
+        if (pregnancy_state == temp) {
+            return false;
+        }
+    }
+    return true;
+}
+
 TreatmentIMPL::TreatmentIMPL(
     std::shared_ptr<datamanagement::DataManagerBase> dm) {
     this->discount = Utils::GetDoubleFromConfig("cost.discounting_rate", dm);

@@ -910,6 +910,7 @@ public:
     /// @param incompleteTreatment Boolean value for initiated treatment
     /// state to be set
     void InitiateTreatment() {
+        // cannot continue being treated if already in retreatment
         if (treatmentDetails.initiatedTreatment &&
             treatmentDetails.retreatment) {
             return;
@@ -919,6 +920,7 @@ public:
         } else {
             this->treatmentDetails.initiatedTreatment = true;
         }
+        // treatment starts counts treatment regimens
         this->treatmentDetails.numberOfTreatmentStarts++;
         this->treatmentDetails.timeOfTreatmentInitiation = this->_currentTime;
     }

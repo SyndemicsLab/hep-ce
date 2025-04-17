@@ -22,17 +22,19 @@
 namespace event {
 class TreatmentIMPL {
 protected:
+    // constants
     utility::UtilityCategory UTIL_CATEGORY =
         utility::UtilityCategory::TREATMENT;
+
+    // user-provided values
     double discount = 0.0;
     double lost_to_follow_up_probability;
+    // costs of visit for treatment and retreatment, respectively
     double treatment_cost;
-    double retreatment_cost;
     double treatment_utility;
     double toxicity_cost;
     double toxicity_utility;
     double treatment_init_probability;
-    bool allow_retreatment = true;
     // including all ineligibility variables because it's unclear if any would
     // make a person ineligible for HIV treatment - erring on the side of
     // caution
@@ -47,9 +49,21 @@ protected:
                            Utils::key_equal_3i>;
     treatmentmap_t duration_data;
     treatmentmap_t cost_data;
-    treatmentmap_t svr_data;
     treatmentmap_t toxicity_data;
     treatmentmap_t withdrawal_data;
+
+    /// @brief
+    /// @param
+    /// @return
+    bool isEligibleFibrosisStage(person::FibrosisState fibrosisState) const;
+    /// @brief
+    /// @param
+    /// @return
+    bool isEligibleBehavior(person::Behavior behavior) const;
+    /// @brief
+    /// @param
+    /// @return
+    bool isEligiblePregnancy(person::PregnancyState pregnancy_state) const;
 
 public:
     TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm);

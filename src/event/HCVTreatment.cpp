@@ -17,6 +17,11 @@
 namespace event {
 class HCVTreatmentIMPL : public TreatmentIMPL {
 private:
+    // user-provided values
+    double retreatment_cost;
+    bool allow_retreatment = true;
+    treatmentmap_t svr_data;
+
     static int callback_treament(void *storage, int count, char **data,
                                  char **columns) {
         Utils::tuple_3i key = std::make_tuple(
@@ -63,50 +68,6 @@ private:
         return false;
     }
 
-    bool isEligibleFibrosisStage(person::FibrosisState fibrosisState) const {
-        for (std::string state : ineligible_fibrosis) {
-            person::FibrosisState temp;
-            temp << state;
-            if (fibrosisState == temp) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool isEligibleBehavior(person::Behavior behavior) const {
-        for (std::string state : ineligible_behaviors) {
-            person::Behavior temp;
-            temp << state;
-            if (behavior == temp) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool isEligiblePregnancy(person::PregnancyState pregnancy_state) const {
-        for (std::string state : ineligible_pregnancy) {
-            person::PregnancyState temp;
-            temp << state;
-            if (pregnancy_state == temp) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void addTreatmentCostAndUtility(std::shared_ptr<person::PersonBase> person,
-                                    double cost, double util) {
-
-        double discountAdjustedCost = Event::DiscountEventCost(
-            cost, discount, person->GetCurrentTimestep());
-        person->AddCost(cost, discountAdjustedCost,
-                        cost::CostCategory::TREATMENT);
-
-        person->SetUtility(util, UTIL_CATEGORY);
-    }
-
     bool LostToFollowUp(std::shared_ptr<person::PersonBase> person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::shared_ptr<stats::DeciderBase> decider) {
@@ -122,9 +83,7 @@ private:
         return false;
     }
 
-    void
-    ChargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
-                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    void ChargeCostOfVisit(std::shared_ptr<person::PersonBase> person) {
         int num_treatments =
             person->GetWithdrawals() + person->GetCompletedTreatments();
         double c = (num_treatments > 0) ? retreatment_cost : treatment_cost;
@@ -133,10 +92,8 @@ private:
         person->AddCost(c, discountAdjustedCost, cost::CostCategory::TREATMENT);
     }
 
-    void
-    ChargeCostOfCourse(std::shared_ptr<person::PersonBase> person,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        if (cost_data.empty()) {
+    void ChargeCostOfCourse(std::shared_ptr<person::PersonBase> person) {
+        if (this->cost_data.empty()) {
             spdlog::get("main")->warn("No Treatment Cost Data Found.");
             return;
         }
@@ -145,7 +102,7 @@ private:
                                      discount, person->GetCurrentTimestep());
         person->AddCost(cost_data[GetTreatmentThruple(person)],
                         discountAdjustedCost, cost::CostCategory::TREATMENT);
-        person->SetUtility(treatment_utility, UTIL_CATEGORY);
+        person->SetUtility(treatment_utility, this->UTIL_CATEGORY);
     }
 
     bool Withdraws(std::shared_ptr<person::PersonBase> person,
@@ -183,7 +140,7 @@ private:
             toxicity_cost, discount, person->GetCurrentTimestep());
         person->AddCost(toxicity_cost, discountAdjustedCost,
                         cost::CostCategory::TREATMENT);
-        person->SetUtility(toxicity_utility, UTIL_CATEGORY);
+        person->SetUtility(toxicity_utility, this->UTIL_CATEGORY);
     }
 
     bool InitiateTreatment(std::shared_ptr<person::PersonBase> person,
@@ -205,7 +162,16 @@ private:
         person->EndTreatment();
         person->Unlink();
         // reset utility
-        person->SetUtility(1.0, UTIL_CATEGORY);
+        person->SetUtility(1.0, this->UTIL_CATEGORY);
+    }
+
+    int GetTreatmentDuration(std::shared_ptr<person::PersonBase> person) {
+        if (duration_data.empty()) {
+            spdlog::get("main")->warn("No Treatment Duration Found!");
+            return -1;
+        }
+        double duration = duration_data[GetTreatmentThruple(person)];
+        return static_cast<int>(duration);
     }
 
     int DecideIfPersonAchievesSVR(std::shared_ptr<person::PersonBase> person,
@@ -325,13 +291,14 @@ public:
         if (person->GetLinkState() != person::LinkageState::LINKED) {
             return;
         }
+
         // 1. Check if the Person is Lost To Follow Up (LTFU)
         if (LostToFollowUp(person, dm, decider)) {
             return;
         }
 
         // 2. Charge the Cost of the Visit (varies if this is retreatment)
-        ChargeCostOfVisit(person, dm);
+        ChargeCostOfVisit(person);
 
         // 3. Attempt to start primary treatment, if already on treatment
         // nothing happens
@@ -341,25 +308,21 @@ public:
             }
         }
 
-        // 5. Charge the person for the Course they are on
-        ChargeCostOfCourse(person, dm);
+        // 4. Charge the person for the Course they are on
+        ChargeCostOfCourse(person);
 
-        // 6. Check if the person experiences toxicity
+        // 5. Check if the person experiences toxicity
         CheckIfExperienceToxicity(person, dm, decider);
 
-        // 7. Determine if the person withdraws from the treatment
+        // 6. Determine if the person withdraws from the treatment
         if (Withdraws(person, dm, decider)) {
             return;
         }
 
-        // 8. Determine if the person has been treated long enough, if they
+        // 7. Determine if the person has been treated long enough, if they
         // achieve SVR
-        if (duration_data.empty()) {
-            spdlog::get("main")->warn("No Treatment Duration Found!");
-            return;
-        }
-        double duration = duration_data[GetTreatmentThruple(person)];
-        if (person->GetTimeSinceTreatmentInitiation() == (int)duration) {
+        int duration = GetTreatmentDuration(person);
+        if (person->GetTimeSinceTreatmentInitiation() == duration) {
             person->AddCompletedTreatment();
             int decision = DecideIfPersonAchievesSVR(person, decider);
             if (decision == 0) {
@@ -368,9 +331,11 @@ public:
                 person->ClearDiagnosis();
                 this->quitEngagement(person);
             } else if (!person->IsInRetreatment()) {
+                // initiate retreatment
                 person->InitiateTreatment();
             } else {
-                // Person just goes away apparently?
+                // if retreatment fails, it is a failure and treatment ceases
+                this->quitEngagement(person);
             }
         }
     }
@@ -387,8 +352,8 @@ public:
             Utils::GetDoubleFromConfig("treatment.retreatment_cost", dm);
         this->treatment_utility =
             Utils::GetDoubleFromConfig("treatment.treatment_utility", dm);
-        this->treatment_init_probability = Utils::GetDoubleFromConfig(
-            "treatment.treatment_initialization", dm);
+        this->treatment_init_probability =
+            Utils::GetDoubleFromConfig("treatment.treatment_initiation", dm);
         this->toxicity_cost =
             Utils::GetDoubleFromConfig("treatment.tox_cost", dm);
         this->toxicity_utility =
