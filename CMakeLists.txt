@@ -1,21 +1,127 @@
 cmake_minimum_required(VERSION 3.27)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+include(utils)
+hepce_extract_version()
+
+project(hepce VERSION ${HEPCE_VERSION} LANGUAGES CXX)
+
+message(STATUS "Build hepce: ${HEPCE_VERSION}")
+
+include(GNUInstallDirs)
+
+# ---------------------------------------------------------------------------------------
+# Set default build to release
+# ---------------------------------------------------------------------------------------
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose Release or Debug" FORCE)
+endif()
+
+# ---------------------------------------------------------------------------------------
+# Compiler config
+# ---------------------------------------------------------------------------------------
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(globalHEPCE)
+# ---------------------------------------------------------------------------------------
+# Windows CXX Extensions
+# ---------------------------------------------------------------------------------------
+set(CMAKE_CXX_EXTENSIONS OFF)
+if(CMAKE_SYSTEM_NAME MATCHES "CYGWIN" OR CMAKE_SYSTEM_NAME MATCHES "MSYS" OR CMAKE_SYSTEM_NAME MATCHES "MINGW")
+    set(CMAKE_CXX_EXTENSIONS ON)
+endif()
 
-# Add option for building tests
-option(BUILD_TESTS "enable HEPCE tests" OFF)
+# ---------------------------------------------------------------------------------------
+# Set HEPCE_MASTER_PROJECT to ON if we are building hepce directly
+# ---------------------------------------------------------------------------------------
+if(NOT DEFINED HEPCE_MASTER_PROJECT)
+    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        set(HEPCE_MASTER_PROJECT ON)
+    else()
+        set(HEPCE_MASTER_PROJECT OFF)
+    endif()
+endif()
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/../bin)
+# ---------------------------------------------------------------------------------------
+# Set all default options
+# ---------------------------------------------------------------------------------------
+include(options)
+
+# ---------------------------------------------------------------------------------------
+# Set position independent code
+# ---------------------------------------------------------------------------------------
+if(HEPCE_BUILD_PIC)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
+# ---------------------------------------------------------------------------------------
+# Building the Library
+# ---------------------------------------------------------------------------------------
+set(HEPCE_SRCS 
+    src/data_ops/cost_loader.cpp
+    src/data_ops/data_formatter.cpp
+    src/data_ops/data_loader.cpp
+    src/data_ops/utility_loader.cpp
+    src/data_ops/writer.cpp
+    src/model/simulation.cpp
+    src/utils/logging.cpp
+)
+
+if(HEPCE_BUILD_SHARED_LIBS)
+    if(WIN32)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc @ONLY)
+        list(APPEND HEPCE_SRCS ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
+    endif()
+    add_library(hepce SHARED ${HEPCE_SRCS} ${HEPCE_ALL_HEADERS})
+    target_compile_definitions(hepce PUBLIC HEPCE_SHARED_LIB)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        target_compile_options(hepce PUBLIC $<$<AND:$<CXX_COMPILER_ID:MSVC>,$<NOT:$<COMPILE_LANGUAGE:CUDA>>>:/wd4251
+                                             /wd4275>)
+    endif()
+else()
+    add_library(hepce STATIC ${HEPCE_SRCS} ${HEPCE_ALL_HEADERS})
+endif()
+
+# ---------------------------------------------------------------------------------------
+# Alias for importing
+# ---------------------------------------------------------------------------------------
+add_library(hepce::hepce ALIAS hepce)
+
+set(HEPCE_INCLUDES_LEVEL "")
+if(HEPCE_SYSTEM_INCLUDES)
+    set(HEPCE_INCLUDES_LEVEL "SYSTEM")
+endif()
+
+target_compile_definitions(hepce PUBLIC HEPCE_COMPILED_LIB)
+target_include_directories(hepce ${HEPCE_INCLUDES_LEVEL} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+                                                                  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+                                                                  PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>")
 
 include(MakeDependenciesAvailable)
+                                                                  
+target_link_libraries(hepce
+PUBLIC
+    datamanagement::datamanagement
+PRIVATE
+    spdlog::spdlog
+    gcov
+)
+
+set_target_properties(hepce PROPERTIES VERSION ${HEPCE_VERSION} SOVERSION ${HEPCE_VERSION_MAJOR}.${HEPCE_VERSION_MINOR})
+
+include(BuildBinaries)
+
+# ---------------------------------------------------------------------------------------
+# Install
+# ---------------------------------------------------------------------------------------
+if(HEPCE_INSTALL)
+    include(InstallHepce)
+endif()
+
+
+
+
+
+
 add_subdirectory(src)
 
-# Only compile tests if desired
-if (NOT BUILD_TESTS STREQUAL OFF)
-  add_subdirectory(tests)
-endif()
