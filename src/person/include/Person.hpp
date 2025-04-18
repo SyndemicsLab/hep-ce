@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -196,9 +196,14 @@ public:
     virtual int AddChild(HCV hcv, bool test) = 0;
     virtual int EndPostpartum() = 0;
     virtual int Impregnate() = 0;
+    virtual void AddInfantExposure() = 0;
     virtual PregnancyDetails GetPregnancyDetails() const = 0;
     virtual void SetPregnancyState(PregnancyState state) = 0;
     virtual void SetNumMiscarriages(int miscarriages) = 0;
+    virtual int GetInfantHCVExposures() const = 0;
+    virtual int GetInfantHCVInfections() const = 0;
+    virtual int GetInfantHCVTests() const = 0;
+    virtual int GetPregnancyCount() const = 0;
 
     virtual void TransitionMOUD() = 0;
     virtual MOUD GetMoudState() const = 0;
@@ -383,9 +388,14 @@ public:
     int AddChild(HCV hcv, bool test);
     int EndPostpartum();
     int Impregnate();
+    void AddInfantExposure();
     PregnancyDetails GetPregnancyDetails() const;
     void SetPregnancyState(PregnancyState state);
     void SetNumMiscarriages(int miscarriages);
+    int GetInfantHCVExposures() const;
+    int GetInfantHCVInfections() const;
+    int GetInfantHCVTests() const;
+    int GetPregnancyCount() const;
 
     // MOUD
     void TransitionMOUD();

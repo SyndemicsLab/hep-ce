@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -451,6 +451,11 @@ public:
         }
     }
 
+    /// @brief Increment the tracker for number of infant HCV exposures
+    void AddInfantExposure() { this->pregnancyDetails.numHCVExposures++; }
+
+    /// @brief Increment the tracker for number of miscarriages and end person's
+    /// pregnancy
     void Miscarry() {
         this->pregnancyDetails.numMiscarriages++;
         this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
@@ -466,6 +471,7 @@ public:
         if (GetSex() == person::Sex::MALE) {
             return;
         }
+        this->pregnancyDetails.count++;
         this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
         this->pregnancyDetails.pregnancyState =
             person::PregnancyState::PREGNANT;
@@ -481,10 +487,28 @@ public:
         this->pregnancyDetails.numMiscarriages++;
     }
 
+    int GetInfantHCVExposures() const {
+        return this->pregnancyDetails.numHCVExposures;
+    }
+
+    int GetInfantHCVInfections() const {
+        return this->pregnancyDetails.numHCVInfections;
+    }
+
+    int GetInfantHCVTests() const { return this->pregnancyDetails.numHCVTests; }
+
+    int GetPregnancyCount() const { return this->pregnancyDetails.count; }
+
     void AddChild(HCV hcv, bool test) {
         person::Child child;
         child.hcv = hcv;
+        if (hcv != HCV::NONE) {
+            this->pregnancyDetails.numHCVInfections++;
+        }
         child.tested = test;
+        if (test) {
+            this->pregnancyDetails.numHCVTests++;
+        }
         this->children.push_back(child);
     }
 
@@ -1321,6 +1345,19 @@ void Person::SetHCV(HCV hcv) { pImplPERSON->SetHCV(hcv); }
 void Person::InitiateTreatment() { pImplPERSON->InitiateTreatment(); }
 void Person::SetPregnancyState(PregnancyState state) {
     pImplPERSON->SetPregnancyState(state);
+}
+void Person::AddInfantExposure() { pImplPERSON->AddInfantExposure(); }
+int Person::GetInfantHCVExposures() const {
+    return pImplPERSON->GetInfantHCVExposures();
+}
+int Person::GetInfantHCVInfections() const {
+    return pImplPERSON->GetInfantHCVInfections();
+}
+int Person::GetInfantHCVTests() const {
+    return pImplPERSON->GetInfantHCVTests();
+}
+int Person::GetPregnancyCount() const {
+    return pImplPERSON->GetPregnancyCount();
 }
 void Person::SetNumMiscarriages(int miscarriages) {
     pImplPERSON->SetNumMiscarriages(miscarriages);

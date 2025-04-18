@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -28,7 +28,9 @@ inline static const std::string POPULATION_HEADERS =
     "discountMultUtility,treatmentWithdrawals,treatmentToxicReactions,"
     "completedTreatments,svrs,behaviorUtility,liverUtility,treatmentUtility,"
     "backgroundUtility,hivUtility,lifeSpan,discountedLifeSpan,"
-    "numberOfTreatmentStarts,numberOfRetreatments";
+    "numberOfTreatmentStarts,numberOfRetreatments,numPregnancies,numInfants,"
+    "numMiscarriages,numInfantsExposedHCV,numInfantsHCVInfected,"
+    "numInfantsTested";
 
 /// @brief Infection types tracked for all Persons
 enum class InfectionType {
@@ -296,8 +298,12 @@ std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 struct PregnancyDetails {
     PregnancyState pregnancyState = PregnancyState::NA;
     int timeOfPregnancyChange = -1;
+    int count = 0;
     int numInfants = 0;
     int numMiscarriages = 0;
+    int numHCVExposures = 0;
+    int numHCVInfections = 0;
+    int numHCVTests = 0;
 };
 std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
 

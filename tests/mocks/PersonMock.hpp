@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -185,7 +185,7 @@ public:
     MOCK_METHOD(int, GetTimeHIVChanged, (), (const, override));
     MOCK_METHOD(int, GetTimeSinceHIVChanged, (), (const, override));
 
-    // TODO
+    // PREGNANCY
     MOCK_METHOD(PregnancyState, GetPregnancyState, (), (const, override));
     MOCK_METHOD(int, GetTimeOfPregnancyChange, (), (const, override));
     MOCK_METHOD(int, GetTimeSincePregnancyChange, (), (const, override));
@@ -198,6 +198,11 @@ public:
     MOCK_METHOD(PregnancyDetails, GetPregnancyDetails, (), (const, override));
     MOCK_METHOD(void, SetPregnancyState, (PregnancyState state), (override));
     MOCK_METHOD(void, SetNumMiscarriages, (int miscarriages), (override));
+    MOCK_METHOD(void, AddInfantExposure, (), (override));
+    MOCK_METHOD(int, GetInfantHCVExposures, (), (const, override));
+    MOCK_METHOD(int, GetInfantHCVInfections, (), (const, override));
+    MOCK_METHOD(int, GetInfantHCVTests, (), (const, override));
+    MOCK_METHOD(int, GetPregnancyCount, (), (const, override));
 
     MOCK_METHOD(void, TransitionMOUD, (), (override));
     MOCK_METHOD(MOUD, GetMoudState, (), (const, override));
