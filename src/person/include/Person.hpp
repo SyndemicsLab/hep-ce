@@ -203,6 +203,7 @@ public:
     virtual int GetInfantHCVExposures() const = 0;
     virtual int GetInfantHCVInfections() const = 0;
     virtual int GetInfantHCVTests() const = 0;
+    virtual int GetPregnancyCount() const = 0;
 
     virtual void TransitionMOUD() = 0;
     virtual MOUD GetMoudState() const = 0;
@@ -394,6 +395,7 @@ public:
     int GetInfantHCVExposures() const;
     int GetInfantHCVInfections() const;
     int GetInfantHCVTests() const;
+    int GetPregnancyCount() const;
 
     // MOUD
     void TransitionMOUD();

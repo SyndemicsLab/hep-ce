@@ -202,6 +202,7 @@ public:
     MOCK_METHOD(int, GetInfantHCVExposures, (), (const, override));
     MOCK_METHOD(int, GetInfantHCVInfections, (), (const, override));
     MOCK_METHOD(int, GetInfantHCVTests, (), (const, override));
+    MOCK_METHOD(int, GetPregnancyCount, (), (const, override));
 
     MOCK_METHOD(void, TransitionMOUD, (), (override));
     MOCK_METHOD(MOUD, GetMoudState, (), (const, override));

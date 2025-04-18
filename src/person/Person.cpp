@@ -471,6 +471,7 @@ public:
         if (GetSex() == person::Sex::MALE) {
             return;
         }
+        this->pregnancyDetails.count++;
         this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
         this->pregnancyDetails.pregnancyState =
             person::PregnancyState::PREGNANT;
@@ -495,6 +496,8 @@ public:
     }
 
     int GetInfantHCVTests() const { return this->pregnancyDetails.numHCVTests; }
+
+    int GetPregnancyCount() const { return this->pregnancyDetails.count; }
 
     void AddChild(HCV hcv, bool test) {
         person::Child child;
@@ -1352,6 +1355,9 @@ int Person::GetInfantHCVInfections() const {
 }
 int Person::GetInfantHCVTests() const {
     return pImplPERSON->GetInfantHCVTests();
+}
+int Person::GetPregnancyCount() const {
+    return pImplPERSON->GetPregnancyCount();
 }
 void Person::SetNumMiscarriages(int miscarriages) {
     pImplPERSON->SetNumMiscarriages(miscarriages);

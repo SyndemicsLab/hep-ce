@@ -69,8 +69,9 @@ private:
                             << person->GetRetreatments() << ",";
         // pregnancy quantities
         const auto &preg = person->GetPregnancyDetails();
-        compiled_attributes << preg.numInfants << "," << preg.numMiscarriages
-                            << "," << preg.numHCVExposures << ","
+        compiled_attributes << preg.count << "," << preg.numInfants << ","
+                            << preg.numMiscarriages << ","
+                            << preg.numHCVExposures << ","
                             << preg.numHCVInfections << "," << preg.numHCVTests;
         return compiled_attributes.str();
     }

@@ -28,8 +28,9 @@ inline static const std::string POPULATION_HEADERS =
     "discountMultUtility,treatmentWithdrawals,treatmentToxicReactions,"
     "completedTreatments,svrs,behaviorUtility,liverUtility,treatmentUtility,"
     "backgroundUtility,hivUtility,lifeSpan,discountedLifeSpan,"
-    "numberOfTreatmentStarts,numberOfRetreatments,numInfants,numMiscarriages,"
-    "numInfantsExposedHCV,numInfantsHCVInfected,numInfantsTested";
+    "numberOfTreatmentStarts,numberOfRetreatments,numPregnancies,numInfants,"
+    "numMiscarriages,numInfantsExposedHCV,numInfantsHCVInfected,"
+    "numInfantsTested";
 
 /// @brief Infection types tracked for all Persons
 enum class InfectionType {
@@ -297,6 +298,7 @@ std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 struct PregnancyDetails {
     PregnancyState pregnancyState = PregnancyState::NA;
     int timeOfPregnancyChange = -1;
+    int count = 0;
     int numInfants = 0;
     int numMiscarriages = 0;
     int numHCVExposures = 0;
