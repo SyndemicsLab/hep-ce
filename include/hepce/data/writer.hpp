@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+#include <hepce/model/person.hpp>
+
 namespace hepce {
 namespace data {
 enum class OutputType : int { kString = 0, kFile = 1, kCount = 2 };
@@ -24,7 +26,7 @@ public:
     virtual ~Writer() = default;
     virtual std::string
     WritePopulation(const std::vector<model::Person> &population,
-                    const std::string &directory,
+                    const std::string &filename,
                     const OutputType output_type) = 0;
 
     static std::unique_ptr<Writer>

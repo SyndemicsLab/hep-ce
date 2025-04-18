@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -41,11 +41,14 @@ inline double RateToProbability(double rate) {
 /// @param discount_rate The Discount Rate
 /// @param timestep The Timestep to Discount During
 /// @return
-inline double Discount(double value, double discount_rate, double timestep) {
+inline double Discount(double value, double discount_rate, double timestep,
+                       bool annual = false) {
     if (discount_rate < 0 || timestep < 0) {
         throw std::domain_error("Out of discount rate or Timestep Range");
     }
-    return value / pow(1 + discount_rate, timestep);
+    discount_rate = annual ? discount_rate / 12 : discount_rate;
+    double denominator = std::pow(1 + discount_rate, timestep);
+    return value / denominator;
 }
 } // namespace utils
 } // namespace hepce

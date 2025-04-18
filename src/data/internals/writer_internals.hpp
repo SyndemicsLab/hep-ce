@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: aging.hpp                                                            //
+// File: writer_internals.hpp                                                 //
 // Project: HEPCESimulationv2                                                 //
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
@@ -9,29 +9,23 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef HEPCE_EVENT_BASE_AGING_HPP_
-#define HEPCE_EVENT_BASE_AGING_HPP_
+#ifndef HEPCE_DATA_WRITERINTERNALS_HPP_
+#define HEPCE_DATA_WRITERINTERNALS_HPP_
 
-#include <memory>
-#include <string>
-
-#include <DataManagement/DataManagerBase.hpp>
-
-#include <hepce/event/event.hpp>
+#include <hepce/data/writer.hpp>
 
 namespace hepce {
-namespace event {
-namespace base {
-class Aging : public virtual Event {
+namespace data {
+class WriterImpl : public virtual Writer {
 public:
-    virtual ~Aging() = default;
-
-    static std::unique_ptr<Event>
-    Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
-           const std::string &log_name = "console");
+    WriterImpl(const std::string &directory = "",
+               const std::string &log_name = "console") {}
+    ~WriterImpl() = default;
+    std::string WritePopulation(const std::vector<model::Person> &population,
+                                const std::string &filename,
+                                const OutputType output_type) override;
 };
-} // namespace base
-} // namespace event
+} // namespace data
 } // namespace hepce
 
-#endif // HEPCE_EVENT_BASE_AGING_HPP_
+#endif // HEPCE_DATA_WRITERINTERNALS_HPP_

@@ -55,18 +55,58 @@ if(HEPCE_BUILD_PIC)
 endif()
 
 # ---------------------------------------------------------------------------------------
-# Building the Library
+# Setting the Source Files
 # ---------------------------------------------------------------------------------------
-set(HEPCE_SRCS 
-    src/data_ops/cost_loader.cpp
-    src/data_ops/data_formatter.cpp
-    src/data_ops/data_loader.cpp
-    src/data_ops/utility_loader.cpp
-    src/data_ops/writer.cpp
-    src/model/simulation.cpp
-    src/utils/logging.cpp
+set(HEPCE_DATA
+    src/data/writer.cpp
 )
 
+set(HEPCE_EVENT_BASE
+
+)
+
+set(HEPCE_EVENT_BEHAVIOR
+
+)
+
+set(HEPCE_EVENT_FIBROSIS
+
+)
+
+set(HEPCE_EVENT_HCV
+
+)
+
+set(HEPCE_EVENT_HIV
+
+)
+
+set(HEPCE_EVENT
+    HEPCE_EVENT_BASE
+    HEPCE_EVENT_BEHAVIOR
+    HEPCE_EVENT_FIBROSIS
+    HEPCE_EVENT_HCV
+    HEPCE_EVENT_HIV
+)
+
+set(HEPCE_MODEL
+
+)
+
+set(HEPCE_UTILS
+
+)
+
+set(HEPCE_SRCS 
+    HEPCE_DATA
+    HEPCE_EVENT
+    HEPCE_MODEL
+    HEPCE_UTILS
+)
+
+# ---------------------------------------------------------------------------------------
+# Building the Library
+# ---------------------------------------------------------------------------------------
 if(HEPCE_BUILD_SHARED_LIBS)
     if(WIN32)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc @ONLY)
@@ -117,11 +157,4 @@ include(BuildBinaries)
 if(HEPCE_INSTALL)
     include(InstallHepce)
 endif()
-
-
-
-
-
-
-add_subdirectory(src)
 

@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -345,6 +345,14 @@ struct LifetimeUtility {
 };
 std::ostream &operator<<(std::ostream &os, LifetimeUtility const &lu);
 bool operator==(LifetimeUtility const &lhs, LifetimeUtility const &rhs);
+
+// Literally just a supportive data type
+struct CostUtil {
+    double cost = 0.0;
+    double util = 0.0;
+};
+std::ostream &operator<<(std::ostream &os, CostUtil const &lu);
+bool operator==(CostUtil const &lhs, CostUtil const &rhs);
 } // namespace data
 } // namespace hepce
 

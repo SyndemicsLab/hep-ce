@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -25,9 +25,9 @@ namespace event {
 class Event {
 public:
     virtual ~Event() = default;
-    virtual int Execute(model::Person person,
+    virtual int Execute(model::Person &person,
                         std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        model::Sampler sampler) = 0;
+                        model::Sampler &sampler) = 0;
 };
 } // namespace event
 } // namespace hepce

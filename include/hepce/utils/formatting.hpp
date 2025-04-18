@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -21,7 +21,7 @@
 namespace hepce {
 namespace utils {
 
-inline void trim(std::string &str) {
+inline void Trim(std::string &str) {
     while (str[0] == ' ')
         str.erase(str.begin());
     while (str[str.size() - 1] == ' ')
@@ -29,7 +29,7 @@ inline void trim(std::string &str) {
 }
 
 template <typename T>
-inline std::vector<T> split2vecT(const std::string &s, char delim) {
+inline std::vector<T> SplitToVecT(const std::string &s, char delim) {
     std::vector<T> elems;
     std::stringstream ss(s);
     std::string item;
@@ -46,7 +46,7 @@ inline std::vector<T> split2vecT(const std::string &s, char delim) {
     return elems;
 }
 
-inline double stod_positive(const std::string &s) {
+inline double SToDPositive(const std::string &s) {
     double d = std::stod(s);
     if (d < 0) {
         throw std::invalid_argument("Value must be positive");
@@ -66,7 +66,7 @@ inline std::string ToLower(std::string string) {
 /// @brief
 /// @param string
 /// @return
-inline bool StoBool(std::string string) {
+inline bool SToBool(std::string string) {
     std::string temp = ToLower(string);
     std::istringstream is(temp);
     bool b;
@@ -74,7 +74,7 @@ inline bool StoBool(std::string string) {
     return b;
 }
 
-inline std::string const boolToString(bool b) {
+inline std::string const BoolToString(bool b) {
     return b ? std::string("true") : std::string("false");
 }
 
