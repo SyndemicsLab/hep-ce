@@ -4,7 +4,7 @@
 // Created: 2025-04-16                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -22,9 +22,10 @@
 namespace event {
 class TreatmentIMPL {
 protected:
-    // constants
+    // event-specific variables
     utility::UtilityCategory UTIL_CATEGORY =
         utility::UtilityCategory::TREATMENT;
+    cost::CostCategory COST_CATEGORY = cost::CostCategory::TREATMENT;
 
     // user-provided values
     double discount = 0.0;
@@ -64,6 +65,19 @@ protected:
     /// @param
     /// @return
     bool isEligiblePregnancy(person::PregnancyState pregnancy_state) const;
+    /// @brief
+    /// @param
+    void QuitEngagement(std::shared_ptr<person::PersonBase> person);
+    /// @brief
+    /// @param
+    /// @return
+    bool LostToFollowUp(std::shared_ptr<person::PersonBase> person,
+                        std::shared_ptr<datamanagement::DataManagerBase> dm,
+                        std::shared_ptr<stats::DeciderBase> decider);
+    /// @brief
+    /// @param
+    void ChargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
+                           double cost);
 
 public:
     TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm);

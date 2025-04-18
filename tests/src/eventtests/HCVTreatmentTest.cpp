@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-07                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -19,7 +19,49 @@ using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
 
-class HCVTreatmentTest : public EventTest {};
+class HCVTreatmentTest : public EventTest {
+protected:
+    void SetUp() override {
+        EventTest::SetUp();
+
+        // Person Setup
+
+        // Data Setup
+        ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
+        ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
+        ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initiation", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
+        ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
+        ON_CALL(*event_dm, GetFromConfig("treatment.ltfu_probability", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+        ON_CALL(*event_dm, GetFromConfig("treatment.tox_cost", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
+        ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
+        ON_CALL(*event_dm, GetFromConfig("treatment.retreatment_cost", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+        ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
+        ON_CALL(*event_dm, GetFromConfig("eligibility.ineligible_drug_use", _))
+            .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+        ON_CALL(*event_dm,
+                GetFromConfig("eligibility.ineligible_fibrosis_stages", _))
+            .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+        ON_CALL(
+            *event_dm,
+            GetFromConfig("eligibility.ineligible_time_former_threshold", _))
+            .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+        ON_CALL(*event_dm,
+                GetFromConfig("eligibility.ineligible_time_since_linked", _))
+            .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
+        ON_CALL(*event_dm,
+                GetFromConfig("eligibility.ineligible_pregnancy_states", _))
+            .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
+    }
+};
 
 std::string const DURATION_QUERY =
     "SELECT retreatment, genotype_three, cirrhotic, duration FROM treatments;";
@@ -36,11 +78,6 @@ std::string const WITHDRAWAL_QUERY = "SELECT retreatment, genotype_three, "
 
 TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
     // Person Setup
-    EXPECT_CALL(*testPerson, HasInitiatedTreatment())
-        .WillOnce(Return(false))       // False Positive
-        .WillOnce(Return(false))       // Initiate
-        .WillOnce(Return(false))       // Retreatment
-        .WillRepeatedly(Return(true)); // Remainder
     ON_CALL(*testPerson, GetTimeSinceTreatmentInitiation())
         .WillByDefault(Return(0));
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
@@ -60,40 +97,6 @@ TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
     ON_CALL(*testPerson, GetWithdrawals()).WillByDefault(Return(0));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
-
-    // Data Setup
-    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.ltfu_probability", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.tox_cost", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("12.00"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.tox_utility", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("1.0"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.retreatment_cost", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("0.0"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("eligibility.ineligible_drug_use", _))
-        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
-    ON_CALL(*event_dm,
-            GetFromConfig("eligibility.ineligible_fibrosis_stages", _))
-        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
-    ON_CALL(*event_dm,
-            GetFromConfig("eligibility.ineligible_time_former_threshold", _))
-        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
-    ON_CALL(*event_dm,
-            GetFromConfig("eligibility.ineligible_time_since_linked", _))
-        .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
-    ON_CALL(*event_dm,
-            GetFromConfig("eligibility.ineligible_pregnancy_states", _))
-        .WillByDefault(DoAll(SetArgReferee<1>(""), Return(0)));
 
     // Duration Setup
     double duration = 2;
@@ -142,14 +145,12 @@ TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&wstorage), Return(0)));
 
     // Decider Setup
-    EXPECT_CALL(*decider, GetDecision(_))
-        .WillOnce(Return(1))        // Is Not Lost to Follow Up
-        .WillOnce(Return(0))        // Initiate Treatment
-        .WillOnce(Return(1))        // Does Not Experience Toxicity
-        .WillOnce(Return(1))        // Do Not Withdraw
-        .WillRepeatedly(Return(0)); // The Rest
-
     // Expectations
+    EXPECT_CALL(*testPerson, HasInitiatedTreatment())
+        .WillOnce(Return(false))       // False Positive
+        .WillOnce(Return(false))       // Initiate
+        .WillOnce(Return(false))       // Retreatment
+        .WillRepeatedly(Return(true)); // Remainder
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(2);
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(1);
     EXPECT_CALL(*testPerson, InitiateTreatment()).Times(1);
@@ -157,6 +158,12 @@ TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
     EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
     EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
     EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
+    EXPECT_CALL(*decider, GetDecision(_))
+        .WillOnce(Return(1))        // Is Not Lost to Follow Up
+        .WillOnce(Return(0))        // Initiate Treatment
+        .WillOnce(Return(1))        // Does Not Experience Toxicity
+        .WillOnce(Return(1))        // Do Not Withdraw
+        .WillRepeatedly(Return(0)); // The Rest
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -181,7 +188,7 @@ TEST_F(HCVTreatmentTest, FinishTreatment) {
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
+    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initiation", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
@@ -283,7 +290,7 @@ TEST_F(HCVTreatmentTest, FinishTreatmentNoSVR) {
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
+    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initiation", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
@@ -385,7 +392,7 @@ TEST_F(HCVTreatmentTest, LostToFollowUp) {
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
+    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initiation", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
@@ -484,7 +491,7 @@ TEST_F(HCVTreatmentTest, Withdraw) {
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
+    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initiation", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
@@ -587,7 +594,7 @@ TEST_F(HCVTreatmentTest, DevelopToxicity) {
         .WillByDefault(DoAll(SetArgReferee<1>("10.00"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.allow_retreatment", _))
         .WillByDefault(DoAll(SetArgReferee<1>("true"), Return(0)));
-    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initialization", _))
+    ON_CALL(*event_dm, GetFromConfig("treatment.treatment_initiation", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_utility", _))
         .WillByDefault(DoAll(SetArgReferee<1>("1"), Return(0)));

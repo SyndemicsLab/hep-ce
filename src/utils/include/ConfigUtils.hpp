@@ -4,7 +4,7 @@
 // Created: 2025-04-11                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -27,12 +27,15 @@ namespace Utils {
 /// @return
 inline bool
 GetBoolFromConfig(std::string config_key,
-                  std::shared_ptr<datamanagement::DataManagerBase> dm) {
+                  std::shared_ptr<datamanagement::DataManagerBase> dm,
+                  bool quiet = false) {
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No `{}' Found! Returning `false`...",
-                                  config_key);
+        if (!quiet) {
+            spdlog::get("main")->warn("No `{}' Found! Returning `false`...",
+                                      config_key);
+        }
         return false;
     }
     bool to_return;
@@ -43,13 +46,15 @@ GetBoolFromConfig(std::string config_key,
 /// @brief
 /// @param
 /// @return
-inline int
-GetIntFromConfig(std::string config_key,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm) {
+inline int GetIntFromConfig(std::string config_key,
+                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            bool quiet = false) {
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No `{}' Found!", config_key);
+        if (!quiet) {
+            spdlog::get("main")->warn("No `{}' Found!", config_key);
+        }
         config_data = "-2";
     }
     return std::stoi(config_data);
@@ -61,11 +66,13 @@ GetIntFromConfig(std::string config_key,
 inline double
 GetDoubleFromConfig(std::string config_key,
                     std::shared_ptr<datamanagement::DataManagerBase> dm,
-                    bool positive = true) {
+                    bool positive = true, bool quiet = false) {
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No `{}' Found!", config_key);
+        if (!quiet) {
+            spdlog::get("main")->warn("No `{}' Found!", config_key);
+        }
         config_data = "0.0";
     }
     if (positive) {
@@ -79,10 +86,11 @@ GetDoubleFromConfig(std::string config_key,
 /// @return
 inline std::string
 GetStringFromConfig(std::string config_key,
-                    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+                    std::shared_ptr<datamanagement::DataManagerBase> dm,
+                    bool quiet = false) {
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
-    if (config_data.empty()) {
+    if (!quiet && config_data.empty()) {
         spdlog::get("main")->warn("No `{}' Found!", config_key);
     }
     return config_data;

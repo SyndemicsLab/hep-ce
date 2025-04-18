@@ -184,6 +184,7 @@ public:
     MOCK_METHOD(void, InfectHIV, (), (override));
     MOCK_METHOD(int, GetTimeHIVChanged, (), (const, override));
     MOCK_METHOD(int, GetTimeSinceHIVChanged, (), (const, override));
+    MOCK_METHOD(int, GetLowCD4MonthCount, (), (const, override));
 
     // PREGNANCY
     MOCK_METHOD(PregnancyState, GetPregnancyState, (), (const, override));

@@ -4,7 +4,7 @@
 // Created: 2025-04-17                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -21,6 +21,7 @@ private:
     person::InfectionType INF_TYPE = person::InfectionType::HIV;
 
     // user-provided values
+    // months in treatment required to achieve suppression
     int suppression_months;
 
 public:
@@ -34,6 +35,8 @@ public:
 
     HIVTreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
         : TreatmentIMPL(dm) {
+        this->suppression_months =
+            Utils::GetIntFromConfig("hiv_treatment.months_to_suppression", dm);
         this->lost_to_follow_up_probability =
             Utils::GetDoubleFromConfig("hiv_treatment.ltfu_probability", dm);
         this->treatment_cost =
@@ -46,8 +49,6 @@ public:
             Utils::GetDoubleFromConfig("hiv_treatment.tox_cost", dm);
         this->toxicity_utility =
             Utils::GetDoubleFromConfig("hiv_treatment.tox_utility", dm);
-        this->suppression_months =
-            Utils::GetIntFromConfig("hiv_treatment.months_to_suppression", dm);
     }
 };
 

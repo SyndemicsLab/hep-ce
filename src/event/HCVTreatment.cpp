@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: HCVTreatment.cpp                                                        //
+// File: HCVTreatment.cpp                                                     //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -68,30 +68,6 @@ private:
         return false;
     }
 
-    bool LostToFollowUp(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        std::shared_ptr<stats::DeciderBase> decider) {
-        // If the person is already on treatment, they can't be lost to
-        // follow up
-        if (person->HasInitiatedTreatment()) {
-            return false;
-        }
-        if (decider->GetDecision({lost_to_follow_up_probability}) == 0) {
-            this->quitEngagement(person);
-            return true;
-        }
-        return false;
-    }
-
-    void ChargeCostOfVisit(std::shared_ptr<person::PersonBase> person) {
-        int num_treatments =
-            person->GetWithdrawals() + person->GetCompletedTreatments();
-        double c = (num_treatments > 0) ? retreatment_cost : treatment_cost;
-        double discountAdjustedCost =
-            Event::DiscountEventCost(c, discount, person->GetCurrentTimestep());
-        person->AddCost(c, discountAdjustedCost, cost::CostCategory::TREATMENT);
-    }
-
     void ChargeCostOfCourse(std::shared_ptr<person::PersonBase> person) {
         if (this->cost_data.empty()) {
             spdlog::get("main")->warn("No Treatment Cost Data Found.");
@@ -101,7 +77,7 @@ private:
             Event::DiscountEventCost(cost_data[GetTreatmentThruple(person)],
                                      discount, person->GetCurrentTimestep());
         person->AddCost(cost_data[GetTreatmentThruple(person)],
-                        discountAdjustedCost, cost::CostCategory::TREATMENT);
+                        discountAdjustedCost, this->COST_CATEGORY);
         person->SetUtility(treatment_utility, this->UTIL_CATEGORY);
     }
 
@@ -116,7 +92,7 @@ private:
         if (decider->GetDecision(
                 {withdrawal_data[GetTreatmentThruple(person)]}) == 0) {
             person->AddWithdrawal();
-            this->quitEngagement(person);
+            this->QuitEngagement(person);
             return true;
         }
         return false;
@@ -139,7 +115,7 @@ private:
         double discountAdjustedCost = Event::DiscountEventCost(
             toxicity_cost, discount, person->GetCurrentTimestep());
         person->AddCost(toxicity_cost, discountAdjustedCost,
-                        cost::CostCategory::TREATMENT);
+                        this->COST_CATEGORY);
         person->SetUtility(toxicity_utility, this->UTIL_CATEGORY);
     }
 
@@ -156,13 +132,6 @@ private:
             return true;
         }
         return false;
-    }
-
-    void quitEngagement(std::shared_ptr<person::PersonBase> person) {
-        person->EndTreatment();
-        person->Unlink();
-        // reset utility
-        person->SetUtility(1.0, this->UTIL_CATEGORY);
     }
 
     int GetTreatmentDuration(std::shared_ptr<person::PersonBase> person) {
@@ -261,7 +230,7 @@ private:
     std::vector<std::string> LoadEligibilityVectors(
         std::string config_key,
         std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string data = Utils::GetStringFromConfig(config_key, dm);
+        std::string data = Utils::GetStringFromConfig(config_key, dm, true);
         if (data.empty()) {
             return {};
         }
@@ -278,9 +247,9 @@ private:
             "eligibility.ineligible_pregnancy_states", dm);
 
         this->ineligible_time_since_linked = Utils::GetIntFromConfig(
-            "eligibility.ineligible_time_since_linked", dm);
+            "eligibility.ineligible_time_since_linked", dm, true);
         this->ineligible_time_since_last_use = Utils::GetIntFromConfig(
-            "eligibility.ineligible_time_former_threshold", dm);
+            "eligibility.ineligible_time_former_threshold", dm, true);
     }
 
 public:
@@ -298,7 +267,11 @@ public:
         }
 
         // 2. Charge the Cost of the Visit (varies if this is retreatment)
-        ChargeCostOfVisit(person);
+        int num_treatments =
+            person->GetWithdrawals() + person->GetCompletedTreatments();
+        double cost = (num_treatments > 0) ? this->retreatment_cost
+                                           : this->treatment_cost;
+        ChargeCostOfVisit(person, cost);
 
         // 3. Attempt to start primary treatment, if already on treatment
         // nothing happens
@@ -329,13 +302,13 @@ public:
                 person->AddSVR();
                 person->ClearHCV();
                 person->ClearDiagnosis();
-                this->quitEngagement(person);
+                this->QuitEngagement(person);
             } else if (!person->IsInRetreatment()) {
                 // initiate retreatment
                 person->InitiateTreatment();
             } else {
                 // if retreatment fails, it is a failure and treatment ceases
-                this->quitEngagement(person);
+                this->QuitEngagement(person);
             }
         }
     }

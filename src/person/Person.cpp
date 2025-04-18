@@ -158,6 +158,9 @@ private:
         if (GetMoudState() == person::MOUD::CURRENT) {
             this->moudDetails.totalMOUDMonths++;
         }
+        if (GetHIV() == person::HIV::LOUN || GetHIV() == person::HIV::LOSU) {
+            this->hivDetails.lowCD4MonthsCount++;
+        }
         this->moudDetails.currentStateConcurrentMonths++;
         return 0;
     }
@@ -906,6 +909,10 @@ public:
         this->hivDetails.timeChanged = this->_currentTime;
     }
 
+    int GetLowCD4MonthCount() const {
+        return this->hivDetails.lowCD4MonthsCount;
+    }
+
     /// @brief Setter for PersonIMPL's treatment initiation state
     /// @param incompleteTreatment Boolean value for initiated treatment
     /// state to be set
@@ -1396,6 +1403,9 @@ bool Person::IsDiagnosedWithHCC() const {
 // HIV
 HIV Person::GetHIV() const { return pImplPERSON->GetHIV(); }
 void Person::SetHIV(HIV hiv) { return pImplPERSON->SetHIV(hiv); }
+int Person::GetLowCD4MonthCount() const {
+    return pImplPERSON->GetLowCD4MonthCount();
+}
 void Person::InfectHIV() { return pImplPERSON->InfectHIV(); }
 int Person::GetTimeHIVChanged() const {
     return pImplPERSON->GetTimeHIVChanged();

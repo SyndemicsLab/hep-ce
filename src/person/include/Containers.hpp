@@ -261,6 +261,8 @@ struct HIVDetails {
     HIV hiv = HIV::NONE;
     // Time step of change tracking
     int timeChanged = -1;
+    // Months with low T-/CD4 cell count
+    int lowCD4MonthsCount = 0;
 };
 std::ostream &operator<<(std::ostream &os, const HIVDetails &inst);
 
