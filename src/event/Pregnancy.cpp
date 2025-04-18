@@ -4,7 +4,7 @@
 // Created: 2024-06-13                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -109,6 +109,7 @@ private:
 
         bool tested = DoChildrenGetTested(dm, decider);
         for (int child = 0; child < numberOfBirths; ++child) {
+            person->AddInfantExposure();
             if (DrawChildInfection(dm, decider)) {
                 person->AddChild(person::HCV::CHRONIC, tested);
             } else {

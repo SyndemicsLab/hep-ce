@@ -4,7 +4,7 @@
 // Created: 2024-06-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -66,7 +66,12 @@ private:
                             << "," << person->GetLifeSpan() << ","
                             << person->GetDiscountedLifeSpan() << ","
                             << person->GetNumberOfTreatmentStarts() << ","
-                            << person->GetRetreatments();
+                            << person->GetRetreatments() << ",";
+        // pregnancy quantities
+        const auto &preg = person->GetPregnancyDetails();
+        compiled_attributes << preg.numInfants << "," << preg.numMiscarriages
+                            << "," << preg.numHCVExposures << ","
+                            << preg.numHCVInfections << "," << preg.numHCVTests;
         return compiled_attributes.str();
     }
 
