@@ -62,7 +62,7 @@ set(HEPCE_DATA
 )
 
 set(HEPCE_EVENT_BASE
-
+    src/event/base/aging.cpp
 )
 
 set(HEPCE_EVENT_BEHAVIOR
@@ -82,11 +82,11 @@ set(HEPCE_EVENT_HIV
 )
 
 set(HEPCE_EVENT
-    HEPCE_EVENT_BASE
-    HEPCE_EVENT_BEHAVIOR
-    HEPCE_EVENT_FIBROSIS
-    HEPCE_EVENT_HCV
-    HEPCE_EVENT_HIV
+    ${HEPCE_EVENT_BASE}
+    ${HEPCE_EVENT_BEHAVIOR}
+    ${HEPCE_EVENT_FIBROSIS}
+    ${HEPCE_EVENT_HCV}
+    ${HEPCE_EVENT_HIV}
 )
 
 set(HEPCE_MODEL
@@ -98,10 +98,10 @@ set(HEPCE_UTILS
 )
 
 set(HEPCE_SRCS 
-    HEPCE_DATA
-    HEPCE_EVENT
-    HEPCE_MODEL
-    HEPCE_UTILS
+    ${HEPCE_DATA}
+    ${HEPCE_EVENT}
+    ${HEPCE_MODEL}
+    ${HEPCE_UTILS}
 )
 
 # ---------------------------------------------------------------------------------------
