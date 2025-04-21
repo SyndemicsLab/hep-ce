@@ -4,7 +4,7 @@
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -170,9 +170,11 @@ protected:
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetAcuteHCVClearances())
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]), HasInitiatedTreatment())
+            ON_CALL(*(testPopulation[id]),
+                    HasInitiatedTreatment(person::InfectionType::HCV))
                 .WillByDefault(Return(false));
-            ON_CALL(*(testPopulation[id]), GetTimeOfTreatmentInitiation())
+            ON_CALL(*(testPopulation[id]),
+                    GetTimeOfTreatmentInitiation(person::InfectionType::HCV))
                 .WillByDefault(Return(id));
             double util = 1 / static_cast<double>(id + 1);
             person::LifetimeUtility lu = {util, util, util, util};
@@ -195,7 +197,8 @@ protected:
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetDiscountedLifeSpan())
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]), GetNumberOfTreatmentStarts())
+            ON_CALL(*(testPopulation[id]),
+                    GetNumberOfTreatmentStarts(person::InfectionType::HCV))
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetRetreatments())
                 .WillByDefault(Return(id));

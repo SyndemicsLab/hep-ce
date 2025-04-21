@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -101,16 +101,20 @@ public:
     virtual int GetRetreatments() const = 0;
     virtual int AddSVR() = 0;
     virtual int GetSVRs() const = 0;
-    virtual TreatmentDetails GetTreatmentDetails() const = 0;
-    virtual int GetNumberOfTreatmentStarts() const = 0;
-    virtual void InitiateTreatment() = 0;
-    virtual int EndTreatment() = 0;
-
-    virtual bool HasInitiatedTreatment() const = 0;
-    virtual bool IsInRetreatment() const = 0;
-
-    virtual int GetTimeOfTreatmentInitiation() const = 0;
-    virtual int GetTimeSinceTreatmentInitiation() const = 0;
+    virtual TreatmentDetails
+    GetTreatmentDetails(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetNumberOfTreatmentStarts(InfectionType it = InfectionType::HCV) const = 0;
+    virtual void InitiateTreatment(InfectionType it = InfectionType::HCV) = 0;
+    virtual int EndTreatment(InfectionType it = InfectionType::HCV) = 0;
+    virtual bool
+    HasInitiatedTreatment(InfectionType it = InfectionType::HCV) const = 0;
+    virtual bool
+    IsInRetreatment(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int GetTimeOfTreatmentInitiation(
+        InfectionType it = InfectionType::HCV) const = 0;
+    virtual int GetTimeSinceTreatmentInitiation(
+        InfectionType it = InfectionType::HCV) const = 0;
 
     // Drug Use Behavior
     virtual int SetBehavior(Behavior) = 0;
@@ -296,16 +300,14 @@ public:
     int GetRetreatments() const;
     int AddSVR();
     int GetSVRs() const;
-    TreatmentDetails GetTreatmentDetails() const;
-    int GetNumberOfTreatmentStarts() const;
-    void InitiateTreatment();
-    int EndTreatment();
-
-    bool HasInitiatedTreatment() const;
-    bool IsInRetreatment() const;
-
-    int GetTimeOfTreatmentInitiation() const;
-    int GetTimeSinceTreatmentInitiation() const;
+    TreatmentDetails GetTreatmentDetails(InfectionType it) const;
+    int GetNumberOfTreatmentStarts(InfectionType it) const;
+    void InitiateTreatment(InfectionType it);
+    int EndTreatment(InfectionType it);
+    bool HasInitiatedTreatment(InfectionType it) const;
+    bool IsInRetreatment(InfectionType it) const;
+    int GetTimeOfTreatmentInitiation(InfectionType it) const;
+    int GetTimeSinceTreatmentInitiation(InfectionType it) const;
 
     // Drug Use Behavior
     int SetBehavior(Behavior);

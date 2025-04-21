@@ -4,13 +4,14 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Person.hpp"
+#include "PersonTableOperations.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
@@ -23,107 +24,17 @@
 namespace person {
 class Person::PersonIMPL {
 private:
-    struct person_select {
-        Sex sex = Sex::MALE;
-        int age = 0;
-        bool isAlive = true;
-        DeathReason deathReason = DeathReason::NA;
-        int identifiedHCV = false;
-        int timeInfectionIdentified = -1;
-        HCV hcv = HCV::NONE;
-        FibrosisState fibrosisState = FibrosisState::NONE;
-        bool isGenotypeThree = false;
-        bool seropositive = false;
-        int timeHCVChanged = -1;
-        int timeFibrosisStateChanged = -1;
-        Behavior drugBehavior = Behavior::NEVER;
-        int timeLastActiveDrugUse = -1;
-        LinkageState linkageState = LinkageState::NEVER;
-        int timeOfLinkChange = -1;
-        LinkageType linkageType = LinkageType::INTERVENTION;
-        int linkCount = 0;
-        MeasuredFibrosisState measuredFibrosisState =
-            MeasuredFibrosisState::NONE;
-        int timeOfLastStaging = -1;
-        int timeOfLastScreening = -1;
-        int numABTests = 0;
-        int numRNATests = 0;
-        int timesInfected = 0;
-        int timesAcuteCleared = 0;
-        bool initiatedTreatment = false;
-        int timeOfTreatmentInitiation = -1;
-        double min_utility = 0.0;
-        double mult_utility = 0.0;
-        double discount_min_utility = 0.0;
-        double discount_mult_utility = 0.0;
-        double behaviorUtility = 1.0;
-        double liverUtility = 1.0;
-        double treatmentUtility = 1.0;
-        double backgroundUtility = 1.0;
-        double hivUtility = 1.0;
-        int treatmentWithdrawals = 0;
-        int treatmentToxicReactions = 0;
-        int completedTreatments = 0;
-        int numberOfTreatmentStarts = 0;
-        bool retreatment = false;
-        int svrs = 0;
-    };
-    static int callback(void *storage, int count, char **data, char **columns) {
-        struct person_select *temp = (struct person_select *)storage;
-        temp->sex << data[0];
-        temp->age = std::stoi(data[1]);
-        temp->isAlive = std::stoi(data[2]);
-        temp->deathReason << data[3];
-        temp->identifiedHCV = std::stoi(data[4]);
-        temp->timeInfectionIdentified = std::stoi(data[5]);
-        temp->hcv << data[6];
-        temp->fibrosisState << data[7];
-        temp->isGenotypeThree = std::stoi(data[8]);
-        temp->seropositive = std::stoi(data[9]);
-        temp->timeHCVChanged = std::stoi(data[10]);
-        temp->timeFibrosisStateChanged = std::stoi(data[11]);
-        temp->drugBehavior << data[12];
-        temp->timeLastActiveDrugUse = std::stoi(data[13]);
-        temp->linkageState << data[14];
-        temp->timeOfLinkChange = std::stoi(data[15]);
-        temp->linkageType << data[16];
-        temp->linkCount = std::stoi(data[17]);
-        temp->measuredFibrosisState << data[18];
-        temp->timeOfLastStaging = std::stoi(data[19]);
-        temp->timeOfLastScreening = std::stoi(data[20]);
-        temp->numABTests = std::stoi(data[21]);
-        temp->numRNATests = std::stoi(data[22]);
-        temp->timesInfected = std::stoi(data[23]);
-        temp->timesAcuteCleared = std::stoi(data[24]);
-        temp->initiatedTreatment = std::stoi(data[25]);
-        temp->timeOfTreatmentInitiation = std::stoi(data[26]);
-        temp->min_utility = Utils::stod_positive(data[27]);
-        temp->mult_utility = Utils::stod_positive(data[28]);
-        temp->discount_min_utility = Utils::stod_positive(data[29]);
-        temp->discount_mult_utility = Utils::stod_positive(data[30]);
-        temp->treatmentWithdrawals = std::stoi(data[31]);
-        temp->treatmentToxicReactions = std::stoi(data[32]);
-        temp->completedTreatments = std::stoi(data[33]);
-        temp->svrs = std::stoi(data[34]);
-        temp->behaviorUtility = Utils::stod_positive(data[35]);
-        temp->liverUtility = Utils::stod_positive(data[36]);
-        temp->treatmentUtility = Utils::stod_positive(data[37]);
-        temp->backgroundUtility = Utils::stod_positive(data[38]);
-        temp->hivUtility = Utils::stod_positive(data[39]);
-        return 0;
-    }
     size_t id = 0;
-    size_t _currentTime = 0;
+    size_t _current_time = 0;
 
     int age = 0;
     Sex sex = Sex::MALE;
-    bool isAlive = true;
-    DeathReason deathReason = DeathReason::NA;
-    BehaviorDetails behaviorDetails;
-    HCVDetails hcvDetails;
+    bool is_alive = true;
+    DeathReason death_reason = DeathReason::NA;
+    BehaviorDetails behavior_details;
+    HCVDetails hcv_details;
     HIVDetails hivDetails;
     HCCDetails hccDetails;
-    std::unordered_map<InfectionType, LinkageDetails> linkStatus;
     int numOverdoses = 0;
     int treatmentWithdrawals = 0;
     int treatmentToxicReactions = 0;
@@ -135,25 +46,26 @@ private:
     MOUDDetails moudDetails;
     PregnancyDetails pregnancyDetails;
     StagingDetails stagingDetails;
+    std::unordered_map<InfectionType, LinkageDetails> linkStatus;
     std::unordered_map<InfectionType, ScreeningDetails> screeningDetails;
-    TreatmentDetails treatmentDetails;
+    std::unordered_map<InfectionType, TreatmentDetails> treatmentDetails;
     cost::CostTracker costs;
     bool boomerClassification = false;
     std::vector<Child> children = {};
 
     // utility
     utility::UtilityTracker utility_tracker;
-    LifetimeUtility lifetimeUtility;
+    LifetimeUtility lifetime_utility;
 
     // life span tracking
-    int lifeSpan = 0;
-    double discountedLifeSpan = 0;
+    int life_span = 0;
+    double discounted_life_span = 0;
 
     int UpdateTimers() {
-        this->_currentTime++;
+        this->_current_time++;
         if (GetBehavior() == person::Behavior::NONINJECTION ||
             GetBehavior() == person::Behavior::INJECTION) {
-            this->behaviorDetails.timeLastActive = this->_currentTime;
+            this->behavior_details.timeLastActive = this->_current_time;
         }
         if (GetMoudState() == person::MOUD::CURRENT) {
             this->moudDetails.totalMOUDMonths++;
@@ -169,7 +81,7 @@ private:
     /// @param moud PersonIMPL's new MOUD state
     void SetMoudState(MOUD moud) {
         if (moud == person::MOUD::CURRENT) {
-            this->moudDetails.timeStartedMoud = this->_currentTime;
+            this->moudDetails.timeStartedMoud = this->_current_time;
         }
         this->moudDetails.currentStateConcurrentMonths = 0;
         this->moudDetails.moudState = moud;
@@ -188,6 +100,7 @@ public:
              ++i) {
             this->linkStatus[i] = LinkageDetails();
             this->screeningDetails[i] = ScreeningDetails();
+            this->treatmentDetails[i] = TreatmentDetails();
         }
     }
     int
@@ -205,8 +118,8 @@ public:
 
         struct person_select storage;
         std::string error;
-        int rc = dm->SelectCustomCallback(query.str(), this->callback, &storage,
-                                          error);
+        int rc = dm->SelectCustomCallback(query.str(), person_callback,
+                                          &storage, error);
         if (rc != 0) {
 // only log on main because during debug we don't always expect tables
 #ifdef NDEBUG
@@ -220,18 +133,18 @@ public:
 
         sex = storage.sex;
         SetAge(storage.age);
-        isAlive = storage.isAlive;
+        is_alive = storage.is_alive;
         screeningDetails[InfectionType::HCV].identified = storage.identifiedHCV;
         screeningDetails[InfectionType::HCV].timeIdentified =
             storage.timeInfectionIdentified;
-        hcvDetails.hcv = storage.hcv;
-        hcvDetails.fibrosisState = storage.fibrosisState;
-        hcvDetails.isGenotypeThree = storage.isGenotypeThree;
-        hcvDetails.seropositive = storage.seropositive;
-        hcvDetails.timeChanged = storage.timeHCVChanged;
-        hcvDetails.timeFibrosisStateChanged = storage.timeFibrosisStateChanged;
-        behaviorDetails.behavior = storage.drugBehavior;
-        behaviorDetails.timeLastActive = storage.timeLastActiveDrugUse;
+        hcv_details.hcv = storage.hcv;
+        hcv_details.fibrosisState = storage.fibrosisState;
+        hcv_details.isGenotypeThree = storage.isGenotypeThree;
+        hcv_details.seropositive = storage.seropositive;
+        hcv_details.timeChanged = storage.timeHCVChanged;
+        hcv_details.timeFibrosisStateChanged = storage.timeFibrosisStateChanged;
+        behavior_details.behavior = storage.drugBehavior;
+        behavior_details.timeLastActive = storage.timeLastActiveDrugUse;
         linkStatus[InfectionType::HCV].linkState = storage.linkageState;
         linkStatus[InfectionType::HCV].timeOfLinkChange =
             storage.timeOfLinkChange;
@@ -243,18 +156,19 @@ public:
             storage.timeOfLastScreening;
         screeningDetails[InfectionType::HCV].numABTests = storage.numABTests;
         screeningDetails[InfectionType::HCV].numRNATests = storage.numRNATests;
-        hcvDetails.timesInfected = storage.timesInfected;
-        hcvDetails.timesAcuteCleared = storage.timesAcuteCleared;
-        treatmentDetails.initiatedTreatment = storage.initiatedTreatment;
-        treatmentDetails.timeOfTreatmentInitiation =
+        hcv_details.timesInfected = storage.timesInfected;
+        hcv_details.timesAcuteCleared = storage.timesAcuteCleared;
+        treatmentDetails[InfectionType::HCV].initiatedTreatment =
+            storage.initiatedTreatment;
+        treatmentDetails[InfectionType::HCV].timeOfTreatmentInitiation =
             storage.timeOfTreatmentInitiation;
-        treatmentDetails.retreatment = storage.retreatment;
-        treatmentDetails.numberOfTreatmentStarts =
+        treatmentDetails[InfectionType::HCV].retreatment = storage.retreatment;
+        treatmentDetails[InfectionType::HCV].numberOfTreatmentStarts =
             storage.numberOfTreatmentStarts;
-        lifetimeUtility.min_util = storage.min_utility;
-        lifetimeUtility.mult_util = storage.mult_utility;
-        lifetimeUtility.discount_min_util = storage.discount_min_utility;
-        lifetimeUtility.discount_mult_util = storage.discount_mult_utility;
+        lifetime_utility.min_util = storage.min_utility;
+        lifetime_utility.mult_util = storage.mult_utility;
+        lifetime_utility.discount_min_util = storage.discount_min_utility;
+        lifetime_utility.discount_mult_util = storage.discount_mult_utility;
         this->utility_tracker.SetUtility(storage.behaviorUtility,
                                          utility::UtilityCategory::BEHAVIOR);
         this->utility_tracker.SetUtility(storage.liverUtility,
@@ -269,39 +183,39 @@ public:
     }
 
     /// @brief End a PersonIMPL's life and set final Age
-    void Die(DeathReason deathReason) {
-        this->isAlive = false;
-        SetDeathReason(deathReason);
+    void Die(DeathReason death_reason) {
+        this->is_alive = false;
+        SetDeathReason(death_reason);
     }
 
     /// @brief increase a person's Age
     void Grow() {
         UpdateTimers();
         SetAge(GetAge() + 1);
-        ++(this->lifeSpan);
+        ++(this->life_span);
     }
 
     /// @brief Infect the person
     void InfectHCV() {
         // cannot be multiply infected
-        if (this->hcvDetails.hcv != HCV::NONE) {
+        if (this->hcv_details.hcv != HCV::NONE) {
             return;
         }
-        this->hcvDetails.hcv = HCV::ACUTE;
-        this->hcvDetails.timeChanged = this->_currentTime;
-        this->hcvDetails.seropositive = true;
-        this->hcvDetails.timesInfected++;
+        this->hcv_details.hcv = HCV::ACUTE;
+        this->hcv_details.timeChanged = this->_current_time;
+        this->hcv_details.seropositive = true;
+        this->hcv_details.timesInfected++;
 
         // once infected, immediately enter F0
-        if (this->hcvDetails.fibrosisState == FibrosisState::NONE) {
+        if (this->hcv_details.fibrosisState == FibrosisState::NONE) {
             UpdateTrueFibrosis(FibrosisState::F0);
         }
     }
 
     /// @brief Clear of HCV infection
     void ClearHCV(bool acute) {
-        this->hcvDetails.hcv = HCV::NONE;
-        this->hcvDetails.timeChanged = this->_currentTime;
+        this->hcv_details.hcv = HCV::NONE;
+        this->hcv_details.timeChanged = this->_current_time;
         if (acute) {
             this->AddAcuteHCVClearance();
         }
@@ -315,7 +229,7 @@ public:
         }
         // infected start as high CD4, unsuppressed infection
         this->hivDetails.hiv = HIV::HIUN;
-        this->hivDetails.timeChanged = this->_currentTime;
+        this->hivDetails.timeChanged = this->_current_time;
     }
 
     int LoadICValues(int id, std::vector<std::string> icValues) {
@@ -323,12 +237,12 @@ public:
         SetAge(std::stoi(icValues[1]));
         this->sex = static_cast<person::Sex>(std::stoi(icValues[2]));
         SetBehavior(static_cast<person::Behavior>(std::stoi(icValues[3])));
-        behaviorDetails.timeLastActive = std::stoi(icValues[4]);
+        behavior_details.timeLastActive = std::stoi(icValues[4]);
         bool sero = (std::stoi(icValues[5]) == 1) ? true : false;
         SetSeropositivity(sero);
         bool geno = (std::stoi(icValues[6]) == 1) ? true : false;
         SetGenotypeThree(geno);
-        this->hcvDetails.fibrosisState =
+        this->hcv_details.fibrosisState =
             static_cast<person::FibrosisState>(std::stoi(icValues[7]));
         if (std::stoi(icValues[8]) == 1) {
             this->screeningDetails[InfectionType::HCV].identified = true;
@@ -336,7 +250,7 @@ public:
         }
         linkStatus[InfectionType::HCV].linkState =
             static_cast<person::LinkageState>(std::stoi(icValues[9]));
-        hcvDetails.hcv = static_cast<person::HCV>(std::stoi(icValues[10]));
+        hcv_details.hcv = static_cast<person::HCV>(std::stoi(icValues[10]));
 
         if (icValues.size() == 11) {
             return 0;
@@ -356,17 +270,18 @@ public:
     /// @param timestep Current simulation timestep
     void SetBehavior(const Behavior &bc) {
         // nothing to do -- cannot go back to NEVER
-        if (bc == this->behaviorDetails.behavior || bc == Behavior::NEVER) {
+        if (bc == this->behavior_details.behavior || bc == Behavior::NEVER) {
             return;
         }
         if ((bc == person::Behavior::NONINJECTION ||
              bc == person::Behavior::INJECTION) &&
-            (this->behaviorDetails.behavior == Behavior::NEVER ||
-             this->behaviorDetails.behavior == Behavior::FORMER_INJECTION ||
-             this->behaviorDetails.behavior == Behavior::FORMER_NONINJECTION)) {
-            this->behaviorDetails.timeLastActive = this->_currentTime;
+            (this->behavior_details.behavior == Behavior::NEVER ||
+             this->behavior_details.behavior == Behavior::FORMER_INJECTION ||
+             this->behavior_details.behavior ==
+                 Behavior::FORMER_NONINJECTION)) {
+            this->behavior_details.timeLastActive = this->_current_time;
         }
-        this->behaviorDetails.behavior = bc;
+        this->behavior_details.behavior = bc;
     }
 
     /// @brief Diagnose somebody's fibrosis
@@ -374,12 +289,12 @@ public:
     MeasuredFibrosisState DiagnoseFibrosis(MeasuredFibrosisState &data) {
         // need to add functionality here
         this->stagingDetails.measuredFibrosisState = data;
-        this->stagingDetails.timeOfLastStaging = this->_currentTime;
+        this->stagingDetails.timeOfLastStaging = this->_current_time;
         return this->stagingDetails.measuredFibrosisState;
     }
 
     /// @brief Add an acute clearance to the running count
-    void AddAcuteHCVClearance() { this->hcvDetails.timesAcuteCleared++; };
+    void AddAcuteHCVClearance() { this->hcv_details.timesAcuteCleared++; };
 
     void AddWithdrawal() { this->treatmentWithdrawals++; }
 
@@ -391,18 +306,18 @@ public:
 
     /// @brief Mark somebody as having been screened this timestep
     void MarkScreened(InfectionType it) {
-        this->screeningDetails[it].timeOfLastScreening = this->_currentTime;
+        this->screeningDetails[it].timeOfLastScreening = this->_current_time;
     }
 
     /// @brief
     void AddAbScreen(InfectionType it) {
-        this->screeningDetails[it].timeOfLastScreening = this->_currentTime;
+        this->screeningDetails[it].timeOfLastScreening = this->_current_time;
         this->screeningDetails[it].numABTests++;
     }
 
     /// @brief
     void AddRnaScreen(InfectionType it) {
-        this->screeningDetails[it].timeOfLastScreening = this->_currentTime;
+        this->screeningDetails[it].timeOfLastScreening = this->_current_time;
         this->screeningDetails[it].numRNATests++;
     }
 
@@ -410,7 +325,7 @@ public:
     /// @param timestep Timestep during which the PersonIMPL is Unlinked
     void Unlink(InfectionType it) {
         this->linkStatus[it].linkState = LinkageState::UNLINKED;
-        this->linkStatus[it].timeOfLinkChange = this->_currentTime;
+        this->linkStatus[it].timeOfLinkChange = this->_current_time;
     }
 
     /// @brief Reset a PersonIMPL's Link State to Linked
@@ -418,19 +333,19 @@ public:
     /// @param linkType The linkage type the PersonIMPL recieves
     void Link(LinkageType linkType, InfectionType it) {
         this->linkStatus[it].linkState = LinkageState::LINKED;
-        this->linkStatus[it].timeOfLinkChange = this->_currentTime;
+        this->linkStatus[it].timeOfLinkChange = this->_current_time;
         this->linkStatus[it].linkType = linkType;
         this->linkStatus[it].linkCount++;
     }
 
-    void EndTreatment() {
-        this->treatmentDetails.initiatedTreatment = false;
-        this->treatmentDetails.retreatment = false;
+    void EndTreatment(InfectionType it) {
+        this->treatmentDetails[it].initiatedTreatment = false;
+        this->treatmentDetails[it].retreatment = false;
     }
 
     void Diagnose(InfectionType it) {
         this->screeningDetails[it].identified = true;
-        this->screeningDetails[it].timeIdentified = this->_currentTime;
+        this->screeningDetails[it].timeIdentified = this->_current_time;
         this->screeningDetails[it].antibodyPositive = true;
     }
 
@@ -461,12 +376,12 @@ public:
     /// pregnancy
     void Miscarry() {
         this->pregnancyDetails.numMiscarriages++;
-        this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
+        this->pregnancyDetails.timeOfPregnancyChange = this->_current_time;
         this->pregnancyDetails.pregnancyState = person::PregnancyState::NONE;
     }
 
     void EndPostpartum() {
-        this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
+        this->pregnancyDetails.timeOfPregnancyChange = this->_current_time;
         this->pregnancyDetails.pregnancyState = person::PregnancyState::NONE;
     }
 
@@ -475,7 +390,7 @@ public:
             return;
         }
         this->pregnancyDetails.count++;
-        this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
+        this->pregnancyDetails.timeOfPregnancyChange = this->_current_time;
         this->pregnancyDetails.pregnancyState =
             person::PregnancyState::PREGNANT;
     }
@@ -484,7 +399,7 @@ public:
         if (GetSex() == person::Sex::MALE) {
             return;
         }
-        this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
+        this->pregnancyDetails.timeOfPregnancyChange = this->_current_time;
         this->pregnancyDetails.pregnancyState =
             person::PregnancyState::POSTPARTUM;
         this->pregnancyDetails.numMiscarriages++;
@@ -531,7 +446,7 @@ public:
 
     ////////////// CHECKS /////////////////
 
-    bool IsAlive() const { return this->isAlive; }
+    bool IsAlive() const { return this->is_alive; }
 
     /// @brief Getter for whether PersonIMPL experienced fibtest two this
     /// cycle
@@ -549,14 +464,16 @@ public:
     /// @brief Getter for whether PersonIMPL has initiated treatment
     /// @return Boolean true if PersonIMPL has initiated treatment, false
     /// otherwise
-    bool HasInitiatedTreatment() const {
-        return this->treatmentDetails.initiatedTreatment;
+    bool HasInitiatedTreatment(InfectionType it) const {
+        return this->treatmentDetails.at(it).initiatedTreatment;
     }
 
-    bool IsInRetreatment() const { return this->treatmentDetails.retreatment; }
+    bool IsInRetreatment(InfectionType it) const {
+        return this->treatmentDetails.at(it).retreatment;
+    }
     /// @brief Getter for whether PersonIMPL is genotype three
     /// @return True if genotype three, false otherwise
-    bool IsGenotypeThree() const { return this->hcvDetails.isGenotypeThree; }
+    bool IsGenotypeThree() const { return this->hcv_details.isGenotypeThree; }
     bool IsBoomer() const { return this->boomerClassification; }
 
     bool IsCirrhotic() {
@@ -570,18 +487,18 @@ public:
     ////////////// GETTERS ////////////////
     int GetID() const { return this->id; }
 
-    int GetCurrentTimestep() const { return this->_currentTime; }
+    int GetCurrentTimestep() const { return this->_current_time; }
 
     int GetAge() const { return this->age; }
 
     /// @brief Getter for the number of HCV infections experienced by
     /// PersonIMPL
     /// @return Number of HCV infections experienced by PersonIMPL
-    int GetTimesHCVInfected() const { return this->hcvDetails.timesInfected; }
+    int GetTimesHCVInfected() const { return this->hcv_details.timesInfected; }
 
     /// @brief Get the running total of clearances for PersonIMPL
     int GetAcuteHCVClearances() const {
-        return this->hcvDetails.timesAcuteCleared;
+        return this->hcv_details.timesAcuteCleared;
     };
 
     int GetWithdrawals() const { return this->treatmentWithdrawals; }
@@ -616,31 +533,31 @@ public:
 
     int GetNumberOfOverdoses() const { return this->numOverdoses; }
 
-    DeathReason GetDeathReason() const { return this->deathReason; }
+    DeathReason GetDeathReason() const { return this->death_reason; }
 
     /// @brief Getter for the Fibrosis State
     /// @return The Current Fibrosis State
     FibrosisState GetTrueFibrosisState() const {
-        return this->hcvDetails.fibrosisState;
+        return this->hcv_details.fibrosisState;
     }
 
     /// @brief Getter for the HCV State
     /// @return HCV State
-    HCV GetHCV() const { return this->hcvDetails.hcv; }
+    HCV GetHCV() const { return this->hcv_details.hcv; }
 
     /// @brief Getter for Behavior Classification
     /// @return Behavior Classification
-    Behavior GetBehavior() const { return this->behaviorDetails.behavior; }
+    Behavior GetBehavior() const { return this->behavior_details.behavior; }
 
     /// @brief Getter for time since active drug use
     /// @return Time since the person left an active drug use state
     int GetTimeBehaviorChange() const {
-        return this->behaviorDetails.timeLastActive;
+        return this->behavior_details.timeLastActive;
     }
 
     /// @brief Getter for timestep in which HCV last changed
     /// @return Timestep that HCV last changed
-    int GetTimeHCVChanged() const { return this->hcvDetails.timeChanged; }
+    int GetTimeHCVChanged() const { return this->hcv_details.timeChanged; }
 
     /// @brief Getter for timestep in which HIV last changed
     /// @return Timestep that HIV last changed
@@ -649,12 +566,12 @@ public:
     /// @brief Getter for Time since Fibrosis State Change
     /// @return Time Since Fibrosis State Change
     int GetTimeTrueFibrosisStateChanged() const {
-        return this->hcvDetails.timeFibrosisStateChanged;
+        return this->hcv_details.timeFibrosisStateChanged;
     }
 
     /// @brief Getter for Seropositive
     /// @return Seropositive
-    bool GetSeropositivity() const { return this->hcvDetails.seropositive; }
+    bool GetSeropositivity() const { return this->hcv_details.seropositive; }
 
     int GetTimeHCVIdentified() const {
         return this->screeningDetails.at(InfectionType::HCV).timeIdentified;
@@ -691,8 +608,8 @@ public:
     /// @brief Getter for the number of timesteps PersonIMPL has been in
     /// treatment
     /// @return Integer number of timesteps spent in treatment
-    int GetTimeOfTreatmentInitiation() const {
-        return this->treatmentDetails.timeOfTreatmentInitiation;
+    int GetTimeOfTreatmentInitiation(InfectionType it) const {
+        return this->treatmentDetails.at(it).timeOfTreatmentInitiation;
     }
 
     /// @brief Getter for pregnancy status
@@ -727,8 +644,8 @@ public:
         return CalculateTimeSince(GetTimeOfLinkChange(it));
     }
 
-    int GetTimeSinceTreatmentInitiation() const {
-        return CalculateTimeSince(GetTimeOfTreatmentInitiation());
+    int GetTimeSinceTreatmentInitiation(InfectionType it) const {
+        return CalculateTimeSince(GetTimeOfTreatmentInitiation(it));
     }
 
     int GetTimeSinceFibrosisStaging() const {
@@ -765,16 +682,16 @@ public:
 
     /// @brief Get Person's undiscounted life span
     /// @return Undiscounted life span, in months
-    int GetLifeSpan() const { return this->lifeSpan; }
+    int GetLifeSpan() const { return this->life_span; }
 
     /// @brief Get Person's discounted life span
     /// @return Discounted life span, in months
-    double GetDiscountedLifeSpan() const { return this->discountedLifeSpan; }
+    double GetDiscountedLifeSpan() const { return this->discounted_life_span; }
 
     /// @brief Add discounted life span to person
     /// @param
     void AddDiscountedLifeSpan(double discounted_life) {
-        this->discountedLifeSpan += discounted_life;
+        this->discounted_life_span += discounted_life;
     }
 
     /// @brief Getter for the person's sex
@@ -783,7 +700,7 @@ public:
 
     /// @brief Getter for the person's stratified utilities
     /// @return PersonIMPL's stratified utilities
-    LifetimeUtility GetTotalUtility() const { return this->lifetimeUtility; }
+    LifetimeUtility GetTotalUtility() const { return this->lifetime_utility; }
 
     /// @brief Getter for the person's utilities broken down by category
     /// @return PersonIMPL's category-specific utilities
@@ -803,11 +720,13 @@ public:
         return this->costs.GetTotals();
     }
 
-    HCVDetails GetHCVDetails() const { return this->hcvDetails; }
+    HCVDetails GetHCVDetails() const { return this->hcv_details; }
     HIVDetails GetHIVDetails() const { return this->hivDetails; }
     HCCDetails GetHCCDetails() const { return this->hccDetails; }
 
-    BehaviorDetails GetBehaviorDetails() const { return this->behaviorDetails; }
+    BehaviorDetails GetBehaviorDetails() const {
+        return this->behavior_details;
+    }
 
     LinkageDetails GetLinkStatus(InfectionType it) const {
         return this->linkStatus.at(it);
@@ -837,11 +756,11 @@ public:
         this->screeningDetails[it].antibodyPositive = result;
     }
 
-    TreatmentDetails GetTreatmentDetails() const {
-        return this->treatmentDetails;
+    TreatmentDetails GetTreatmentDetails(InfectionType it) const {
+        return this->treatmentDetails.at(it);
     }
-    int GetNumberOfTreatmentStarts() const {
-        return treatmentDetails.numberOfTreatmentStarts;
+    int GetNumberOfTreatmentStarts(InfectionType it) const {
+        return this->treatmentDetails.at(it).numberOfTreatmentStarts;
     }
 
     std::string GetPersonDataString() const {
@@ -863,8 +782,9 @@ public:
              << GetNumberOfABTests(InfectionType::HCV) << ","
              << GetNumberOfRNATests(InfectionType::HCV) << ","
              << GetTimesHCVInfected() << "," << GetAcuteHCVClearances() << ","
-             << std::boolalpha << GetTreatmentDetails().initiatedTreatment
-             << "," << GetTimeOfTreatmentInitiation() << ","
+             << std::boolalpha
+             << GetTreatmentDetails(InfectionType::HCV).initiatedTreatment
+             << "," << GetTimeOfTreatmentInitiation(InfectionType::HCV) << ","
              << std::to_string(GetTotalUtility().min_util) << ","
              << std::to_string(GetTotalUtility().mult_util);
         return data.str();
@@ -884,18 +804,18 @@ public:
     /// @brief Set the Seropositive value
     /// @param seropositive Seropositive status to set
     void SetSeropositivity(bool seropositive) {
-        this->hcvDetails.seropositive = seropositive;
+        this->hcv_details.seropositive = seropositive;
     }
 
-    void SetDeathReason(DeathReason deathReason) {
-        this->deathReason = deathReason;
+    void SetDeathReason(DeathReason death_reason) {
+        this->death_reason = death_reason;
     }
 
     /// @brief Set HEPC State -- used to change to chronic infection
     /// @param New HEPC State
     void SetHCV(HCV hcv) {
-        this->hcvDetails.hcv = hcv;
-        this->hcvDetails.timeChanged = this->_currentTime;
+        this->hcv_details.hcv = hcv;
+        this->hcv_details.timeChanged = this->_current_time;
     }
 
     /// @brief Set HIV infection state -- used to change between states of
@@ -906,7 +826,7 @@ public:
             return;
         }
         this->hivDetails.hiv = hiv;
-        this->hivDetails.timeChanged = this->_currentTime;
+        this->hivDetails.timeChanged = this->_current_time;
     }
 
     int GetLowCD4MonthCount() const {
@@ -916,26 +836,26 @@ public:
     /// @brief Setter for PersonIMPL's treatment initiation state
     /// @param incompleteTreatment Boolean value for initiated treatment
     /// state to be set
-    void InitiateTreatment() {
+    void InitiateTreatment(InfectionType it) {
+        TreatmentDetails &td = this->treatmentDetails[it];
         // cannot continue being treated if already in retreatment
-        if (treatmentDetails.initiatedTreatment &&
-            treatmentDetails.retreatment) {
+        if (td.initiatedTreatment && td.retreatment) {
             return;
-        } else if (treatmentDetails.initiatedTreatment) {
-            this->treatmentDetails.retreatment = true;
+        } else if (td.initiatedTreatment) {
+            td.retreatment = true;
             retreatments++;
         } else {
-            this->treatmentDetails.initiatedTreatment = true;
+            td.initiatedTreatment = true;
         }
         // treatment starts counts treatment regimens
-        this->treatmentDetails.numberOfTreatmentStarts++;
-        this->treatmentDetails.timeOfTreatmentInitiation = this->_currentTime;
+        td.numberOfTreatmentStarts++;
+        td.timeOfTreatmentInitiation = this->_current_time;
     }
 
     /// @brief Setter for Pregnancy State
     /// @param state PersonIMPL's pregnancy State
     void SetPregnancyState(PregnancyState state) {
-        this->pregnancyDetails.timeOfPregnancyChange = this->_currentTime;
+        this->pregnancyDetails.timeOfPregnancyChange = this->_current_time;
         this->pregnancyDetails.pregnancyState = state;
     }
 
@@ -948,23 +868,23 @@ public:
     /// @brief Set PersonIMPL's measured fibrosis state
     /// @param state
     void UpdateTrueFibrosis(FibrosisState state) {
-        this->hcvDetails.timeFibrosisStateChanged = this->_currentTime;
-        this->hcvDetails.fibrosisState = state;
+        this->hcv_details.timeFibrosisStateChanged = this->_current_time;
+        this->hcv_details.fibrosisState = state;
     }
 
     /// @brief Setter for whether PersonIMPL is genotype three
     /// @param genotype True if infection is genotype three, false
     /// otherwise
     void SetGenotypeThree(bool genotype) {
-        this->hcvDetails.isGenotypeThree = genotype;
+        this->hcv_details.isGenotypeThree = genotype;
     }
 
     void AccumulateTotalUtility(std::pair<double, double> util,
                                 std::pair<double, double> discount_util) {
-        this->lifetimeUtility.min_util += util.first;
-        this->lifetimeUtility.mult_util += util.second;
-        this->lifetimeUtility.discount_min_util += discount_util.first;
-        this->lifetimeUtility.discount_mult_util += discount_util.second;
+        this->lifetime_utility.min_util += util.first;
+        this->lifetime_utility.mult_util += util.second;
+        this->lifetime_utility.discount_min_util += discount_util.first;
+        this->lifetime_utility.discount_mult_util += discount_util.second;
     }
 
     /// @brief Get Person's utility values
@@ -1018,7 +938,7 @@ std::ostream &operator<<(std::ostream &os, const Person &person) {
     os << person.GetPregnancyDetails() << std::endl;
     os << person.GetFibrosisStagingDetails() << std::endl;
     os << person.GetScreeningDetails(InfectionType::HCV) << std::endl;
-    os << person.GetTreatmentDetails() << std::endl;
+    os << person.GetTreatmentDetails(InfectionType::HCV) << std::endl;
     os << person.GetTotalUtility() << std::endl;
     // os << person.getCosts() << std::endl;
     os << "Is a Baby Boomer: " << std::boolalpha << person.IsBoomer()
@@ -1046,8 +966,8 @@ int Person::Grow() {
     pImplPERSON->Grow();
     return 0;
 }
-int Person::Die(DeathReason deathReason) {
-    pImplPERSON->Die(deathReason);
+int Person::Die(DeathReason death_reason) {
+    pImplPERSON->Die(death_reason);
     return 0;
 }
 int Person::InfectHCV() {
@@ -1110,8 +1030,8 @@ int Person::Link(LinkageType linkType, InfectionType it) {
     pImplPERSON->Link(linkType, it);
     return 0;
 }
-int Person::EndTreatment() {
-    pImplPERSON->EndTreatment();
+int Person::EndTreatment(InfectionType it) {
+    pImplPERSON->EndTreatment(it);
     return 0;
 }
 void Person::ClearDiagnosis(InfectionType it) {
@@ -1154,10 +1074,12 @@ bool Person::HadSecondScreeningTest() const {
 bool Person::IsIdentifiedAsInfected(InfectionType it) const {
     return pImplPERSON->IsIdentifiedAsInfected(it);
 }
-bool Person::HasInitiatedTreatment() const {
-    return pImplPERSON->HasInitiatedTreatment();
+bool Person::HasInitiatedTreatment(InfectionType it) const {
+    return pImplPERSON->HasInitiatedTreatment(it);
 }
-bool Person::IsInRetreatment() const { return pImplPERSON->IsInRetreatment(); }
+bool Person::IsInRetreatment(InfectionType it) const {
+    return pImplPERSON->IsInRetreatment(it);
+}
 bool Person::IsGenotypeThree() const { return pImplPERSON->IsGenotypeThree(); }
 bool Person::IsBoomer() const { return pImplPERSON->IsBoomer(); }
 bool Person::IsCirrhotic() { return pImplPERSON->IsCirrhotic(); }
@@ -1244,11 +1166,11 @@ void Person::SetLinkageType(LinkageType linkType, InfectionType it) {
 LinkageType Person::GetLinkageType(InfectionType it) const {
     return pImplPERSON->GetLinkageType(it);
 }
-int Person::GetTimeOfTreatmentInitiation() const {
-    return pImplPERSON->GetTimeOfTreatmentInitiation();
+int Person::GetTimeOfTreatmentInitiation(InfectionType it) const {
+    return pImplPERSON->GetTimeOfTreatmentInitiation(it);
 }
-int Person::GetTimeSinceTreatmentInitiation() const {
-    return pImplPERSON->GetTimeSinceTreatmentInitiation();
+int Person::GetTimeSinceTreatmentInitiation(InfectionType it) const {
+    return pImplPERSON->GetTimeSinceTreatmentInitiation(it);
 }
 PregnancyState Person::GetPregnancyState() const {
     return pImplPERSON->GetPregnancyState();
@@ -1323,18 +1245,18 @@ StagingDetails Person::GetFibrosisStagingDetails() const {
 ScreeningDetails Person::GetScreeningDetails(InfectionType it) const {
     return pImplPERSON->GetScreeningDetails(it);
 }
-TreatmentDetails Person::GetTreatmentDetails() const {
-    return pImplPERSON->GetTreatmentDetails();
+TreatmentDetails Person::GetTreatmentDetails(InfectionType it) const {
+    return pImplPERSON->GetTreatmentDetails(it);
 }
-int Person::GetNumberOfTreatmentStarts() const {
-    return pImplPERSON->GetNumberOfTreatmentStarts();
+int Person::GetNumberOfTreatmentStarts(InfectionType it) const {
+    return pImplPERSON->GetNumberOfTreatmentStarts(it);
 }
 std::string Person::GetPersonDataString() const {
     return pImplPERSON->GetPersonDataString();
 }
 // Setters
-void Person::SetDeathReason(DeathReason deathReason) {
-    pImplPERSON->SetDeathReason(deathReason);
+void Person::SetDeathReason(DeathReason death_reason) {
+    pImplPERSON->SetDeathReason(death_reason);
 }
 void Person::SetAge(int age) { pImplPERSON->SetAge(age); }
 void Person::GiveSecondScreeningTest(bool state) {
@@ -1351,7 +1273,9 @@ void Person::SetSeropositivity(bool seropositive) {
     pImplPERSON->SetSeropositivity(seropositive);
 }
 void Person::SetHCV(HCV hcv) { pImplPERSON->SetHCV(hcv); }
-void Person::InitiateTreatment() { pImplPERSON->InitiateTreatment(); }
+void Person::InitiateTreatment(InfectionType it) {
+    pImplPERSON->InitiateTreatment(it);
+}
 void Person::SetPregnancyState(PregnancyState state) {
     pImplPERSON->SetPregnancyState(state);
 }
