@@ -33,14 +33,9 @@ private:
     DeathReason death_reason = DeathReason::NA;
     BehaviorDetails behavior_details;
     HCVDetails hcv_details;
-    HIVDetails hivDetails;
+    HIVDetails hiv_details;
     HCCDetails hccDetails;
     int numOverdoses = 0;
-    int treatmentWithdrawals = 0;
-    int treatmentToxicReactions = 0;
-    int completedTreatments = 0;
-    int retreatments = 0;
-    int svrs = 0;
     bool currentlyOverdosing = false;
     bool hccDiagnosed = false;
     MOUDDetails moudDetails;
@@ -49,6 +44,7 @@ private:
     std::unordered_map<InfectionType, LinkageDetails> linkStatus;
     std::unordered_map<InfectionType, ScreeningDetails> screeningDetails;
     std::unordered_map<InfectionType, TreatmentDetails> treatmentDetails;
+    int svrs = 0;
     cost::CostTracker costs;
     bool boomerClassification = false;
     std::vector<Child> children = {};
@@ -71,7 +67,7 @@ private:
             this->moudDetails.totalMOUDMonths++;
         }
         if (GetHIV() == person::HIV::LOUN || GetHIV() == person::HIV::LOSU) {
-            this->hivDetails.lowCD4MonthsCount++;
+            this->hiv_details.lowCD4MonthsCount++;
         }
         this->moudDetails.currentStateConcurrentMonths++;
         return 0;
@@ -224,12 +220,12 @@ public:
     /// @brief infect the person with HIV
     void InfectHIV() {
         // cannot be multiply infected
-        if (this->hivDetails.hiv != HIV::NONE) {
+        if (this->hiv_details.hiv != HIV::NONE) {
             return;
         }
         // infected start as high CD4, unsuppressed infection
-        this->hivDetails.hiv = HIV::HIUN;
-        this->hivDetails.timeChanged = this->_current_time;
+        this->hiv_details.hiv = HIV::HIUN;
+        this->hiv_details.timeChanged = this->_current_time;
     }
 
     int LoadICValues(int id, std::vector<std::string> icValues) {
@@ -296,11 +292,17 @@ public:
     /// @brief Add an acute clearance to the running count
     void AddAcuteHCVClearance() { this->hcv_details.timesAcuteCleared++; };
 
-    void AddWithdrawal() { this->treatmentWithdrawals++; }
+    void AddWithdrawal(InfectionType it) {
+        this->treatmentDetails[it].treatmentWithdrawals++;
+    }
 
-    void AddToxicReaction() { this->treatmentToxicReactions++; }
+    void AddToxicReaction(InfectionType it) {
+        this->treatmentDetails[it].treatmentToxicReactions++;
+    }
 
-    void AddCompletedTreatment() { this->completedTreatments++; }
+    void AddCompletedTreatment(InfectionType it) {
+        this->treatmentDetails[it].completedTreatments++;
+    }
 
     void AddSVR() { this->svrs++; }
 
@@ -501,13 +503,21 @@ public:
         return this->hcv_details.timesAcuteCleared;
     };
 
-    int GetWithdrawals() const { return this->treatmentWithdrawals; }
+    int GetWithdrawals(InfectionType it) const {
+        return this->treatmentDetails.at(it).treatmentWithdrawals;
+    }
 
-    int GetToxicReactions() const { return this->treatmentToxicReactions; }
+    int GetToxicReactions(InfectionType it) const {
+        return this->treatmentDetails.at(it).treatmentToxicReactions;
+    }
 
-    int GetCompletedTreatments() const { return this->completedTreatments; }
+    int GetCompletedTreatments(InfectionType it) const {
+        return this->treatmentDetails.at(it).completedTreatments;
+    }
 
-    int GetRetreatments() const { return this->retreatments; }
+    int GetRetreatments(InfectionType it) const {
+        return this->treatmentDetails.at(it).retreatments;
+    }
 
     int GetSVRs() const { return this->svrs; }
 
@@ -561,7 +571,7 @@ public:
 
     /// @brief Getter for timestep in which HIV last changed
     /// @return Timestep that HIV last changed
-    int GetTimeHIVChanged() const { return this->hivDetails.timeChanged; }
+    int GetTimeHIVChanged() const { return this->hiv_details.timeChanged; }
 
     /// @brief Getter for Time since Fibrosis State Change
     /// @return Time Since Fibrosis State Change
@@ -721,7 +731,7 @@ public:
     }
 
     HCVDetails GetHCVDetails() const { return this->hcv_details; }
-    HIVDetails GetHIVDetails() const { return this->hivDetails; }
+    HIVDetails GetHIVDetails() const { return this->hiv_details; }
     HCCDetails GetHCCDetails() const { return this->hccDetails; }
 
     BehaviorDetails GetBehaviorDetails() const {
@@ -734,7 +744,7 @@ public:
 
     MOUDDetails GetMOUDDetails() const { return this->moudDetails; }
 
-    HIV GetHIV() const { return this->hivDetails.hiv; }
+    HIV GetHIV() const { return this->hiv_details.hiv; }
 
     PregnancyDetails GetPregnancyDetails() const {
         return this->pregnancyDetails;
@@ -822,15 +832,15 @@ public:
     /// suppression and CD4 count
     /// @param New HIV infection state
     void SetHIV(HIV hiv) {
-        if (hiv == this->hivDetails.hiv) {
+        if (hiv == this->hiv_details.hiv) {
             return;
         }
-        this->hivDetails.hiv = hiv;
-        this->hivDetails.timeChanged = this->_current_time;
+        this->hiv_details.hiv = hiv;
+        this->hiv_details.timeChanged = this->_current_time;
     }
 
     int GetLowCD4MonthCount() const {
-        return this->hivDetails.lowCD4MonthsCount;
+        return this->hiv_details.lowCD4MonthsCount;
     }
 
     /// @brief Setter for PersonIMPL's treatment initiation state
@@ -843,7 +853,7 @@ public:
             return;
         } else if (td.initiatedTreatment) {
             td.retreatment = true;
-            retreatments++;
+            td.retreatments++;
         } else {
             td.initiatedTreatment = true;
         }
@@ -994,16 +1004,16 @@ int Person::AddAcuteHCVClearance() {
     pImplPERSON->AddAcuteHCVClearance();
     return 0;
 }
-int Person::AddWithdrawal() {
-    pImplPERSON->AddWithdrawal();
+int Person::AddWithdrawal(InfectionType it) {
+    pImplPERSON->AddWithdrawal(it);
     return 0;
 }
-int Person::AddToxicReaction() {
-    pImplPERSON->AddToxicReaction();
+int Person::AddToxicReaction(InfectionType it) {
+    pImplPERSON->AddToxicReaction(it);
     return 0;
 }
-int Person::AddCompletedTreatment() {
-    pImplPERSON->AddCompletedTreatment();
+int Person::AddCompletedTreatment(InfectionType it) {
+    pImplPERSON->AddCompletedTreatment(it);
     return 0;
 }
 int Person::AddSVR() {
@@ -1095,14 +1105,18 @@ int Person::GetTimesHCVInfected() const {
 int Person::GetAcuteHCVClearances() const {
     return pImplPERSON->GetAcuteHCVClearances();
 }
-int Person::GetWithdrawals() const { return pImplPERSON->GetWithdrawals(); }
-int Person::GetToxicReactions() const {
-    return pImplPERSON->GetToxicReactions();
+int Person::GetWithdrawals(InfectionType it) const {
+    return pImplPERSON->GetWithdrawals(it);
 }
-int Person::GetCompletedTreatments() const {
-    return pImplPERSON->GetCompletedTreatments();
+int Person::GetToxicReactions(InfectionType it) const {
+    return pImplPERSON->GetToxicReactions(it);
 }
-int Person::GetRetreatments() const { return pImplPERSON->GetRetreatments(); }
+int Person::GetCompletedTreatments(InfectionType it) const {
+    return pImplPERSON->GetCompletedTreatments(it);
+}
+int Person::GetRetreatments(InfectionType it) const {
+    return pImplPERSON->GetRetreatments(it);
+}
 int Person::GetSVRs() const { return pImplPERSON->GetSVRs(); }
 int Person::GetNumberOfABTests(InfectionType it) const {
     return pImplPERSON->GetNumberOfABTests(it);

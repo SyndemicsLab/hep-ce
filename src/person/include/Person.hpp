@@ -92,13 +92,17 @@ public:
     GetLinkStatus(InfectionType it = InfectionType::HCV) const = 0;
 
     // Treatment
-    virtual int AddWithdrawal() = 0;
-    virtual int GetWithdrawals() const = 0;
-    virtual int AddToxicReaction() = 0;
-    virtual int GetToxicReactions() const = 0;
-    virtual int AddCompletedTreatment() = 0;
-    virtual int GetCompletedTreatments() const = 0;
-    virtual int GetRetreatments() const = 0;
+    virtual int AddWithdrawal(InfectionType it = InfectionType::HCV) = 0;
+    virtual int GetWithdrawals(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int AddToxicReaction(InfectionType it = InfectionType::HCV) = 0;
+    virtual int
+    GetToxicReactions(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    AddCompletedTreatment(InfectionType it = InfectionType::HCV) = 0;
+    virtual int
+    GetCompletedTreatments(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetRetreatments(InfectionType it = InfectionType::HCV) const = 0;
     virtual int AddSVR() = 0;
     virtual int GetSVRs() const = 0;
     virtual TreatmentDetails
@@ -291,13 +295,13 @@ public:
     LinkageDetails GetLinkStatus(InfectionType it) const;
 
     // Treatment
-    int AddWithdrawal();
-    int GetWithdrawals() const;
-    int AddToxicReaction();
-    int GetToxicReactions() const;
-    int AddCompletedTreatment();
-    int GetCompletedTreatments() const;
-    int GetRetreatments() const;
+    int AddWithdrawal(InfectionType it);
+    int GetWithdrawals(InfectionType it) const;
+    int AddToxicReaction(InfectionType it);
+    int GetToxicReactions(InfectionType it) const;
+    int AddCompletedTreatment(InfectionType it);
+    int GetCompletedTreatments(InfectionType it) const;
+    int GetRetreatments(InfectionType it) const;
     int AddSVR();
     int GetSVRs() const;
     TreatmentDetails GetTreatmentDetails(InfectionType it) const;

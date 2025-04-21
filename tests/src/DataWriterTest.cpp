@@ -88,6 +88,7 @@ private:
     }
 
 protected:
+    person::InfectionType hcv_inf = person::InfectionType::HCV;
     std::vector<std::shared_ptr<NiceMock<person::MOCKPerson>>> testPopulation;
     void SetUp() override {
         RegisterLogger();
@@ -106,8 +107,7 @@ protected:
             ON_CALL(*(testPopulation[id]), GetDeathReason())
                 .WillByDefault(Return(person::DeathReason::NA));
             bool hcv_id = (id % 2 == 0) ? true : false;
-            ON_CALL(*(testPopulation[id]),
-                    IsIdentifiedAsInfected(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), IsIdentifiedAsInfected(hcv_inf))
                 .WillByDefault(Return(hcv_id));
             int hcv_time = (id % 2 == 0) ? 1 : -1;
             ON_CALL(*(testPopulation[id]), GetTimeHCVIdentified())
@@ -157,32 +157,28 @@ protected:
                 .WillByDefault(Return(meas));
             ON_CALL(*(testPopulation[id]), GetTimeOfFibrosisStaging())
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]),
-                    GetTimeOfLastScreening(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), GetTimeOfLastScreening(hcv_inf))
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]),
-                    GetNumberOfABTests(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), GetNumberOfABTests(hcv_inf))
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]),
-                    GetNumberOfRNATests(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), GetNumberOfRNATests(hcv_inf))
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetTimesHCVInfected())
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetAcuteHCVClearances())
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]),
-                    HasInitiatedTreatment(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), HasInitiatedTreatment(hcv_inf))
                 .WillByDefault(Return(false));
             ON_CALL(*(testPopulation[id]),
-                    GetTimeOfTreatmentInitiation(person::InfectionType::HCV))
+                    GetTimeOfTreatmentInitiation(hcv_inf))
                 .WillByDefault(Return(id));
             double util = 1 / static_cast<double>(id + 1);
             person::LifetimeUtility lu = {util, util, util, util};
             ON_CALL(*(testPopulation[id]), GetTotalUtility())
                 .WillByDefault(Return(lu));
-            ON_CALL(*(testPopulation[id]), GetToxicReactions())
+            ON_CALL(*(testPopulation[id]), GetToxicReactions(hcv_inf))
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]), GetCompletedTreatments())
+            ON_CALL(*(testPopulation[id]), GetCompletedTreatments(hcv_inf))
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetSVRs()).WillByDefault(Return(id));
             std::unordered_map<utility::UtilityCategory, double> current_util;
@@ -197,10 +193,9 @@ protected:
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetDiscountedLifeSpan())
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]),
-                    GetNumberOfTreatmentStarts(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), GetNumberOfTreatmentStarts(hcv_inf))
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]), GetRetreatments())
+            ON_CALL(*(testPopulation[id]), GetRetreatments(hcv_inf))
                 .WillByDefault(Return(id));
             person::PregnancyDetails current_preg = {
                 person::PregnancyState::NA, 0, id, id, id, id, id, id};

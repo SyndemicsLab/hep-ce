@@ -93,8 +93,8 @@ TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
         .WillByDefault(Return(person::PregnancyState::NONE));
     ON_CALL(*testPerson, GetLinkState(it))
         .WillByDefault(Return(person::LinkageState::LINKED));
-    ON_CALL(*testPerson, GetCompletedTreatments()).WillByDefault(Return(0));
-    ON_CALL(*testPerson, GetWithdrawals()).WillByDefault(Return(0));
+    ON_CALL(*testPerson, GetCompletedTreatments(it)).WillByDefault(Return(0));
+    ON_CALL(*testPerson, GetWithdrawals(it)).WillByDefault(Return(0));
     ON_CALL(*testPerson, GetPregnancyState())
         .WillByDefault(Return(person::PregnancyState::NA));
 
@@ -156,7 +156,7 @@ TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
     EXPECT_CALL(*testPerson, InitiateTreatment(it)).Times(1);
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
-    EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
+    EXPECT_CALL(*testPerson, AddCompletedTreatment(it)).Times(0);
     EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
     EXPECT_CALL(*decider, GetDecision(_))
         .WillOnce(Return(1))        // Is Not Lost to Follow Up
@@ -264,7 +264,7 @@ TEST_F(HCVTreatmentTest, FinishTreatment) {
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(2);
     EXPECT_CALL(*testPerson, AddSVR()).Times(1);
     EXPECT_CALL(*testPerson, ClearHCV(false)).Times(1);
-    EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(1);
+    EXPECT_CALL(*testPerson, AddCompletedTreatment(it)).Times(1);
     EXPECT_CALL(*testPerson, Unlink(it)).Times(1);
 
     // Running Test
@@ -366,7 +366,7 @@ TEST_F(HCVTreatmentTest, FinishTreatmentNoSVR) {
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(1);
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
-    EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(1);
+    EXPECT_CALL(*testPerson, AddCompletedTreatment(it)).Times(1);
     EXPECT_CALL(*testPerson, InitiateTreatment(it)).Times(1);
 
     // Running Test
@@ -466,7 +466,7 @@ TEST_F(HCVTreatmentTest, LostToFollowUp) {
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(1);
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
-    EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
+    EXPECT_CALL(*testPerson, AddCompletedTreatment(it)).Times(0);
     EXPECT_CALL(*testPerson, Unlink(it)).Times(1);
 
     // Running Test
@@ -568,9 +568,9 @@ TEST_F(HCVTreatmentTest, Withdraw) {
         .Times(2); // Cost of Visit and Quit
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
-    EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
+    EXPECT_CALL(*testPerson, AddCompletedTreatment(it)).Times(0);
     EXPECT_CALL(*testPerson, Unlink(it)).Times(1);
-    EXPECT_CALL(*testPerson, AddWithdrawal()).Times(1);
+    EXPECT_CALL(*testPerson, AddWithdrawal(it)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -670,9 +670,9 @@ TEST_F(HCVTreatmentTest, DevelopToxicity) {
         .Times(3); // Visit, Quit, Toxicity
     EXPECT_CALL(*testPerson, AddSVR()).Times(0);
     EXPECT_CALL(*testPerson, ClearHCV(false)).Times(0);
-    EXPECT_CALL(*testPerson, AddCompletedTreatment()).Times(0);
+    EXPECT_CALL(*testPerson, AddCompletedTreatment(it)).Times(0);
     EXPECT_CALL(*testPerson, Unlink(it)).Times(1);
-    EXPECT_CALL(*testPerson, AddToxicReaction()).Times(1);
+    EXPECT_CALL(*testPerson, AddToxicReaction(it)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event =

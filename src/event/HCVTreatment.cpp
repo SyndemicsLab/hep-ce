@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -27,6 +27,16 @@ private:
         Utils::tuple_3i key = std::make_tuple(
             std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
         (*((treatmentmap_t *)storage))[key] = Utils::stod_positive(data[3]);
+        return 0;
+    }
+
+    static int GetDataKey(std::shared_ptr<person::PersonBase> person,
+                          void *storage) {
+        int geno3 = (person->IsGenotypeThree()) ? 1 : 0;
+        int cirr = (person->IsCirrhotic()) ? 1 : 0;
+        int retreatment = (int)person->IsInRetreatment();
+        (*((Utils::tuple_3i *)storage)) =
+            std::make_tuple(geno3, cirr, retreatment);
         return 0;
     }
 
@@ -73,11 +83,8 @@ private:
             spdlog::get("main")->warn("No Treatment Cost Data Found.");
             return;
         }
-        double discountAdjustedCost =
-            Event::DiscountEventCost(cost_data[GetTreatmentThruple(person)],
-                                     discount, person->GetCurrentTimestep());
-        person->AddCost(cost_data[GetTreatmentThruple(person)],
-                        discountAdjustedCost, this->COST_CATEGORY);
+        double course_cost = cost_data[GetTreatmentThruple(person)];
+        ChargeCost(person, course_cost);
         person->SetUtility(treatment_utility, this->UTIL_CATEGORY);
     }
 
@@ -112,10 +119,7 @@ private:
             return;
         }
         person->AddToxicReaction();
-        double discountAdjustedCost = Event::DiscountEventCost(
-            toxicity_cost, discount, person->GetCurrentTimestep());
-        person->AddCost(toxicity_cost, discountAdjustedCost,
-                        this->COST_CATEGORY);
+        ChargeCost(person, this->toxicity_cost);
         person->SetUtility(toxicity_utility, this->UTIL_CATEGORY);
     }
 
@@ -132,15 +136,6 @@ private:
             return true;
         }
         return false;
-    }
-
-    int GetTreatmentDuration(std::shared_ptr<person::PersonBase> person) {
-        if (duration_data.empty()) {
-            spdlog::get("main")->warn("No Treatment Duration Found!");
-            return -1;
-        }
-        double duration = duration_data[GetTreatmentThruple(person)];
-        return static_cast<int>(duration);
     }
 
     int DecideIfPersonAchievesSVR(std::shared_ptr<person::PersonBase> person,
@@ -227,16 +222,6 @@ private:
         return rc;
     }
 
-    std::vector<std::string> LoadEligibilityVectors(
-        std::string config_key,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string data = Utils::GetStringFromConfig(config_key, dm, true);
-        if (data.empty()) {
-            return {};
-        }
-        return Utils::split2vecT<std::string>(data, ',');
-    }
-
     void
     LoadEligibilityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
         this->ineligible_behaviors =
@@ -262,16 +247,16 @@ public:
         }
 
         // 1. Check if the Person is Lost To Follow Up (LTFU)
-        if (LostToFollowUp(person, dm, decider)) {
+        if (LostToFollowUp(person, decider)) {
             return;
         }
 
         // 2. Charge the Cost of the Visit (varies if this is retreatment)
         int num_treatments =
             person->GetWithdrawals() + person->GetCompletedTreatments();
-        double cost = (num_treatments > 0) ? this->retreatment_cost
-                                           : this->treatment_cost;
-        ChargeCostOfVisit(person, cost);
+        double visit_cost = (num_treatments > 0) ? this->retreatment_cost
+                                                 : this->treatment_cost;
+        ChargeCost(person, visit_cost);
 
         // 3. Attempt to start primary treatment, if already on treatment
         // nothing happens
@@ -294,7 +279,7 @@ public:
 
         // 7. Determine if the person has been treated long enough, if they
         // achieve SVR
-        int duration = GetTreatmentDuration(person);
+        int duration = GetTreatmentDuration(person, this->GetDataKey);
         if (person->GetTimeSinceTreatmentInitiation() == duration) {
             person->AddCompletedTreatment();
             int decision = DecideIfPersonAchievesSVR(person, decider);

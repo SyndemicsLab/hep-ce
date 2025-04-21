@@ -87,13 +87,14 @@ public:
                 (const, override));
 
     // Treatment
-    MOCK_METHOD(int, AddWithdrawal, (), (override));
-    MOCK_METHOD(int, GetWithdrawals, (), (const, override));
-    MOCK_METHOD(int, AddToxicReaction, (), (override));
-    MOCK_METHOD(int, GetToxicReactions, (), (const, override));
-    MOCK_METHOD(int, AddCompletedTreatment, (), (override));
-    MOCK_METHOD(int, GetCompletedTreatments, (), (const, override));
-    MOCK_METHOD(int, GetRetreatments, (), (const, override));
+    MOCK_METHOD(int, AddWithdrawal, (InfectionType it), (override));
+    MOCK_METHOD(int, GetWithdrawals, (InfectionType it), (const, override));
+    MOCK_METHOD(int, AddToxicReaction, (InfectionType it), (override));
+    MOCK_METHOD(int, GetToxicReactions, (InfectionType it), (const, override));
+    MOCK_METHOD(int, AddCompletedTreatment, (InfectionType it), (override));
+    MOCK_METHOD(int, GetCompletedTreatments, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(int, GetRetreatments, (InfectionType it), (const, override));
     MOCK_METHOD(int, AddSVR, (), (override));
     MOCK_METHOD(int, GetSVRs, (), (const, override));
     MOCK_METHOD(TreatmentDetails, GetTreatmentDetails, (InfectionType it),

@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -341,6 +341,10 @@ struct TreatmentDetails {
     int timeOfTreatmentInitiation = 0;
     bool retreatment = false;
     int numberOfTreatmentStarts = 0;
+    int treatmentWithdrawals = 0;
+    int treatmentToxicReactions = 0;
+    int completedTreatments = 0;
+    int retreatments = 0;
 };
 std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 

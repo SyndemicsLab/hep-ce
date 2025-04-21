@@ -4,7 +4,7 @@
 // Created: 2025-04-16                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -58,11 +58,10 @@ void TreatmentIMPL::QuitEngagement(std::shared_ptr<person::PersonBase> person) {
 
 bool TreatmentIMPL::LostToFollowUp(
     std::shared_ptr<person::PersonBase> person,
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
     std::shared_ptr<stats::DeciderBase> decider) {
     // If the person is already on treatment, they can't be lost to
     // follow up
-    if (person->HasInitiatedTreatment()) {
+    if (person->HasInitiatedTreatment(this->INF_TYPE)) {
         return false;
     }
     if (decider->GetDecision({this->lost_to_follow_up_probability}) == 0) {
@@ -72,11 +71,34 @@ bool TreatmentIMPL::LostToFollowUp(
     return false;
 }
 
-void TreatmentIMPL::ChargeCostOfVisit(
-    std::shared_ptr<person::PersonBase> person, double cost) {
+void TreatmentIMPL::ChargeCost(std::shared_ptr<person::PersonBase> person,
+                               double cost) {
     double discounted_cost = Event::DiscountEventCost(
         cost, this->discount, person->GetCurrentTimestep());
     person->AddCost(cost, discounted_cost, this->COST_CATEGORY);
+}
+
+std::vector<std::string> TreatmentIMPL::LoadEligibilityVectors(
+    std::string config_key,
+    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::string data = Utils::GetStringFromConfig(config_key, dm, true);
+    if (data.empty()) {
+        return {};
+    }
+    return Utils::split2vecT<std::string>(data, ',');
+}
+
+int TreatmentIMPL::GetTreatmentDuration(
+    std::shared_ptr<person::PersonBase> person,
+    int (*key_function)(std::shared_ptr<person::PersonBase>, void *)) {
+    if (this->duration_data.empty()) {
+        spdlog::get("main")->warn("No Treatment Duration Found!");
+        return -1;
+    }
+    Utils::tuple_3i storage;
+    key_function(person, &storage);
+    double duration = this->duration_data[storage];
+    return static_cast<int>(duration);
 }
 
 TreatmentIMPL::TreatmentIMPL(

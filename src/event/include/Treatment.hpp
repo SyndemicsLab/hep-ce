@@ -4,7 +4,7 @@
 // Created: 2025-04-16                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -26,6 +26,8 @@ protected:
     utility::UtilityCategory UTIL_CATEGORY =
         utility::UtilityCategory::TREATMENT;
     cost::CostCategory COST_CATEGORY = cost::CostCategory::TREATMENT;
+    // default infection type is HCV
+    person::InfectionType INF_TYPE = person::InfectionType::HCV;
 
     // user-provided values
     double discount = 0.0;
@@ -72,12 +74,24 @@ protected:
     /// @param
     /// @return
     bool LostToFollowUp(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                         std::shared_ptr<stats::DeciderBase> decider);
     /// @brief
     /// @param
-    void ChargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
-                           double cost);
+    void ChargeCost(std::shared_ptr<person::PersonBase> person, double cost);
+
+    /// @brief
+    /// @param
+    /// @return
+    std::vector<std::string>
+    LoadEligibilityVectors(std::string config_key,
+                           std::shared_ptr<datamanagement::DataManagerBase> dm);
+
+    /// @brief
+    /// @param
+    /// @return
+    int GetTreatmentDuration(
+        std::shared_ptr<person::PersonBase> person,
+        int (*key_function)(std::shared_ptr<person::PersonBase>, void *));
 
 public:
     TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm);
