@@ -4,7 +4,6 @@
 if command -v module &>/dev/null; then
     module load gcc/13.2.0
     module load openmpi/4.1.5
-    module load cmake/3.22.2
 fi
 
 # red output
@@ -24,7 +23,7 @@ showhelp () {
     echo "Syntax: $(basename "$0") [-h|-t OPTION|-p|l]"
     echo "h              Print this help screen."
     echo "t OPTION       Set the build type to OPTION"
-    echo "               Options: [Debug|Release|Build]"
+    echo "               Options: [Debug|Release]"
     echo "               Default: Debug"
     echo "l              Build Shared Library."
     echo "p              Build and run tests."
