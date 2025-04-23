@@ -23,31 +23,35 @@ namespace hepce {
 namespace event {
 class EventBase : public virtual Event {
 public:
-    void SetDiscount(double d) { discount = d; }
+    void SetDiscount(const double &d) { discount = d; }
 
-    void SetCost(double cost) { cu.cost = cost; }
-    void SetCostCategory(model::CostCategory cc) { eventCostCategory = cc; }
+    void SetCost(const double &cost) { cu.cost = cost; }
+    void SetCostCategory(const model::CostCategory &cc) {
+        eventCostCategory = cc;
+    }
 
-    void SetUtil(double util) { cu.util = util; }
-    void SetUtilityCategory(model::UtilityCategory uc) {
+    void SetUtil(const double &util) { cu.util = util; }
+    void SetUtilityCategory(const model::UtilityCategory &uc) {
         eventUtilityCategory = uc;
     }
 
-    double GetDiscount() { return discount; }
+    double GetDiscount() const { return discount; }
 
-    double GetCost() { return cu.cost; }
-    model::CostCategory GetCostCategory() { return eventCostCategory; }
+    double GetCost() const { return cu.cost; }
+    model::CostCategory GetCostCategory() const { return eventCostCategory; }
 
-    double GetUtil() { return cu.util; }
-    model::UtilityCategory GetUtilityCategory() { return eventUtilityCategory; }
+    double GetUtil() const { return cu.util; }
+    model::UtilityCategory GetUtilityCategory() const {
+        return eventUtilityCategory;
+    }
 
-    void AddEventCost(model::Person &person, bool annual = false) {
+    void AddEventCost(model::Person &person, bool annual = false) const {
         double discounted_cost = utils::Discount(
             GetCost(), GetDiscount(), person.GetCurrentTimestep(), annual);
         person.AddCost(GetCost(), discounted_cost, GetCostCategory());
     }
 
-    void AddUtility(model::Person &person) {
+    void AddUtility(model::Person &person) const {
         person.SetUtility(GetUtil(), GetUtilityCategory());
     }
 

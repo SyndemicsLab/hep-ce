@@ -4,8 +4,8 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-23                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,8 +24,6 @@ private:
     class FibrosisStagingIMPL;
     std::unique_ptr<FibrosisStagingIMPL> impl;
 
-    double testOneCost = 0;
-    double testTwoCost = 0;
     /// @brief Implementation of Virtual Function DoEvent
     /// @param person Individual Person undergoing Event
     void DoEvent(std::shared_ptr<person::PersonBase> person,
