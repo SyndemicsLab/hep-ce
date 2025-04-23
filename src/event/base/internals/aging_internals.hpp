@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -54,7 +54,7 @@ private:
         return 0;
     }
 
-    inline std::string BuildSQL() const {
+    inline const std::string BuildSQL() const {
         return "SELECT age_years, gender, drug_behavior, cost, utility "
                "FROM background_impacts;";
     }

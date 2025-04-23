@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -41,6 +41,10 @@ public:
         double discounted_cost = utils::Discount(
             GetCost(), GetDiscount(), person.GetCurrentTimestep(), annual);
         person.AddCost(GetCost(), discounted_cost, GetCostCategory());
+    }
+
+    void AddUtility(model::Person &person) {
+        person.SetUtility(GetUtil(), GetUtilityCategory());
     }
 
 private:

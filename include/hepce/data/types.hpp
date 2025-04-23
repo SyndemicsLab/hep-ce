@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -346,7 +346,7 @@ struct LifetimeUtility {
 std::ostream &operator<<(std::ostream &os, LifetimeUtility const &lu);
 bool operator==(LifetimeUtility const &lhs, LifetimeUtility const &rhs);
 
-// Literally just a supportive data type
+/// @brief Attributes for an associated cost and utility
 struct CostUtil {
     double cost = 0.0;
     double util = 0.0;
