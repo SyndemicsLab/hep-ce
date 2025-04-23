@@ -28,6 +28,43 @@ int AgingImpl::Execute(model::Person &person,
         utils::Discount(1, GetDiscount(), person.GetCurrentTimestep()));
 }
 
+int AgingImpl::LoadData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::string query = BuildSQL();
+    std::string error;
+    int rc = dm->SelectCustomCallback(query, Callback, &data, error);
+    if (rc != 0) {
+        spdlog::get("main")->error(
+            "Error extracting Aging Data from background costs and "
+            "background behaviors! Error Message: {}",
+            error);
+    }
+    if (data.empty()) {
+        spdlog::get("main")->warn("No Background Cost found for Aging!");
+    }
+    return rc;
+}
+
+void AgingImpl::AddBackgroundCostAndUtility(
+    model::Person &person,
+    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int age_years = (int)(person.GetAge() / 12.0);
+    int gender = ((int)person.GetSex());
+    int behavior = ((int)person.GetBehavior());
+    utils::tuple_3i tup = std::make_tuple(age_years, gender, behavior);
+
+    SetCost(data[tup].cost);
+    AddEventCost(person);
+
+    person.SetUtility(data[tup].util, GetUtilityCategory());
+    std::pair<double, double> utilities = person.GetUtility();
+    std::pair<double, double> discount_utilities = {
+        utils::Discount(utilities.first, GetDiscount(),
+                        person.GetCurrentTimestep()),
+        utils::Discount(utilities.second, GetDiscount(),
+                        person.GetCurrentTimestep())};
+    person.AccumulateTotalUtility(utilities, discount_utilities);
+}
+
 std::unique_ptr<hepce::event::Event>
 Aging::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
               const std::string &log_name) {

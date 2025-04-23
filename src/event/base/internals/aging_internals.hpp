@@ -29,6 +29,7 @@ public:
     AgingImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
               const std::string &log_name = "console") {
         SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
+        SetCostCategory(model::CostCategory::kBackground);
         data.clear();
         LoadData(dm);
     }
@@ -53,51 +54,18 @@ private:
         return 0;
     }
 
-    std::string BuildSQL() const {
+    inline std::string BuildSQL() const {
         return "SELECT age_years, gender, drug_behavior, cost, utility "
                "FROM background_impacts;";
     }
 
-    int LoadData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string query = BuildSQL();
-        std::string error;
-        int rc = dm->SelectCustomCallback(query, Callback, &data, error);
-        if (rc != 0) {
-            spdlog::get("main")->error(
-                "Error extracting Aging Data from background costs and "
-                "background behaviors! Error Message: {}",
-                error);
-        }
-        if (data.empty()) {
-            spdlog::get("main")->warn("No Background Cost found for Aging!");
-        }
-        return rc;
-    }
+    int LoadData(std::shared_ptr<datamanagement::DataManagerBase> dm);
 
     /// @brief Adds person's background cost
     /// @param person The person to whom cost will be added
     void AddBackgroundCostAndUtility(
         model::Person &person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        int age_years = (int)(person.GetAge() / 12.0);
-        int gender = ((int)person.GetSex());
-        int behavior = ((int)person.GetBehavior());
-        utils::tuple_3i tup = std::make_tuple(age_years, gender, behavior);
-
-        double discountAdjustedCost = utils::Discount(
-            data[tup].cost, GetDiscount(), person.GetCurrentTimestep());
-        person.AddCost(data[tup].cost, discountAdjustedCost,
-                       model::CostCategory::kBackground);
-
-        person.SetUtility(data[tup].util, GetUtilityCategory());
-        std::pair<double, double> utilities = person.GetUtility();
-        std::pair<double, double> discount_utilities = {
-            utils::Discount(utilities.first, GetDiscount(),
-                            person.GetCurrentTimestep()),
-            utils::Discount(utilities.second, GetDiscount(),
-                            person.GetCurrentTimestep())};
-        person.AccumulateTotalUtility(utilities, discount_utilities);
-    }
+        std::shared_ptr<datamanagement::DataManagerBase> dm);
 };
 } // namespace base
 } // namespace event

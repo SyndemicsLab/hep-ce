@@ -17,6 +17,7 @@
 #include <hepce/data/types.hpp>
 #include <hepce/model/cost.hpp>
 #include <hepce/model/utility.hpp>
+#include <hepce/utils/math.hpp>
 
 namespace hepce {
 namespace event {
@@ -35,6 +36,12 @@ public:
     double GetUtil() { return cu.util; }
     model::UtilityCategory GetUtilityCategory() { return eventUtilityCategory; }
     model::CostCategory GetCostCategory() { return eventCostCategory; }
+
+    void AddEventCost(model::Person &person, bool annual = false) {
+        double discounted_cost = utils::Discount(
+            GetCost(), GetDiscount(), person.GetCurrentTimestep(), annual);
+        person.AddCost(GetCost(), discounted_cost, GetCostCategory());
+    }
 
 private:
     double discount = 0.0;

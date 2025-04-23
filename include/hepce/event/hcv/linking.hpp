@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -15,12 +15,12 @@
 #include <memory>
 #include <string>
 
-#include <hepce/event/base/linking.hpp>
+#include <hepce/event/event.hpp>
 
 namespace hepce {
 namespace event {
 namespace hcv {
-class Linking : public virtual hepce::event::base::Linking {
+class Linking : public virtual Event {
 public:
     virtual ~Linking() = default;
 

@@ -1,35 +1,26 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: linking.hpp                                                          //
+// File: linking.cpp                                                          //
 // Project: HEPCESimulationv2                                                 //
-// Created Date: Th Apr 2025                                                  //
+// Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef HEPCE_EVENT_HIV_LINKING_HPP_
-#define HEPCE_EVENT_HIV_LINKING_HPP_
+#include <hepce/event/hiv/linking.hpp>
 
-#include <memory>
-#include <string>
-
-#include <hepce/event/event.hpp>
+#include "hiv/internals/linking_internals.hpp"
 
 namespace hepce {
 namespace event {
 namespace hiv {
-class Linking : public virtual Event {
-public:
-    virtual ~Linking() = default;
-
-    static std::unique_ptr<Event>
-    Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
-           const std::string &log_name = "console");
-};
+std::unique_ptr<hepce::event::Event>
+hiv::Linking::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+                     const std::string &log_name) {
+    return std::make_unique<hiv::LinkingImpl>(dm, log_name);
+}
 } // namespace hiv
 } // namespace event
 } // namespace hepce
-
-#endif // HEPCE_EVENT_HIV_LINKINGS_HPP_
