@@ -4,7 +4,7 @@
 // Created: 2024-09-03                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -471,22 +471,22 @@ PregnancyState &operator<<(PregnancyState &inst, const std::string &str) {
 
 std::ostream &operator<<(std::ostream &os, HCVDetails const &inst) {
     os << "HCV State: " << inst.hcv << std::endl;
-    os << "Fibrosis State: " << inst.fibrosisState << std::endl;
-    os << "Genotype 3 Infection: " << std::boolalpha << inst.isGenotypeThree
+    os << "Fibrosis State: " << inst.fibrosis_state << std::endl;
+    os << "Genotype 3 Infection: " << std::boolalpha << inst.is_genotype_three
        << std::endl;
     os << "Seropositive: " << std::boolalpha << inst.seropositive << std::endl;
-    os << "Last Time the HCV State Changed: " << inst.timeChanged << std::endl;
+    os << "Last Time the HCV State Changed: " << inst.time_changed << std::endl;
     os << "Last Time the Fibrosis State Changed: "
-       << inst.timeFibrosisStateChanged << std::endl;
-    os << "Number of Times Infected: " << inst.timesInfected << std::endl;
-    os << "Number of Times Spontaneously Cleared: " << inst.timesAcuteCleared
+       << inst.time_fibrosis_state_changed << std::endl;
+    os << "Number of Times Infected: " << inst.times_infected << std::endl;
+    os << "Number of Times Spontaneously Cleared: " << inst.times_acute_cleared
        << std::endl;
     return os;
 }
 
 std::ostream &operator<<(std::ostream &os, HIVDetails const &inst) {
     os << "HIV State: " << inst.hiv << std::endl;
-    os << "Last Time the HIV State Changed: " << inst.timeChanged << std::endl;
+    os << "Last Time the HIV State Changed: " << inst.time_changed << std::endl;
     return os;
 }
 
@@ -497,7 +497,7 @@ std::ostream &operator<<(std::ostream &os, HCCDetails const &inst) {
 
 std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav) {
     os << "Behavior Type: " << behav.behavior << std::endl;
-    os << "Last Timestep Active: " << behav.timeLastActive << std::endl;
+    os << "Last Timestep Active: " << behav.time_last_active << std::endl;
     return os;
 }
 

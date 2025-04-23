@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-21                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -14,23 +14,56 @@
 #define PERSON_CONTAINERS_HPP_
 
 #include <ostream>
+#include <vector>
 
 namespace person {
 
+/// @brief A comma-separated list of the headers in the `population' table.
 inline static const std::string POPULATION_HEADERS =
-    "sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,HCV,"
-    "fibrosisState,isGenotypeThree,seropositive,timeHCVChanged,"
-    "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,linkageState,"
-    "timeOfLinkChange,linkageType,linkCount,measuredFibrosisState,"
-    "timeOfLastStaging,timeOfLastScreening,numABTests,numRNATests,"
-    "timesInfected,timesAcuteCleared,initiatedTreatment,"
-    "timeOfTreatmentInitiation,minUtility,multUtility,discountMinUtility,"
-    "discountMultUtility,treatmentWithdrawals,treatmentToxicReactions,"
-    "completedTreatments,svrs,behaviorUtility,liverUtility,treatmentUtility,"
-    "backgroundUtility,hivUtility,lifeSpan,discountedLifeSpan,"
-    "numberOfTreatmentStarts,numberOfRetreatments,numPregnancies,numInfants,"
-    "numMiscarriages,numInfantsExposedHCV,numInfantsHCVInfected,"
-    "numInfantsTested";
+    // basic characteristics
+    "sex,age,is_alive,boomer_classification,death_reason,"
+    // BehaviorDetails
+    "drug_behavior,time_last_active_drug_use,"
+    // HCVDetails
+    "hcv,fibrosis_state,is_genotype_three,seropositive,time_hcv_changed,time_"
+    "fibrosis_state_changed,times_hcv_infected,times_acute_cleared,svrs,"
+    // HIVDetails
+    "hiv,time_hiv_changed,low_cd4_months_count,"
+    // HCCDetails
+    "hcc_state,hcc_diagnosed,"
+    // overdose characteristics
+    "currently_overdosing,num_overdoses,"
+    // MOUDDetails
+    "moud_state,time_started_moud,current_moud_state_concurrent_months,total_"
+    "moud_months,"
+    // PregnancyDetails
+    "pregnancy_state,time_of_pregnancy_change,pregnancy_count,num_infants,num_"
+    "miscarriages,num_infant_hcv_exposures,num_infant_hcv_infections,num_"
+    "infant_hcv_tests,"
+    // StagingDetails
+    "measured_fibrosis_state,had_second_test,time_of_last_staging,"
+    // LinkageDetails
+    "hcv_link_state,time_of_hcv_link_change,hcv_link_type,hcv_link_count,"
+    "hiv_link_state,time_of_hiv_link_change,hiv_link_type,hiv_link_count,"
+    // ScreeningDetails
+    "time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,hcv_"
+    "antibody_positive,hcv_identified,time_hcv_identified,"
+    "time_of_last_hiv_screening,num_hiv_ab_tests,num_hiv_rna_tests,hiv_"
+    "antibody_positive,hiv_identified,time_hiv_identified,"
+    // TreatmentDetails
+    "initiated_hcv_treatment,time_of_hcv_treatment_initiation,num_hcv_"
+    "treatment_starts,num_hcv_treatment_withdrawals,num_hcv_treatment_toxic_"
+    "reactions,num_completed_hcv_treatments,num_hcv_retreatments,in_hcv_"
+    "retreatment,initiated_hiv_treatment,time_of_hiv_treatment_initiation,num_"
+    "hiv_treatment_starts,num_hiv_treatment_withdrawals,num_hiv_treatment_"
+    "toxic_reactions,"
+    // Utility - NOTE: While LifetimeUtility values are listed here, they cannot
+    // be assigned when creating a new Person. They are effectively read-only.
+    "behavior_utility,liver_utility,treatment_utility,background_utility,hiv_"
+    "utility,"
+    "min_utility,mult_utility,discounted_min_utility,discounted_mult_utility,"
+    // Lifespan
+    "life_span,discounted_life_span";
 
 /// @brief Infection types tracked for all Persons
 enum class InfectionType {
@@ -244,15 +277,16 @@ PregnancyState &operator<<(PregnancyState &inst, const std::string &str);
 struct HCVDetails {
     // Active statuses
     HCV hcv = HCV::NONE;
-    FibrosisState fibrosisState = FibrosisState::NONE;
-    bool isGenotypeThree = false;
+    FibrosisState fibrosis_state = FibrosisState::NONE;
+    bool is_genotype_three = false;
     bool seropositive = false;
     // Time step of change tracking
-    int timeChanged = -1;
-    int timeFibrosisStateChanged = -1;
+    int time_changed = -1;
+    int time_fibrosis_state_changed = -1;
     // Counters
-    int timesInfected = 0;
-    int timesAcuteCleared = 0;
+    int times_infected = 0;
+    int times_acute_cleared = 0;
+    int svrs = 0;
 };
 std::ostream &operator<<(std::ostream &os, const HCVDetails &inst);
 
@@ -260,21 +294,22 @@ struct HIVDetails {
     // Active statuses
     HIV hiv = HIV::NONE;
     // Time step of change tracking
-    int timeChanged = -1;
+    int time_changed = -1;
     // Months with low T-/CD4 cell count
-    int lowCD4MonthsCount = 0;
+    int low_cd4_months_count = 0;
 };
 std::ostream &operator<<(std::ostream &os, const HIVDetails &inst);
 
 struct HCCDetails {
     HCCState hccState = HCCState::NONE;
+    bool hccDiagnosed = false;
 };
 std::ostream &operator<<(std::ostream &os, const HCCDetails &inst);
 
 /// @brief Attributes describing drug use behavior
 struct BehaviorDetails {
     Behavior behavior = Behavior::NEVER;
-    int timeLastActive = -1;
+    int time_last_active = -1;
 };
 std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav);
 
@@ -296,6 +331,12 @@ struct MOUDDetails {
 };
 std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 
+struct Child {
+    HCV hcv = HCV::NONE;
+    bool tested = false;
+};
+std::ostream &operator<<(std::ostream &os, Child const &inst);
+
 /// @brief Attributes describing pregnancy
 struct PregnancyDetails {
     PregnancyState pregnancyState = PregnancyState::NA;
@@ -306,14 +347,9 @@ struct PregnancyDetails {
     int numHCVExposures = 0;
     int numHCVInfections = 0;
     int numHCVTests = 0;
+    std::vector<Child> children = {};
 };
 std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
-
-struct Child {
-    HCV hcv = HCV::NONE;
-    bool tested = false;
-};
-std::ostream &operator<<(std::ostream &os, Child const &inst);
 
 /// @brief Person attributes describing clinically assessed liver stage
 struct StagingDetails {
@@ -338,13 +374,13 @@ std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 /// @brief Attributes describing treatment state
 struct TreatmentDetails {
     bool initiatedTreatment = false;
-    int timeOfTreatmentInitiation = 0;
-    bool retreatment = false;
+    int timeOfTreatmentInitiation = -1;
     int numberOfTreatmentStarts = 0;
     int treatmentWithdrawals = 0;
     int treatmentToxicReactions = 0;
     int completedTreatments = 0;
     int retreatments = 0;
+    bool retreatment = false;
 };
 std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 

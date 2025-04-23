@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -308,11 +308,11 @@ TEST_F(PersonTest, LinkType) {
 }
 
 TEST_F(PersonTest, TimeOfTreatmentInitiation) {
-    EXPECT_EQ(0, testPerson->GetTimeOfTreatmentInitiation());
+    EXPECT_EQ(-1, testPerson->GetTimeOfTreatmentInitiation());
     testPerson->Grow();
     testPerson->Grow();
     testPerson->Grow();
-    EXPECT_EQ(0, testPerson->GetTimeOfTreatmentInitiation());
+    EXPECT_EQ(-1, testPerson->GetTimeOfTreatmentInitiation());
     testPerson->InitiateTreatment();
     EXPECT_EQ(3, testPerson->GetTimeOfTreatmentInitiation());
 }
