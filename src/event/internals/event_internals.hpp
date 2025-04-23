@@ -24,18 +24,22 @@ namespace event {
 class EventBase : public virtual Event {
 public:
     void SetDiscount(double d) { discount = d; }
+
     void SetCost(double cost) { cu.cost = cost; }
+    void SetCostCategory(model::CostCategory cc) { eventCostCategory = cc; }
+
     void SetUtil(double util) { cu.util = util; }
     void SetUtilityCategory(model::UtilityCategory uc) {
         eventUtilityCategory = uc;
     }
-    void SetCostCategory(model::CostCategory cc) { eventCostCategory = cc; }
 
     double GetDiscount() { return discount; }
+
     double GetCost() { return cu.cost; }
+    model::CostCategory GetCostCategory() { return eventCostCategory; }
+
     double GetUtil() { return cu.util; }
     model::UtilityCategory GetUtilityCategory() { return eventUtilityCategory; }
-    model::CostCategory GetCostCategory() { return eventCostCategory; }
 
     void AddEventCost(model::Person &person, bool annual = false) {
         double discounted_cost = utils::Discount(

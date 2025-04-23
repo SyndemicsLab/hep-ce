@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -197,6 +197,7 @@ public:
     int AddChild(data::HCV hcv, bool test) override;
     int EndPostpartum() override;
     int Impregnate() override;
+    void ExposeInfant() override;
     data::PregnancyDetails GetPregnancyDetails() const override;
     void SetPregnancyState(data::PregnancyState state) override;
     void SetNumMiscarriages(int miscarriages) override;
