@@ -4,7 +4,7 @@
 // Created: 2025-04-16                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-21                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -30,12 +30,14 @@ protected:
     person::InfectionType INF_TYPE = person::InfectionType::HCV;
 
     // user-provided values
+    bool allow_retreatment = true;
     double discount = 0.0;
     double lost_to_follow_up_probability;
-    // costs of visit for treatment and retreatment, respectively
+    // costs of visit for treatment
     double treatment_cost;
-    double treatment_utility;
+    // cost in the case of a toxicity event during treatment
     double toxicity_cost;
+    // utility in the case of a toxicity event during treatment
     double toxicity_utility;
     double treatment_init_probability;
     // including all ineligibility variables because it's unclear if any would
@@ -46,14 +48,6 @@ protected:
     std::vector<std::string> ineligible_pregnancy = {};
     int ineligible_time_since_linked = -2;
     int ineligible_time_since_last_use = -2;
-
-    using treatmentmap_t =
-        std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
-                           Utils::key_equal_3i>;
-    treatmentmap_t duration_data;
-    treatmentmap_t cost_data;
-    treatmentmap_t toxicity_data;
-    treatmentmap_t withdrawal_data;
 
     /// @brief
     /// @param
@@ -69,6 +63,9 @@ protected:
     bool isEligiblePregnancy(person::PregnancyState pregnancy_state) const;
     /// @brief
     /// @param
+    void ResetUtility(std::shared_ptr<person::PersonBase> person);
+    /// @brief
+    /// @param
     void QuitEngagement(std::shared_ptr<person::PersonBase> person);
     /// @brief
     /// @param
@@ -78,20 +75,16 @@ protected:
     /// @brief
     /// @param
     void ChargeCost(std::shared_ptr<person::PersonBase> person, double cost);
-
     /// @brief
     /// @param
     /// @return
     std::vector<std::string>
     LoadEligibilityVectors(std::string config_key,
                            std::shared_ptr<datamanagement::DataManagerBase> dm);
-
     /// @brief
     /// @param
     /// @return
-    int GetTreatmentDuration(
-        std::shared_ptr<person::PersonBase> person,
-        int (*key_function)(std::shared_ptr<person::PersonBase>, void *));
+    bool IsEligible(std::shared_ptr<person::PersonBase> person) const;
 
 public:
     TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm);

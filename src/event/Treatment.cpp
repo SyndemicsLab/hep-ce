@@ -4,7 +4,7 @@
 // Created: 2025-04-16                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-21                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -49,11 +49,17 @@ bool TreatmentIMPL::isEligiblePregnancy(
     return true;
 }
 
-void TreatmentIMPL::QuitEngagement(std::shared_ptr<person::PersonBase> person) {
-    person->EndTreatment();
-    person->Unlink();
-    // reset utility
+void TreatmentIMPL::ResetUtility(std::shared_ptr<person::PersonBase> person) {
+    // used for HCV
     person->SetUtility(1.0, this->UTIL_CATEGORY);
+}
+
+void TreatmentIMPL::QuitEngagement(std::shared_ptr<person::PersonBase> person) {
+    person->EndTreatment(this->INF_TYPE);
+    person->Unlink(this->INF_TYPE);
+    // reset utility - moved to its own function to allow HIV to be handled
+    // differently
+    this->ResetUtility(person);
 }
 
 bool TreatmentIMPL::LostToFollowUp(
@@ -88,17 +94,30 @@ std::vector<std::string> TreatmentIMPL::LoadEligibilityVectors(
     return Utils::split2vecT<std::string>(data, ',');
 }
 
-int TreatmentIMPL::GetTreatmentDuration(
-    std::shared_ptr<person::PersonBase> person,
-    int (*key_function)(std::shared_ptr<person::PersonBase>, void *)) {
-    if (this->duration_data.empty()) {
-        spdlog::get("main")->warn("No Treatment Duration Found!");
-        return -1;
+bool TreatmentIMPL::IsEligible(
+    std::shared_ptr<person::PersonBase> person) const {
+    // If currently on a treatment, a new eligibility check should
+    // verify retreatment is allowed
+    bool check_retreatment = person->HasInitiatedTreatment();
+    if (!this->allow_retreatment && check_retreatment) {
+        return false;
     }
-    Utils::tuple_3i storage;
-    key_function(person, &storage);
-    double duration = this->duration_data[storage];
-    return static_cast<int>(duration);
+    person::FibrosisState fibrosisState = person->GetTrueFibrosisState();
+    person::Behavior behavior = person->GetBehavior();
+    int timeSinceLastUse = person->GetTimeBehaviorChange();
+    int timeSinceLinked = person->GetTimeSinceLinkChange();
+    person::PregnancyState pregnancyState = person->GetPregnancyState();
+    // if a person is an eligible fibrosis state, behavior, linked time,
+    // and hasn't used
+    if (isEligibleFibrosisStage(fibrosisState) &&
+        isEligibleBehavior(behavior) &&
+        (pregnancyState == person::PregnancyState::NA ||
+         isEligiblePregnancy(pregnancyState)) &&
+        (timeSinceLastUse > ineligible_time_since_last_use) &&
+        (timeSinceLinked > ineligible_time_since_linked)) {
+        return true;
+    }
+    return false;
 }
 
 TreatmentIMPL::TreatmentIMPL(

@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-21                                                  //
+// Last Modified: 2025-04-23                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -17,26 +17,25 @@
 namespace event {
 class HCVTreatmentIMPL : public TreatmentIMPL {
 private:
+    // maps to hold treatment data
+    using treatmentmap_t =
+        std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
+                           Utils::key_equal_3i>;
+    treatmentmap_t duration_data;
+    treatmentmap_t cost_data;
+    treatmentmap_t toxicity_data;
+    treatmentmap_t withdrawal_data;
+
     // user-provided values
     double retreatment_cost;
-    bool allow_retreatment = true;
     treatmentmap_t svr_data;
+    double treatment_utility;
 
     static int callback_treament(void *storage, int count, char **data,
                                  char **columns) {
         Utils::tuple_3i key = std::make_tuple(
             std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
         (*((treatmentmap_t *)storage))[key] = Utils::stod_positive(data[3]);
-        return 0;
-    }
-
-    static int GetDataKey(std::shared_ptr<person::PersonBase> person,
-                          void *storage) {
-        int geno3 = (person->IsGenotypeThree()) ? 1 : 0;
-        int cirr = (person->IsCirrhotic()) ? 1 : 0;
-        int retreatment = (int)person->IsInRetreatment();
-        (*((Utils::tuple_3i *)storage)) =
-            std::make_tuple(geno3, cirr, retreatment);
         return 0;
     }
 
@@ -51,31 +50,6 @@ private:
         int cirr = (person->IsCirrhotic()) ? 1 : 0;
         int retreatment = (int)person->IsInRetreatment();
         return std::make_tuple(retreatment, geno3, cirr);
-    }
-
-    bool isEligible(std::shared_ptr<person::PersonBase> person) const {
-        // If currently on a treatment, a new eligibility check should
-        // verify retreatment is allowed
-        bool check_retreatment = person->HasInitiatedTreatment();
-        if (!allow_retreatment && check_retreatment) {
-            return false;
-        }
-        person::FibrosisState fibrosisState = person->GetTrueFibrosisState();
-        person::Behavior behavior = person->GetBehavior();
-        int timeSinceLastUse = person->GetTimeBehaviorChange();
-        int timeSinceLinked = person->GetTimeSinceLinkChange();
-        person::PregnancyState pregnancyState = person->GetPregnancyState();
-        // if a person is an eligible fibrosis state, behavior, linked time,
-        // and hasn't used
-        if (isEligibleFibrosisStage(fibrosisState) &&
-            isEligibleBehavior(behavior) &&
-            (pregnancyState == person::PregnancyState::NA ||
-             isEligiblePregnancy(pregnancyState)) &&
-            (timeSinceLastUse > ineligible_time_since_last_use) &&
-            (timeSinceLinked > ineligible_time_since_linked)) {
-            return true;
-        }
-        return false;
     }
 
     void ChargeCostOfCourse(std::shared_ptr<person::PersonBase> person) {
@@ -105,10 +79,9 @@ private:
         return false;
     }
 
-    void CheckIfExperienceToxicity(
-        std::shared_ptr<person::PersonBase> person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm,
-        std::shared_ptr<stats::DeciderBase> decider) {
+    void
+    CheckIfExperienceToxicity(std::shared_ptr<person::PersonBase> person,
+                              std::shared_ptr<stats::DeciderBase> decider) {
         if (toxicity_data.empty()) {
             spdlog::get("main")->warn("No Toxicity Data Found.");
             return;
@@ -120,14 +93,13 @@ private:
         }
         person->AddToxicReaction();
         ChargeCost(person, this->toxicity_cost);
-        person->SetUtility(toxicity_utility, this->UTIL_CATEGORY);
+        person->SetUtility(this->toxicity_utility, this->UTIL_CATEGORY);
     }
 
     bool InitiateTreatment(std::shared_ptr<person::PersonBase> person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                            std::shared_ptr<stats::DeciderBase> decider) {
         // Do not start treatment until eligible
-        if (!isEligible(person)) {
+        if (!IsEligible(person)) {
             return false;
         }
         // person initiates treatment -- set treatment initiation values
@@ -230,11 +202,19 @@ private:
             "eligibility.ineligible_fibrosis_stages", dm);
         this->ineligible_pregnancy = LoadEligibilityVectors(
             "eligibility.ineligible_pregnancy_states", dm);
-
         this->ineligible_time_since_linked = Utils::GetIntFromConfig(
             "eligibility.ineligible_time_since_linked", dm, true);
         this->ineligible_time_since_last_use = Utils::GetIntFromConfig(
             "eligibility.ineligible_time_former_threshold", dm, true);
+    }
+
+    int GetTreatmentDuration(std::shared_ptr<person::PersonBase> person) {
+        if (this->duration_data.empty()) {
+            spdlog::get("main")->warn("No Treatment Duration Found!");
+            return -1;
+        }
+        double duration = this->duration_data[GetTreatmentThruple(person)];
+        return static_cast<int>(duration);
     }
 
 public:
@@ -261,7 +241,7 @@ public:
         // 3. Attempt to start primary treatment, if already on treatment
         // nothing happens
         if (!person->HasInitiatedTreatment()) {
-            if (!InitiateTreatment(person, dm, decider)) {
+            if (!InitiateTreatment(person, decider)) {
                 return;
             }
         }
@@ -270,16 +250,16 @@ public:
         ChargeCostOfCourse(person);
 
         // 5. Check if the person experiences toxicity
-        CheckIfExperienceToxicity(person, dm, decider);
+        CheckIfExperienceToxicity(person, decider);
 
         // 6. Determine if the person withdraws from the treatment
         if (Withdraws(person, dm, decider)) {
             return;
         }
 
-        // 7. Determine if the person has been treated long enough, if they
-        // achieve SVR
-        int duration = GetTreatmentDuration(person, this->GetDataKey);
+        // 7. Determine if the person has been treated long enough and, if so,
+        // if they achieve SVR
+        int duration = GetTreatmentDuration(person);
         if (person->GetTimeSinceTreatmentInitiation() == duration) {
             person->AddCompletedTreatment();
             int decision = DecideIfPersonAchievesSVR(person, decider);
@@ -306,10 +286,10 @@ public:
             Utils::GetDoubleFromConfig("treatment.ltfu_probability", dm);
         this->treatment_cost =
             Utils::GetDoubleFromConfig("treatment.treatment_cost", dm);
-        this->retreatment_cost =
-            Utils::GetDoubleFromConfig("treatment.retreatment_cost", dm);
         this->treatment_utility =
             Utils::GetDoubleFromConfig("treatment.treatment_utility", dm);
+        this->retreatment_cost =
+            Utils::GetDoubleFromConfig("treatment.retreatment_cost", dm);
         this->treatment_init_probability =
             Utils::GetDoubleFromConfig("treatment.treatment_initiation", dm);
         this->toxicity_cost =
