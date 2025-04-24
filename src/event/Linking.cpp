@@ -4,8 +4,8 @@
 // Created: 2025-04-02                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-24                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ LinkingIMPL::GetLinkProbability(std::shared_ptr<person::PersonBase> person,
     int age_years = (int)(person->GetAge() / 12.0);
     int gender = (int)person->GetSex();
     int drug_behavior = (int)person->GetBehavior();
-    int pregnancy = (int)person->GetPregnancyState();
+    int pregnancy = (pregnancy_strata) ? (int)person->GetPregnancyState() : -1;
     const person::LinkageType &type = person->GetLinkageType(it);
     Utils::tuple_4i tup =
         std::make_tuple(age_years, gender, drug_behavior, pregnancy);
