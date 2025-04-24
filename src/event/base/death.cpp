@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -28,8 +28,8 @@ int DeathImpl::LoadBackgroundMortality(
     std::shared_ptr<datamanagement::DataManagerBase> dm) {
     std::string query = BackgroundMortalitySQL();
     std::string error;
-    int rc = dm->SelectCustomCallback(query, callback_background,
-                                      &background_data, error);
+    int rc = dm->SelectCustomCallback(query, CallbackBackground,
+                                      &_background_data, error);
     if (rc != 0) {
         spdlog::get("main")->error(
             "Error extracting Death Data from background_mortality and "
@@ -37,7 +37,7 @@ int DeathImpl::LoadBackgroundMortality(
             error);
         spdlog::get("main")->info("Query: {}", query);
     }
-    if (background_data.empty()) {
+    if (_background_data.empty()) {
         spdlog::get("main")->warn(
             "Setting background death probability to zero. No Data "
             "Found for background_mortality and "
@@ -68,8 +68,8 @@ int DeathImpl::LoadOverdoseData(
         return rc;
     }
     std::string error;
-    rc = dm->SelectCustomCallback(OverdoseSQL(), this->callback_overdose,
-                                  &overdose_data, error);
+    rc = dm->SelectCustomCallback(OverdoseSQL(), CallbackOverdose,
+                                  &_overdose_data, error);
     if (rc != 0) {
         spdlog::get("main")->error("Error extracting Fatal Overdose "
                                    "Probability! Error Message: {}",
@@ -85,16 +85,16 @@ bool DeathImpl::FatalOverdose(
         return false;
     }
 
-    if (overdose_data.empty()) {
+    if (_overdose_data.empty()) {
         spdlog::get("main")->warn("No Fatal Overdose Probability Found!");
         person.ToggleOverdose();
         return false;
     }
 
-    int moud = (int)person.GetMoudState();
-    int drug_behavior = (int)person.GetBehavior();
+    int moud = static_cast<int>(person.GetMoudState());
+    int drug_behavior = static_cast<int>(person.GetBehavior());
     utils::tuple_2i tup = std::make_tuple(moud, drug_behavior);
-    double probability = overdose_data[tup];
+    double probability = _overdose_data[tup];
 
     if (decider.GetDecision({probability, 1 - probability}) != 0) {
         person.ToggleOverdose();
@@ -110,16 +110,16 @@ void DeathImpl::GetFibrosisMortalityProb(
 
     if (person.GetTrueFibrosisState() == data::FibrosisState::F4) {
         if (person.GetHCV() == data::HCV::NONE) {
-            prob = f4_uninfected_probability;
+            prob = _f4_uninfected_probability;
         } else {
-            prob = f4_infected_probability;
+            prob = _f4_infected_probability;
         }
 
     } else if (person.GetTrueFibrosisState() == data::FibrosisState::DECOMP) {
         if (person.GetHCV() == data::HCV::NONE) {
-            prob = decomp_uninfected_probability;
+            prob = _decomp_uninfected_probability;
         } else {
-            prob = decomp_infected_probability;
+            prob = _decomp_infected_probability;
         }
     } else {
         prob = 0;
@@ -130,7 +130,7 @@ void DeathImpl::GetSMRandBackgroundProb(
     model::Person &person, std::shared_ptr<datamanagement::DataManagerBase> dm,
     double &backgroundMortProb, double &smr) {
 
-    if (background_data.empty()) {
+    if (_background_data.empty()) {
         spdlog::get("main")->warn(
             "Setting background death probability to zero. No Data "
             "Found for background_mortality and "
@@ -140,12 +140,12 @@ void DeathImpl::GetSMRandBackgroundProb(
         return;
     }
     // age, gender, drug
-    int age_years = (int)(person.GetAge() / 12.0);
-    int gender = (int)person.GetSex();
-    int drug_behavior = (int)person.GetBehavior();
+    int age_years = static_cast<int>(person.GetAge() / 12.0);
+    int gender = static_cast<int>(person.GetSex());
+    int drug_behavior = static_cast<int>(person.GetBehavior());
     utils::tuple_3i tup = std::make_tuple(age_years, gender, drug_behavior);
-    backgroundMortProb = background_data[tup].back_mort;
-    smr = background_data[tup].smr;
+    backgroundMortProb = _background_data[tup].back_mort;
+    smr = _background_data[tup].smr;
 }
 
 int DeathImpl::Execute(model::Person &person,

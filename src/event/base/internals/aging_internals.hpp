@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -26,11 +26,14 @@ namespace event {
 namespace base {
 class AgingImpl : public virtual Aging, public EventBase {
 public:
+    using agemap_t =
+        std::unordered_map<utils::tuple_3i, data::CostUtil, utils::key_hash_3i,
+                           utils::key_equal_3i>;
     AgingImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
               const std::string &log_name = "console") {
         SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
         SetCostCategory(model::CostCategory::kBackground);
-        data.clear();
+        _age_data.clear();
         LoadData(dm);
     }
     ~AgingImpl() = default;
@@ -40,10 +43,7 @@ public:
                 model::Sampler &sampler) override;
 
 private:
-    using agemap_t =
-        std::unordered_map<utils::tuple_3i, data::CostUtil, utils::key_hash_3i,
-                           utils::key_equal_3i>;
-    agemap_t data;
+    agemap_t _age_data;
 
     static int Callback(void *storage, int count, char **data, char **columns) {
         utils::tuple_3i tup = std::make_tuple(

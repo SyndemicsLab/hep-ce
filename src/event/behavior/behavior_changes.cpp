@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -39,15 +39,14 @@ int BehaviorChangesImpl::Execute(
     int moud = static_cast<int>(person.GetMoudState());
     int behavior = static_cast<int>(person.GetBehavior());
     utils::tuple_4i tup = std::make_tuple(age_years, gender, moud, behavior);
-    std::vector<double> probs = {behavior_data[tup].never,
-                                 behavior_data[tup].fni, behavior_data[tup].fi,
-                                 behavior_data[tup].ni, behavior_data[tup].in};
+    std::vector<double> probs = {
+        _behavior_data[tup].never, _behavior_data[tup].fni,
+        _behavior_data[tup].fi, _behavior_data[tup].ni, _behavior_data[tup].in};
 
     // 2. Draw a behavior state to be transitioned to
     int res = sampler.GetDecision(probs);
     if (res >= static_cast<int>(data::Behavior::COUNT)) {
-        // spdlog::get("main")->error("Behavior Classification Decision returned "
-        //                            "value outside bounds");
+        // Log Error
         return;
     }
 
@@ -62,18 +61,13 @@ int BehaviorChangesImpl::Execute(
 int BehaviorChangesImpl::LoadCostData(
     std::shared_ptr<datamanagement::DataManagerBase> dm) {
     std::string error;
-    int rc = dm->SelectCustomCallback(CostSQL(), this->callback_costs,
-                                      &cost_data, error);
+    int rc =
+        dm->SelectCustomCallback(CostSQL(), CallbackCosts, &_cost_data, error);
     if (rc != 0) {
-        // spdlog::get("main")->error(
-        //     "Error extracting Behavior Change Data from background "
-        //     "costs and "
-        //     "background behaviors! Error Message: {}",
-        //     error);
+        // Log Error
     }
-    if (cost_data.empty()) {
-        // spdlog::get("main")->warn(
-        //     "No Background Cost found for Behavior Changes!");
+    if (_cost_data.empty()) {
+        // Warn Empty
     }
     return rc;
 }
@@ -81,16 +75,13 @@ int BehaviorChangesImpl::LoadCostData(
 int BehaviorChangesImpl::LoadBehaviorData(
     std::shared_ptr<datamanagement::DataManagerBase> dm) {
     std::string error;
-    int rc = dm->SelectCustomCallback(TransitionSQL(), this->callback_trans,
-                                      &behavior_data, error);
+    int rc = dm->SelectCustomCallback(TransitionSQL(), CallbackTransitions,
+                                      &_behavior_data, error);
     if (rc != 0) {
-        // spdlog::get("main")->error("Error extracting Behavior Change "
-        //                            "Transition Data! Error Message: {}",
-        //                            error);
+        // Log Error
     }
-    if (behavior_data.empty()) {
-        // spdlog::get("main")->warn(
-        //     "No Transition Data found for Behavior Changes!");
+    if (_behavior_data.empty()) {
+        // Warn Empty
     }
     return rc;
 }
@@ -100,10 +91,10 @@ void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {
     int behavior = static_cast<int>(person.GetBehavior());
     utils::tuple_2i tup = std::make_tuple(gender, behavior);
 
-    SetCost(cost_data[tup].cost);
+    SetCost(_cost_data[tup].cost);
     AddEventCost(person);
 
-    SetUtil(cost_data[tup].util);
+    SetUtil(_cost_data[tup].util);
     AddUtility(person);
 }
 

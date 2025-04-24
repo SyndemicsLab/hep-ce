@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -24,39 +24,31 @@ namespace hepce {
 namespace event {
 class LinkingBase : public EventBase {
 public:
-    virtual ~LinkingBase() = default;
-
     // typing
     // First is background, second is intervention
     using linkmap_t =
         std::unordered_map<utils::tuple_4i, std::pair<double, double>,
                            utils::key_hash_4i, utils::key_equal_4i>;
 
-    void SetLinkageType(const data::LinkageType &type) {
-        this->linkage_type = type;
-    }
-    void SetLinkingStratifiedByPregnancy(bool stratify) {
-        this->stratify_by_pregnancy = stratify;
-    }
-    void SetInterventionCost(double cost) { this->intervention_cost = cost; }
-    void SetFalsePositiveCost(double cost) { this->false_positive_cost = cost; }
+    virtual ~LinkingBase() = default;
 
-    data::LinkageType GetLinkageType() const { return linkage_type; }
-    bool GetLinkingStratifiedByPregnancy() const {
-        return stratify_by_pregnancy;
+    void SetLinkageType(const data::LinkageType &type) { _linkage_type = type; }
+    void SetLinkingStratifiedByPregnancy(bool stratify) {
+        _stratify_by_pregnancy = stratify;
     }
-    double GetInterventionCost() const { return intervention_cost; }
-    double GetFalsePositiveCost() const { return false_positive_cost; }
+    void SetInterventionCost(double cost) { _intervention_cost = cost; }
+    void SetFalsePositiveCost(double cost) { _false_positive_cost = cost; }
+
+    data::LinkageType GetLinkageType() const { return _linkage_type; }
+    bool GetLinkingStratifiedByPregnancy() const {
+        return _stratify_by_pregnancy;
+    }
+    double GetInterventionCost() const { return _intervention_cost; }
+    double GetFalsePositiveCost() const { return _false_positive_cost; }
 
 protected:
-    linkmap_t link_data;
-
-    virtual bool FalsePositive(model::Person &person) = 0;
-    virtual void
-    LoadLinkingData(std::shared_ptr<datamanagement::DataManagerBase> dm) = 0;
-
-    static int callback_link(void *storage, int count, char **data,
-                             char **columns) {
+    static int CallbackLink(void *storage, int count, char **data,
+                            char **columns) {
         utils::tuple_4i tup =
             std::make_tuple(std::stoi(data[0]), std::stoi(data[1]),
                             std::stoi(data[2]), std::stoi(data[3]));
@@ -65,8 +57,16 @@ protected:
         return 0;
     }
 
+    void SetLinkData(const linkmap_t &link_data) { _link_data = link_data; }
+
+    linkmap_t GetLinkData() const { return _link_data; }
+
+    virtual bool FalsePositive(model::Person &person) = 0;
+    virtual void
+    LoadLinkingData(std::shared_ptr<datamanagement::DataManagerBase> dm) = 0;
+
     // FYI This is just a straight up SQL Injection Vulnerability Waiting to Happen
-    const std::string LinkSQL(const std::string &table) const {
+    inline const std::string LinkSQL(const std::string &table) const {
         std::stringstream ss;
         ss << "SELECT age_years, gender, drug_behavior, "
            << ((GetLinkingStratifiedByPregnancy()) ? "pregnancy, " : "-1, ")
@@ -83,9 +83,9 @@ protected:
         utils::tuple_4i tup =
             std::make_tuple(age_years, gender, drug_behavior, pregnancy);
         if (GetLinkageType() == data::LinkageType::BACKGROUND) {
-            return this->link_data[tup].first;
+            return _link_data[tup].first;
         } else if (GetLinkageType() == data::LinkageType::INTERVENTION) {
-            return this->link_data[tup].second;
+            return _link_data[tup].second;
         }
         return 0.0;
     }
@@ -110,10 +110,11 @@ protected:
 
 private:
     // properties
-    data::LinkageType linkage_type = data::LinkageType::BACKGROUND;
-    bool stratify_by_pregnancy = false;
-    double intervention_cost = 0.0;
-    double false_positive_cost = 0.0;
+    data::LinkageType _linkage_type = data::LinkageType::BACKGROUND;
+    linkmap_t _link_data;
+    bool _stratify_by_pregnancy = false;
+    double _intervention_cost = 0.0;
+    double _false_positive_cost = 0.0;
 };
 } // namespace event
 } // namespace hepce

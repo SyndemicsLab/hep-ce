@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -28,7 +28,7 @@ PregnancyImpl::PregnancyImpl(
         //     "No Multiple Delivery Probability Found! Assuming 0.");
         storage = "0";
     }
-    multiple_delivery_probability = utils::SToDPositive(storage);
+    _multiple_delivery_probability = utils::SToDPositive(storage);
 
     storage.clear();
     dm->GetFromConfig("pregnancy.infant_hcv_tested_probability", storage);
@@ -37,7 +37,7 @@ PregnancyImpl::PregnancyImpl(
         //     "No Infant HCV Testing Probability Found! Assuming 0.");
         storage = "0";
     }
-    infant_hcv_tested_probability = utils::SToDPositive(storage);
+    _infant_hcv_tested_probability = utils::SToDPositive(storage);
 
     storage.clear();
     dm->GetFromConfig("pregnancy.vertical_hcv_transition_probability", storage);
@@ -46,7 +46,7 @@ PregnancyImpl::PregnancyImpl(
         //                           "Probability Found! Assuming 0.");
         storage = "0";
     }
-    vertical_hcv_transition_probability = utils::SToDPositive(storage);
+    _vertical_hcv_transition_probability = utils::SToDPositive(storage);
 
     LoadPregnancyData(dm);
 }
@@ -73,12 +73,37 @@ int PregnancyImpl::Execute(model::Person &person,
         }
     } else {
         double prob =
-            pregnancy_data[static_cast<int>(person.GetAge() / 12.0)].pregnant;
+            _pregnancy_data[static_cast<int>(person.GetAge() / 12.0)].pregnant;
         if (sampler.GetDecision({1 - prob, prob})) {
             person.Impregnate();
         }
     }
     return 0;
+}
+
+void PregnancyImpl::AttemptHaveChild(model::Person &person,
+                                     model::Sampler &sampler) {
+    if (CheckMiscarriage(person, sampler)) {
+        person.Stillbirth();
+        return;
+    }
+
+    int numberOfBirths = GetNumberOfBirths(person, sampler);
+
+    if (person.GetHCV() != data::HCV::CHRONIC) {
+        for (int child = 0; child < numberOfBirths; ++child) {
+            person.AddChild(data::HCV::NONE, false);
+        }
+        return;
+    }
+
+    bool tested = DoChildrenGetTested(sampler);
+    for (int child = 0; child < numberOfBirths; ++child) {
+        person.ExposeInfant();
+        data::HCV hcv = (DrawChildInfection(sampler)) ? data::HCV::CHRONIC
+                                                      : data::HCV::NONE;
+        person.AddChild(hcv, tested);
+    }
 }
 
 std::unique_ptr<hepce::event::Event>

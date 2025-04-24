@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -31,14 +31,14 @@ int AgingImpl::Execute(model::Person &person,
 int AgingImpl::LoadData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
     std::string query = BuildSQL();
     std::string error;
-    int rc = dm->SelectCustomCallback(query, Callback, &data, error);
+    int rc = dm->SelectCustomCallback(query, Callback, &_age_data, error);
     if (rc != 0) {
         spdlog::get("main")->error(
             "Error extracting Aging Data from background costs and "
             "background behaviors! Error Message: {}",
             error);
     }
-    if (data.empty()) {
+    if (_age_data.empty()) {
         spdlog::get("main")->warn("No Background Cost found for Aging!");
     }
     return rc;
@@ -52,10 +52,10 @@ void AgingImpl::AddBackgroundCostAndUtility(
     int behavior = ((int)person.GetBehavior());
     utils::tuple_3i tup = std::make_tuple(age_years, gender, behavior);
 
-    SetCost(data[tup].cost);
+    SetCost(_age_data[tup].cost);
     AddEventCost(person);
 
-    person.SetUtility(data[tup].util, GetUtilityCategory());
+    person.SetUtility(_age_data[tup].util, GetUtilityCategory());
     std::pair<double, double> utilities = person.GetUtility();
     std::pair<double, double> discount_utilities = {
         utils::Discount(utilities.first, GetDiscount(),

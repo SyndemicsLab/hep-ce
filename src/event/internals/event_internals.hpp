@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -23,26 +23,26 @@ namespace hepce {
 namespace event {
 class EventBase : public virtual Event {
 public:
-    void SetDiscount(const double &d) { discount = d; }
+    void SetDiscount(const double &d) { _discount = d; }
 
-    void SetCost(const double &cost) { cu.cost = cost; }
+    void SetCost(const double &cost) { _cu.cost = cost; }
     void SetCostCategory(const model::CostCategory &cc) {
-        eventCostCategory = cc;
+        _event_cost_category = cc;
     }
 
-    void SetUtil(const double &util) { cu.util = util; }
+    void SetUtil(const double &util) { _cu.util = util; }
     void SetUtilityCategory(const model::UtilityCategory &uc) {
-        eventUtilityCategory = uc;
+        _event_utility_category = uc;
     }
 
-    double GetDiscount() const { return discount; }
+    double GetDiscount() const { return _discount; }
 
-    double GetCost() const { return cu.cost; }
-    model::CostCategory GetCostCategory() const { return eventCostCategory; }
+    double GetCost() const { return _cu.cost; }
+    model::CostCategory GetCostCategory() const { return _event_cost_category; }
 
-    double GetUtil() const { return cu.util; }
+    double GetUtil() const { return _cu.util; }
     model::UtilityCategory GetUtilityCategory() const {
-        return eventUtilityCategory;
+        return _event_utility_category;
     }
 
     void AddEventCost(model::Person &person, bool annual = false) const {
@@ -56,11 +56,11 @@ public:
     }
 
 private:
-    double discount = 0.0;
-    model::UtilityCategory eventUtilityCategory =
+    double _discount = 0.0;
+    model::UtilityCategory _event_utility_category =
         model::UtilityCategory::kBackground;
-    model::CostCategory eventCostCategory = model::CostCategory::kBackground;
-    data::CostUtil cu;
+    model::CostCategory _event_cost_category = model::CostCategory::kBackground;
+    data::CostUtil _cu;
 };
 } // namespace event
 } // namespace hepce

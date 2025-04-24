@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -20,23 +20,23 @@ namespace event {
 namespace fibrosis {
 StagingImpl::StagingImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
                          const std::string &log_name)
-    : test_one(utils::GetStringFromConfig("fibrosis_staging.test_one", dm)),
-      test_two(utils::GetStringFromConfig("fibrosis_staging.test_two", dm)) {
+    : _test_one(utils::GetStringFromConfig("fibrosis_staging.test_one", dm)),
+      _test_two(utils::GetStringFromConfig("fibrosis_staging.test_two", dm)) {
 
     SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
     SetCostCategory(model::CostCategory::kStaging);
     LoadStagingData(dm);
 
-    staging_period = utils::GetIntFromConfig("fibrosis_staging.period", dm);
-    test_one_cost =
+    _staging_period = utils::GetIntFromConfig("fibrosis_staging.period", dm);
+    _test_one_cost =
         utils::GetDoubleFromConfig("fibrosis_staging.test_one_cost", dm);
-    test_two_cost =
+    _test_two_cost =
         utils::GetDoubleFromConfig("fibrosis_staging.test_two_cost", dm);
-    testtwo_eligible_fibs = utils::SplitToVecT<data::FibrosisState>(
+    _testtwo_eligible_fibs = utils::SplitToVecT<data::FibrosisState>(
         utils::GetStringFromConfig("fibrosis_staging.test_two_eligible_stages",
                                    dm),
         ',');
-    this->multitest_result_method = utils::GetStringFromConfig(
+    _multitest_result_method = utils::GetStringFromConfig(
         "fibrosis_staging.multitest_result_method", dm);
 }
 
@@ -51,7 +51,7 @@ int StagingImpl::Execute(model::Person &person,
     // 1. Check the time since the person's last fibrosis staging test.
     // If the person's last test is more recent than the limit, exit
     // event. If they've never been staged they have a -1
-    if (person.GetTimeSinceFibrosisStaging() < staging_period &&
+    if (person.GetTimeSinceFibrosisStaging() < _staging_period &&
         person.GetTimeOfFibrosisStaging() != -1) {
         return;
     }
@@ -61,7 +61,7 @@ int StagingImpl::Execute(model::Person &person,
     // state.
 
     // 3. Get the probability of each of the test_one fibrosis outcomes.
-    std::vector<double> probs = ProbabilityBuilder(person, test1_data);
+    std::vector<double> probs = ProbabilityBuilder(person, _test1_data);
 
     // 4. Decide which stage is assigned to the person
     int res = sampler.GetDecision(probs);
@@ -75,19 +75,19 @@ int StagingImpl::Execute(model::Person &person,
 
     // 5. Assign this value as the person's measured state.
     person.DiagnoseFibrosis(stateOne);
-    AddStagingCost(person, test_one_cost);
+    AddStagingCost(person, _test_one_cost);
 
     // 6. Get a vector of the probabilities of each of the possible
     // fibrosis outcomes (test two) provided there is a second test.
     // If No Second Test Specified or not an eligible fibrosis state,
     // End
-    if (test_two.empty() ||
-        std::find(testtwo_eligible_fibs.begin(), testtwo_eligible_fibs.end(),
+    if (_test_two.empty() ||
+        std::find(_testtwo_eligible_fibs.begin(), _testtwo_eligible_fibs.end(),
                   person.GetTrueFibrosisState()) ==
-            testtwo_eligible_fibs.end()) {
+            _testtwo_eligible_fibs.end()) {
         return;
     }
-    probs = ProbabilityBuilder(person, test2_data);
+    probs = ProbabilityBuilder(person, _test2_data);
 
     // 7. Decide which stage is assigned to the person.
     if (probs.empty()) {
@@ -101,9 +101,9 @@ int StagingImpl::Execute(model::Person &person,
 
     // determine whether to use latest test value or greatest
     data::MeasuredFibrosisState measured;
-    if (multitest_result_method == "latest") {
+    if (_multitest_result_method == "latest") {
         measured = stateTwo;
-    } else if (multitest_result_method == "maximum") {
+    } else if (_multitest_result_method == "maximum") {
         measured = std::max<data::MeasuredFibrosisState>(stateOne, stateTwo);
     } else {
         // log an error
@@ -111,7 +111,7 @@ int StagingImpl::Execute(model::Person &person,
     }
     // 8. Assign this state to the person.
     person.DiagnoseFibrosis(measured);
-    AddStagingCost(person, test_two_cost);
+    AddStagingCost(person, _test_two_cost);
 }
 
 const std::vector<double>
@@ -140,13 +140,13 @@ StagingImpl::ProbabilityBuilder(const model::Person &person,
 int StagingImpl::LoadStagingData(
     std::shared_ptr<datamanagement::DataManagerBase> dm) {
     std::string error;
-    int rc = dm->SelectCustomCallback(StagingSQL(test_one), Callback,
-                                      &test1_data, error);
+    int rc = dm->SelectCustomCallback(StagingSQL(_test_one), Callback,
+                                      &_test1_data, error);
     if (rc != 0) {
         // Logging error
     }
 
-    rc = dm->SelectCustomCallback(StagingSQL(test_two), Callback, &test2_data,
+    rc = dm->SelectCustomCallback(StagingSQL(_test_two), Callback, &_test2_data,
                                   error);
     return rc;
 }
