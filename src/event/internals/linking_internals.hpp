@@ -32,19 +32,51 @@ public:
 
     virtual ~LinkingBase() = default;
 
-    void SetLinkageType(const data::LinkageType &type) { _linkage_type = type; }
-    void SetLinkingStratifiedByPregnancy(bool stratify) {
-        _stratify_by_pregnancy = stratify;
-    }
-    void SetInterventionCost(double cost) { _intervention_cost = cost; }
-    void SetFalsePositiveCost(double cost) { _false_positive_cost = cost; }
-
     data::LinkageType GetLinkageType() const { return _linkage_type; }
     bool GetLinkingStratifiedByPregnancy() const {
         return _stratify_by_pregnancy;
     }
     double GetInterventionCost() const { return _intervention_cost; }
     double GetFalsePositiveCost() const { return _false_positive_cost; }
+
+    virtual data::InfectionType GetInfectionType() const = 0;
+
+    int Execute(model::Person &person,
+                std::shared_ptr<datamanagement::DataManagerBase> dm,
+                model::Sampler &sampler) override {
+        SetLinkageType(person.GetLinkageType(GetInfectionType()));
+        bool is_linked = (person.GetLinkState(GetInfectionType()) ==
+                          data::LinkageState::LINKED);
+        bool is_not_identified =
+            (!person.IsIdentifiedAsInfected(GetInfectionType()));
+        if (is_linked || is_not_identified) {
+            return;
+        }
+
+        if (FalsePositive(person)) {
+            return;
+        }
+
+        double prob = GetLinkProbability(person);
+        // check if the person was recently screened, for multiplier
+        bool recently_screened =
+            (person.GetTimeSinceLastScreening(GetInfectionType()) <=
+             _recent_screen_cutoff);
+        // apply the multiplier to recently screened persons
+        if (recently_screened && (prob < 1)) {
+            prob = ApplyMultiplier(prob, _recent_screen_multiplier);
+        }
+
+        // draw from link probability
+        if (sampler.GetDecision({prob}) == 0) {
+            data::LinkageType lt = person.GetLinkageType(GetInfectionType());
+            person.Link(lt, GetInfectionType());
+            if (lt == data::LinkageType::INTERVENTION) {
+                SetCost(GetInterventionCost());
+                AddEventCost(person);
+            }
+        }
+    }
 
 protected:
     static int CallbackLink(void *storage, int count, char **data,
@@ -57,9 +89,21 @@ protected:
         return 0;
     }
 
+    void SetLinkageType(const data::LinkageType &type) { _linkage_type = type; }
+    void SetLinkingStratifiedByPregnancy(bool stratify) {
+        _stratify_by_pregnancy = stratify;
+    }
+    void SetInterventionCost(double cost) { _intervention_cost = cost; }
+    void SetFalsePositiveCost(double cost) { _false_positive_cost = cost; }
+
+    void SetRecentScreenCutoff(int cutoff) { _recent_screen_cutoff = cutoff; }
+    void SetRecentScreenMultiplier(double mult) {
+        _recent_screen_multiplier = mult;
+    }
+
     void SetLinkData(const linkmap_t &link_data) { _link_data = link_data; }
 
-    linkmap_t GetLinkData() const { return _link_data; }
+    linkmap_t &GetLinkData() { return _link_data; }
 
     virtual bool FalsePositive(model::Person &person) = 0;
     virtual void
@@ -112,6 +156,8 @@ private:
     // properties
     data::LinkageType _linkage_type = data::LinkageType::BACKGROUND;
     linkmap_t _link_data;
+    int _recent_screen_cutoff = -1;
+    double _recent_screen_multiplier = 1.0;
     bool _stratify_by_pregnancy = false;
     double _intervention_cost = 0.0;
     double _false_positive_cost = 0.0;

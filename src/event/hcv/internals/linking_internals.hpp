@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -22,19 +22,12 @@ namespace hcv {
 class LinkingImpl : public virtual hcv::Linking, public event::LinkingBase {
 public:
     LinkingImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
-                const std::string &log_name = "console") {
-        SetCostCategory(model::CostCategory::kLinking);
-        SetLinkingStratifiedByPregnancy(CheckForPregnancyEvent(dm));
-        LoadLinkingData(dm);
-    }
+                const std::string &log_name = "console");
 
     ~LinkingImpl() = default;
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override {
-        SetLinkageType(person.GetLinkageType(data::InfectionType::HCV));
-        return 0;
+    data::InfectionType GetInfectionType() const override {
+        return data::InfectionType::HCV;
     }
 
 private:
@@ -50,16 +43,15 @@ private:
     void LoadLinkingData(
         std::shared_ptr<datamanagement::DataManagerBase> dm) override {
         std::string error;
-        int rc =
-            dm->SelectCustomCallback(LinkSQL("screening_and_linkage"),
-                                     this->callback_link, &link_data, error);
+        int rc = dm->SelectCustomCallback(LinkSQL("screening_and_linkage"),
+                                          CallbackLink, &GetLinkData(), error);
         if (rc != 0) {
             spdlog::get("main")->error(
                 "Error retrieving Linking values "
                 "for table screening_and_linkage;! Error Message: {}",
                 error);
         }
-        if (link_data.empty()) {
+        if (GetLinkData().empty()) {
             spdlog::get("main")->warn("No HCV linking data found.");
         }
     }

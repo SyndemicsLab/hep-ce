@@ -16,6 +16,12 @@
 namespace hepce {
 namespace event {
 namespace base {
+std::unique_ptr<hepce::event::Event>
+Death::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+              const std::string &log_name) {
+    return std::make_unique<DeathImpl>(dm, log_name);
+}
+
 bool DeathImpl::ReachedMaxAge(model::Person &person) {
     if (person.GetAge() >= 1200) {
         Die(person, data::DeathReason::AGE);
@@ -182,11 +188,6 @@ int DeathImpl::Execute(model::Person &person,
     }
 }
 
-std::unique_ptr<hepce::event::Event>
-Death::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
-              const std::string &log_name) {
-    return std::make_unique<DeathImpl>(dm, log_name);
-}
 } // namespace base
 } // namespace event
 } // namespace hepce

@@ -19,6 +19,11 @@
 namespace hepce {
 namespace event {
 namespace base {
+std::unique_ptr<hepce::event::Event>
+Aging::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+              const std::string &log_name) {
+    return std::make_unique<AgingImpl>(dm, log_name);
+}
 int AgingImpl::Execute(model::Person &person,
                        std::shared_ptr<datamanagement::DataManagerBase> dm,
                        model::Sampler &sampler) {
@@ -63,12 +68,6 @@ void AgingImpl::AddBackgroundCostAndUtility(
         utils::Discount(utilities.second, GetDiscount(),
                         person.GetCurrentTimestep())};
     person.AccumulateTotalUtility(utilities, discount_utilities);
-}
-
-std::unique_ptr<hepce::event::Event>
-Aging::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
-              const std::string &log_name) {
-    return std::make_unique<AgingImpl>(dm, log_name);
 }
 } // namespace base
 } // namespace event

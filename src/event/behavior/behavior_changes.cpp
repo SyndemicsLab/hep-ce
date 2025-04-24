@@ -17,6 +17,12 @@
 namespace hepce {
 namespace event {
 namespace behavior {
+std::unique_ptr<hepce::event::Event>
+BehaviorChanges::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+                        const std::string &log_name) {
+    return std::make_unique<BehaviorChangesImpl>(dm, log_name);
+}
+
 BehaviorChangesImpl::BehaviorChangesImpl(
     std::shared_ptr<datamanagement::DataManagerBase> dm,
     const std::string &log_name = "console") {
@@ -97,13 +103,6 @@ void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {
     SetUtil(_cost_data[tup].util);
     AddUtility(person);
 }
-
-std::unique_ptr<hepce::event::Event>
-BehaviorChanges::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        const std::string &log_name) {
-    return std::make_unique<BehaviorChangesImpl>(dm, log_name);
-}
-
 } // namespace behavior
 } // namespace event
 } // namespace hepce

@@ -17,6 +17,12 @@
 namespace hepce {
 namespace event {
 namespace fibrosis {
+std::unique_ptr<hepce::event::Event>
+Progression::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+                    const std::string &log_name) {
+    return std::make_unique<ProgressionImpl>(dm, log_name);
+}
+
 ProgressionImpl::ProgressionImpl(
     std::shared_ptr<datamanagement::DataManagerBase> dm,
     const std::string &log_name = "console") {
@@ -80,12 +86,6 @@ ProgressionImpl::GetTransitionProbability(const data::FibrosisState &fs) const {
     default:
         return {0.0, 1.0};
     }
-}
-
-std::unique_ptr<hepce::event::Event>
-Progression::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
-                    const std::string &log_name) {
-    return std::make_unique<ProgressionImpl>(dm, log_name);
 }
 } // namespace fibrosis
 } // namespace event

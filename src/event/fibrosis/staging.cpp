@@ -18,6 +18,12 @@
 namespace hepce {
 namespace event {
 namespace fibrosis {
+std::unique_ptr<hepce::event::Event>
+Staging::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+                const std::string &log_name) {
+    return std::make_unique<StagingImpl>(dm, log_name);
+}
+
 StagingImpl::StagingImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
                          const std::string &log_name)
     : _test_one(utils::GetStringFromConfig("fibrosis_staging.test_one", dm)),

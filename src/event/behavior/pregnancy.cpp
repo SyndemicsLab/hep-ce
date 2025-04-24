@@ -18,6 +18,12 @@
 namespace hepce {
 namespace event {
 namespace behavior {
+std::unique_ptr<hepce::event::Event>
+Pregnancy::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+                  const std::string &log_name) {
+    return std::make_unique<PregnancyImpl>(dm, log_name);
+}
+
 PregnancyImpl::PregnancyImpl(
     std::shared_ptr<datamanagement::DataManagerBase> dm,
     const std::string &log_name) {
@@ -104,12 +110,6 @@ void PregnancyImpl::AttemptHaveChild(model::Person &person,
                                                       : data::HCV::NONE;
         person.AddChild(hcv, tested);
     }
-}
-
-std::unique_ptr<hepce::event::Event>
-Pregnancy::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
-                  const std::string &log_name) {
-    return std::make_unique<PregnancyImpl>(dm, log_name);
 }
 } // namespace behavior
 } // namespace event
