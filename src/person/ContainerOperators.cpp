@@ -4,7 +4,7 @@
 // Created: 2024-09-03                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -491,7 +491,9 @@ std::ostream &operator<<(std::ostream &os, HIVDetails const &inst) {
 }
 
 std::ostream &operator<<(std::ostream &os, HCCDetails const &inst) {
-    os << "HCC State: " << inst.hccState << std::endl;
+    os << "HCC State: " << inst.hcc_state << std::endl;
+    os << "HCC Diagnosed: " << std::boolalpha << inst.hcc_diagnosed
+       << std::endl;
     return os;
 }
 
@@ -502,26 +504,31 @@ std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav) {
 }
 
 std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet) {
-    os << "Linkage State: " << ldet.linkState << std::endl;
-    os << "Last Time Linkage State Changed: " << ldet.timeOfLinkChange
+    os << "Linkage State: " << ldet.link_state << std::endl;
+    os << "Last Time Linkage State Changed: " << ldet.time_of_link_change
        << std::endl;
-    os << "Linkage Type: " << ldet.linkType << std::endl;
-    os << "Times Linked: " << ldet.linkCount << std::endl;
+    os << "Linkage Type: " << ldet.link_type << std::endl;
+    os << "Times Linked: " << ldet.link_count << std::endl;
     return os;
 }
 
 std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet) {
-    os << "MOUD State: " << mdet.moudState << std::endl;
-    os << "Time Started MOUD: " << mdet.timeStartedMoud << std::endl;
+    os << "MOUD State: " << mdet.moud_state << std::endl;
+    os << "Time Started MOUD: " << mdet.time_started << std::endl;
     return os;
 }
 
 std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet) {
-    os << "Pregnancy State: " << pdet.pregnancyState << std::endl;
-    os << "Time of Pregnancy State Change: " << pdet.timeOfPregnancyChange
+    os << "Pregnancy State: " << pdet.pregnancy_state << std::endl;
+    os << "Time of Pregnancy State Change: " << pdet.time_of_pregnancy_change
        << std::endl;
-    os << "Infant Count: " << pdet.numInfants << std::endl;
-    os << "Miscarriage Count: " << pdet.numMiscarriages << std::endl;
+    os << "Number of Pregnancies: " << pdet.count << std::endl;
+    os << "Infant Count: " << pdet.num_infants << std::endl;
+    os << "Miscarriage Count: " << pdet.num_miscarriages << std::endl;
+    os << "Infant HCV Exposure Count: " << pdet.num_hcv_exposures << std::endl;
+    os << "Infant HCV Infection Count: " << pdet.num_hcv_infections
+       << std::endl;
+    os << "Infant HCV Test Count: " << pdet.num_hcv_tests << std::endl;
     return os;
 }
 
@@ -532,29 +539,40 @@ std::ostream &operator<<(std::ostream &os, Child const &inst) {
 }
 
 std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet) {
-    os << "Fibrosis State: " << sdet.measuredFibrosisState << std::endl;
-    os << "Has a Second Fibrosis Test: " << sdet.hadSecondTest << std::endl;
-    os << "Time of Last Staging: " << sdet.timeOfLastStaging << std::endl;
+    os << "Fibrosis State: " << sdet.measured_fibrosis_state << std::endl;
+    os << "Has a Second Fibrosis Test: " << sdet.had_second_test << std::endl;
+    os << "Time of Last Staging: " << sdet.time_of_last_staging << std::endl;
     return os;
 }
 
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet) {
-    os << "Time of Last Screening: " << sdet.timeOfLastScreening << std::endl;
-    os << "AB Test Counts: " << sdet.numABTests << std::endl;
-    os << "RNA Testing Counts: " << sdet.numRNATests << std::endl;
-    os << "Antibody Positive: " << std::boolalpha << sdet.antibodyPositive
+    os << "Time of Last Screening: " << sdet.time_of_last_screening
        << std::endl;
+    os << "AB Test Counts: " << sdet.num_ab_tests << std::endl;
+    os << "RNA Testing Counts: " << sdet.num_rna_tests << std::endl;
+    os << "Antibody Positive: " << std::boolalpha << sdet.antibody_positive
+       << std::endl;
+    os << "Is Identified: " << std::boolalpha << sdet.identified << std::endl;
+    os << "Time Identified: " << sdet.time_identified << std::endl;
     return os;
 }
 
 std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet) {
-    os << "Has the person Initiated Treatment: " << tdet.initiatedTreatment
+    os << "Has the person Initiated Treatment: " << tdet.initiated_treatment
        << std::endl;
-    os << "Time Person Initiated Treatment: " << tdet.timeOfTreatmentInitiation
+    os << "Time Person Initiated Treatment: "
+       << tdet.time_of_treatment_initiation << std::endl;
+    os << "Number of Treatment Initializations: " << tdet.num_starts
        << std::endl;
-    os << "Person is in Retreatment: " << tdet.retreatment << std::endl;
-    os << "Number of Treatment Initializations: "
-       << tdet.numberOfTreatmentStarts << std::endl;
+    os << "Number of Treatment Withdrawals: " << tdet.num_withdrawals
+       << std::endl;
+    os << "Number of Toxic Treatment Reactions: " << tdet.num_toxic_reactions
+       << std::endl;
+    os << "Number of Treatment Completions: " << tdet.num_completed
+       << std::endl;
+    os << "Number of Retreatments: " << tdet.num_withdrawals << std::endl;
+    os << "Person is in Retreatment: " << std::boolalpha << tdet.retreatment
+       << std::endl;
     return os;
 }
 

@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -301,8 +301,8 @@ struct HIVDetails {
 std::ostream &operator<<(std::ostream &os, const HIVDetails &inst);
 
 struct HCCDetails {
-    HCCState hccState = HCCState::NONE;
-    bool hccDiagnosed = false;
+    HCCState hcc_state = HCCState::NONE;
+    bool hcc_diagnosed = false;
 };
 std::ostream &operator<<(std::ostream &os, const HCCDetails &inst);
 
@@ -315,19 +315,19 @@ std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav);
 
 /// @brief Attributes describing Linkage
 struct LinkageDetails {
-    LinkageState linkState = LinkageState::NEVER;
-    int timeOfLinkChange = -1;
-    LinkageType linkType = LinkageType::NA;
-    int linkCount = 0;
+    LinkageState link_state = LinkageState::NEVER;
+    int time_of_link_change = -1;
+    LinkageType link_type = LinkageType::NA;
+    int link_count = 0;
 };
 std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet);
 
 /// @brief Attributes describing MOUD status
 struct MOUDDetails {
-    MOUD moudState = MOUD::NONE;
-    int timeStartedMoud = -1;
-    int currentStateConcurrentMonths = 0;
-    int totalMOUDMonths = 0;
+    MOUD moud_state = MOUD::NONE;
+    int time_started = -1;
+    int current_state_concurrent_months = 0;
+    int total_moud_months = 0;
 };
 std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 
@@ -339,47 +339,47 @@ std::ostream &operator<<(std::ostream &os, Child const &inst);
 
 /// @brief Attributes describing pregnancy
 struct PregnancyDetails {
-    PregnancyState pregnancyState = PregnancyState::NA;
-    int timeOfPregnancyChange = -1;
+    PregnancyState pregnancy_state = PregnancyState::NA;
+    int time_of_pregnancy_change = -1;
     int count = 0;
-    int numInfants = 0;
-    int numMiscarriages = 0;
-    int numHCVExposures = 0;
-    int numHCVInfections = 0;
-    int numHCVTests = 0;
+    int num_infants = 0;
+    int num_miscarriages = 0;
+    int num_hcv_exposures = 0;
+    int num_hcv_infections = 0;
+    int num_hcv_tests = 0;
     std::vector<Child> children = {};
 };
 std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
 
 /// @brief Person attributes describing clinically assessed liver stage
 struct StagingDetails {
-    MeasuredFibrosisState measuredFibrosisState = MeasuredFibrosisState::NONE;
-    bool hadSecondTest = false;
-    int timeOfLastStaging = -1;
+    MeasuredFibrosisState measured_fibrosis_state = MeasuredFibrosisState::NONE;
+    bool had_second_test = false;
+    int time_of_last_staging = -1;
 };
 std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet);
 
 /// @brief Attributes describing screening status
 struct ScreeningDetails {
     // -1 if never screened, otherwise [0, currentTimestep-1)
-    int timeOfLastScreening = -1;
-    int numABTests = 0;
-    int numRNATests = 0;
-    bool antibodyPositive = false;
+    int time_of_last_screening = -1;
+    int num_ab_tests = 0;
+    int num_rna_tests = 0;
+    bool antibody_positive = false;
     bool identified = false;
-    int timeIdentified = -1;
+    int time_identified = -1;
 };
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 
 /// @brief Attributes describing treatment state
 struct TreatmentDetails {
-    bool initiatedTreatment = false;
-    int timeOfTreatmentInitiation = -1;
-    int numberOfTreatmentStarts = 0;
-    int treatmentWithdrawals = 0;
-    int treatmentToxicReactions = 0;
-    int completedTreatments = 0;
-    int retreatments = 0;
+    bool initiated_treatment = false;
+    int time_of_treatment_initiation = -1;
+    int num_starts = 0;
+    int num_withdrawals = 0;
+    int num_toxic_reactions = 0;
+    int num_completed = 0;
+    int num_retreatments = 0;
     bool retreatment = false;
 };
 std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);

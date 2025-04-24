@@ -4,7 +4,7 @@
 // Created: 2025-04-21                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -69,14 +69,14 @@ struct person_select {
     int time_of_last_staging = -1;
     // LinkageDetails
     // HCV
-    LinkageState hcv_linkage_state = LinkageState::NEVER;
+    LinkageState hcv_link_state = LinkageState::NEVER;
     int time_of_hcv_link_change = -1;
-    LinkageType hcv_linkage_type = LinkageType::NA;
+    LinkageType hcv_link_type = LinkageType::NA;
     int hcv_link_count = 0;
     // HIV
-    LinkageState hiv_linkage_state = LinkageState::NEVER;
+    LinkageState hiv_link_state = LinkageState::NEVER;
     int time_of_hiv_link_change = -1;
-    LinkageType hiv_linkage_type = LinkageType::NA;
+    LinkageType hiv_link_type = LinkageType::NA;
     int hiv_link_count = 0;
     // ScreeningDetails
     // HCV
@@ -164,13 +164,13 @@ static inline int person_callback(void *storage, int count, char **data,
     temp->measured_fibrosis_state << data[35];
     temp->had_second_test = std::stoi(data[36]);
     temp->time_of_last_staging = std::stoi(data[37]);
-    temp->hcv_linkage_state << data[38];
+    temp->hcv_link_state << data[38];
     temp->time_of_hcv_link_change = std::stoi(data[39]);
-    temp->hcv_linkage_type << data[40];
+    temp->hcv_link_type << data[40];
     temp->hcv_link_count = std::stoi(data[41]);
-    temp->hiv_linkage_state << data[42];
+    temp->hiv_link_state << data[42];
     temp->time_of_hiv_link_change = std::stoi(data[43]);
-    temp->hiv_linkage_type << data[44];
+    temp->hiv_link_type << data[44];
     temp->hiv_link_count = std::stoi(data[45]);
     temp->time_of_last_hcv_screening = std::stoi(data[46]);
     temp->num_hcv_ab_tests = std::stoi(data[47]);
