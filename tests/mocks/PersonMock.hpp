@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -87,25 +87,29 @@ public:
                 (const, override));
 
     // Treatment
-    MOCK_METHOD(int, AddWithdrawal, (), (override));
-    MOCK_METHOD(int, GetWithdrawals, (), (const, override));
-    MOCK_METHOD(int, AddToxicReaction, (), (override));
-    MOCK_METHOD(int, GetToxicReactions, (), (const, override));
-    MOCK_METHOD(int, AddCompletedTreatment, (), (override));
-    MOCK_METHOD(int, GetCompletedTreatments, (), (const, override));
+    MOCK_METHOD(int, AddWithdrawal, (InfectionType it), (override));
+    MOCK_METHOD(int, GetWithdrawals, (InfectionType it), (const, override));
+    MOCK_METHOD(int, AddToxicReaction, (InfectionType it), (override));
+    MOCK_METHOD(int, GetToxicReactions, (InfectionType it), (const, override));
+    MOCK_METHOD(int, AddCompletedTreatment, (InfectionType it), (override));
+    MOCK_METHOD(int, GetCompletedTreatments, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(int, GetRetreatments, (InfectionType it), (const, override));
     MOCK_METHOD(int, AddSVR, (), (override));
     MOCK_METHOD(int, GetSVRs, (), (const, override));
-    MOCK_METHOD(TreatmentDetails, GetTreatmentDetails, (), (const, override));
-    MOCK_METHOD(void, InitiateTreatment, (), (override));
-    MOCK_METHOD(int, EndTreatment, (), (override));
-    MOCK_METHOD(bool, IsInRetreatment, (), (const, override));
-
-    MOCK_METHOD(bool, HasInitiatedTreatment, (), (const, override));
-
-    MOCK_METHOD(int, GetTimeOfTreatmentInitiation, (), (const, override));
-    MOCK_METHOD(int, GetTimeSinceTreatmentInitiation, (), (const, override));
-    MOCK_METHOD(int, GetNumberOfTreatmentStarts, (), (const, override));
-    MOCK_METHOD(int, GetRetreatments, (), (const, override));
+    MOCK_METHOD(TreatmentDetails, GetTreatmentDetails, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(int, GetNumberOfTreatmentStarts, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(void, InitiateTreatment, (InfectionType it), (override));
+    MOCK_METHOD(int, EndTreatment, (InfectionType it), (override));
+    MOCK_METHOD(bool, HasInitiatedTreatment, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(bool, IsInRetreatment, (InfectionType it), (const, override));
+    MOCK_METHOD(int, GetTimeOfTreatmentInitiation, (InfectionType it),
+                (const, override));
+    MOCK_METHOD(int, GetTimeSinceTreatmentInitiation, (InfectionType it),
+                (const, override));
 
     // Drug Use Behavior
     MOCK_METHOD(int, SetBehavior, (Behavior), (override));
@@ -184,6 +188,7 @@ public:
     MOCK_METHOD(void, InfectHIV, (), (override));
     MOCK_METHOD(int, GetTimeHIVChanged, (), (const, override));
     MOCK_METHOD(int, GetTimeSinceHIVChanged, (), (const, override));
+    MOCK_METHOD(int, GetLowCD4MonthCount, (), (const, override));
 
     // PREGNANCY
     MOCK_METHOD(PregnancyState, GetPregnancyState, (), (const, override));
@@ -214,6 +219,9 @@ public:
     MOCK_METHOD(HCCState, GetHCCState, (), (const, override));
     MOCK_METHOD(void, DiagnoseHCC, (), (override));
     MOCK_METHOD(bool, IsDiagnosedWithHCC, (), (const, override));
+
+    // OUTPUTS
+    MOCK_METHOD(std::string, MakePopulationRow, (), (const, override));
 };
 } // namespace person
 

@@ -29,11 +29,13 @@ target_sources(${PROJECT_NAME}
         HIVInfections.cpp
         HIVLinking.cpp
         HIVScreening.cpp
+        HIVTreatment.cpp
         Linking.cpp
         MOUD.cpp
         Overdose.cpp
-        VoluntaryRelinking.cpp
         Pregnancy.cpp
+        Treatment.cpp
+        VoluntaryRelinking.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

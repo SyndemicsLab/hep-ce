@@ -4,14 +4,13 @@
 // Created: 2024-06-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-24                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "DataWriter.hpp"
-
 #include "Cost.hpp"
 #include "Person.hpp"
 #include "Utils.hpp"
@@ -69,10 +68,10 @@ private:
                             << person->GetRetreatments() << ",";
         // pregnancy quantities
         const auto &preg = person->GetPregnancyDetails();
-        compiled_attributes << preg.count << "," << preg.numInfants << ","
-                            << preg.numMiscarriages << ","
-                            << preg.numHCVExposures << ","
-                            << preg.numHCVInfections << "," << preg.numHCVTests;
+        compiled_attributes
+            << preg.count << "," << preg.num_infants << ","
+            << preg.num_miscarriages << "," << preg.num_hcv_exposures << ","
+            << preg.num_hcv_infections << "," << preg.num_hcv_tests;
         return compiled_attributes.str();
     }
 

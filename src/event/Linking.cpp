@@ -5,7 +5,7 @@
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
 // Last Modified: 2025-04-24                                                  //
-// Modified By: Matthew Carroll                                               //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////

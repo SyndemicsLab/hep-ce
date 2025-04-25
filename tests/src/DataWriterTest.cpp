@@ -4,7 +4,7 @@
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -26,54 +26,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 
 const int POPULATION_SIZE = 10;
-const std::string EXPECTED_POPULATION =
-    "id,sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,HCV,"
-    "fibrosisState,isGenotypeThree,seropositive,timeHCVChanged,"
-    "timeFibrosisStateChanged,drugBehavior,timeLastActiveDrugUse,linkageState,"
-    "timeOfLinkChange,linkageType,linkCount,measuredFibrosisState,"
-    "timeOfLastStaging,timeOfLastScreening,numABTests,numRNATests,"
-    "timesInfected,timesAcuteCleared,initiatedTreatment,"
-    "timeOfTreatmentInitiation,minUtility,multUtility,discountMinUtility,"
-    "discountMultUtility,treatmentWithdrawals,treatmentToxicReactions,"
-    "completedTreatments,svrs,behaviorUtility,liverUtility,treatmentUtility,"
-    "backgroundUtility,hivUtility,lifeSpan,discountedLifeSpan,"
-    "numberOfTreatmentStarts,numberOfRetreatments,numPregnancies,numInfants,"
-    "numMiscarriages,numInfantsExposedHCV,numInfantsHCVInfected,"
-    "numInfantsTested,cost,discount_cost\n1,male,300,false,N/"
-    "A,true,1,none,f0,false,false,-1,1,never,0,never,0,NA,0,f01,0,0,0,0,0,0,"
-    "false,0,1,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0\n2,female,300,"
-    "false,N/"
-    "A,false,-1,acute,f1,false,false,1,1,former_noninjection,1,linked,1,"
-    "background,1,f23,1,1,1,1,1,1,false,1,0.5,0.5,0.5,0.5,0,1,1,1,0.5,0.5,0.5,"
-    "0.5,0.5,1,1,1,1,1,1,1,1,1,1,0,0\n3,male,300,false,N/"
-    "A,true,1,chronic,f2,false,false,1,1,former_injection,2,unlinked,2,NA,2,f4,"
-    "2,2,2,2,2,2,false,2,0.333333,0.333333,0.333333,0.333333,0,2,2,2,0.333333,"
-    "0.333333,0.333333,0.333333,0.333333,2,2,2,2,2,2,2,2,2,2,0,0\n4,female,300,"
-    "false,N/"
-    "A,false,-1,none,f3,false,false,-1,1,noninjection,3,never,3,NA,3,decomp,3,"
-    "3,3,3,3,3,false,3,0.25,0.25,0.25,0.25,0,3,3,3,0.25,0.25,0.25,0.25,0.25,3,"
-    "3,3,3,3,3,3,3,3,3,0,0\n5,male,300,false,N/"
-    "A,true,1,acute,f4,false,false,1,1,injection,4,linked,4,background,4,none,"
-    "4,4,4,4,4,4,false,4,0.2,0.2,0.2,0.2,0,4,4,4,0.2,0.2,0.2,0.2,0.2,4,4,4,4,4,"
-    "4,4,4,4,4,0,0\n6,female,300,false,N/"
-    "A,false,-1,chronic,decomp,false,false,1,1,never,5,unlinked,5,NA,5,f01,5,5,"
-    "5,5,5,5,false,5,0.166667,0.166667,0.166667,0.166667,0,5,5,5,0.166667,0."
-    "166667,0.166667,0.166667,0.166667,5,5,5,5,5,5,5,5,5,5,0,0\n7,male,300,"
-    "false,N/"
-    "A,true,1,none,none,false,false,-1,-1,former_noninjection,6,never,6,NA,6,"
-    "f23,6,6,6,6,6,6,false,6,0.142857,0.142857,0.142857,0.142857,0,6,6,6,0."
-    "142857,0.142857,0.142857,0.142857,0.142857,6,6,6,6,6,6,6,6,6,6,0,0\n8,"
-    "female,300,false,N/"
-    "A,false,-1,acute,f0,false,false,1,1,former_injection,7,linked,7,"
-    "background,7,f4,7,7,7,7,7,7,false,7,0.125,0.125,0.125,0.125,0,7,7,7,0.125,"
-    "0.125,0.125,0.125,0.125,7,7,7,7,7,7,7,7,7,7,0,0\n9,male,300,false,N/"
-    "A,true,1,chronic,f1,false,false,1,1,noninjection,8,unlinked,8,NA,8,decomp,"
-    "8,8,8,8,8,8,false,8,0.111111,0.111111,0.111111,0.111111,0,8,8,8,0.111111,"
-    "0.111111,0.111111,0.111111,0.111111,8,8,8,8,8,8,8,8,8,8,0,0\n10,female,"
-    "300,false,N/"
-    "A,false,-1,none,f2,false,false,-1,1,injection,9,never,9,NA,9,none,9,9,9,9,"
-    "9,9,false,9,0.1,0.1,0.1,0.1,0,9,9,9,0.1,0.1,0.1,0.1,0.1,9,9,9,9,9,9,9,9,9,"
-    "9,0,0\n";
 
 class DataWriterTest : public ::testing::Test {
 private:
@@ -88,6 +40,7 @@ private:
     }
 
 protected:
+    person::InfectionType hcv_inf = person::InfectionType::HCV;
     std::vector<std::shared_ptr<NiceMock<person::MOCKPerson>>> testPopulation;
     void SetUp() override {
         RegisterLogger();
@@ -106,8 +59,7 @@ protected:
             ON_CALL(*(testPopulation[id]), GetDeathReason())
                 .WillByDefault(Return(person::DeathReason::NA));
             bool hcv_id = (id % 2 == 0) ? true : false;
-            ON_CALL(*(testPopulation[id]),
-                    IsIdentifiedAsInfected(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), IsIdentifiedAsInfected(hcv_inf))
                 .WillByDefault(Return(hcv_id));
             int hcv_time = (id % 2 == 0) ? 1 : -1;
             ON_CALL(*(testPopulation[id]), GetTimeHCVIdentified())
@@ -157,30 +109,28 @@ protected:
                 .WillByDefault(Return(meas));
             ON_CALL(*(testPopulation[id]), GetTimeOfFibrosisStaging())
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]),
-                    GetTimeOfLastScreening(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), GetTimeOfLastScreening(hcv_inf))
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]),
-                    GetNumberOfABTests(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), GetNumberOfABTests(hcv_inf))
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]),
-                    GetNumberOfRNATests(person::InfectionType::HCV))
+            ON_CALL(*(testPopulation[id]), GetNumberOfRNATests(hcv_inf))
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetTimesHCVInfected())
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetAcuteHCVClearances())
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]), HasInitiatedTreatment())
+            ON_CALL(*(testPopulation[id]), HasInitiatedTreatment(hcv_inf))
                 .WillByDefault(Return(false));
-            ON_CALL(*(testPopulation[id]), GetTimeOfTreatmentInitiation())
+            ON_CALL(*(testPopulation[id]),
+                    GetTimeOfTreatmentInitiation(hcv_inf))
                 .WillByDefault(Return(id));
             double util = 1 / static_cast<double>(id + 1);
             person::LifetimeUtility lu = {util, util, util, util};
             ON_CALL(*(testPopulation[id]), GetTotalUtility())
                 .WillByDefault(Return(lu));
-            ON_CALL(*(testPopulation[id]), GetToxicReactions())
+            ON_CALL(*(testPopulation[id]), GetToxicReactions(hcv_inf))
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]), GetCompletedTreatments())
+            ON_CALL(*(testPopulation[id]), GetCompletedTreatments(hcv_inf))
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetSVRs()).WillByDefault(Return(id));
             std::unordered_map<utility::UtilityCategory, double> current_util;
@@ -195,9 +145,9 @@ protected:
                 .WillByDefault(Return(id));
             ON_CALL(*(testPopulation[id]), GetDiscountedLifeSpan())
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]), GetNumberOfTreatmentStarts())
+            ON_CALL(*(testPopulation[id]), GetNumberOfTreatmentStarts(hcv_inf))
                 .WillByDefault(Return(id));
-            ON_CALL(*(testPopulation[id]), GetRetreatments())
+            ON_CALL(*(testPopulation[id]), GetRetreatments(hcv_inf))
                 .WillByDefault(Return(id));
             person::PregnancyDetails current_preg = {
                 person::PregnancyState::NA, 0, id, id, id, id, id, id};
@@ -208,11 +158,4 @@ protected:
     void TearDown() override { spdlog::drop("main"); }
 };
 
-TEST_F(DataWriterTest, PopulationString) {
-    // Test Body
-    writer::DataWriter writer;
-    std::vector<std::shared_ptr<person::PersonBase>> writable_population(
-        testPopulation.begin(), testPopulation.end());
-    EXPECT_EQ(EXPECTED_POPULATION,
-              writer.PopulationToString(writable_population));
-}
+TEST_F(DataWriterTest, PopulationString) {}

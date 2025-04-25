@@ -16,7 +16,6 @@
 #include "Cost.hpp"
 #include "Event.hpp"
 #include "Person.hpp"
-#include "Utils.hpp"
 #include <unordered_map>
 
 namespace event {

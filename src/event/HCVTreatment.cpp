@@ -1,54 +1,35 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: HCVTreatment.cpp                                                        //
+// File: HCVTreatment.cpp                                                     //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-07                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "HCVTreatment.hpp"
-#include "Cost.hpp"
 #include "Decider.hpp"
-#include "Person.hpp"
-#include "Utility.hpp"
-#include "Utils.hpp"
-#include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
-#include <sstream>
+#include "Treatment.hpp"
 
 namespace event {
-class HCVTreatment::HCVTreatmentIMPL {
+class HCVTreatmentIMPL : public TreatmentIMPL {
 private:
-    utility::UtilityCategory util_category =
-        utility::UtilityCategory::TREATMENT;
-    double discount = 0.0;
-    double lost_to_follow_up_probability;
-    double treatment_cost;
-    double retreatment_cost;
-    double treatment_utility;
-    double toxicity_cost;
-    double toxicity_utility;
-    double treatment_init_probability;
-    bool allow_retreatment = true;
-
-    std::vector<std::string> ineligible_behaviors = {};
-    std::vector<std::string> ineligible_fibrosis = {};
-    std::vector<std::string> ineligible_pregnancy = {};
-    int ineligible_time_since_linked = -2;
-    int ineligible_time_since_last_use = -2;
-
+    // maps to hold treatment data
     using treatmentmap_t =
         std::unordered_map<Utils::tuple_3i, double, Utils::key_hash_3i,
                            Utils::key_equal_3i>;
     treatmentmap_t duration_data;
     treatmentmap_t cost_data;
-    treatmentmap_t svr_data;
     treatmentmap_t toxicity_data;
     treatmentmap_t withdrawal_data;
+
+    // user-provided values
+    double retreatment_cost;
+    treatmentmap_t svr_data;
+    double treatment_utility;
 
     static int callback_treament(void *storage, int count, char **data,
                                  char **columns) {
@@ -71,114 +52,14 @@ private:
         return std::make_tuple(retreatment, geno3, cirr);
     }
 
-    bool isEligible(std::shared_ptr<person::PersonBase> person) const {
-        // If currently on a treatment, a new eligibility check should
-        // verify retreatment is allowed
-        bool check_retreatment = person->HasInitiatedTreatment();
-        if (!allow_retreatment && check_retreatment) {
-            return false;
-        }
-        person::FibrosisState fibrosisState = person->GetTrueFibrosisState();
-        person::Behavior behavior = person->GetBehavior();
-        int timeSinceLastUse = person->GetTimeBehaviorChange();
-        int timeSinceLinked = person->GetTimeSinceLinkChange();
-        person::PregnancyState pregnancyState = person->GetPregnancyState();
-        // if a person is an eligible fibrosis state, behavior, linked time,
-        // and hasn't used
-        if (isEligibleFibrosisStage(fibrosisState) &&
-            isEligibleBehavior(behavior) &&
-            (pregnancyState == person::PregnancyState::NA ||
-             isEligiblePregnancy(pregnancyState)) &&
-            (timeSinceLastUse > ineligible_time_since_last_use) &&
-            (timeSinceLinked > ineligible_time_since_linked)) {
-            return true;
-        }
-        return false;
-    }
-
-    bool isEligibleFibrosisStage(person::FibrosisState fibrosisState) const {
-        for (std::string state : ineligible_fibrosis) {
-            person::FibrosisState temp;
-            temp << state;
-            if (fibrosisState == temp) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool isEligibleBehavior(person::Behavior behavior) const {
-        for (std::string state : ineligible_behaviors) {
-            person::Behavior temp;
-            temp << state;
-            if (behavior == temp) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    bool isEligiblePregnancy(person::PregnancyState pregnancy_state) const {
-        for (std::string state : ineligible_pregnancy) {
-            person::PregnancyState temp;
-            temp << state;
-            if (pregnancy_state == temp) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void addTreatmentCostAndUtility(std::shared_ptr<person::PersonBase> person,
-                                    double cost, double util) {
-
-        double discountAdjustedCost = Event::DiscountEventCost(
-            cost, discount, person->GetCurrentTimestep());
-        person->AddCost(cost, discountAdjustedCost,
-                        cost::CostCategory::TREATMENT);
-
-        person->SetUtility(util, util_category);
-    }
-
-    bool LostToFollowUp(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        std::shared_ptr<stats::DeciderBase> decider) {
-        // If the person is already on treatment, they can't be lost to
-        // follow up
-        if (person->HasInitiatedTreatment()) {
-            return false;
-        }
-        if (decider->GetDecision({lost_to_follow_up_probability}) == 0) {
-            this->quitEngagement(person);
-            return true;
-        }
-        return false;
-    }
-
-    void
-    ChargeCostOfVisit(std::shared_ptr<person::PersonBase> person,
-                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        int num_treatments =
-            person->GetWithdrawals() + person->GetCompletedTreatments();
-        double c = (num_treatments > 0) ? retreatment_cost : treatment_cost;
-        double discountAdjustedCost =
-            Event::DiscountEventCost(c, discount, person->GetCurrentTimestep());
-        person->AddCost(c, discountAdjustedCost, cost::CostCategory::TREATMENT);
-    }
-
-    void
-    ChargeCostOfCourse(std::shared_ptr<person::PersonBase> person,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        if (cost_data.empty()) {
+    void ChargeCostOfCourse(std::shared_ptr<person::PersonBase> person) {
+        if (this->cost_data.empty()) {
             spdlog::get("main")->warn("No Treatment Cost Data Found.");
             return;
         }
-        double discountAdjustedCost =
-            Event::DiscountEventCost(cost_data[GetTreatmentThruple(person)],
-                                     discount, person->GetCurrentTimestep());
-        person->AddCost(cost_data[GetTreatmentThruple(person)],
-                        discountAdjustedCost, cost::CostCategory::TREATMENT);
-        person->SetUtility(treatment_utility, util_category);
+        double course_cost = cost_data[GetTreatmentThruple(person)];
+        ChargeCost(person, course_cost);
+        person->SetUtility(treatment_utility, this->UTIL_CATEGORY);
     }
 
     bool Withdraws(std::shared_ptr<person::PersonBase> person,
@@ -192,16 +73,15 @@ private:
         if (decider->GetDecision(
                 {withdrawal_data[GetTreatmentThruple(person)]}) == 0) {
             person->AddWithdrawal();
-            this->quitEngagement(person);
+            this->QuitEngagement(person);
             return true;
         }
         return false;
     }
 
-    void CheckIfExperienceToxicity(
-        std::shared_ptr<person::PersonBase> person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm,
-        std::shared_ptr<stats::DeciderBase> decider) {
+    void
+    CheckIfExperienceToxicity(std::shared_ptr<person::PersonBase> person,
+                              std::shared_ptr<stats::DeciderBase> decider) {
         if (toxicity_data.empty()) {
             spdlog::get("main")->warn("No Toxicity Data Found.");
             return;
@@ -212,18 +92,14 @@ private:
             return;
         }
         person->AddToxicReaction();
-        double discountAdjustedCost = Event::DiscountEventCost(
-            toxicity_cost, discount, person->GetCurrentTimestep());
-        person->AddCost(toxicity_cost, discountAdjustedCost,
-                        cost::CostCategory::TREATMENT);
-        person->SetUtility(toxicity_utility, util_category);
+        ChargeCost(person, this->toxicity_cost);
+        person->SetUtility(this->toxicity_utility, this->UTIL_CATEGORY);
     }
 
     bool InitiateTreatment(std::shared_ptr<person::PersonBase> person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
                            std::shared_ptr<stats::DeciderBase> decider) {
         // Do not start treatment until eligible
-        if (!isEligible(person)) {
+        if (!IsEligible(person)) {
             return false;
         }
         // person initiates treatment -- set treatment initiation values
@@ -232,25 +108,6 @@ private:
             return true;
         }
         return false;
-    }
-
-    void quitEngagement(std::shared_ptr<person::PersonBase> person) {
-        person->EndTreatment();
-        person->Unlink();
-        // reset utility
-        person->SetUtility(1.0, util_category);
-    }
-
-    double ParseDoublesFromConfig(
-        std::string configKey,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string data;
-        dm->GetFromConfig(configKey, data);
-        if (data.empty()) {
-            spdlog::get("main")->warn("No {} Found!", configKey);
-            data = "0.0";
-        }
-        return Utils::stod_positive(data);
     }
 
     int DecideIfPersonAchievesSVR(std::shared_ptr<person::PersonBase> person,
@@ -337,39 +194,27 @@ private:
         return rc;
     }
 
-    int LoadEligibilityVectors(std::string data,
-                               std::vector<std::string> &ineligibility_vec) {
-        if (data.empty()) {
-            return 0;
-        }
-
-        ineligibility_vec = Utils::split2vecT<std::string>(data, ',');
-        return 0;
+    void
+    LoadEligibilityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        this->ineligible_behaviors =
+            LoadEligibilityVectors("eligibility.ineligible_drug_use", dm);
+        this->ineligible_fibrosis = LoadEligibilityVectors(
+            "eligibility.ineligible_fibrosis_stages", dm);
+        this->ineligible_pregnancy = LoadEligibilityVectors(
+            "eligibility.ineligible_pregnancy_states", dm);
+        this->ineligible_time_since_linked = Utils::GetIntFromConfig(
+            "eligibility.ineligible_time_since_linked", dm, true);
+        this->ineligible_time_since_last_use = Utils::GetIntFromConfig(
+            "eligibility.ineligible_time_former_threshold", dm, true);
     }
 
-    int
-    LoadEligibilityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string eligibility_data;
-        dm->GetFromConfig("eligibility.ineligible_drug_use", eligibility_data);
-        LoadEligibilityVectors(eligibility_data, ineligible_behaviors);
-
-        eligibility_data.clear();
-        dm->GetFromConfig("eligibility.ineligible_fibrosis_stages",
-                          eligibility_data);
-        LoadEligibilityVectors(eligibility_data, ineligible_fibrosis);
-
-        eligibility_data.clear();
-        dm->GetFromConfig("eligibility.ineligible_pregnancy_states",
-                          eligibility_data);
-        LoadEligibilityVectors(eligibility_data, ineligible_fibrosis);
-
-        std::string data;
-        dm->GetFromConfig("eligibility.ineligible_time_since_linked", data);
-        ineligible_time_since_linked = (data.empty()) ? -2 : std::stoi(data);
-
-        dm->GetFromConfig("eligibility.ineligible_time_former_threshold", data);
-        ineligible_time_since_last_use = (data.empty()) ? -2 : std::stoi(data);
-        return 0;
+    int GetTreatmentDuration(std::shared_ptr<person::PersonBase> person) {
+        if (this->duration_data.empty()) {
+            spdlog::get("main")->warn("No Treatment Duration Found!");
+            return -1;
+        }
+        double duration = this->duration_data[GetTreatmentThruple(person)];
+        return static_cast<int>(duration);
     }
 
 public:
@@ -380,92 +225,90 @@ public:
         if (person->GetLinkState() != person::LinkageState::LINKED) {
             return;
         }
+
         // 1. Check if the Person is Lost To Follow Up (LTFU)
-        if (LostToFollowUp(person, dm, decider)) {
+        if (LostToFollowUp(person, decider)) {
             return;
         }
 
         // 2. Charge the Cost of the Visit (varies if this is retreatment)
-        ChargeCostOfVisit(person, dm);
+        int num_treatments =
+            person->GetWithdrawals() + person->GetCompletedTreatments();
+        double visit_cost = (num_treatments > 0) ? this->retreatment_cost
+                                                 : this->treatment_cost;
+        ChargeCost(person, visit_cost);
 
         // 3. Attempt to start primary treatment, if already on treatment
         // nothing happens
-        if (!person->HasInitiatedTreatment()) {
-            if (!InitiateTreatment(person, dm, decider)) {
-                return;
-            }
+        if (!person->HasInitiatedTreatment() &&
+            !InitiateTreatment(person, decider)) {
+            return;
         }
 
-        // 5. Charge the person for the Course they are on
-        ChargeCostOfCourse(person, dm);
+        // 4. Charge the person for the Course they are on
+        ChargeCostOfCourse(person);
 
-        // 6. Check if the person experiences toxicity
-        CheckIfExperienceToxicity(person, dm, decider);
+        // 5. Check if the person experiences toxicity
+        CheckIfExperienceToxicity(person, decider);
 
-        // 7. Determine if the person withdraws from the treatment
+        // 6. Determine if the person withdraws from the treatment
         if (Withdraws(person, dm, decider)) {
             return;
         }
 
-        // 8. Determine if the person has been treated long enough, if they
-        // achieve SVR
-        if (duration_data.empty()) {
-            spdlog::get("main")->warn("No Treatment Duration Found!");
-            return;
-        }
-        double duration = duration_data[GetTreatmentThruple(person)];
-        if (person->GetTimeSinceTreatmentInitiation() == (int)duration) {
+        // 7. Determine if the person has been treated long enough and, if so,
+        // if they achieve SVR
+        int duration = GetTreatmentDuration(person);
+        if (person->GetTimeSinceTreatmentInitiation() == duration) {
             person->AddCompletedTreatment();
             int decision = DecideIfPersonAchievesSVR(person, decider);
             if (decision == 0) {
                 person->AddSVR();
                 person->ClearHCV();
                 person->ClearDiagnosis();
-                this->quitEngagement(person);
+                this->QuitEngagement(person);
             } else if (!person->IsInRetreatment()) {
+                // initiate retreatment
                 person->InitiateTreatment();
             } else {
-                // Person just goes away apparently?
+                // if retreatment fails, it is a failure and treatment ceases
+                this->QuitEngagement(person);
             }
         }
     }
-    HCVTreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string data;
-        int rc = dm->GetFromConfig("cost.discounting_rate", data);
-        if (!data.empty()) {
-            this->discount = Utils::stod_positive(data);
-        }
-        rc = dm->GetFromConfig("treatment.allow_retreatment", data);
-        if (!data.empty()) {
-            std::istringstream(data) >> allow_retreatment;
-        }
+    HCVTreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
+        : TreatmentIMPL(dm) {
+        this->allow_retreatment =
+            Utils::GetBoolFromConfig("treatment.allow_retreatment", dm);
 
-        lost_to_follow_up_probability =
-            ParseDoublesFromConfig("treatment.ltfu_probability", dm);
-        treatment_cost = ParseDoublesFromConfig("treatment.treatment_cost", dm);
-        retreatment_cost =
-            ParseDoublesFromConfig("treatment.retreatment_cost", dm);
-        treatment_utility =
-            ParseDoublesFromConfig("treatment.treatment_utility", dm);
-        treatment_init_probability =
-            ParseDoublesFromConfig("treatment.treatment_initialization", dm);
-        toxicity_cost = ParseDoublesFromConfig("treatment.tox_cost", dm);
-        toxicity_utility = ParseDoublesFromConfig("treatment.tox_utility", dm);
+        this->lost_to_follow_up_probability =
+            Utils::GetDoubleFromConfig("treatment.ltfu_probability", dm);
+        this->treatment_cost =
+            Utils::GetDoubleFromConfig("treatment.treatment_cost", dm);
+        this->treatment_utility =
+            Utils::GetDoubleFromConfig("treatment.treatment_utility", dm);
+        this->retreatment_cost =
+            Utils::GetDoubleFromConfig("treatment.retreatment_cost", dm);
+        this->treatment_init_probability =
+            Utils::GetDoubleFromConfig("treatment.treatment_initiation", dm);
+        this->toxicity_cost =
+            Utils::GetDoubleFromConfig("treatment.tox_cost", dm);
+        this->toxicity_utility =
+            Utils::GetDoubleFromConfig("treatment.tox_utility", dm);
 
-        rc = LoadEligibilityData(dm);
-
-        rc = LoadCostData(dm);
-        rc = LoadWithdrawalData(dm);
-        rc = LoadToxicityData(dm);
-        rc = LoadSVRData(dm);
-        rc = LoadDurationData(dm);
+        LoadEligibilityData(dm);
+        LoadCostData(dm);
+        LoadWithdrawalData(dm);
+        LoadToxicityData(dm);
+        LoadSVRData(dm);
+        LoadDurationData(dm);
     }
 };
+
 HCVTreatment::HCVTreatment(
     std::shared_ptr<datamanagement::DataManagerBase> dm) {
     impl = std::make_unique<HCVTreatmentIMPL>(dm);
 }
-
 HCVTreatment::~HCVTreatment() = default;
 HCVTreatment::HCVTreatment(HCVTreatment &&) noexcept = default;
 HCVTreatment &HCVTreatment::operator=(HCVTreatment &&) noexcept = default;
@@ -475,5 +318,4 @@ void HCVTreatment::DoEvent(std::shared_ptr<person::PersonBase> person,
                            std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }
-
 } // namespace event

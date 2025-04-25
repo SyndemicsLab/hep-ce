@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -92,25 +92,33 @@ public:
     GetLinkStatus(InfectionType it = InfectionType::HCV) const = 0;
 
     // Treatment
-    virtual int AddWithdrawal() = 0;
-    virtual int GetWithdrawals() const = 0;
-    virtual int AddToxicReaction() = 0;
-    virtual int GetToxicReactions() const = 0;
-    virtual int AddCompletedTreatment() = 0;
-    virtual int GetCompletedTreatments() const = 0;
-    virtual int GetRetreatments() const = 0;
+    virtual int AddWithdrawal(InfectionType it = InfectionType::HCV) = 0;
+    virtual int GetWithdrawals(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int AddToxicReaction(InfectionType it = InfectionType::HCV) = 0;
+    virtual int
+    GetToxicReactions(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    AddCompletedTreatment(InfectionType it = InfectionType::HCV) = 0;
+    virtual int
+    GetCompletedTreatments(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetRetreatments(InfectionType it = InfectionType::HCV) const = 0;
     virtual int AddSVR() = 0;
     virtual int GetSVRs() const = 0;
-    virtual TreatmentDetails GetTreatmentDetails() const = 0;
-    virtual int GetNumberOfTreatmentStarts() const = 0;
-    virtual void InitiateTreatment() = 0;
-    virtual int EndTreatment() = 0;
-
-    virtual bool HasInitiatedTreatment() const = 0;
-    virtual bool IsInRetreatment() const = 0;
-
-    virtual int GetTimeOfTreatmentInitiation() const = 0;
-    virtual int GetTimeSinceTreatmentInitiation() const = 0;
+    virtual TreatmentDetails
+    GetTreatmentDetails(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int
+    GetNumberOfTreatmentStarts(InfectionType it = InfectionType::HCV) const = 0;
+    virtual void InitiateTreatment(InfectionType it = InfectionType::HCV) = 0;
+    virtual int EndTreatment(InfectionType it = InfectionType::HCV) = 0;
+    virtual bool
+    HasInitiatedTreatment(InfectionType it = InfectionType::HCV) const = 0;
+    virtual bool
+    IsInRetreatment(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int GetTimeOfTreatmentInitiation(
+        InfectionType it = InfectionType::HCV) const = 0;
+    virtual int GetTimeSinceTreatmentInitiation(
+        InfectionType it = InfectionType::HCV) const = 0;
 
     // Drug Use Behavior
     virtual int SetBehavior(Behavior) = 0;
@@ -185,6 +193,8 @@ public:
     virtual void InfectHIV() = 0;
     virtual int GetTimeHIVChanged() const = 0;
     virtual int GetTimeSinceHIVChanged() const = 0;
+    // outcomes
+    virtual int GetLowCD4MonthCount() const = 0;
 
     // TODO
     virtual PregnancyState GetPregnancyState() const = 0;
@@ -216,6 +226,9 @@ public:
     virtual HCCState GetHCCState() const = 0;
     virtual void DiagnoseHCC() = 0;
     virtual bool IsDiagnosedWithHCC() const = 0;
+
+    // Person Output
+    virtual std::string MakePopulationRow() const = 0;
 };
 /// @brief Class describing a Person
 class Person : public PersonBase {
@@ -285,25 +298,23 @@ public:
     LinkageDetails GetLinkStatus(InfectionType it) const;
 
     // Treatment
-    int AddWithdrawal();
-    int GetWithdrawals() const;
-    int AddToxicReaction();
-    int GetToxicReactions() const;
-    int AddCompletedTreatment();
-    int GetCompletedTreatments() const;
-    int GetRetreatments() const;
+    int AddWithdrawal(InfectionType it);
+    int GetWithdrawals(InfectionType it) const;
+    int AddToxicReaction(InfectionType it);
+    int GetToxicReactions(InfectionType it) const;
+    int AddCompletedTreatment(InfectionType it);
+    int GetCompletedTreatments(InfectionType it) const;
+    int GetRetreatments(InfectionType it) const;
     int AddSVR();
     int GetSVRs() const;
-    TreatmentDetails GetTreatmentDetails() const;
-    int GetNumberOfTreatmentStarts() const;
-    void InitiateTreatment();
-    int EndTreatment();
-
-    bool HasInitiatedTreatment() const;
-    bool IsInRetreatment() const;
-
-    int GetTimeOfTreatmentInitiation() const;
-    int GetTimeSinceTreatmentInitiation() const;
+    TreatmentDetails GetTreatmentDetails(InfectionType it) const;
+    int GetNumberOfTreatmentStarts(InfectionType it) const;
+    void InitiateTreatment(InfectionType it);
+    int EndTreatment(InfectionType it);
+    bool HasInitiatedTreatment(InfectionType it) const;
+    bool IsInRetreatment(InfectionType it) const;
+    int GetTimeOfTreatmentInitiation(InfectionType it) const;
+    int GetTimeSinceTreatmentInitiation(InfectionType it) const;
 
     // Drug Use Behavior
     int SetBehavior(Behavior);
@@ -376,6 +387,7 @@ public:
     void InfectHIV();
     int GetTimeHIVChanged() const;
     int GetTimeSinceHIVChanged() const;
+    int GetLowCD4MonthCount() const;
 
     // Pregnancy
     PregnancyState GetPregnancyState() const;
@@ -408,6 +420,9 @@ public:
     HCCState GetHCCState() const;
     void DiagnoseHCC();
     bool IsDiagnosedWithHCC() const;
+
+    // Person Output
+    std::string MakePopulationRow() const;
 };
 } // namespace person
 #endif

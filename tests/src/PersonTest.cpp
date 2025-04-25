@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -308,11 +308,11 @@ TEST_F(PersonTest, LinkType) {
 }
 
 TEST_F(PersonTest, TimeOfTreatmentInitiation) {
-    EXPECT_EQ(0, testPerson->GetTimeOfTreatmentInitiation());
+    EXPECT_EQ(-1, testPerson->GetTimeOfTreatmentInitiation());
     testPerson->Grow();
     testPerson->Grow();
     testPerson->Grow();
-    EXPECT_EQ(0, testPerson->GetTimeOfTreatmentInitiation());
+    EXPECT_EQ(-1, testPerson->GetTimeOfTreatmentInitiation());
     testPerson->InitiateTreatment();
     EXPECT_EQ(3, testPerson->GetTimeOfTreatmentInitiation());
 }
@@ -423,4 +423,48 @@ TEST_F(PersonTest, DiscountedLifeSpan) {
         testPerson->Grow();
     }
     EXPECT_EQ(expected, testPerson->GetDiscountedLifeSpan());
+}
+
+TEST_F(PersonTest, MakePopulationRow) {
+    // clang-format off
+    // all traits are default
+    const std::string expected =
+        // basic characteristics
+        "male,0,true,false,"
+        // DeathReason
+        "na,"
+        // BehaviorDetails
+        "never,-1,"
+        // HCVDetails
+        "none,none,false,false,-1,-1,0,0,0,"
+        // HIVDetails
+        "none,-1,0,"
+        // HCCDetails
+        "none,false,"
+        // overdoses
+        "false,0,"
+        // MOUDDetails
+        "none,-1,0,0,"
+        // PregnancyDetails
+        "na,-1,0,0,0,0,0,0,"
+        // StagingDetails
+        "none,false,-1,"
+        // LinkageDetails
+        "never,-1,na,0,"
+        "never,-1,na,0,"
+        // ScreeningDetails
+        "-1,0,0,false,false,-1,"
+        "-1,0,0,false,false,-1,"
+        // TreatmentDetails
+        "false,-1,0,0,0,0,0,false,"
+        "false,-1,0,0,0,"
+        // Utility
+        "1,1,1,1,1,"
+        "0,0,0,0,"
+        // Lifespan
+        "0,0,"
+        // Costs
+        "0,0\n";
+    // clang-format on
+    EXPECT_EQ(testPerson->MakePopulationRow(), expected);
 }
