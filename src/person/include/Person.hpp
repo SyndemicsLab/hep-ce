@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-21                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -226,6 +226,9 @@ public:
     virtual HCCState GetHCCState() const = 0;
     virtual void DiagnoseHCC() = 0;
     virtual bool IsDiagnosedWithHCC() const = 0;
+
+    // Person Output
+    virtual std::string MakePopulationRow() const = 0;
 };
 /// @brief Class describing a Person
 class Person : public PersonBase {
@@ -417,6 +420,9 @@ public:
     HCCState GetHCCState() const;
     void DiagnoseHCC();
     bool IsDiagnosedWithHCC() const;
+
+    // Person Output
+    std::string MakePopulationRow() const;
 };
 } // namespace person
 #endif

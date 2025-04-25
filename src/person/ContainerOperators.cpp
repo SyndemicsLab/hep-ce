@@ -4,7 +4,7 @@
 // Created: 2024-09-03                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -127,7 +127,7 @@ std::ostream &operator<<(std::ostream &os, const DeathReason &inst) {
         os << "overdose";
         break;
     default:
-        os << "N/A";
+        os << "na";
         break;
     }
     return os;
@@ -193,7 +193,7 @@ std::ostream &operator<<(std::ostream &os, const LinkageType &inst) {
         os << "intervention";
         break;
     default:
-        os << "NA";
+        os << "na";
         break;
     }
     return os;
@@ -452,6 +452,9 @@ std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
     case PregnancyState::PREGNANT:
         os << "pregnant";
         break;
+    case PregnancyState::NA:
+        os << "na";
+        break;
     default:
         os << "none";
         break;
@@ -463,8 +466,10 @@ PregnancyState &operator<<(PregnancyState &inst, const std::string &str) {
         inst = PregnancyState::POSTPARTUM;
     } else if (str == "pregnant") {
         inst = PregnancyState::PREGNANT;
-    } else {
+    } else if (str == "none") {
         inst = PregnancyState::NONE;
+    } else {
+        inst = PregnancyState::NA;
     }
     return inst;
 }

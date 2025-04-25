@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -22,9 +22,11 @@
 #include <vector>
 
 namespace person {
+int count = 0;
+
 class Person::PersonIMPL {
 private:
-    size_t id = 0;
+    size_t id = count;
     size_t _current_time = 0;
 
     Sex sex = Sex::MALE;
@@ -93,6 +95,7 @@ public:
             this->linkage_details[i] = LinkageDetails();
             this->screening_details[i] = ScreeningDetails();
             this->treatment_details[i] = TreatmentDetails();
+            count++;
         }
     }
 
@@ -275,7 +278,7 @@ public:
         return 0;
     }
 
-    std::string MakePopulationRow() {
+    std::string MakePopulationRow() const {
         std::stringstream population_row;
         // clang-format off
         // basic characteristics
@@ -1162,9 +1165,6 @@ public:
     //////////////////// SETTERS ////////////////////
 };
 
-int count = 0;
-
-std::string sqlQuery = "";
 std::ostream &operator<<(std::ostream &os, const Person &person) {
     os << "sex: " << person.GetSex() << std::endl;
     os << "alive: " << std::boolalpha << person.IsAlive()
@@ -1579,5 +1579,10 @@ int Person::GetTimeHIVChanged() const {
 }
 int Person::GetTimeSinceHIVChanged() const {
     return pImplPERSON->GetTimeSinceHIVChanged();
+}
+
+// Person Output
+std::string Person::MakePopulationRow() const {
+    return pImplPERSON->MakePopulationRow();
 }
 } // namespace person

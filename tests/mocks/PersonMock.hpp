@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-21                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -219,6 +219,9 @@ public:
     MOCK_METHOD(HCCState, GetHCCState, (), (const, override));
     MOCK_METHOD(void, DiagnoseHCC, (), (override));
     MOCK_METHOD(bool, IsDiagnosedWithHCC, (), (const, override));
+
+    // OUTPUTS
+    MOCK_METHOD(std::string, MakePopulationRow, (), (const, override));
 };
 } // namespace person
 
