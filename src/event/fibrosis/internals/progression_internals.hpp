@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -78,7 +78,7 @@ private:
 
     inline void AddProgressionUtility(model::Person &person) {
         SetUtil(_cost_data[TupleBuilder(person)].util);
-        AddUtility(person);
+        AddEventUtility(person);
     }
 
     void

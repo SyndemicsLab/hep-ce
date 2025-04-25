@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -26,16 +26,18 @@ public:
         SetCostCategory(model::CostCategory::kHiv);
         SetLinkingStratifiedByPregnancy(CheckForPregnancyEvent(dm));
         LoadLinkingData(dm);
+
+        SetInterventionCost(
+            utils::GetDoubleFromConfig("hiv_linking.intervention_cost", dm));
+        SetFalsePositiveCost(utils::GetDoubleFromConfig(
+            "hiv_linking.false_positive_test_cost", dm));
+        SetRecentScreenMultiplier(utils::GetDoubleFromConfig(
+            "hiv_linking.recent_screen_multiplier", dm));
+        SetRecentScreenCutoff(
+            utils::GetIntFromConfig("hiv_linking.recent_screen_cutoff", dm));
     }
 
     ~LinkingImpl() = default;
-
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override {
-        SetLinkageType(person.GetLinkageType(data::InfectionType::HIV));
-        return 0;
-    }
 
 private:
     inline bool FalsePositive(model::Person &person) override {
@@ -45,22 +47,6 @@ private:
         person.ClearDiagnosis(data::InfectionType::HCV);
         AddFalsePositiveCost(person, GetCostCategory());
         return true;
-    }
-
-    void LoadLinkingData(
-        std::shared_ptr<datamanagement::DataManagerBase> dm) override {
-        std::string error;
-        int rc = dm->SelectCustomCallback(
-            LinkSQL("hiv_linking"), this->callback_link, &link_data, error);
-        if (rc != 0) {
-            spdlog::get("main")->error(
-                "Error retrieving Linking values "
-                "for table hiv_linking;! Error Message: {}",
-                error);
-        }
-        if (link_data.empty()) {
-            spdlog::get("main")->warn("No HIV linking data found.");
-        }
     }
 };
 } // namespace hiv

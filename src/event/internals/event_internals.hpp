@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,7 +51,7 @@ public:
         person.AddCost(GetCost(), discounted_cost, GetCostCategory());
     }
 
-    void AddUtility(model::Person &person) const {
+    void AddEventUtility(model::Person &person) const {
         person.SetUtility(GetUtil(), GetUtilityCategory());
     }
 

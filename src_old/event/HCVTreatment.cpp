@@ -5,7 +5,7 @@
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-04-25                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,6 +16,93 @@
 
 namespace event {
 class HCVTreatmentIMPL : public TreatmentIMPL {
+public:
+    void DoEvent(std::shared_ptr<person::PersonBase> person,
+                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 std::shared_ptr<stats::DeciderBase> decider) {
+        // 0. Verify the person is linked before starting treatment
+        if (person->GetLinkState() != person::LinkageState::LINKED) {
+            return;
+        }
+
+        // 1. Check if the Person is Lost To Follow Up (LTFU)
+        if (LostToFollowUp(person, decider)) {
+            return;
+        }
+
+        // 2. Charge the Cost of the Visit (varies if this is retreatment)
+        int num_treatments =
+            person->GetWithdrawals() + person->GetCompletedTreatments();
+        double visit_cost = (num_treatments > 0) ? this->retreatment_cost
+                                                 : this->treatment_cost;
+        ChargeCost(person, visit_cost);
+
+        // 3. Attempt to start primary treatment, if already on treatment
+        // nothing happens
+        if (!person->HasInitiatedTreatment() &&
+            !InitiateTreatment(person, decider)) {
+            return;
+        }
+
+        // 4. Charge the person for the Course they are on
+        ChargeCostOfCourse(person);
+
+        // 5. Check if the person experiences toxicity
+        CheckIfExperienceToxicity(person, decider);
+
+        // 6. Determine if the person withdraws from the treatment
+        if (Withdraws(person, dm, decider)) {
+            return;
+        }
+
+        // 7. Determine if the person has been treated long enough and, if so,
+        // if they achieve SVR
+        int duration = GetTreatmentDuration(person);
+        if (person->GetTimeSinceTreatmentInitiation() == duration) {
+            person->AddCompletedTreatment();
+            int decision = DecideIfPersonAchievesSVR(person, decider);
+            if (decision == 0) {
+                person->AddSVR();
+                person->ClearHCV();
+                person->ClearDiagnosis();
+                this->QuitEngagement(person);
+            } else if (!person->IsInRetreatment()) {
+                // initiate retreatment
+                person->InitiateTreatment();
+            } else {
+                // if retreatment fails, it is a failure and treatment ceases
+                this->QuitEngagement(person);
+            }
+        }
+    }
+    HCVTreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
+        : TreatmentIMPL(dm) {
+        this->allow_retreatment =
+            Utils::GetBoolFromConfig("treatment.allow_retreatment", dm);
+
+        this->lost_to_follow_up_probability =
+            Utils::GetDoubleFromConfig("treatment.ltfu_probability", dm);
+        this->treatment_cost =
+            Utils::GetDoubleFromConfig("treatment.treatment_cost", dm);
+        this->treatment_utility =
+            Utils::GetDoubleFromConfig("treatment.treatment_utility", dm);
+        this->retreatment_cost =
+            Utils::GetDoubleFromConfig("treatment.retreatment_cost", dm);
+        this->treatment_init_probability =
+            Utils::GetDoubleFromConfig("treatment.treatment_initiation", dm);
+        this->toxicity_cost =
+            Utils::GetDoubleFromConfig("treatment.tox_cost", dm);
+        this->toxicity_utility =
+            Utils::GetDoubleFromConfig("treatment.tox_utility", dm);
+
+        LoadEligibilityData(dm);
+        LoadCostData(dm);
+        LoadWithdrawalData(dm);
+        LoadToxicityData(dm);
+        LoadSVRData(dm);
+        LoadDurationData(dm);
+    }
+
 private:
     // maps to hold treatment data
     using treatmentmap_t =
@@ -215,93 +302,6 @@ private:
         }
         double duration = this->duration_data[GetTreatmentThruple(person)];
         return static_cast<int>(duration);
-    }
-
-public:
-    void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
-                 std::shared_ptr<stats::DeciderBase> decider) {
-        // 0. Verify the person is linked before starting treatment
-        if (person->GetLinkState() != person::LinkageState::LINKED) {
-            return;
-        }
-
-        // 1. Check if the Person is Lost To Follow Up (LTFU)
-        if (LostToFollowUp(person, decider)) {
-            return;
-        }
-
-        // 2. Charge the Cost of the Visit (varies if this is retreatment)
-        int num_treatments =
-            person->GetWithdrawals() + person->GetCompletedTreatments();
-        double visit_cost = (num_treatments > 0) ? this->retreatment_cost
-                                                 : this->treatment_cost;
-        ChargeCost(person, visit_cost);
-
-        // 3. Attempt to start primary treatment, if already on treatment
-        // nothing happens
-        if (!person->HasInitiatedTreatment() &&
-            !InitiateTreatment(person, decider)) {
-            return;
-        }
-
-        // 4. Charge the person for the Course they are on
-        ChargeCostOfCourse(person);
-
-        // 5. Check if the person experiences toxicity
-        CheckIfExperienceToxicity(person, decider);
-
-        // 6. Determine if the person withdraws from the treatment
-        if (Withdraws(person, dm, decider)) {
-            return;
-        }
-
-        // 7. Determine if the person has been treated long enough and, if so,
-        // if they achieve SVR
-        int duration = GetTreatmentDuration(person);
-        if (person->GetTimeSinceTreatmentInitiation() == duration) {
-            person->AddCompletedTreatment();
-            int decision = DecideIfPersonAchievesSVR(person, decider);
-            if (decision == 0) {
-                person->AddSVR();
-                person->ClearHCV();
-                person->ClearDiagnosis();
-                this->QuitEngagement(person);
-            } else if (!person->IsInRetreatment()) {
-                // initiate retreatment
-                person->InitiateTreatment();
-            } else {
-                // if retreatment fails, it is a failure and treatment ceases
-                this->QuitEngagement(person);
-            }
-        }
-    }
-    HCVTreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
-        : TreatmentIMPL(dm) {
-        this->allow_retreatment =
-            Utils::GetBoolFromConfig("treatment.allow_retreatment", dm);
-
-        this->lost_to_follow_up_probability =
-            Utils::GetDoubleFromConfig("treatment.ltfu_probability", dm);
-        this->treatment_cost =
-            Utils::GetDoubleFromConfig("treatment.treatment_cost", dm);
-        this->treatment_utility =
-            Utils::GetDoubleFromConfig("treatment.treatment_utility", dm);
-        this->retreatment_cost =
-            Utils::GetDoubleFromConfig("treatment.retreatment_cost", dm);
-        this->treatment_init_probability =
-            Utils::GetDoubleFromConfig("treatment.treatment_initiation", dm);
-        this->toxicity_cost =
-            Utils::GetDoubleFromConfig("treatment.tox_cost", dm);
-        this->toxicity_utility =
-            Utils::GetDoubleFromConfig("treatment.tox_utility", dm);
-
-        LoadEligibilityData(dm);
-        LoadCostData(dm);
-        LoadWithdrawalData(dm);
-        LoadToxicityData(dm);
-        LoadSVRData(dm);
-        LoadDurationData(dm);
     }
 };
 

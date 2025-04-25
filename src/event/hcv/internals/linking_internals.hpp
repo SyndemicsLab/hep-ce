@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -38,22 +38,6 @@ private:
         person.ClearDiagnosis(data::InfectionType::HCV);
         AddFalsePositiveCost(person, GetCostCategory());
         return true;
-    }
-
-    void LoadLinkingData(
-        std::shared_ptr<datamanagement::DataManagerBase> dm) override {
-        std::string error;
-        int rc = dm->SelectCustomCallback(LinkSQL("screening_and_linkage"),
-                                          CallbackLink, &GetLinkData(), error);
-        if (rc != 0) {
-            spdlog::get("main")->error(
-                "Error retrieving Linking values "
-                "for table screening_and_linkage;! Error Message: {}",
-                error);
-        }
-        if (GetLinkData().empty()) {
-            spdlog::get("main")->warn("No HCV linking data found.");
-        }
     }
 };
 } // namespace hcv

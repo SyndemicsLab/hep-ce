@@ -5,7 +5,7 @@
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-04-29                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -728,7 +728,7 @@ public:
     bool IsGenotypeThree() const { return this->hcv_details.is_genotype_three; }
     bool IsBoomer() const { return this->boomer_classification; }
 
-    bool IsCirrhotic() {
+    bool IsCirrhotic() const {
         if (this->GetTrueFibrosisState() == FibrosisState::F4 ||
             this->GetTrueFibrosisState() == FibrosisState::DECOMP) {
             return true;

@@ -4,8 +4,8 @@
 // Created: 2025-04-16                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-25                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,6 +39,9 @@ bool TreatmentIMPL::isEligibleBehavior(person::Behavior behavior) const {
 
 bool TreatmentIMPL::isEligiblePregnancy(
     person::PregnancyState pregnancy_state) const {
+    if (pregnancy_state == person::PregnancyState::NA) {
+        return true;
+    }
     for (std::string state : this->ineligible_pregnancy) {
         person::PregnancyState temp;
         temp << state;

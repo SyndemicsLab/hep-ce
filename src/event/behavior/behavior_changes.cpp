@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -101,7 +101,7 @@ void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {
     AddEventCost(person);
 
     SetUtil(_cost_data[tup].util);
-    AddUtility(person);
+    AddEventUtility(person);
 }
 } // namespace behavior
 } // namespace event

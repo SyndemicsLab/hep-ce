@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -173,7 +173,7 @@ public:
     virtual int GetAge() const = 0;
     virtual void SetAge(int age) = 0;
 
-    virtual bool IsCirrhotic() = 0;
+    virtual bool IsCirrhotic() const = 0;
 
     virtual std::string GetPersonDataString() const = 0;
     virtual int GetID() const = 0;

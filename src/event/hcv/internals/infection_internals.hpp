@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -20,7 +20,7 @@
 namespace hepce {
 namespace event {
 namespace hcv {
-class InfectionImpl : public virtual Infection, public EventBase {
+class InfectionImpl : public virtual hcv::Infection, public EventBase {
 public:
     using incidencemap_t =
         std::unordered_map<utils::tuple_3i, double, utils::key_hash_3i,

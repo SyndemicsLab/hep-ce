@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -12,6 +12,7 @@
 #include <hepce/event/hcv/linking.hpp>
 
 #include "hcv/internals/linking_internals.hpp"
+#include <hepce/utils/config.hpp>
 
 namespace hepce {
 namespace event {
@@ -24,6 +25,7 @@ hcv::Linking::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
 
 LinkingImpl::LinkingImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
                          const std::string &log_name) {
+    SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
     SetCostCategory(model::CostCategory::kLinking);
     SetLinkingStratifiedByPregnancy(CheckForPregnancyEvent(dm));
     LoadLinkingData(dm);
