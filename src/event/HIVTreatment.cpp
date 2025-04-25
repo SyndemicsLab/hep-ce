@@ -4,7 +4,7 @@
 // Created: 2025-04-17                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -241,10 +241,9 @@ public:
         ChargeCost(person, this->treatment_cost);
 
         // Determine if Person initiates treatment
-        if (!person->HasInitiatedTreatment(INF_TYPE)) {
-            if (!InitiateTreatment(person, decider)) {
-                return;
-            }
+        if (!person->HasInitiatedTreatment(INF_TYPE) &&
+            !InitiateTreatment(person, decider)) {
+            return;
         }
 
         // Charge the cost of the treatment

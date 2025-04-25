@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -240,10 +240,9 @@ public:
 
         // 3. Attempt to start primary treatment, if already on treatment
         // nothing happens
-        if (!person->HasInitiatedTreatment()) {
-            if (!InitiateTreatment(person, decider)) {
-                return;
-            }
+        if (!person->HasInitiatedTreatment() &&
+            !InitiateTreatment(person, decider)) {
+            return;
         }
 
         // 4. Charge the person for the Course they are on
