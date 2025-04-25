@@ -4,7 +4,7 @@
 // Created: 2024-04-10                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-04-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -12,6 +12,7 @@
 
 #include "Cost.hpp"
 #include <cmath>
+#include <ostream>
 
 namespace cost {
 class CostTracker::CostTrackerIMPL {

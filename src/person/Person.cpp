@@ -389,7 +389,12 @@ public:
                        << tu.discount_mult_util << ",";
         // lifespan
         population_row << this->life_span << ","
-                       << this->discounted_life_span;
+                       << this->discounted_life_span << ",";
+
+        // Cost Totals
+        const auto &ct = this->GetCostTotals();
+        population_row << ct.first << ","
+                       << ct.second << std::endl;
         // clang-format on
         return population_row.str();
     }
