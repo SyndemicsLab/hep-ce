@@ -31,7 +31,7 @@ public:
 
 private:
     data::InfectionType GetInfectionType() const override {
-        return data::InfectionType::HIV;
+        return data:: ::kHiv;
     }
 };
 } // namespace hiv

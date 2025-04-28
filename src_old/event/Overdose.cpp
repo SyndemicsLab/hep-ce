@@ -42,8 +42,8 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if not using, return
-        if (person->GetBehavior() != person::Behavior::INJECTION &&
-            person->GetBehavior() != person::Behavior::NONINJECTION) {
+        if (person->GetBehavior() != person::Behavior::kInjection &&
+            person->GetBehavior() != person::Behavior::kNoninjection) {
             return;
         }
         std::string query = buildSQL(person);

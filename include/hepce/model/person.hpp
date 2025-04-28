@@ -27,28 +27,23 @@ namespace model {
 class Person {
 public:
     // Functionality
-    virtual int
-    CreatePersonFromTable(int id, datamanagement::ModelData &model_data) = 0;
     virtual int Grow() = 0;
     virtual int
-    Die(data::DeathReason deathReason = data::DeathReason::BACKGROUND) = 0;
+    Die(data::DeathReason deathReason = data::DeathReason::kBackground) = 0;
 
     // HCV
     virtual int InfectHCV() = 0;
-    virtual int ClearHCV(bool acute = false) = 0;
+    virtual int ClearHCV(bool is_acute = false) = 0;
     virtual data::HCV GetHCV() const = 0;
     virtual void SetHCV(data::HCV hcv) = 0;
     virtual int AddAcuteHCVClearance() = 0;
     virtual int GetAcuteHCVClearances() const = 0;
     virtual bool GetSeropositivity() const = 0;
-    virtual void SetSeropositivity(bool seropositive) = 0;
+    virtual void SetSeropositivity(bool seropositive_state) = 0;
 
-    virtual void
-    Diagnose(data::InfectionType it = data::InfectionType::HCV) = 0;
-    virtual void
-    ClearDiagnosis(data::InfectionType it = data::InfectionType::HCV) = 0;
-    virtual bool IsIdentifiedAsInfected(
-        data::InfectionType it = data::InfectionType::HCV) const = 0;
+    virtual void Diagnose(data::InfectionType it) = 0;
+    virtual void ClearDiagnosis(data::InfectionType it) = 0;
+    virtual bool IsIdentifiedAsInfected(data::InfectionType it) const = 0;
 
     virtual int GetTimeHCVIdentified() const = 0;
     virtual int GetTimesHCVInfected() const = 0;
@@ -56,70 +51,54 @@ public:
     virtual int GetTimeSinceHCVChanged() const = 0;
 
     // Screening
-    virtual int
-    MarkScreened(data::InfectionType it = data::InfectionType::HCV) = 0;
-    virtual int
-    AddAbScreen(data::InfectionType it = data::InfectionType::HCV) = 0;
-    virtual int
-    AddRnaScreen(data::InfectionType it = data::InfectionType::HCV) = 0;
+    virtual int MarkScreened(data::InfectionType it) = 0;
+    virtual int AddAbScreen(data::InfectionType it) = 0;
+    virtual int AddRnaScreen(data::InfectionType it) = 0;
     virtual bool HadSecondScreeningTest() const = 0;
-    virtual int GetNumberOfABTests(
-        data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual int GetNumberOfRNATests(
-        data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual int GetTimeOfLastScreening(
-        data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual int GetTimeSinceLastScreening(
-        data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual data::ScreeningDetails GetScreeningDetails(
-        data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual bool CheckAntibodyPositive(
-        data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual void
-    SetAntibodyPositive(bool result = true,
-                        data::InfectionType it = data::InfectionType::HCV) = 0;
+    virtual int GetNumberOfABTests(data::InfectionType it) const = 0;
+    virtual int GetNumberOfRNATests(data::InfectionType it) const = 0;
+    virtual int GetTimeOfLastScreening(data::InfectionType it) const = 0;
+    virtual int GetTimeSinceLastScreening(data::InfectionType it) const = 0;
+    virtual data::ScreeningDetails
+    GetScreeningDetails(data::InfectionType it) const = 0;
+    virtual bool CheckAntibodyPositive(data::InfectionType it) const = 0;
+    virtual void SetAntibodyPositive(bool result = true,
+                                     data::InfectionType it) = 0;
     virtual void GiveSecondScreeningTest(bool state) = 0;
 
     // Linking
-    virtual int Unlink(data::InfectionType it = data::InfectionType::HCV) = 0;
-    virtual int Link(data::LinkageType linkType,
-                     data::InfectionType it = data::InfectionType::HCV) = 0;
-    virtual data::LinkageState
-    GetLinkState(data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual int GetTimeOfLinkChange(
-        data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual int GetTimeSinceLinkChange(
-        data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual int
-    GetLinkCount(data::InfectionType it = data::InfectionType::HCV) const = 0;
-    virtual void
-    SetLinkageType(data::LinkageType linkType,
-                   data::InfectionType it = data::InfectionType::HCV) = 0;
-    virtual data::LinkageType
-    GetLinkageType(data::InfectionType it = data::InfectionType::HCV) const = 0;
+    virtual int Unlink(data::InfectionType it) = 0;
+    virtual int Link(data::LinkageType link_type, data::InfectionType it) = 0;
+    virtual data::LinkageState GetLinkState(data::InfectionType it) const = 0;
+    virtual int GetTimeOfLinkChange(data::InfectionType it) const = 0;
+    virtual int GetTimeSinceLinkChange(data::InfectionType it) const = 0;
+    virtual int GetLinkCount(data::InfectionType it) const = 0;
+    virtual void SetLinkageType(data::LinkageType link_type,
+                                data::InfectionType it) = 0;
+    virtual data::LinkageType GetLinkageType(data::InfectionType it) const = 0;
     virtual data::LinkageDetails
-    GetLinkStatus(data::InfectionType it = data::InfectionType::HCV) const = 0;
+    GetLinkStatus(data::InfectionType it) const = 0;
 
     // Treatment
-    virtual int AddWithdrawal() = 0;
-    virtual int GetWithdrawals() const = 0;
-    virtual int AddToxicReaction() = 0;
-    virtual int GetToxicReactions() const = 0;
-    virtual int AddCompletedTreatment() = 0;
-    virtual int GetCompletedTreatments() const = 0;
-    virtual int GetRetreatments() const = 0;
+    virtual int AddWithdrawal(data::InfectionType it) = 0;
+    virtual int GetWithdrawals(data::InfectionType it) const = 0;
+    virtual int AddToxicReaction(data::InfectionType it) = 0;
+    virtual int GetToxicReactions(data::InfectionType it) const = 0;
+    virtual int AddCompletedTreatment(data::InfectionType it) = 0;
+    virtual int GetCompletedTreatments(data::InfectionType it) const = 0;
+    virtual int GetRetreatments(data::InfectionType it) const = 0;
     virtual int AddSVR() = 0;
     virtual int GetSVRs() const = 0;
-    virtual data::TreatmentDetails GetTreatmentDetails() const = 0;
-    virtual int GetNumberOfTreatmentStarts() const = 0;
-    virtual void InitiateTreatment() = 0;
-    virtual int EndTreatment() = 0;
-
-    virtual bool HasInitiatedTreatment() const = 0;
-    virtual bool IsInRetreatment() const = 0;
-
-    virtual int GetTimeOfTreatmentInitiation() const = 0;
-    virtual int GetTimeSinceTreatmentInitiation() const = 0;
+    virtual data::TreatmentDetails
+    GetTreatmentDetails(data::InfectionType it) const = 0;
+    virtual int GetNumberOfTreatmentStarts(data::InfectionType it) const = 0;
+    virtual void InitiateTreatment(data::InfectionType it) = 0;
+    virtual int EndTreatment(data::InfectionType it) = 0;
+    virtual bool HasInitiatedTreatment(data::InfectionType it) const = 0;
+    virtual bool IsInRetreatment(data::InfectionType it) const = 0;
+    virtual int GetTimeOfTreatmentInitiation(data::InfectionType it) const = 0;
+    virtual int
+    GetTimeSinceTreatmentInitiation(data::InfectionType it) const = 0;
 
     // Drug Use Behavior
     virtual int SetBehavior(data::Behavior) = 0;
@@ -162,7 +141,6 @@ public:
     virtual void AddDiscountedLifeSpan(double discounted_life) = 0;
 
     // General Data Handling
-    virtual int LoadICValues(int id, std::vector<std::string> icValues) = 0;
     virtual bool IsAlive() const = 0;
     virtual bool IsGenotypeThree() const = 0;
     virtual void SetGenotypeThree(bool genotype) = 0;
@@ -173,10 +151,9 @@ public:
     virtual int GetAge() const = 0;
     virtual void SetAge(int age) = 0;
 
-    virtual bool IsCirrhotic() const = 0;
+    virtual bool IsCirrhotic() = 0;
 
     virtual std::string GetPersonDataString() const = 0;
-    virtual int GetID() const = 0;
     virtual int GetCurrentTimestep() const = 0;
     virtual data::Sex GetSex() const = 0;
     virtual std::unordered_map<model::CostCategory, std::pair<double, double>>
@@ -194,6 +171,8 @@ public:
     virtual void InfectHIV() = 0;
     virtual int GetTimeHIVChanged() const = 0;
     virtual int GetTimeSinceHIVChanged() const = 0;
+    // outcomes
+    virtual int GetLowCD4MonthCount() const = 0;
 
     // TODO
     virtual data::PregnancyState GetPregnancyState() const = 0;
@@ -205,10 +184,14 @@ public:
     virtual int AddChild(data::HCV hcv, bool test) = 0;
     virtual int EndPostpartum() = 0;
     virtual int Impregnate() = 0;
-    virtual void ExposeInfant() = 0;
+    virtual void AddInfantExposure() = 0;
     virtual data::PregnancyDetails GetPregnancyDetails() const = 0;
     virtual void SetPregnancyState(data::PregnancyState state) = 0;
     virtual void SetNumMiscarriages(int miscarriages) = 0;
+    virtual int GetInfantHCVExposures() const = 0;
+    virtual int GetInfantHCVInfections() const = 0;
+    virtual int GetInfantHCVTests() const = 0;
+    virtual int GetPregnancyCount() const = 0;
 
     virtual void TransitionMOUD() = 0;
     virtual data::MOUD GetMoudState() const = 0;
@@ -221,6 +204,9 @@ public:
     virtual data::HCCState GetHCCState() const = 0;
     virtual void DiagnoseHCC() = 0;
     virtual bool IsDiagnosedWithHCC() const = 0;
+
+    // Person Output
+    virtual std::string MakePopulationRow() const = 0;
 
     static std::unique_ptr<Person>
     Create(const std::string &log_name = "console");

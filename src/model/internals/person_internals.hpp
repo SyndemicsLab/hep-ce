@@ -14,34 +14,38 @@
 
 #include <hepce/model/person.hpp>
 
+#include <hepce/data/types.hpp>
+#include <hepce/model/cost.hpp>
+
 namespace hepce {
 namespace model {
 class PersonImpl : public Person {
 public:
-    PersonImpl(const std::string &log_name = "console") {}
+    PersonImpl(const std::string &log_name = "console");
     ~PersonImpl() = default;
+
     // Functionality
-    int CreatePersonFromTable(int id,
-                              datamanagement::ModelData &model_data) override;
-    int Grow() override;
-    int
-    Die(data::DeathReason deathReason = data::DeathReason::BACKGROUND) override;
+    inline int Grow() override {
+        UpdateTimers();
+        SetAge(GetAge() + 1);
+        _life_span++;
+    }
+    int Die(data::DeathReason deathReason =
+                data::DeathReason::kBackground) override;
 
     // HCV
     int InfectHCV() override;
-    int ClearHCV(bool acute = false) override;
+    int ClearHCV(bool is_acute = false) override;
     data::HCV GetHCV() const override;
     void SetHCV(data::HCV hcv) override;
     int AddAcuteHCVClearance() override;
     int GetAcuteHCVClearances() const override;
     bool GetSeropositivity() const override;
-    void SetSeropositivity(bool seropositive) override;
+    void SetSeropositivity(bool seropositive_state) override;
 
-    void Diagnose(data::InfectionType it = data::InfectionType::HCV) override;
-    void
-    ClearDiagnosis(data::InfectionType it = data::InfectionType::HCV) override;
-    bool IsIdentifiedAsInfected(
-        data::InfectionType it = data::InfectionType::HCV) const override;
+    void Diagnose(data::InfectionType it) override;
+    void ClearDiagnosis(data::InfectionType it) override;
+    bool IsIdentifiedAsInfected(data::InfectionType it) const override;
 
     int GetTimeHCVIdentified() const override;
     int GetTimesHCVInfected() const override;
@@ -49,69 +53,52 @@ public:
     int GetTimeSinceHCVChanged() const override;
 
     // Screening
-    int
-    MarkScreened(data::InfectionType it = data::InfectionType::HCV) override;
-    int AddAbScreen(data::InfectionType it = data::InfectionType::HCV) override;
-    int
-    AddRnaScreen(data::InfectionType it = data::InfectionType::HCV) override;
+    int MarkScreened(data::InfectionType it) override;
+    int AddAbScreen(data::InfectionType it) override;
+    int AddRnaScreen(data::InfectionType it) override;
     bool HadSecondScreeningTest() const override;
-    int GetNumberOfABTests(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    int GetNumberOfRNATests(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    int GetTimeOfLastScreening(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    int GetTimeSinceLastScreening(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    data::ScreeningDetails GetScreeningDetails(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    bool CheckAntibodyPositive(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    void SetAntibodyPositive(
-        bool result = true,
-        data::InfectionType it = data::InfectionType::HCV) override;
+    int GetNumberOfABTests(data::InfectionType it) const override;
+    int GetNumberOfRNATests(data::InfectionType it) const override;
+    int GetTimeOfLastScreening(data::InfectionType it) const override;
+    int GetTimeSinceLastScreening(data::InfectionType it) const override;
+    data::ScreeningDetails
+    GetScreeningDetails(data::InfectionType it) const override;
+    bool CheckAntibodyPositive(data::InfectionType it) const override;
+    void SetAntibodyPositive(bool result = true,
+                             data::InfectionType it) override;
     void GiveSecondScreeningTest(bool state) override;
 
     // Linking
-    int Unlink(data::InfectionType it = data::InfectionType::HCV) override;
-    int Link(data::LinkageType linkType,
-             data::InfectionType it = data::InfectionType::HCV) override;
-    data::LinkageState GetLinkState(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    int GetTimeOfLinkChange(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    int GetTimeSinceLinkChange(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    int GetLinkCount(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    void
-    SetLinkageType(data::LinkageType linkType,
-                   data::InfectionType it = data::InfectionType::HCV) override;
-    data::LinkageType GetLinkageType(
-        data::InfectionType it = data::InfectionType::HCV) const override;
-    data::LinkageDetails GetLinkStatus(
-        data::InfectionType it = data::InfectionType::HCV) const override;
+    int Unlink(data::InfectionType it) override;
+    int Link(data::LinkageType link_type, data::InfectionType it) override;
+    data::LinkageState GetLinkState(data::InfectionType it) const override;
+    int GetTimeOfLinkChange(data::InfectionType it) const override;
+    int GetTimeSinceLinkChange(data::InfectionType it) const override;
+    int GetLinkCount(data::InfectionType it) const override;
+    void SetLinkageType(data::LinkageType link_type,
+                        data::InfectionType it) override;
+    data::LinkageType GetLinkageType(data::InfectionType it) const override;
+    data::LinkageDetails GetLinkStatus(data::InfectionType it) const override;
 
     // Treatment
-    int AddWithdrawal() override;
-    int GetWithdrawals() const override;
-    int AddToxicReaction() override;
-    int GetToxicReactions() const override;
-    int AddCompletedTreatment() override;
-    int GetCompletedTreatments() const override;
-    int GetRetreatments() const override;
+    int AddWithdrawal(data::InfectionType it) override;
+    int GetWithdrawals(data::InfectionType it) const override;
+    int AddToxicReaction(data::InfectionType it) override;
+    int GetToxicReactions(data::InfectionType it) const override;
+    int AddCompletedTreatment(data::InfectionType it) override;
+    int GetCompletedTreatments(data::InfectionType it) const override;
+    int GetRetreatments(data::InfectionType it) const override;
     int AddSVR() override;
     int GetSVRs() const override;
-    data::TreatmentDetails GetTreatmentDetails() const override;
-    int GetNumberOfTreatmentStarts() const override;
-    void InitiateTreatment() override;
-    int EndTreatment() override;
-
-    bool HasInitiatedTreatment() const override;
-    bool IsInRetreatment() const override;
-
-    int GetTimeOfTreatmentInitiation() const override;
-    int GetTimeSinceTreatmentInitiation() const override;
+    data::TreatmentDetails
+    GetTreatmentDetails(data::InfectionType it) const override;
+    int GetNumberOfTreatmentStarts(data::InfectionType it) const override;
+    void InitiateTreatment(data::InfectionType it) override;
+    int EndTreatment(data::InfectionType it) override;
+    bool HasInitiatedTreatment(data::InfectionType it) const override;
+    bool IsInRetreatment(data::InfectionType it) const override;
+    int GetTimeOfTreatmentInitiation(data::InfectionType it) const override;
+    int GetTimeSinceTreatmentInitiation(data::InfectionType it) const override;
 
     // Drug Use Behavior
     int SetBehavior(data::Behavior) override;
@@ -154,7 +141,6 @@ public:
     void AddDiscountedLifeSpan(double discounted_life) override;
 
     // General Data Handling
-    int LoadICValues(int id, std::vector<std::string> icValues) override;
     bool IsAlive() const override;
     bool IsGenotypeThree() const override;
     void SetGenotypeThree(bool genotype) override;
@@ -165,10 +151,9 @@ public:
     int GetAge() const override;
     void SetAge(int age) override;
 
-    bool IsCirrhotic() const override;
+    bool IsCirrhotic() override;
 
     std::string GetPersonDataString() const override;
-    int GetID() const override;
     int GetCurrentTimestep() const override;
     data::Sex GetSex() const override;
     std::unordered_map<model::CostCategory, std::pair<double, double>>
@@ -186,6 +171,8 @@ public:
     void InfectHIV() override;
     int GetTimeHIVChanged() const override;
     int GetTimeSinceHIVChanged() const override;
+    // outcomes
+    int GetLowCD4MonthCount() const override;
 
     // TODO
     data::PregnancyState GetPregnancyState() const override;
@@ -197,10 +184,14 @@ public:
     int AddChild(data::HCV hcv, bool test) override;
     int EndPostpartum() override;
     int Impregnate() override;
-    void ExposeInfant() override;
+    void AddInfantExposure() override;
     data::PregnancyDetails GetPregnancyDetails() const override;
     void SetPregnancyState(data::PregnancyState state) override;
     void SetNumMiscarriages(int miscarriages) override;
+    int GetInfantHCVExposures() const override;
+    int GetInfantHCVInfections() const override;
+    int GetInfantHCVTests() const override;
+    int GetPregnancyCount() const override;
 
     void TransitionMOUD() override;
     data::MOUD GetMoudState() const override;
@@ -213,6 +204,57 @@ public:
     data::HCCState GetHCCState() const override;
     void DiagnoseHCC() override;
     bool IsDiagnosedWithHCC() const override;
+
+    // Person Output
+    std::string MakePopulationRow() const override;
+
+private:
+    size_t _id;
+    size_t _current_time = 0;
+
+    data::Sex _sex = data::Sex::kMale;
+    int _age = 0;
+    bool _is_alive = true;
+    bool _boomer_classification = false;
+    data::DeathReason _death_reason = data::DeathReason::kNa;
+    data::BehaviorDetails _behavior_details;
+    data::HCVDetails _hcv_details;
+    data::HIVDetails _hiv_details;
+    data::HCCDetails _hcc_details;
+    bool _currently_overdosing = false;
+    int _num_overdoses = 0;
+    data::MOUDDetails _moud_details;
+    data::PregnancyDetails _pregnancy_details;
+    data::StagingDetails _staging_details;
+    std::unordered_map<data::InfectionType, data::LinkageDetails>
+        _linkage_details;
+    std::unordered_map<data::InfectionType, data::ScreeningDetails>
+        _screening_details;
+    std::unordered_map<data::InfectionType, data::TreatmentDetails>
+        _treatment_details;
+    // utility
+    std::unordered_map<model::UtilityCategory, double> _utilities;
+    // life span tracking
+    int _life_span = 0;
+    double _discounted_life_span = 0;
+    // cost
+    std::unique_ptr<model::Costs> _costs;
+
+    int UpdateTimers() {
+        _current_time++;
+        if (GetBehavior() == data::Behavior::kNoninjection ||
+            GetBehavior() == data::Behavior::kInjection) {
+            _behavior_details.time_last_active = _current_time;
+        }
+        if (GetMoudState() == data::MOUD::kCurrent) {
+            _moud_details.total_moud_months++;
+        }
+        if (GetHIV() == data::HIV::LoUn || GetHIV() == data::HIV::LoSu) {
+            _hiv_details.low_cd4_months_count++;
+        }
+        _moud_details.current_state_concurrent_months++;
+        return 0;
+    }
 };
 } // namespace model
 } // namespace hepce

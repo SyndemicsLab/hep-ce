@@ -149,7 +149,7 @@ public:
 
         // 2. Draw a behavior state to be transitioned to
         int res = decider->GetDecision(probs);
-        if (res >= (int)person::Behavior::COUNT) {
+        if (res >= (int)person::Behavior::kCount) {
             spdlog::get("main")->error(
                 "Behavior Classification Decision returned "
                 "value outside bounds");

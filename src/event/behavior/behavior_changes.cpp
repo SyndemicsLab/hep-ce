@@ -51,7 +51,7 @@ int BehaviorChangesImpl::Execute(model::Person &person,
 
     // 2. Draw a behavior state to be transitioned to
     int res = sampler.GetDecision(probs);
-    if (res >= static_cast<int>(data::Behavior::COUNT)) {
+    if (res >= static_cast<int>(data::Behavior::kCount)) {
         // Log Error
         return;
     }

@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,9 +28,9 @@ std::string SQLQuery = "SELECT age_years, gender, drug_behavior, cost, utility "
 TEST_F(AgingTest, Aging) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::INJECTION));
+        .WillByDefault(Return(person::Behavior::kInjection));
 
     // Data Setup
     double discount_rate = 0.025;
@@ -57,10 +57,10 @@ TEST_F(AgingTest, Aging) {
     EXPECT_CALL(*testPerson, Grow()).Times(1);
     EXPECT_CALL(*testPerson, GetCurrentTimestep()).WillRepeatedly(Return(1));
     EXPECT_CALL(*testPerson, AddCost(cu.cost, discounted_cost,
-                                     cost::CostCategory::BACKGROUND))
+                                     cost::CostCategory::kBackground))
         .Times(1);
     EXPECT_CALL(*testPerson,
-                SetUtility(cu.util, utility::UtilityCategory::BACKGROUND))
+                SetUtility(cu.util, utility::UtilityCategory::kBackground))
         .Times(1);
     EXPECT_CALL(*testPerson, GetUtility()).WillOnce(Return(expected_utils));
     EXPECT_CALL(*testPerson, AccumulateTotalUtility(expected_utils,

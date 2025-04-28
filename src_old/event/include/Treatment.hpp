@@ -27,7 +27,7 @@ protected:
         utility::UtilityCategory::TREATMENT;
     cost::CostCategory COST_CATEGORY = cost::CostCategory::TREATMENT;
     // default infection type is HCV
-    person::InfectionType INF_TYPE = person::InfectionType::HCV;
+    person::InfectionType INF_TYPE = person:: ::kHcv;
 
     // user-provided values
     bool allow_retreatment = true;
@@ -52,7 +52,7 @@ protected:
     /// @brief
     /// @param
     /// @return
-    bool isEligibleFibrosisStage(person::FibrosisState fibrosisState) const;
+    bool isEligibleFibrosisStage(person::FibrosisState fibrosis_state) const;
     /// @brief
     /// @param
     /// @return

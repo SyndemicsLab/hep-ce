@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-07                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +23,7 @@ class ClearanceTest : public EventTest {};
 
 TEST_F(ClearanceTest, Clearance) {
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("infection.clearance_prob", _))

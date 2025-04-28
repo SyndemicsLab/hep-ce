@@ -138,16 +138,16 @@ private:
                                   datamanagement::ModelData &model_data,
                                   double &prob) {
 
-        if (person->GetTrueFibrosisState() == person::FibrosisState::F4) {
-            if (person->GetHCV() == person::HCV::NONE) {
+        if (person->GetTrueFibrosisState() == person::FibrosisState::kF4) {
+            if (person->GetHCV() == person::HCV::kNone) {
                 prob = f4_uninfected_probability;
             } else {
                 prob = f4_infected_probability;
             }
 
         } else if (person->GetTrueFibrosisState() ==
-                   person::FibrosisState::DECOMP) {
-            if (person->GetHCV() == person::HCV::NONE) {
+                   person::FibrosisState::kDecomp) {
+            if (person->GetHCV() == person::HCV::kNone) {
                 prob = decomp_uninfected_probability;
             } else {
                 prob = decomp_infected_probability;
@@ -181,7 +181,7 @@ private:
 
     bool ReachedMaxAge(std::shared_ptr<person::PersonBase> person) {
         if (person->GetAge() >= 1200) {
-            this->die(person, person::DeathReason::AGE);
+            this->die(person, person::DeathReason::kAge);
             return true;
         }
         return false;
@@ -209,7 +209,7 @@ private:
             person->ToggleOverdose();
             return false;
         }
-        this->die(person, person::DeathReason::OVERDOSE);
+        this->die(person, person::DeathReason::kOverdose);
         return true;
     }
 
@@ -243,9 +243,9 @@ public:
 
         int retIdx = decider->GetDecision(probVec);
         if (retIdx == 0) {
-            this->die(person, person::DeathReason::BACKGROUND);
+            this->die(person, person::DeathReason::kBackground);
         } else if (retIdx == 1) {
-            this->die(person, person::DeathReason::LIVER);
+            this->die(person, person::DeathReason::kLiver);
         }
     }
 

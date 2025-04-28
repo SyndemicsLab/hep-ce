@@ -4,8 +4,8 @@
 // Created: 2024-04-10                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,9 +28,9 @@ public:
         costs[CostCategory::STAGING] = {0.0, 0.0};
         costs[CostCategory::LIVER] = {0.0, 0.0};
         costs[CostCategory::TREATMENT] = {0.0, 0.0};
-        costs[CostCategory::BACKGROUND] = {0.0, 0.0};
+        costs[CostCategory::kBackground] = {0.0, 0.0};
     }
-    ~CostTrackerIMPL(){};
+    ~CostTrackerIMPL() {};
 
     std::pair<double, double> GetTotals() const {
         double base_sum = 0.0;
@@ -105,8 +105,8 @@ std::ostream &operator<<(std::ostream &os, const CostCategory &inst) {
     case CostCategory::TREATMENT:
         os << "TREATMENT";
         break;
-    case CostCategory::BACKGROUND:
-        os << "BACKGROUND";
+    case CostCategory::kBackground:
+        os << "kBackground";
         break;
     default:
         os << "N/A";

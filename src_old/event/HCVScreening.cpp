@@ -97,33 +97,33 @@ private:
     double GetScreeningTypeSensitivitySpecificity(person::HCV infectionStatus,
                                                   std::string configKey) {
         if (configKey == "screening_background_rna") {
-            if (infectionStatus == person::HCV::ACUTE) {
+            if (infectionStatus == person::HCV::kAcute) {
                 return background_rna_acute_sensitivity;
-            } else if (infectionStatus == person::HCV::CHRONIC) {
+            } else if (infectionStatus == person::HCV::kChronic) {
                 return background_rna_chronic_sensitivity;
             } else {
                 return 1 - background_rna_specificity;
             }
         } else if (configKey == "screening_background_ab") {
-            if (infectionStatus == person::HCV::ACUTE) {
+            if (infectionStatus == person::HCV::kAcute) {
                 return background_ab_acute_sensitivity;
-            } else if (infectionStatus == person::HCV::CHRONIC) {
+            } else if (infectionStatus == person::HCV::kChronic) {
                 return background_ab_chronic_sensitivity;
             } else {
                 return 1 - background_ab_specificity;
             }
         } else if (configKey == "screening_intervention_rna") {
-            if (infectionStatus == person::HCV::ACUTE) {
+            if (infectionStatus == person::HCV::kAcute) {
                 return intervention_rna_acute_sensitivity;
-            } else if (infectionStatus == person::HCV::CHRONIC) {
+            } else if (infectionStatus == person::HCV::kChronic) {
                 return intervention_rna_chronic_sensitivity;
             } else {
                 return 1 - intervention_rna_specificity;
             }
         } else if (configKey == "screening_intervention_ab") {
-            if (infectionStatus == person::HCV::ACUTE) {
+            if (infectionStatus == person::HCV::kAcute) {
                 return intervention_ab_acute_sensitivity;
-            } else if (infectionStatus == person::HCV::CHRONIC) {
+            } else if (infectionStatus == person::HCV::kChronic) {
                 return intervention_ab_chronic_sensitivity;
             } else {
                 return 1 - intervention_ab_specificity;
@@ -165,8 +165,8 @@ private:
 
         if (runRNATest(person, dm, screenkey, decider)) {
             person::LinkageType type = (screenkey == "screening_background")
-                                           ? person::LinkageType::BACKGROUND
-                                           : person::LinkageType::INTERVENTION;
+                                           ? person::LinkageType::kBackground
+                                           : person::LinkageType::kIntervention;
             person->SetLinkageType(type);
             person->Diagnose();
         }
@@ -246,7 +246,7 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if a person is already linked, skip screening
-        if (person->GetLinkState() == person::LinkageState::LINKED) {
+        if (person->GetLinkState() == person::LinkageState::kLinked) {
             return;
         }
 

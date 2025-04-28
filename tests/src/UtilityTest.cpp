@@ -4,8 +4,8 @@
 // Created: 2025-02-27                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,7 +28,7 @@ TEST(UtilityTest, GetUtilities) {
 
     double expected_min = 0.64;
     double expected_mult = 1.0;
-    for (int i = 0; i < (int)utility::UtilityCategory::COUNT; ++i) {
+    for (int i = 0; i < (int)utility::UtilityCategory::kCount; ++i) {
         double util = 1 - 0.36 / (static_cast<int>(i) + 1);
         expected_mult *= util;
         utility::UtilityCategory category =
@@ -45,7 +45,7 @@ TEST(UtilityTest, GetRawUtilities) {
     utility::UtilityTracker ut;
     std::unordered_map<utility::UtilityCategory, double> expected;
 
-    for (int i = 0; i < (int)utility::UtilityCategory::COUNT; ++i) {
+    for (int i = 0; i < (int)utility::UtilityCategory::kCount; ++i) {
         double util = 1 - 0.36 / (static_cast<int>(i) + 1);
         utility::UtilityCategory category =
             static_cast<utility::UtilityCategory>(i);

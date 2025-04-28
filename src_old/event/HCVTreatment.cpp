@@ -21,7 +21,7 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // 0. Verify the person is linked before starting treatment
-        if (person->GetLinkState() != person::LinkageState::LINKED) {
+        if (person->GetLinkState() != person::LinkageState::kLinked) {
             return;
         }
 

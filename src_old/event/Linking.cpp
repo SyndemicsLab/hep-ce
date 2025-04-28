@@ -48,9 +48,9 @@ LinkingIMPL::GetLinkProbability(std::shared_ptr<person::PersonBase> person,
     const person::LinkageType &type = person->GetLinkageType(it);
     Utils::tuple_4i tup =
         std::make_tuple(age_years, gender, drug_behavior, pregnancy);
-    if (type == person::LinkageType::BACKGROUND) {
+    if (type == person::LinkageType::kBackground) {
         return this->background_link_data[tup];
-    } else if (type == person::LinkageType::INTERVENTION) {
+    } else if (type == person::LinkageType::kIntervention) {
         return this->intervention_link_data[tup];
     }
     return 0.0;
@@ -59,7 +59,7 @@ LinkingIMPL::GetLinkProbability(std::shared_ptr<person::PersonBase> person,
 void LinkingIMPL::AddLinkingCost(std::shared_ptr<person::PersonBase> person,
                                  LINK_COST type, cost::CostCategory category) {
     double cost;
-    if (type == LINK_COST::INTERVENTION) {
+    if (type == LINK_COST::kIntervention) {
         cost = this->intervention_cost;
     } else if (type == LINK_COST::FALSE_POSITIVE) {
         cost = this->false_positive_test_cost;
@@ -89,7 +89,7 @@ void LinkingIMPL::LoadLinkingData(person::LinkageType type,
                                   datamanagement::ModelData &model_data) {
     std::string infection =
         (this->COST_CATEGORY == cost::CostCategory::LINKING) ? "HCV" : "HIV";
-    linkmap_t *chosen_linkmap = (type == person::LinkageType::BACKGROUND)
+    linkmap_t *chosen_linkmap = (type == person::LinkageType::kBackground)
                                     ? &this->background_link_data
                                     : &this->intervention_link_data;
     std::string column = this->LINK_COLUMNS.at(type);
@@ -107,15 +107,15 @@ void LinkingIMPL::LoadLinkingData(person::LinkageType type,
 }
 
 bool LinkingIMPL::FalsePositive(std::shared_ptr<person::PersonBase> person) {
-    if (this->INF_TYPE == person::InfectionType::HCV) {
-        if (person->GetHCV() == person::HCV::NONE) {
+    if (this->INF_TYPE == person:: ::kHcv) {
+        if (person->GetHCV() == person::HCV::kNone) {
             person->ClearDiagnosis();
             this->AddLinkingCost(person, LINK_COST::FALSE_POSITIVE,
                                  this->COST_CATEGORY);
             return true;
         }
-    } else if (this->INF_TYPE == person::InfectionType::HIV) {
-        if (person->GetHIV() == person::HIV::NONE) {
+    } else if (this->INF_TYPE == person:: ::kHiv) {
+        if (person->GetHIV() == person::HIV::kNone) {
             person->ClearDiagnosis(INF_TYPE);
             this->AddLinkingCost(person, LINK_COST::FALSE_POSITIVE,
                                  this->COST_CATEGORY);
@@ -129,7 +129,7 @@ void LinkingIMPL::DoEvent(std::shared_ptr<person::PersonBase> person,
                           datamanagement::ModelData &model_data,
                           std::shared_ptr<stats::DeciderBase> decider) {
     bool is_linked =
-        (person->GetLinkState(this->INF_TYPE) == person::LinkageState::LINKED);
+        (person->GetLinkState(this->INF_TYPE) == person::LinkageState::kLinked);
     bool is_not_identified = (!person->IsIdentifiedAsInfected(this->INF_TYPE));
     if (is_linked || is_not_identified) {
         return;
@@ -152,8 +152,8 @@ void LinkingIMPL::DoEvent(std::shared_ptr<person::PersonBase> person,
     if (decider->GetDecision({prob}) == 0) {
         person::LinkageType lt = person->GetLinkageType(this->INF_TYPE);
         person->Link(lt, this->INF_TYPE);
-        if (lt == person::LinkageType::INTERVENTION) {
-            this->AddLinkingCost(person, LINK_COST::INTERVENTION,
+        if (lt == person::LinkageType::kIntervention) {
+            this->AddLinkingCost(person, LINK_COST::kIntervention,
                                  this->COST_CATEGORY);
         }
     }

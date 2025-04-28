@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: HIVInfectionsTest.cpp                                                //
-// Project: HEP-CE                                                            //
+// Project: HEPCESimulationv2                                                 //
 // Created: 2025-02-28                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-07                                                  //
+// Last Modified: 2025-04-28                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,9 +22,9 @@ std::string SQL_QUERY =
 TEST_F(HIVInfectionsTest, Infect) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::INJECTION));
+        .WillByDefault(Return(person::Behavior::kInjection));
 
     // Data Setup
     double hiv_infection_prob = 0.8;
@@ -44,7 +44,7 @@ TEST_F(HIVInfectionsTest, Infect) {
     EXPECT_CALL(*decider, GetDecision(expected_infection_prob)).Times(1);
     EXPECT_CALL(*testPerson, GetHIV())
         .Times(1)
-        .WillOnce(Return(person::HIV::NONE));
+        .WillOnce(Return(person::HIV::kNone));
     EXPECT_CALL(*testPerson, InfectHIV()).Times(1);
 
     // Run Test

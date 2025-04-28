@@ -44,7 +44,7 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if the person has never used, no MOUD change
-        if (person->GetBehavior() == person::Behavior::NEVER) {
+        if (person->GetBehavior() == person::Behavior::kNever) {
             return;
         }
         std::string query = buildSQL(person);

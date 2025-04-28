@@ -43,18 +43,18 @@ PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
 }
 
 int PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
-    if (person.GetSex() == data::Sex::MALE || person.GetAge() < 180 ||
+    if (person.GetSex() == data::Sex::kMale || person.GetAge() < 180 ||
         person.GetAge() > 540 ||
-        (person.GetPregnancyState() == data::PregnancyState::POSTPARTUM &&
+        (person.GetPregnancyState() == data::PregnancyState::kPostpartum &&
          person.GetTimeSincePregnancyChange() < 3)) {
         return;
     }
 
-    if (person.GetPregnancyState() == data::PregnancyState::POSTPARTUM) {
+    if (person.GetPregnancyState() == data::PregnancyState::kPostpartum) {
         person.EndPostpartum();
     }
 
-    if (person.GetPregnancyState() == data::PregnancyState::PREGNANT) {
+    if (person.GetPregnancyState() == data::PregnancyState::kPregnant) {
         if (person.GetTimeSincePregnancyChange() >= 9) {
             AttemptHaveChild(person, sampler);
         } else {
@@ -79,9 +79,9 @@ void PregnancyImpl::AttemptHaveChild(model::Person &person,
 
     int numberOfBirths = GetNumberOfBirths(person, sampler);
 
-    if (person.GetHCV() != data::HCV::CHRONIC) {
+    if (person.GetHCV() != data::HCV::kChronic) {
         for (int child = 0; child < numberOfBirths; ++child) {
-            person.AddChild(data::HCV::NONE, false);
+            person.AddChild(data::HCV::kNone, false);
         }
         return;
     }
@@ -89,8 +89,8 @@ void PregnancyImpl::AttemptHaveChild(model::Person &person,
     bool tested = DoChildrenGetTested(sampler);
     for (int child = 0; child < numberOfBirths; ++child) {
         person.ExposeInfant();
-        data::HCV hcv = (DrawChildInfection(sampler)) ? data::HCV::CHRONIC
-                                                      : data::HCV::NONE;
+        data::HCV hcv = (DrawChildInfection(sampler)) ? data::HCV::kChronic
+                                                      : data::HCV::kNone;
         person.AddChild(hcv, tested);
     }
 }

@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_NoHCV) {
         .WillByDefault(DoAll(SetArg2ToUM_T2I_CU(&storage), Return(0)));
 
     // Expectations
-    EXPECT_CALL(*testPerson, GetHCV()).WillOnce(Return(person::HCV::NONE));
+    EXPECT_CALL(*testPerson, GetHCV()).WillOnce(Return(person::HCV::kNone));
     EXPECT_CALL(*testPerson, GetTrueFibrosisState()).Times(0);
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(0);
 
@@ -93,18 +93,18 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F01) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F1));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+        .WillByDefault(Return(person::FibrosisState::kF1));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
 
     // Expectations
     EXPECT_CALL(*testPerson, GetTrueFibrosisState())
-        .WillOnce(Return(person::FibrosisState::F0))
-        .WillOnce(Return(person::FibrosisState::F0))
-        .WillRepeatedly(Return(person::FibrosisState::F1));
-    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F1))
+        .WillOnce(Return(person::FibrosisState::kF0))
+        .WillOnce(Return(person::FibrosisState::kF0))
+        .WillRepeatedly(Return(person::FibrosisState::kF1));
+    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::kF1))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
@@ -146,18 +146,18 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F12) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F2));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+        .WillByDefault(Return(person::FibrosisState::kF2));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
 
     // Expectations
     EXPECT_CALL(*testPerson, GetTrueFibrosisState())
-        .WillOnce(Return(person::FibrosisState::F1))
-        .WillOnce(Return(person::FibrosisState::F1))
-        .WillRepeatedly(Return(person::FibrosisState::F2));
-    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F2))
+        .WillOnce(Return(person::FibrosisState::kF1))
+        .WillOnce(Return(person::FibrosisState::kF1))
+        .WillRepeatedly(Return(person::FibrosisState::kF2));
+    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::kF2))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
@@ -199,16 +199,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F23) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
 
     // Expectations
     EXPECT_CALL(*testPerson, GetTrueFibrosisState())
-        .WillOnce(Return(person::FibrosisState::F2))
-        .WillOnce(Return(person::FibrosisState::F2))
-        .WillRepeatedly(Return(person::FibrosisState::F3));
-    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F3))
+        .WillOnce(Return(person::FibrosisState::kF2))
+        .WillOnce(Return(person::FibrosisState::kF2))
+        .WillRepeatedly(Return(person::FibrosisState::kF3));
+    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::kF3))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
@@ -250,16 +250,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F34) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
 
     // Expectations
     EXPECT_CALL(*testPerson, GetTrueFibrosisState())
-        .WillOnce(Return(person::FibrosisState::F3))
-        .WillOnce(Return(person::FibrosisState::F3))
-        .WillRepeatedly(Return(person::FibrosisState::F4));
-    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F4))
+        .WillOnce(Return(person::FibrosisState::kF3))
+        .WillOnce(Return(person::FibrosisState::kF3))
+        .WillRepeatedly(Return(person::FibrosisState::kF4));
+    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::kF4))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
@@ -301,16 +301,16 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_F4D) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
 
     // Expectations
     EXPECT_CALL(*testPerson, GetTrueFibrosisState())
-        .WillOnce(Return(person::FibrosisState::F4))
-        .WillOnce(Return(person::FibrosisState::F4))
-        .WillRepeatedly(Return(person::FibrosisState::DECOMP));
-    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::DECOMP))
+        .WillOnce(Return(person::FibrosisState::kF4))
+        .WillOnce(Return(person::FibrosisState::kF4))
+        .WillRepeatedly(Return(person::FibrosisState::kDecomp));
+    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::kDecomp))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);
@@ -352,10 +352,10 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_DECOMP) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::DECOMP));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+        .WillByDefault(Return(person::FibrosisState::kDecomp));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
 
     // Expectations
@@ -400,18 +400,18 @@ TEST_F(FibrosisProgressionTest, FibrosisProgression_PersonNotIdentified) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F1));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+        .WillByDefault(Return(person::FibrosisState::kF1));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(false));
 
     // Expectations
     EXPECT_CALL(*testPerson, GetTrueFibrosisState())
-        .WillOnce(Return(person::FibrosisState::F0))
-        .WillOnce(Return(person::FibrosisState::F0))
-        .WillRepeatedly(Return(person::FibrosisState::F1));
-    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::F1))
+        .WillOnce(Return(person::FibrosisState::kF0))
+        .WillOnce(Return(person::FibrosisState::kF0))
+        .WillRepeatedly(Return(person::FibrosisState::kF1));
+    EXPECT_CALL(*testPerson, UpdateTrueFibrosis(person::FibrosisState::kF1))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
     EXPECT_CALL(*testPerson, SetUtility(custorage.util, _)).Times(1);

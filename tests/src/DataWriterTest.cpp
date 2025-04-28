@@ -4,8 +4,8 @@
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-30                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ private:
     }
 
 protected:
-    person::InfectionType hcv_inf = person::InfectionType::HCV;
+    person::InfectionType hcv_inf = person:: ::kHcv;
     std::vector<std::shared_ptr<NiceMock<person::MOCKPerson>>> testPopulation;
     void SetUp() override {
         RegisterLogger();
@@ -53,11 +53,11 @@ protected:
             ON_CALL(*(testPopulation[id]), GetID())
                 .WillByDefault(Return(id + 1));
             person::Sex sex =
-                (id % 2 == 0) ? person::Sex::MALE : person::Sex::FEMALE;
+                (id % 2 == 0) ? person::Sex::kMale : person::Sex::kFemale;
             ON_CALL(*(testPopulation[id]), GetSex()).WillByDefault(Return(sex));
             ON_CALL(*(testPopulation[id]), GetAge()).WillByDefault(Return(300));
             ON_CALL(*(testPopulation[id]), GetDeathReason())
-                .WillByDefault(Return(person::DeathReason::NA));
+                .WillByDefault(Return(person::DeathReason::kNa));
             bool hcv_id = (id % 2 == 0) ? true : false;
             ON_CALL(*(testPopulation[id]), IsIdentifiedAsInfected(hcv_inf))
                 .WillByDefault(Return(hcv_id));
@@ -65,38 +65,38 @@ protected:
             ON_CALL(*(testPopulation[id]), GetTimeHCVIdentified())
                 .WillByDefault(Return(hcv_time));
             person::HCV hcv = static_cast<person::HCV>(
-                id % static_cast<int>(person::HCV::COUNT));
+                id % static_cast<int>(person::HCV::kCount));
             ON_CALL(*(testPopulation[id]), GetHCV()).WillByDefault(Return(hcv));
             person::FibrosisState fib = static_cast<person::FibrosisState>(
-                id % static_cast<int>(person::FibrosisState::COUNT));
+                id % static_cast<int>(person::FibrosisState::kCount));
             ON_CALL(*(testPopulation[id]), GetTrueFibrosisState())
                 .WillByDefault(Return(fib));
             ON_CALL(*(testPopulation[id]), IsGenotypeThree())
                 .WillByDefault(Return(false));
             ON_CALL(*(testPopulation[id]), GetSeropositivity())
                 .WillByDefault(Return(false));
-            int time_hcv_changed = (hcv != person::HCV::NONE) ? 1 : -1;
+            int time_hcv_changed = (hcv != person::HCV::kNone) ? 1 : -1;
             ON_CALL(*(testPopulation[id]), GetTimeHCVChanged())
                 .WillByDefault(Return(time_hcv_changed));
             int time_fibrosis_changed =
-                (fib != person::FibrosisState::NONE) ? 1 : -1;
+                (fib != person::FibrosisState::kNone) ? 1 : -1;
             ON_CALL(*(testPopulation[id]), GetTimeTrueFibrosisStateChanged())
                 .WillByDefault(Return(time_fibrosis_changed));
             person::Behavior behavior = static_cast<person::Behavior>(
-                id % static_cast<int>(person::Behavior::COUNT));
+                id % static_cast<int>(person::Behavior::kCount));
             ON_CALL(*(testPopulation[id]), GetBehavior())
                 .WillByDefault(Return(behavior));
             ON_CALL(*(testPopulation[id]), GetTimeBehaviorChange())
                 .WillByDefault(Return(id));
             person::LinkageState ls = static_cast<person::LinkageState>(
-                id % static_cast<int>(person::LinkageState::COUNT));
+                id % static_cast<int>(person::LinkageState::kCount));
             ON_CALL(*(testPopulation[id]), GetLinkState(_))
                 .WillByDefault(Return(ls));
             ON_CALL(*(testPopulation[id]), GetTimeOfLinkChange(_))
                 .WillByDefault(Return(id));
-            person::LinkageType lt = (ls == person::LinkageState::LINKED)
-                                         ? person::LinkageType::BACKGROUND
-                                         : person::LinkageType::NA;
+            person::LinkageType lt = (ls == person::LinkageState::kLinked)
+                                         ? person::LinkageType::kBackground
+                                         : person::LinkageType::kNa;
             ON_CALL(*(testPopulation[id]), GetLinkageType(_))
                 .WillByDefault(Return(lt));
             ON_CALL(*(testPopulation[id]), GetLinkCount(_))
@@ -104,7 +104,7 @@ protected:
             person::MeasuredFibrosisState meas =
                 static_cast<person::MeasuredFibrosisState>(
                     id %
-                    static_cast<int>(person::MeasuredFibrosisState::COUNT));
+                    static_cast<int>(person::MeasuredFibrosisState::kCount));
             ON_CALL(*(testPopulation[id]), GetMeasuredFibrosisState())
                 .WillByDefault(Return(meas));
             ON_CALL(*(testPopulation[id]), GetTimeOfFibrosisStaging())
@@ -135,7 +135,7 @@ protected:
             ON_CALL(*(testPopulation[id]), GetSVRs()).WillByDefault(Return(id));
             std::unordered_map<utility::UtilityCategory, double> current_util;
             for (int cat = 0;
-                 cat < static_cast<int>(utility::UtilityCategory::COUNT);
+                 cat < static_cast<int>(utility::UtilityCategory::kCount);
                  ++cat) {
                 current_util[static_cast<utility::UtilityCategory>(cat)] = util;
             }
@@ -150,7 +150,7 @@ protected:
             ON_CALL(*(testPopulation[id]), GetRetreatments(hcv_inf))
                 .WillByDefault(Return(id));
             person::PregnancyDetails current_preg = {
-                person::PregnancyState::NA, 0, id, id, id, id, id, id};
+                person::PregnancyState::kNa, 0, id, id, id, id, id, id};
             ON_CALL(*(testPopulation[id]), GetPregnancyDetails())
                 .WillByDefault(Return(current_preg));
         }

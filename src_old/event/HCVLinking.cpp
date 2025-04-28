@@ -20,10 +20,10 @@ namespace event {
 class HCVLinkingIMPL : public LinkingIMPL {
 public:
     HCVLinkingIMPL(datamanagement::ModelData &model_data) : LinkingIMPL(dm) {
-        this->INF_TYPE = person::InfectionType::HCV;
+        this->INF_TYPE = person:: ::kHcv;
         this->LINK_COLUMNS = {
-            {person::LinkageType::BACKGROUND, "background_link_probability"},
-            {person::LinkageType::INTERVENTION,
+            {person::LinkageType::kBackground, "background_link_probability"},
+            {person::LinkageType::kIntervention,
              "intervention_link_probability"}};
 
         this->intervention_cost =
@@ -36,7 +36,7 @@ public:
             Utils::GetIntFromConfig("linking.recent_screen_cutoff", dm);
 
         for (int link_type = 0;
-             link_type < static_cast<int>(person::LinkageType::COUNT);
+             link_type < static_cast<int>(person::LinkageType::kCount);
              ++link_type) {
             person::LinkageType type =
                 static_cast<person::LinkageType>(link_type);

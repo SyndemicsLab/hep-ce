@@ -56,7 +56,7 @@ private:
 
     inline const utils::tuple_2i
     TupleBuilder(const model::Person &person) const {
-        int hcv_status = (person.GetHCV() == data::HCV::NONE) ? 0 : 1;
+        int hcv_status = (person.GetHCV() == data::HCV::kNone) ? 0 : 1;
         int fibrosis_state = static_cast<int>(person.GetTrueFibrosisState());
         return std::make_tuple(hcv_status, fibrosis_state);
     }

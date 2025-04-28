@@ -21,10 +21,10 @@ namespace event {
 class HIVLinkingIMPL : public LinkingIMPL {
 public:
     HIVLinkingIMPL(datamanagement::ModelData &model_data) : LinkingIMPL(dm) {
-        this->INF_TYPE = person::InfectionType::HIV;
-        this->LINK_COLUMNS = {{person::LinkageType::BACKGROUND,
+        this->INF_TYPE = person:: ::kHiv;
+        this->LINK_COLUMNS = {{person::LinkageType::kBackground,
                                "hiv_background_link_probability"},
-                              {person::LinkageType::INTERVENTION,
+                              {person::LinkageType::kIntervention,
                                "hiv_intervention_link_probability"}};
         this->COST_CATEGORY = cost::CostCategory::HIV;
 
@@ -38,7 +38,7 @@ public:
             Utils::GetIntFromConfig("hiv_linking.recent_screen_cutoff", dm);
 
         for (int link_type = 0;
-             link_type < static_cast<int>(person::LinkageType::COUNT);
+             link_type < static_cast<int>(person::LinkageType::kCount);
              ++link_type) {
             person::LinkageType type =
                 static_cast<person::LinkageType>(link_type);

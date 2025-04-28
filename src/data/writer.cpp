@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -53,7 +53,7 @@ GrabPersonDetailsAsStringInHeaderOrder(const model::Person &person) {
     compiled_attributes << cu.at(model::UtilityCategory::BEHAVIOR) << ","
                         << cu.at(model::UtilityCategory::LIVER) << ","
                         << cu.at(model::UtilityCategory::TREATMENT) << ","
-                        << cu.at(model::UtilityCategory::BACKGROUND) << ","
+                        << cu.at(model::UtilityCategory::kBackground) << ","
                         << cu.at(model::UtilityCategory::HIV) << ","
                         << person.GetLifeSpan() << ","
                         << person.GetDiscountedLifeSpan() << ","

@@ -32,7 +32,7 @@ public:
 
 private:
     data::InfectionType GetInfectionType() const override {
-        return data::InfectionType::HCV;
+        return data:: ::kHcv;
     }
 };
 } // namespace hcv

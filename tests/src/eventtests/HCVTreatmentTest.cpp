@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-21                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ using ::testing::SetArgReferee;
 
 class HCVTreatmentTest : public EventTest {
 protected:
-    person::InfectionType it = person::InfectionType::HCV;
+    person::InfectionType it = person:: ::kHcv;
     void SetUp() override {
         EventTest::SetUp();
 
@@ -84,19 +84,19 @@ TEST_F(HCVTreatmentTest, NewTreatmentInitiation) {
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::NONE));
+        .WillByDefault(Return(person::FibrosisState::kNone));
     ON_CALL(*testPerson, GetTimeSinceLinkChange(it)).WillByDefault(Return(2));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::FORMER_NONINJECTION));
+        .WillByDefault(Return(person::Behavior::kFormerNoninjection));
     ON_CALL(*testPerson, GetTimeBehaviorChange()).WillByDefault(Return(120));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NONE));
+        .WillByDefault(Return(person::PregnancyState::kNone));
     ON_CALL(*testPerson, GetLinkState(it))
-        .WillByDefault(Return(person::LinkageState::LINKED));
+        .WillByDefault(Return(person::LinkageState::kLinked));
     ON_CALL(*testPerson, GetCompletedTreatments(it)).WillByDefault(Return(0));
     ON_CALL(*testPerson, GetWithdrawals(it)).WillByDefault(Return(0));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
+        .WillByDefault(Return(person::PregnancyState::kNa));
 
     // Duration Setup
     double duration = 2;
@@ -179,9 +179,9 @@ TEST_F(HCVTreatmentTest, FinishTreatment) {
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetLinkState(it))
-        .WillByDefault(Return(person::LinkageState::LINKED));
+        .WillByDefault(Return(person::LinkageState::kLinked));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
+        .WillByDefault(Return(person::PregnancyState::kNa));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -281,9 +281,9 @@ TEST_F(HCVTreatmentTest, FinishTreatmentNoSVR) {
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetLinkState(it))
-        .WillByDefault(Return(person::LinkageState::LINKED));
+        .WillByDefault(Return(person::LinkageState::kLinked));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
+        .WillByDefault(Return(person::PregnancyState::kNa));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -384,9 +384,9 @@ TEST_F(HCVTreatmentTest, LostToFollowUp) {
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetLinkState(it))
-        .WillByDefault(Return(person::LinkageState::LINKED));
+        .WillByDefault(Return(person::LinkageState::kLinked));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
+        .WillByDefault(Return(person::PregnancyState::kNa));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -483,9 +483,9 @@ TEST_F(HCVTreatmentTest, Withdraw) {
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetLinkState(it))
-        .WillByDefault(Return(person::LinkageState::LINKED));
+        .WillByDefault(Return(person::LinkageState::kLinked));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
+        .WillByDefault(Return(person::PregnancyState::kNa));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))
@@ -586,9 +586,9 @@ TEST_F(HCVTreatmentTest, DevelopToxicity) {
     ON_CALL(*testPerson, IsGenotypeThree()).WillByDefault(Return(false));
     ON_CALL(*testPerson, IsCirrhotic()).WillByDefault(Return(false));
     ON_CALL(*testPerson, GetLinkState(it))
-        .WillByDefault(Return(person::LinkageState::LINKED));
+        .WillByDefault(Return(person::LinkageState::kLinked));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
+        .WillByDefault(Return(person::PregnancyState::kNa));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("treatment.treatment_cost", _))

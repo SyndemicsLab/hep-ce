@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,11 +23,11 @@ class VoluntaryRelinkingTest : public EventTest {};
 
 TEST_F(VoluntaryRelinkingTest, Relink) {
     // Person Setup
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetTimeSinceLinkChange(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kUnlinked));
+    ON_CALL(*testPerson, GetTimeSinceLinkChange(person:: ::kHcv))
         .WillByDefault(Return(5));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::CHRONIC));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kChronic));
 
     // Data Setup
     ON_CALL(*event_dm,
@@ -44,10 +44,10 @@ TEST_F(VoluntaryRelinkingTest, Relink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddRnaScreen(person::InfectionType::HCV)).Times(1);
+    EXPECT_CALL(*testPerson, AddRnaScreen(person:: ::kHcv)).Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND,
-                                  person::InfectionType::HCV))
+    EXPECT_CALL(*testPerson,
+                Link(person::LinkageType::kBackground, person:: ::kHcv))
         .Times(1);
 
     // Running Test
@@ -58,9 +58,9 @@ TEST_F(VoluntaryRelinkingTest, Relink) {
 
 TEST_F(VoluntaryRelinkingTest, NotUnlinked) {
     // Person Setup
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::LINKED));
-    ON_CALL(*testPerson, GetTimeSinceLinkChange(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kLinked));
+    ON_CALL(*testPerson, GetTimeSinceLinkChange(person:: ::kHcv))
         .WillByDefault(Return(5));
 
     // Data Setup
@@ -78,10 +78,10 @@ TEST_F(VoluntaryRelinkingTest, NotUnlinked) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddRnaScreen(person::InfectionType::HCV)).Times(0);
+    EXPECT_CALL(*testPerson, AddRnaScreen(person:: ::kHcv)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND,
-                                  person::InfectionType::HCV))
+    EXPECT_CALL(*testPerson,
+                Link(person::LinkageType::kBackground, person:: ::kHcv))
         .Times(0);
 
     // Running Test
@@ -92,9 +92,9 @@ TEST_F(VoluntaryRelinkingTest, NotUnlinked) {
 
 TEST_F(VoluntaryRelinkingTest, TooLongDuration) {
     // Person Setup
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetTimeSinceLinkChange(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kUnlinked));
+    ON_CALL(*testPerson, GetTimeSinceLinkChange(person:: ::kHcv))
         .WillByDefault(Return(15));
 
     // Data Setup
@@ -112,9 +112,10 @@ TEST_F(VoluntaryRelinkingTest, TooLongDuration) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(0));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddRnaScreen(person::InfectionType::HCV)).Times(0);
+    EXPECT_CALL(*testPerson, AddRnaScreen(person:: ::kHcv)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND, _)).Times(0);
+    EXPECT_CALL(*testPerson, Link(person::LinkageType::kBackground, _))
+        .Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =
@@ -124,9 +125,9 @@ TEST_F(VoluntaryRelinkingTest, TooLongDuration) {
 
 TEST_F(VoluntaryRelinkingTest, DecideNotToRelink) {
     // Person Setup
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetTimeSinceLinkChange(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kUnlinked));
+    ON_CALL(*testPerson, GetTimeSinceLinkChange(person:: ::kHcv))
         .WillByDefault(Return(5));
 
     // Data Setup
@@ -144,9 +145,10 @@ TEST_F(VoluntaryRelinkingTest, DecideNotToRelink) {
     ON_CALL(*decider, GetDecision(_)).WillByDefault(Return(1));
 
     // Expectations
-    EXPECT_CALL(*testPerson, AddRnaScreen(person::InfectionType::HCV)).Times(0);
+    EXPECT_CALL(*testPerson, AddRnaScreen(person:: ::kHcv)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND, _)).Times(0);
+    EXPECT_CALL(*testPerson, Link(person::LinkageType::kBackground, _))
+        .Times(0);
 
     // Running Test
     std::shared_ptr<event::Event> event =

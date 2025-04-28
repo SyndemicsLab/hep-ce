@@ -4,8 +4,8 @@
 // Created: 2025-03-17                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ using ::testing::SetArgReferee;
 
 class HIVScreeningTest : public EventTest {
 protected:
-    person::InfectionType it = person::InfectionType::HIV;
+    person::InfectionType it = person:: ::kHiv;
     // person strata used throughout
     Utils::tuple_3i tup_3i = std::make_tuple(25, 0, 0);
     // pair representing background, intervention
@@ -36,11 +36,13 @@ protected:
         EventTest::SetUp();
 
         // Person setup
-        ON_CALL(*testPerson, GetHIV()).WillByDefault(Return(person::HIV::HIUN));
+        ON_CALL(*testPerson, GetHIV())
+            .WillByDefault(Return(person::HIV::kHiUn));
         ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-        ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+        ON_CALL(*testPerson, GetSex())
+            .WillByDefault(Return(person::Sex::kMale));
         ON_CALL(*testPerson, GetBehavior())
-            .WillByDefault(Return(person::Behavior::NEVER));
+            .WillByDefault(Return(person::Behavior::kNever));
         ON_CALL(*testPerson, GetCurrentTimestep()).WillByDefault(Return(1));
         ON_CALL(*testPerson, GetTimeOfLastScreening(it))
             .WillByDefault(Return(0));
@@ -172,7 +174,7 @@ TEST_F(HIVScreeningTest, PeriodicScreening_T_AB_T_RNA) {
     EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(2);
     // because this was an intervention screen
     EXPECT_CALL(*testPerson,
-                SetLinkageType(person::LinkageType::INTERVENTION, it))
+                SetLinkageType(person::LinkageType::kIntervention, it))
         .Times(1);
 
     // Running test
@@ -233,7 +235,7 @@ TEST_F(HIVScreeningTest, PeriodicScreening_T_AB_F_RNA) {
     EXPECT_CALL(*testPerson, Diagnose(it)).Times(0);
     // because the rna test came back negative, never called
     EXPECT_CALL(*testPerson,
-                SetLinkageType(person::LinkageType::INTERVENTION, it))
+                SetLinkageType(person::LinkageType::kIntervention, it))
         .Times(0);
 
     // Running test
@@ -293,7 +295,7 @@ TEST_F(HIVScreeningTest, PeriodicScreening_F_AB) {
     // type
     EXPECT_CALL(*testPerson, Diagnose(it)).Times(0);
     EXPECT_CALL(*testPerson,
-                SetLinkageType(person::LinkageType::INTERVENTION, it))
+                SetLinkageType(person::LinkageType::kIntervention, it))
         .Times(0);
 
     // Running test
@@ -361,7 +363,7 @@ TEST_F(HIVScreeningTest, PeriodicScreening_TooSoonToScreen) {
     EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(2);
     // because this was a background screen
     EXPECT_CALL(*testPerson,
-                SetLinkageType(person::LinkageType::BACKGROUND, it))
+                SetLinkageType(person::LinkageType::kBackground, it))
         .Times(1);
 
     // Running test
@@ -415,7 +417,7 @@ TEST_F(HIVScreeningTest, OneTimeScreening) {
     EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(2);
     // because this was an intervention screen
     EXPECT_CALL(*testPerson,
-                SetLinkageType(person::LinkageType::INTERVENTION, it))
+                SetLinkageType(person::LinkageType::kIntervention, it))
         .Times(1);
 
     // Running test
@@ -481,7 +483,7 @@ TEST_F(HIVScreeningTest, OneTimeScreening_NotFirstTimeStep) {
     EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(2);
     // because this was a background screen
     EXPECT_CALL(*testPerson,
-                SetLinkageType(person::LinkageType::BACKGROUND, it))
+                SetLinkageType(person::LinkageType::kBackground, it))
         .Times(1);
 
     // Running test
@@ -536,7 +538,7 @@ TEST_F(HIVScreeningTest, BackgroundScreening_T_AB_T_RNA) {
     EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(2);
     // because this was a background screen
     EXPECT_CALL(*testPerson,
-                SetLinkageType(person::LinkageType::BACKGROUND, it))
+                SetLinkageType(person::LinkageType::kBackground, it))
         .Times(1);
 
     // Running test
@@ -593,7 +595,7 @@ TEST_F(HIVScreeningTest, BackgroundScreening_T_AB_F_RNA) {
         .WillOnce(Return(1));
     // never called because person tests rna negative
     EXPECT_CALL(*testPerson,
-                SetLinkageType(person::LinkageType::BACKGROUND, it))
+                SetLinkageType(person::LinkageType::kBackground, it))
         .Times(0);
 
     // Running test
@@ -648,7 +650,7 @@ TEST_F(HIVScreeningTest, BackgroundScreening_F_AB) {
     // never called because person never gets past ab screening
     EXPECT_CALL(*testPerson, Diagnose(it)).Times(0);
     EXPECT_CALL(*testPerson,
-                SetLinkageType(person::LinkageType::BACKGROUND, it))
+                SetLinkageType(person::LinkageType::kBackground, it))
         .Times(0);
 
     // Running test
@@ -700,7 +702,7 @@ TEST_F(HIVScreeningTest, DeclineScreen) {
 TEST_F(HIVScreeningTest, AlreadyLinked) {
     // Person setup
     ON_CALL(*testPerson, GetLinkState(it))
-        .WillByDefault(Return(person::LinkageState::LINKED));
+        .WillByDefault(Return(person::LinkageState::kLinked));
 
     // DataManager setup
     ON_CALL(*event_dm, GetFromConfig("hiv_screening.intervention_type", _))

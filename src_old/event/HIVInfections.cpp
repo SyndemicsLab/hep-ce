@@ -81,7 +81,7 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // If already infected, exit immediately
-        if (person->GetHIV() != person::HIV::NONE) {
+        if (person->GetHIV() != person::HIV::kNone) {
             return;
         }
 

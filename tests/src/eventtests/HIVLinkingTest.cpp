@@ -4,8 +4,8 @@
 // Created: 2025-04-09                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,10 +21,10 @@ using ::testing::SetArgReferee;
 
 class HIVLinkingTest : public EventTest {
 protected:
-    person::InfectionType it = person::InfectionType::HIV;
+    person::InfectionType it = person:: ::kHiv;
     cost::CostCategory cc = cost::CostCategory::HIV;
     // person strata used throughout
-    // 25 years / 300 months old, male, never behavior state, NA pregnancy
+    // 25 years / 300 months old, male, never behavior state, kNa pregnancy
     Utils::tuple_4i tup_4i = std::make_tuple(25, 0, 0, -1);
     // pair representing background, intervention
     std::pair<double, double> link_prob = {0.4, 0.8};
@@ -38,18 +38,20 @@ protected:
 
         // Person setup
         ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-        ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+        ON_CALL(*testPerson, GetSex())
+            .WillByDefault(Return(person::Sex::kMale));
         ON_CALL(*testPerson, GetBehavior())
-            .WillByDefault(Return(person::Behavior::NEVER));
+            .WillByDefault(Return(person::Behavior::kNever));
         ON_CALL(*testPerson, GetPregnancyState())
-            .WillByDefault(Return(person::PregnancyState::NA));
-        ON_CALL(*testPerson, GetHIV()).WillByDefault(Return(person::HIV::HIUN));
+            .WillByDefault(Return(person::PregnancyState::kNa));
+        ON_CALL(*testPerson, GetHIV())
+            .WillByDefault(Return(person::HIV::kHiUn));
         ON_CALL(*testPerson, GetLinkState(it))
-            .WillByDefault(Return(person::LinkageState::NEVER));
+            .WillByDefault(Return(person::LinkageState::kNever));
         ON_CALL(*testPerson, IsIdentifiedAsInfected(it))
             .WillByDefault(Return(true));
         ON_CALL(*testPerson, GetLinkageType(it))
-            .WillByDefault(Return(person::LinkageType::BACKGROUND));
+            .WillByDefault(Return(person::LinkageType::kBackground));
         ON_CALL(*testPerson, GetCurrentTimestep())
             .WillByDefault(Return(current_timestep));
         ON_CALL(*testPerson, GetTimeSinceLastScreening(it))
@@ -88,7 +90,7 @@ const std::string INTLinkSQL = "SELECT age_years, gender, drug_behavior, -1, "
 
 TEST_F(HIVLinkingTest, FalsePositive) {
     // Person setup
-    ON_CALL(*testPerson, GetHIV()).WillByDefault(Return(person::HIV::NONE));
+    ON_CALL(*testPerson, GetHIV()).WillByDefault(Return(person::HIV::kNone));
 
     // DataManager setup
     std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
@@ -159,7 +161,7 @@ TEST_F(HIVLinkingTest, BackgroundLink) {
     EXPECT_CALL(*decider, GetDecision(expected_link_prob))
         .Times(1)
         .WillOnce(Return(0));
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND, it))
+    EXPECT_CALL(*testPerson, Link(person::LinkageType::kBackground, it))
         .Times(1);
 
     // Running test
@@ -171,7 +173,7 @@ TEST_F(HIVLinkingTest, BackgroundLink) {
 TEST_F(HIVLinkingTest, InterventionLink) {
     // Person setup
     ON_CALL(*testPerson, GetLinkageType(it))
-        .WillByDefault(Return(person::LinkageType::INTERVENTION));
+        .WillByDefault(Return(person::LinkageType::kIntervention));
 
     // DataManager setup
     std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,
@@ -189,7 +191,7 @@ TEST_F(HIVLinkingTest, InterventionLink) {
     EXPECT_CALL(*decider, GetDecision(expected_link_prob))
         .Times(1)
         .WillOnce(Return(0));
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION, it))
+    EXPECT_CALL(*testPerson, Link(person::LinkageType::kIntervention, it))
         .Times(1);
 
     // Running test
@@ -201,7 +203,7 @@ TEST_F(HIVLinkingTest, InterventionLink) {
 TEST_F(HIVLinkingTest, AlreadyLinked) {
     // Person setup
     ON_CALL(*testPerson, GetLinkState(it))
-        .WillByDefault(Return(person::LinkageState::LINKED));
+        .WillByDefault(Return(person::LinkageState::kLinked));
 
     // DataManager setup
     std::unordered_map<Utils::tuple_4i, double, Utils::key_hash_4i,

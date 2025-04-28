@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-12                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -28,11 +28,11 @@ std::string const COST_QUERY =
 TEST_F(BehaviorChangesTest, BehaviorChanges) {
     // Person Setup
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::INJECTION));
+        .WillByDefault(Return(person::Behavior::kInjection));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetMoudState())
-        .WillByDefault(Return(person::MOUD::NONE));
+        .WillByDefault(Return(person::MOUD::kNone));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
@@ -64,7 +64,7 @@ TEST_F(BehaviorChangesTest, BehaviorChanges) {
     // Expectations
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
     EXPECT_CALL(*testPerson, SetUtility(_, _)).Times(1);
-    EXPECT_CALL(*testPerson, SetBehavior(person::Behavior::FORMER_INJECTION))
+    EXPECT_CALL(*testPerson, SetBehavior(person::Behavior::kFormerInjection))
         .Times(1);
 
     // Running Test

@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,10 +28,10 @@ std::string const INCIDENCE_QUERY =
 TEST_F(HCVInfectionsTest, HCVInfections_NewInfection) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
+        .WillByDefault(Return(person::Behavior::kNever));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kNone));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("infection.genotype_three_prob", _))
@@ -73,10 +73,10 @@ TEST_F(HCVInfectionsTest, HCVInfections_NewInfection) {
 TEST_F(HCVInfectionsTest, HCVInfections_DoNotInfect) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
+        .WillByDefault(Return(person::Behavior::kNever));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kNone));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("infection.genotype_three_prob", _))
@@ -107,10 +107,10 @@ TEST_F(HCVInfectionsTest, HCVInfections_DoNotInfect) {
 TEST_F(HCVInfectionsTest, HCVInfections_AcuteProgression) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+        .WillByDefault(Return(person::Behavior::kNever));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetTimeSinceHCVChanged()).WillByDefault(Return(6));
 
     // Data Setup
@@ -128,7 +128,7 @@ TEST_F(HCVInfectionsTest, HCVInfections_AcuteProgression) {
         .WillByDefault(DoAll(SetArg2ToUM_T3I_Double(&istorage), Return(0)));
 
     // Expectations
-    EXPECT_CALL(*testPerson, SetHCV(person::HCV::CHRONIC)).Times(1);
+    EXPECT_CALL(*testPerson, SetHCV(person::HCV::kChronic)).Times(1);
     EXPECT_CALL(*testPerson, InfectHCV()).Times(0);
 
     // Running Test
@@ -140,10 +140,10 @@ TEST_F(HCVInfectionsTest, HCVInfections_AcuteProgression) {
 TEST_F(HCVInfectionsTest, HCVInfections_NoAcuteProgression) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+        .WillByDefault(Return(person::Behavior::kNever));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetTimeSinceHCVChanged()).WillByDefault(Return(5));
 
     // Data Setup
@@ -176,10 +176,10 @@ TEST_F(HCVInfectionsTest, HCVInfections_NoAcuteProgression) {
 TEST_F(HCVInfectionsTest, HCVInfections_HandleChronicHCV) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::CHRONIC));
+        .WillByDefault(Return(person::Behavior::kNever));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kChronic));
     ON_CALL(*testPerson, GetTimeSinceHCVChanged()).WillByDefault(Return(5));
 
     // Data Setup
@@ -209,10 +209,10 @@ TEST_F(HCVInfectionsTest, HCVInfections_HandleChronicHCV) {
 TEST_F(HCVInfectionsTest, HCVInfections_NewInfectionGenotype3) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
+        .WillByDefault(Return(person::Behavior::kNever));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kNone));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("infection.genotype_three_prob", _))
@@ -248,10 +248,10 @@ TEST_F(HCVInfectionsTest, HCVInfections_NewInfectionGenotype3) {
 TEST_F(HCVInfectionsTest, HCVInfections_NewInfectionNotGenotype3) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
+        .WillByDefault(Return(person::Behavior::kNever));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kNone));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("infection.genotype_three_prob", _))

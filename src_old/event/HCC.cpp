@@ -25,16 +25,16 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         person::FibrosisState current = person->GetTrueFibrosisState();
-        if (current != person::FibrosisState::F3 &&
-            current != person::FibrosisState::F4 &&
-            current != person::FibrosisState::DECOMP) {
+        if (current != person::FibrosisState::kF3 &&
+            current != person::FibrosisState::kF4 &&
+            current != person::FibrosisState::kDecomp) {
             return;
         }
         // Decide if person->DevelopHCC()
         person::HCCState currentHCC = person->GetHCCState();
-        if (currentHCC == person::HCCState::NONE) {
+        if (currentHCC == person::HCCState::kNone) {
             // Decide if person develops early HCC based on probability
-        } else if (currentHCC == person::HCCState::EARLY) {
+        } else if (currentHCC == person::HCCState::kEarly) {
             // Decide if person develops late HCC based on probability
         }
 

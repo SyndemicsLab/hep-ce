@@ -26,7 +26,7 @@ namespace event {
 class Aging::AgingIMPL {
 private:
     utility::UtilityCategory util_category =
-        utility::UtilityCategory::BACKGROUND;
+        utility::UtilityCategory::kBackground;
     double discount = 0.0;
     struct cost_util {
         double cost;
@@ -72,7 +72,7 @@ private:
         double discountAdjustedCost = Event::DiscountEventCost(
             data[tup].cost, discount, person->GetCurrentTimestep());
         person->AddCost(data[tup].cost, discountAdjustedCost,
-                        cost::CostCategory::BACKGROUND);
+                        cost::CostCategory::kBackground);
 
         person->SetUtility(data[tup].util, util_category);
         std::pair<double, double> utilities = person->GetUtility();

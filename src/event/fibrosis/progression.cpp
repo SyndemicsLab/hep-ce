@@ -44,7 +44,7 @@ ProgressionImpl::ProgressionImpl(datamanagement::ModelData &model_data,
 
 int ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // can only progress in fibrosis state if actively infected with HCV
-    if (person.GetHCV() == data::HCV::NONE) {
+    if (person.GetHCV() == data::HCV::kNone) {
         return;
     }
     // 1. Get current fibrosis status
@@ -71,15 +71,15 @@ int ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
 const std::vector<double>
 ProgressionImpl::GetTransitionProbability(const data::FibrosisState &fs) const {
     switch (fs) {
-    case data::FibrosisState::F0:
+    case data::FibrosisState::kF0:
         return {_probabilities.f0_to_1, 1 - _probabilities.f0_to_1};
-    case data::FibrosisState::F1:
+    case data::FibrosisState::kF1:
         return {_probabilities.f1_to_2, 1 - _probabilities.f1_to_2};
-    case data::FibrosisState::F2:
+    case data::FibrosisState::kF2:
         return {_probabilities.f2_to_3, 1 - _probabilities.f2_to_3};
-    case data::FibrosisState::F3:
+    case data::FibrosisState::kF3:
         return {_probabilities.f3_to_4, 1 - _probabilities.f3_to_4};
-    case data::FibrosisState::F4:
+    case data::FibrosisState::kF4:
         return {_probabilities.f4_to_d, 1 - _probabilities.f4_to_d};
     default:
         return {0.0, 1.0};

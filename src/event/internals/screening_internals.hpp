@@ -53,7 +53,7 @@ public:
     int Execute(model::Person &person, model::Sampler &sampler) override {
         // if a person is already linked, skip screening
         if (person.GetLinkState(GetInfectionType()) ==
-            data::LinkageState::LINKED) {
+            data::LinkageState::kLinked) {
             return;
         }
 
@@ -150,33 +150,33 @@ protected:
     double GetScreeningTypeSensitivitySpecificity(const data::HCV &hcv_status,
                                                   const std::string &key) {
         if (key == "screening_background_rna") {
-            if (hcv_status == data::HCV::ACUTE) {
+            if (hcv_status == data::HCV::kAcute) {
                 return _background_rna_data.acute_sensitivity;
-            } else if (hcv_status == data::HCV::CHRONIC) {
+            } else if (hcv_status == data::HCV::kChronic) {
                 return _background_rna_data.chronic_sensitivity;
             } else {
                 return 1 - _background_rna_data.specificity;
             }
         } else if (key == "screening_background_ab") {
-            if (hcv_status == data::HCV::ACUTE) {
+            if (hcv_status == data::HCV::kAcute) {
                 return _background_ab_data.acute_sensitivity;
-            } else if (hcv_status == data::HCV::CHRONIC) {
+            } else if (hcv_status == data::HCV::kChronic) {
                 return _background_ab_data.chronic_sensitivity;
             } else {
                 return 1 - _background_ab_data.specificity;
             }
         } else if (key == "screening_intervention_rna") {
-            if (hcv_status == data::HCV::ACUTE) {
+            if (hcv_status == data::HCV::kAcute) {
                 return _intervention_rna_data.acute_sensitivity;
-            } else if (hcv_status == data::HCV::CHRONIC) {
+            } else if (hcv_status == data::HCV::kChronic) {
                 return _intervention_rna_data.chronic_sensitivity;
             } else {
                 return 1 - _intervention_rna_data.specificity;
             }
         } else if (key == "screening_intervention_ab") {
-            if (hcv_status == data::HCV::ACUTE) {
+            if (hcv_status == data::HCV::kAcute) {
                 return _intervention_ab_data.acute_sensitivity;
-            } else if (hcv_status == data::HCV::CHRONIC) {
+            } else if (hcv_status == data::HCV::kChronic) {
                 return _intervention_ab_data.chronic_sensitivity;
             } else {
                 return 1 - _intervention_ab_data.specificity;
@@ -204,9 +204,9 @@ protected:
         person.MarkScreened();
         // if person has had a history of HCV Infections
         if (((screenkey == "screening_intervention" &&
-              !person.IsIdentifiedAsInfected(data::InfectionType::HIV)) ||
+              !person.IsIdentifiedAsInfected(data:: ::kHiv)) ||
              screenkey == "screening_background") &&
-            (!person.CheckAntibodyPositive(data::InfectionType::HIV))) {
+            (!person.CheckAntibodyPositive(data:: ::kHiv))) {
             if (!RunAbTest(person, screenkey, sampler)) {
                 return;
             }
@@ -214,8 +214,8 @@ protected:
 
         if (RunRnaTest(person, screenkey, sampler)) {
             data::LinkageType type = (screenkey == "screening_background")
-                                         ? data::LinkageType::BACKGROUND
-                                         : data::LinkageType::INTERVENTION;
+                                         ? data::LinkageType::kBackground
+                                         : data::LinkageType::kIntervention;
             person.SetLinkageType(type);
             person.Diagnose();
         }

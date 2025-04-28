@@ -24,7 +24,7 @@ protected:
     // constants
     // two types of linking - background and intervention
     /// @brief
-    enum class LINK_COST : int { INTERVENTION = 0, FALSE_POSITIVE = 1 };
+    enum class LINK_COST : int { kIntervention = 0, FALSE_POSITIVE = 1 };
 
     // user-provided values
     double discount = 0.0;
@@ -51,9 +51,8 @@ protected:
     static int callback_link(void *storage, int count, char **data,
                              char **columns);
     std::string LinkSQL(std::string column) const;
-    double
-    GetLinkProbability(std::shared_ptr<person::PersonBase> person,
-                       person::InfectionType it = person::InfectionType::HCV);
+    double GetLinkProbability(std::shared_ptr<person::PersonBase> person,
+                              person::InfectionType it = person:: ::kHcv);
     void
     AddLinkingCost(std::shared_ptr<person::PersonBase> person, LINK_COST type,
                    cost::CostCategory category = cost::CostCategory::LINKING);

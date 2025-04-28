@@ -28,7 +28,7 @@ public:
         // if person isn't infected or is chronic, nothing to do
         // Also skip if person is already on treatment since we want this to
         // count as SVR
-        if (person->GetHCV() != person::HCV::ACUTE &&
+        if (person->GetHCV() != person::HCV::kAcute &&
             !person->HasInitiatedTreatment()) {
             return;
         }

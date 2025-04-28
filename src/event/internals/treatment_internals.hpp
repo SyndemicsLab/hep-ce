@@ -117,7 +117,7 @@ protected:
     /// @brief
     /// @param
     inline void QuitEngagement(model::Person &person) {
-        person.EndTreatment();
+        person.EndTreatment(GetInfectionType());
         person.Unlink(GetInfectionType());
         ResetUtility(person);
     }
@@ -127,7 +127,7 @@ protected:
     inline bool LostToFollowUp(model::Person &person, model::Sampler &sampler) {
         // If the person is already on treatment, they can't be lost to
         // follow up
-        if (!person.HasInitiatedTreatment() ||
+        if (!person.HasInitiatedTreatment(GetInfectionType()) ||
             (sampler.GetDecision({_probabilities.loss_to_follow_up}) != 0)) {
             QuitEngagement(person);
             return true;
@@ -164,13 +164,14 @@ protected:
     /// @param
     /// @return
     bool IsEligible(const model::Person &person) const {
-        return ((_retreatment || !person.HasInitiatedTreatment()) &&
+        return ((_retreatment ||
+                 !person.HasInitiatedTreatment(GetInfectionType())) &&
                 IsEligibleFibrosisStage(person.GetTrueFibrosisState()) &&
                 IsEligibleBehavior(person.GetBehavior()) &&
                 IsEligiblePregnancy(person.GetPregnancyState()) &&
                 (person.GetTimeBehaviorChange() >
                  _eligibilities.time_since_last_use) &&
-                (person.GetTimeSinceLinkChange() >
+                (person.GetTimeSinceLinkChange(GetInfectionType()) >
                  _eligibilities.time_since_linked))
                    ? true
                    : false;
@@ -218,7 +219,7 @@ private:
     /// @return
     bool
     IsEligiblePregnancy(const data::PregnancyState &pregnancy_state) const {
-        if (pregnancy_state == data::PregnancyState::NA) {
+        if (pregnancy_state == data::PregnancyState::kNa) {
             return true; // short circuit for not running pregnancy event
         }
         for (std::string state : _eligibilities.pregnancy_states) {

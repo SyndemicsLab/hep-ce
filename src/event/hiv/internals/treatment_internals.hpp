@@ -93,18 +93,18 @@ private:
     }
 
     bool IsLowCD4(model::Person &person) {
-        if ((person.GetHIV() == data::HIV::LOUN) ||
-            (person.GetHIV() == data::HIV::LOSU)) {
+        if ((person.GetHIV() == data::HIV::LoUn) ||
+            (person.GetHIV() == data::HIV::LoSu)) {
             return true;
         }
         return false;
     }
 
     void RestoreHighCD4(model::Person &person) {
-        if (person.GetHIV() == data::HIV::LOUN) {
-            person.SetHIV(data::HIV::HIUN);
-        } else if (person.GetHIV() == data::HIV::LOSU) {
-            person.SetHIV(data::HIV::HISU);
+        if (person.GetHIV() == data::HIV::LoUn) {
+            person.SetHIV(data::HIV::kHiUn);
+        } else if (person.GetHIV() == data::HIV::LoSu) {
+            person.SetHIV(data::HIV::kHiSu);
         }
     }
 
@@ -159,14 +159,14 @@ private:
     void SetUtility(model::Person &person) {
         utils::tuple_2i key;
         switch (person.GetHIV()) {
-        case data::HIV::HISU:
-        case data::HIV::HIUN:
+        case data::HIV::kHiSu:
+        case data::HIV::kHiUn:
             key = std::make_tuple(1, 1);
             SetUtil(_utility_data[key]);
             AddEventUtility(person);
             break;
-        case data::HIV::LOSU:
-        case data::HIV::LOUN:
+        case data::HIV::LoSu:
+        case data::HIV::LoUn:
             key = std::make_tuple(1, 0);
             SetUtil(_utility_data[key]);
             AddEventUtility(person);
@@ -181,14 +181,14 @@ private:
     void ResetUtility(model::Person &person) {
         utils::tuple_2i key;
         switch (person.GetHIV()) {
-        case data::HIV::HISU:
-        case data::HIV::HIUN:
+        case data::HIV::kHiSu:
+        case data::HIV::kHiUn:
             key = std::make_tuple(0, 1);
             SetUtil(_utility_data[key]);
             AddEventUtility(person);
             break;
-        case data::HIV::LOSU:
-        case data::HIV::LOUN:
+        case data::HIV::LoSu:
+        case data::HIV::LoUn:
             key = std::make_tuple(0, 0);
             SetUtil(_utility_data[key]);
             AddEventUtility(person);
@@ -200,11 +200,11 @@ private:
 
     void ApplySuppression(model::Person &person) {
         switch (person.GetHIV()) {
-        case data::HIV::HIUN:
-            person.SetHIV(data::HIV::HISU);
+        case data::HIV::kHiUn:
+            person.SetHIV(data::HIV::kHiSu);
             break;
-        case data::HIV::LOUN:
-            person.SetHIV(data::HIV::LOSU);
+        case data::HIV::LoUn:
+            person.SetHIV(data::HIV::LoSu);
             break;
         default:
             break;
@@ -213,12 +213,12 @@ private:
 
     void LoseSuppression(model::Person &person) {
         switch (person.GetHIV()) {
-        case data::HIV::HISU:
+        case data::HIV::kHiSu:
 
-            person.SetHIV(data::HIV::HIUN);
+            person.SetHIV(data::HIV::kHiUn);
             break;
-        case data::HIV::LOSU:
-            person.SetHIV(data::HIV::LOUN);
+        case data::HIV::LoSu:
+            person.SetHIV(data::HIV::LoUn);
             break;
         default:
             break;

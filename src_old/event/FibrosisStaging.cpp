@@ -129,7 +129,7 @@ public:
                  std::shared_ptr<stats::DeciderBase> decider) {
 
         // 0. Check if Person even has Fibrosis, exit if they are none
-        if (person->GetTrueFibrosisState() == person::FibrosisState::NONE) {
+        if (person->GetTrueFibrosisState() == person::FibrosisState::kNone) {
             return;
         }
 
@@ -151,7 +151,7 @@ public:
 
         // 4. Decide which stage is assigned to the person
         int res = decider->GetDecision(probs);
-        if (res >= (int)person::MeasuredFibrosisState::COUNT) {
+        if (res >= (int)person::MeasuredFibrosisState::kCount) {
             spdlog::get("main")->error(
                 "Measured Fibrosis State Decision returned "
                 "value outside bounds");

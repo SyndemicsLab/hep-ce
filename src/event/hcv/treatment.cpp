@@ -24,7 +24,7 @@ TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
 
 int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Verify the person is linked before starting treatment
-    if (person.GetLinkState() != data::LinkageState::LINKED) {
+    if (person.GetLinkState() != data::LinkageState::kLinked) {
         return;
     }
 

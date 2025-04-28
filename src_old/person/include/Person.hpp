@@ -30,7 +30,7 @@ public:
     virtual int
     CreatePersonFromTable(int id, datamanagement::ModelData &model_data) = 0;
     virtual int Grow() = 0;
-    virtual int Die(DeathReason deathReason = DeathReason::BACKGROUND) = 0;
+    virtual int Die(DeathReason deathReason = DeathReason::kBackground) = 0;
 
     // HCV
     virtual int InfectHCV() = 0;
@@ -42,10 +42,9 @@ public:
     virtual bool GetSeropositivity() const = 0;
     virtual void SetSeropositivity(bool seropositive) = 0;
 
-    virtual void Diagnose(InfectionType it = InfectionType::HCV) = 0;
-    virtual void ClearDiagnosis(InfectionType it = InfectionType::HCV) = 0;
-    virtual bool
-    IsIdentifiedAsInfected(InfectionType it = InfectionType::HCV) const = 0;
+    virtual void Diagnose(InfectionType it = ::kHcv) = 0;
+    virtual void ClearDiagnosis(InfectionType it = ::kHcv) = 0;
+    virtual bool IsIdentifiedAsInfected(InfectionType it = ::kHcv) const = 0;
 
     virtual int GetTimeHCVIdentified() const = 0;
     virtual int GetTimesHCVInfected() const = 0;
@@ -53,72 +52,54 @@ public:
     virtual int GetTimeSinceHCVChanged() const = 0;
 
     // Screening
-    virtual int MarkScreened(InfectionType it = InfectionType::HCV) = 0;
-    virtual int AddAbScreen(InfectionType it = InfectionType::HCV) = 0;
-    virtual int AddRnaScreen(InfectionType it = InfectionType::HCV) = 0;
+    virtual int MarkScreened(InfectionType it = ::kHcv) = 0;
+    virtual int AddAbScreen(InfectionType it = ::kHcv) = 0;
+    virtual int AddRnaScreen(InfectionType it = ::kHcv) = 0;
     virtual bool HadSecondScreeningTest() const = 0;
-    virtual int
-    GetNumberOfABTests(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int
-    GetNumberOfRNATests(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int
-    GetTimeOfLastScreening(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int
-    GetTimeSinceLastScreening(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int GetNumberOfABTests(InfectionType it = ::kHcv) const = 0;
+    virtual int GetNumberOfRNATests(InfectionType it = ::kHcv) const = 0;
+    virtual int GetTimeOfLastScreening(InfectionType it = ::kHcv) const = 0;
+    virtual int GetTimeSinceLastScreening(InfectionType it = ::kHcv) const = 0;
     virtual ScreeningDetails
-    GetScreeningDetails(InfectionType it = InfectionType::HCV) const = 0;
-    virtual bool
-    CheckAntibodyPositive(InfectionType it = InfectionType::HCV) const = 0;
+    GetScreeningDetails(InfectionType it = ::kHcv) const = 0;
+    virtual bool CheckAntibodyPositive(InfectionType it = ::kHcv) const = 0;
     virtual void SetAntibodyPositive(bool result = true,
-                                     InfectionType it = InfectionType::HCV) = 0;
+                                     InfectionType it = ::kHcv) = 0;
     virtual void GiveSecondScreeningTest(bool state) = 0;
 
     // Linking
-    virtual int Unlink(InfectionType it = InfectionType::HCV) = 0;
-    virtual int Link(LinkageType linkType,
-                     InfectionType it = InfectionType::HCV) = 0;
-    virtual LinkageState
-    GetLinkState(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int
-    GetTimeOfLinkChange(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int
-    GetTimeSinceLinkChange(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int GetLinkCount(InfectionType it = InfectionType::HCV) const = 0;
-    virtual void SetLinkageType(LinkageType linkType,
-                                InfectionType it = InfectionType::HCV) = 0;
-    virtual LinkageType
-    GetLinkageType(InfectionType it = InfectionType::HCV) const = 0;
-    virtual LinkageDetails
-    GetLinkStatus(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int Unlink(InfectionType it = ::kHcv) = 0;
+    virtual int Link(LinkageType link_type, InfectionType it = ::kHcv) = 0;
+    virtual LinkageState GetLinkState(InfectionType it = ::kHcv) const = 0;
+    virtual int GetTimeOfLinkChange(InfectionType it = ::kHcv) const = 0;
+    virtual int GetTimeSinceLinkChange(InfectionType it = ::kHcv) const = 0;
+    virtual int GetLinkCount(InfectionType it = ::kHcv) const = 0;
+    virtual void SetLinkageType(LinkageType link_type,
+                                InfectionType it = ::kHcv) = 0;
+    virtual LinkageType GetLinkageType(InfectionType it = ::kHcv) const = 0;
+    virtual LinkageDetails GetLinkStatus(InfectionType it = ::kHcv) const = 0;
 
     // Treatment
-    virtual int AddWithdrawal(InfectionType it = InfectionType::HCV) = 0;
-    virtual int GetWithdrawals(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int AddToxicReaction(InfectionType it = InfectionType::HCV) = 0;
-    virtual int
-    GetToxicReactions(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int
-    AddCompletedTreatment(InfectionType it = InfectionType::HCV) = 0;
-    virtual int
-    GetCompletedTreatments(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int
-    GetRetreatments(InfectionType it = InfectionType::HCV) const = 0;
+    virtual int AddWithdrawal(InfectionType it = ::kHcv) = 0;
+    virtual int GetWithdrawals(InfectionType it = ::kHcv) const = 0;
+    virtual int AddToxicReaction(InfectionType it = ::kHcv) = 0;
+    virtual int GetToxicReactions(InfectionType it = ::kHcv) const = 0;
+    virtual int AddCompletedTreatment(InfectionType it = ::kHcv) = 0;
+    virtual int GetCompletedTreatments(InfectionType it = ::kHcv) const = 0;
+    virtual int GetRetreatments(InfectionType it = ::kHcv) const = 0;
     virtual int AddSVR() = 0;
     virtual int GetSVRs() const = 0;
     virtual TreatmentDetails
-    GetTreatmentDetails(InfectionType it = InfectionType::HCV) const = 0;
+    GetTreatmentDetails(InfectionType it = ::kHcv) const = 0;
+    virtual int GetNumberOfTreatmentStarts(InfectionType it = ::kHcv) const = 0;
+    virtual void InitiateTreatment(InfectionType it = ::kHcv) = 0;
+    virtual int EndTreatment(InfectionType it = ::kHcv) = 0;
+    virtual bool HasInitiatedTreatment(InfectionType it = ::kHcv) const = 0;
+    virtual bool IsInRetreatment(InfectionType it = ::kHcv) const = 0;
     virtual int
-    GetNumberOfTreatmentStarts(InfectionType it = InfectionType::HCV) const = 0;
-    virtual void InitiateTreatment(InfectionType it = InfectionType::HCV) = 0;
-    virtual int EndTreatment(InfectionType it = InfectionType::HCV) = 0;
-    virtual bool
-    HasInitiatedTreatment(InfectionType it = InfectionType::HCV) const = 0;
-    virtual bool
-    IsInRetreatment(InfectionType it = InfectionType::HCV) const = 0;
-    virtual int GetTimeOfTreatmentInitiation(
-        InfectionType it = InfectionType::HCV) const = 0;
-    virtual int GetTimeSinceTreatmentInitiation(
-        InfectionType it = InfectionType::HCV) const = 0;
+    GetTimeOfTreatmentInitiation(InfectionType it = ::kHcv) const = 0;
+    virtual int
+    GetTimeSinceTreatmentInitiation(InfectionType it = ::kHcv) const = 0;
 
     // Drug Use Behavior
     virtual int SetBehavior(Behavior) = 0;
@@ -249,7 +230,7 @@ public:
     // Functionality
     int CreatePersonFromTable(int id, datamanagement::ModelData &model_data);
     int Grow();
-    int Die(DeathReason deathReason = DeathReason::BACKGROUND);
+    int Die(DeathReason deathReason = DeathReason::kBackground);
 
     // HCV
     int InfectHCV();
@@ -286,12 +267,12 @@ public:
 
     // Linking
     int Unlink(InfectionType it);
-    int Link(LinkageType linkType, InfectionType it);
+    int Link(LinkageType link_type, InfectionType it);
     LinkageState GetLinkState(InfectionType it) const;
     int GetTimeOfLinkChange(InfectionType it) const;
     int GetTimeSinceLinkChange(InfectionType it) const;
     int GetLinkCount(InfectionType it) const;
-    void SetLinkageType(LinkageType linkType, InfectionType it);
+    void SetLinkageType(LinkageType link_type, InfectionType it);
     LinkageType GetLinkageType(InfectionType it) const;
     LinkageDetails GetLinkStatus(InfectionType it) const;
 

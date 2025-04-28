@@ -69,7 +69,7 @@ public:
 
     // Linking
     MOCK_METHOD(int, Unlink, (InfectionType it), (override));
-    MOCK_METHOD(int, Link, (LinkageType linkType, InfectionType it),
+    MOCK_METHOD(int, Link, (LinkageType link_type, InfectionType it),
                 (override));
     MOCK_METHOD(LinkageState, GetLinkState, (InfectionType it),
                 (const, override));
@@ -78,7 +78,7 @@ public:
     MOCK_METHOD(int, GetTimeSinceLinkChange, (InfectionType it),
                 (const, override));
     MOCK_METHOD(int, GetLinkCount, (InfectionType it), (const, override));
-    MOCK_METHOD(void, SetLinkageType, (LinkageType linkType, InfectionType it),
+    MOCK_METHOD(void, SetLinkageType, (LinkageType link_type, InfectionType it),
                 (override));
     MOCK_METHOD(LinkageType, GetLinkageType, (InfectionType it),
                 (const, override));

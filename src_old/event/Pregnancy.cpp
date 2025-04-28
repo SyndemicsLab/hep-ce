@@ -99,9 +99,9 @@ private:
 
         int numberOfBirths = GetNumberOfBirths(person, dm, decider);
 
-        if (person->GetHCV() != person::HCV::CHRONIC) {
+        if (person->GetHCV() != person::HCV::kChronic) {
             for (int child = 0; child < numberOfBirths; ++child) {
-                person->AddChild(person::HCV::NONE, false);
+                person->AddChild(person::HCV::kNone, false);
             }
             person->SetPregnancyState(person::PregnancyState::POSTPARTUM);
             return;
@@ -111,9 +111,9 @@ private:
         for (int child = 0; child < numberOfBirths; ++child) {
             person->AddInfantExposure();
             if (DrawChildInfection(dm, decider)) {
-                person->AddChild(person::HCV::CHRONIC, tested);
+                person->AddChild(person::HCV::kChronic, tested);
             } else {
-                person->AddChild(person::HCV::NONE, tested);
+                person->AddChild(person::HCV::kNone, tested);
             }
         }
         // after giving birth, set postpartum
@@ -133,19 +133,20 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
 
-        if (person->GetSex() == person::Sex::MALE || person->GetAge() < 180 ||
+        if (person->GetSex() == person::Sex::kMale || person->GetAge() < 180 ||
             person->GetAge() > 540 ||
             (person->GetPregnancyState() ==
-                 person::PregnancyState::POSTPARTUM &&
+                 person::PregnancyState::kPostpartum &&
              person->GetTimeSincePregnancyChange() < 3)) {
             return;
         }
 
-        if (person->GetPregnancyState() == person::PregnancyState::POSTPARTUM) {
+        if (person->GetPregnancyState() ==
+            person::PregnancyState::kPostpartum) {
             person->EndPostpartum();
         }
 
-        if (person->GetPregnancyState() == person::PregnancyState::PREGNANT) {
+        if (person->GetPregnancyState() == person::PregnancyState::kPregnant) {
             if (person->GetTimeSincePregnancyChange() >= 9) {
                 AttemptHaveChild(person, dm, decider);
             } else {

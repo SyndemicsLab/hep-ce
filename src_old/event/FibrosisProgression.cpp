@@ -58,22 +58,22 @@ private:
         double data;
 
         switch (fs) {
-        case person::FibrosisState::F0:
+        case person::FibrosisState::kF0:
             data = f01_probability;
             break;
-        case person::FibrosisState::F1:
+        case person::FibrosisState::kF1:
             data = f12_probability;
             break;
-        case person::FibrosisState::F2:
+        case person::FibrosisState::kF2:
             data = f23_probability;
             break;
-        case person::FibrosisState::F3:
+        case person::FibrosisState::kF3:
             data = f34_probability;
             break;
-        case person::FibrosisState::F4:
+        case person::FibrosisState::kF4:
             data = f4d_probability;
             break;
-        case person::FibrosisState::DECOMP:
+        case person::FibrosisState::kDecomp:
             data = 0.0;
             break;
         }
@@ -84,7 +84,7 @@ private:
     }
 
     void AddLiverDiseaseCost(std::shared_ptr<person::PersonBase> person) {
-        int hcv_status = (person->GetHCV() == person::HCV::NONE) ? 0 : 1;
+        int hcv_status = (person->GetHCV() == person::HCV::kNone) ? 0 : 1;
         int fibrosis_state = (int)person->GetTrueFibrosisState();
         Utils::tuple_2i tup = std::make_tuple(hcv_status, fibrosis_state);
 
@@ -95,7 +95,7 @@ private:
     }
 
     void SetLiverUtility(std::shared_ptr<person::PersonBase> person) {
-        int hcv_status = (person->GetHCV() == person::HCV::NONE) ? 0 : 1;
+        int hcv_status = (person->GetHCV() == person::HCV::kNone) ? 0 : 1;
         int fibrosis_state = (int)person->GetTrueFibrosisState();
         Utils::tuple_2i tup = std::make_tuple(hcv_status, fibrosis_state);
 
@@ -123,7 +123,7 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // can only progress in fibrosis state if actively infected with HCV
-        if (person->GetHCV() == person::HCV::NONE) {
+        if (person->GetHCV() == person::HCV::kNone) {
             return;
         }
         // 1. Get current fibrosis status

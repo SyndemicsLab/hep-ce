@@ -4,8 +4,8 @@
 // Created: 2025-04-21                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -20,17 +20,17 @@
 namespace person {
 struct person_select {
     // basic characteristics
-    Sex sex = Sex::MALE;
+    Sex sex = Sex::kMale;
     int age = 0;
     bool is_alive = true;
     bool boomer_classification = false;
-    DeathReason death_reason = DeathReason::NA;
+    DeathReason death_reason = DeathReason::kNa;
     // BehaviorDetails
-    Behavior drug_behavior = Behavior::NEVER;
+    Behavior drug_behavior = Behavior::kNever;
     int time_last_active_drug_use = -1;
     // HCVDetails
-    HCV hcv = HCV::NONE;
-    FibrosisState fibrosis_state = FibrosisState::NONE;
+    HCV hcv = HCV::kNone;
+    FibrosisState fibrosis_state = FibrosisState::kNone;
     bool is_genotype_three = false;
     bool seropositive = false;
     int time_hcv_changed = -1;
@@ -39,23 +39,23 @@ struct person_select {
     int times_acute_cleared = 0;
     int svrs = 0;
     // HIVDetails
-    HIV hiv = HIV::NONE;
+    HIV hiv = HIV::kNone;
     int time_hiv_changed = -1;
     int low_cd4_months_count = 0;
     // HCCDetails
-    HCCState hcc_state = HCCState::NONE;
+    HCCState hcc_state = HCCState::kNone;
     bool hcc_diagnosed = false;
     // Overdoses
     int num_overdoses = 0;
     bool currently_overdosing = false;
     // MOUDDetails
-    MOUD moud_state = MOUD::NONE;
+    MOUD moud_state = MOUD::kNone;
     int time_started_moud = -1;
     int current_moud_concurrent_months = 0;
     int total_moud_months = 0;
     // PregnancyDetails - NOTE: No instantiation of the children born prior to
     // this simulation run in the `children' vector.
-    PregnancyState pregnancy_state = PregnancyState::NA;
+    PregnancyState pregnancy_state = PregnancyState::kNa;
     int time_of_pregnancy_change = -1;
     int pregnancy_count = 0;
     int num_infants = 0;
@@ -64,19 +64,20 @@ struct person_select {
     int num_infant_hcv_infections = 0;
     int num_infant_hcv_tests = 0;
     // StagingDetails
-    MeasuredFibrosisState measured_fibrosis_state = MeasuredFibrosisState::NONE;
+    MeasuredFibrosisState measured_fibrosis_state =
+        MeasuredFibrosisState::kNone;
     bool had_second_test = false;
     int time_of_last_staging = -1;
     // LinkageDetails
     // HCV
-    LinkageState hcv_link_state = LinkageState::NEVER;
+    LinkageState hcv_link_state = LinkageState::kNever;
     int time_of_hcv_link_change = -1;
-    LinkageType hcv_link_type = LinkageType::NA;
+    LinkageType hcv_link_type = LinkageType::kNa;
     int hcv_link_count = 0;
     // HIV
-    LinkageState hiv_link_state = LinkageState::NEVER;
+    LinkageState hiv_link_state = LinkageState::kNever;
     int time_of_hiv_link_change = -1;
-    LinkageType hiv_link_type = LinkageType::NA;
+    LinkageType hiv_link_type = LinkageType::kNa;
     int hiv_link_count = 0;
     // ScreeningDetails
     // HCV

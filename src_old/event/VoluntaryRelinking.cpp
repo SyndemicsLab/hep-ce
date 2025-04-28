@@ -42,12 +42,12 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if linked or never linked OR too long since last linked
-        if ((person->GetLinkState() == person::LinkageState::UNLINKED) &&
+        if ((person->GetLinkState() == person::LinkageState::kUnlinked) &&
             ((person->GetTimeSinceLinkChange()) < voluntary_relink_duration) &&
             (decider->GetDecision({relink_probability}) == 0) &&
-            (person->GetHCV() != person::HCV::NONE)) {
+            (person->GetHCV() != person::HCV::kNone)) {
             AddRNATest(person);
-            person->Link(person::LinkageType::BACKGROUND);
+            person->Link(person::LinkageType::kBackground);
         }
     }
 

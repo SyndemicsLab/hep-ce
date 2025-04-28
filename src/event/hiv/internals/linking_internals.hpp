@@ -41,10 +41,10 @@ public:
 
 private:
     inline bool FalsePositive(model::Person &person) override {
-        if (person.GetHIV() != data::HIV::NONE) {
+        if (person.GetHIV() != data::HIV::kNone) {
             return false;
         }
-        person.ClearDiagnosis(data::InfectionType::HCV);
+        person.ClearDiagnosis(data:: ::kHcv);
         AddFalsePositiveCost(person, GetCostCategory());
         return true;
     }

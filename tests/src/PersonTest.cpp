@@ -4,8 +4,8 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-30                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,19 +153,19 @@ TEST_F(PersonTest, NumOverdoses) {
 }
 
 TEST_F(PersonTest, DeathReason) {
-    person::DeathReason reason = person::DeathReason::LIVER;
+    person::DeathReason reason = person::DeathReason::kLiver;
     testPerson->SetDeathReason(reason);
     EXPECT_EQ(reason, testPerson->GetDeathReason());
 }
 
 TEST_F(PersonTest, FibrosisState) {
-    person::FibrosisState state = person::FibrosisState::F3;
+    person::FibrosisState state = person::FibrosisState::kF3;
     testPerson->UpdateTrueFibrosis(state);
     EXPECT_EQ(state, testPerson->GetTrueFibrosisState());
 }
 
 TEST_F(PersonTest, HCV) {
-    person::HCV state = person::HCV::CHRONIC;
+    person::HCV state = person::HCV::kChronic;
     testPerson->SetHCV(state);
     EXPECT_EQ(state, testPerson->GetHCV());
 }
@@ -177,7 +177,7 @@ TEST_F(PersonTest, IsAlive) {
 }
 
 TEST_F(PersonTest, Behavior) {
-    person::Behavior state = person::Behavior::INJECTION;
+    person::Behavior state = person::Behavior::kInjection;
     testPerson->SetBehavior(state);
     EXPECT_EQ(state, testPerson->GetBehavior());
 }
@@ -188,7 +188,7 @@ TEST_F(PersonTest, TimeBehaviorChange) {
     testPerson->Grow();
     testPerson->Grow();
     EXPECT_EQ(-1, testPerson->GetTimeBehaviorChange());
-    person::Behavior state = person::Behavior::INJECTION;
+    person::Behavior state = person::Behavior::kInjection;
     testPerson->SetBehavior(state);
     EXPECT_EQ(3, testPerson->GetTimeBehaviorChange());
 }
@@ -199,7 +199,7 @@ TEST_F(PersonTest, TimeHCVChanged) {
     testPerson->Grow();
     testPerson->Grow();
     EXPECT_EQ(-1, testPerson->GetTimeHCVChanged());
-    person::HCV state = person::HCV::CHRONIC;
+    person::HCV state = person::HCV::kChronic;
     testPerson->SetHCV(state);
     testPerson->Grow();
     EXPECT_EQ(3, testPerson->GetTimeHCVChanged());
@@ -211,7 +211,7 @@ TEST_F(PersonTest, TimeSinceHCVChanged) {
     testPerson->Grow();
     testPerson->Grow();
     EXPECT_EQ(3, testPerson->GetTimeSinceHCVChanged());
-    person::HCV state = person::HCV::CHRONIC;
+    person::HCV state = person::HCV::kChronic;
     testPerson->SetHCV(state);
     testPerson->Grow();
     testPerson->Grow();
@@ -224,7 +224,7 @@ TEST_F(PersonTest, TimeFibrosisChanged) {
     testPerson->Grow();
     testPerson->Grow();
     EXPECT_EQ(-1, testPerson->GetTimeTrueFibrosisStateChanged());
-    person::FibrosisState state = person::FibrosisState::F3;
+    person::FibrosisState state = person::FibrosisState::kF3;
     testPerson->UpdateTrueFibrosis(state);
     testPerson->Grow();
     EXPECT_EQ(3, testPerson->GetTimeTrueFibrosisStateChanged());
@@ -236,7 +236,7 @@ TEST_F(PersonTest, TimeSinceStaging) {
     testPerson->Grow();
     testPerson->Grow();
     EXPECT_EQ(3, testPerson->GetTimeSinceFibrosisStaging());
-    person::MeasuredFibrosisState state = person::MeasuredFibrosisState::F23;
+    person::MeasuredFibrosisState state = person::MeasuredFibrosisState::kF23;
     testPerson->DiagnoseFibrosis(state);
     testPerson->Grow();
     testPerson->Grow();
@@ -260,9 +260,9 @@ TEST_F(PersonTest, TimeHCVIdentified) {
 }
 
 TEST_F(PersonTest, LinkState) {
-    EXPECT_EQ(person::LinkageState::NEVER, testPerson->GetLinkState());
-    testPerson->Link(person::LinkageType::BACKGROUND);
-    EXPECT_EQ(person::LinkageState::LINKED, testPerson->GetLinkState());
+    EXPECT_EQ(person::LinkageState::kNever, testPerson->GetLinkState());
+    testPerson->Link(person::LinkageType::kBackground);
+    EXPECT_EQ(person::LinkageState::kLinked, testPerson->GetLinkState());
 }
 
 TEST_F(PersonTest, TimeLinkChanged) {
@@ -271,7 +271,7 @@ TEST_F(PersonTest, TimeLinkChanged) {
     testPerson->Grow();
     testPerson->Grow();
     EXPECT_EQ(-1, testPerson->GetTimeOfLinkChange());
-    testPerson->Link(person::LinkageType::BACKGROUND);
+    testPerson->Link(person::LinkageType::kBackground);
     EXPECT_EQ(3, testPerson->GetTimeOfLinkChange());
     testPerson->Grow();
     EXPECT_EQ(3, testPerson->GetTimeOfLinkChange());
@@ -283,7 +283,7 @@ TEST_F(PersonTest, TimeSinceLinkChange) {
     testPerson->Grow();
     testPerson->Grow();
     EXPECT_EQ(3, testPerson->GetTimeSinceLinkChange());
-    testPerson->Link(person::LinkageType::BACKGROUND);
+    testPerson->Link(person::LinkageType::kBackground);
     EXPECT_EQ(0, testPerson->GetTimeSinceLinkChange());
     testPerson->Grow();
     EXPECT_EQ(1, testPerson->GetTimeSinceLinkChange());
@@ -291,18 +291,18 @@ TEST_F(PersonTest, TimeSinceLinkChange) {
 
 TEST_F(PersonTest, LinkCount) {
     EXPECT_EQ(0, testPerson->GetLinkCount());
-    testPerson->Link(person::LinkageType::BACKGROUND);
+    testPerson->Link(person::LinkageType::kBackground);
     testPerson->Unlink();
-    testPerson->Link(person::LinkageType::BACKGROUND);
+    testPerson->Link(person::LinkageType::kBackground);
     testPerson->Unlink();
-    testPerson->Link(person::LinkageType::BACKGROUND);
+    testPerson->Link(person::LinkageType::kBackground);
     testPerson->Unlink();
     EXPECT_EQ(3, testPerson->GetLinkCount());
 }
 
 TEST_F(PersonTest, LinkType) {
-    EXPECT_EQ(person::LinkageType::NA, testPerson->GetLinkageType());
-    person::LinkageType type = person::LinkageType::INTERVENTION;
+    EXPECT_EQ(person::LinkageType::kNa, testPerson->GetLinkageType());
+    person::LinkageType type = person::LinkageType::kIntervention;
     testPerson->Link(type);
     EXPECT_EQ(type, testPerson->GetLinkageType());
 }
@@ -334,7 +334,7 @@ TEST_F(PersonTest, CurrentUtility) {
 
     // test setting utilities multiple times
     expected_utils = {0.8, 0.8};
-    testPerson->SetUtility(0.8, utility::UtilityCategory::BACKGROUND);
+    testPerson->SetUtility(0.8, utility::UtilityCategory::kBackground);
     EXPECT_EQ(expected_utils, testPerson->GetUtility());
 
     expected_utils = {0.6, 0.48};
@@ -342,7 +342,7 @@ TEST_F(PersonTest, CurrentUtility) {
     EXPECT_EQ(expected_utils, testPerson->GetUtility());
 
     expected_utils = {0.6, 0.6};
-    testPerson->SetUtility(1.0, utility::UtilityCategory::BACKGROUND);
+    testPerson->SetUtility(1.0, utility::UtilityCategory::kBackground);
     EXPECT_EQ(expected_utils, testPerson->GetUtility());
 }
 

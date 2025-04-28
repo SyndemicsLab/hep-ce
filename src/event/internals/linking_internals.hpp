@@ -44,7 +44,7 @@ public:
     int Execute(model::Person &person, model::Sampler &sampler) override {
         SetLinkageType(person.GetLinkageType(GetInfectionType()));
         bool is_linked = (person.GetLinkState(GetInfectionType()) ==
-                          data::LinkageState::LINKED);
+                          data::LinkageState::kLinked);
         bool is_not_identified =
             (!person.IsIdentifiedAsInfected(GetInfectionType()));
         if (is_linked || is_not_identified) {
@@ -69,7 +69,7 @@ public:
         if (sampler.GetDecision({prob}) == 0) {
             data::LinkageType lt = person.GetLinkageType(GetInfectionType());
             person.Link(lt, GetInfectionType());
-            if (lt == data::LinkageType::INTERVENTION) {
+            if (lt == data::LinkageType::kIntervention) {
                 SetCost(GetInterventionCost());
                 AddEventCost(person);
             }
@@ -130,9 +130,9 @@ protected:
         int pregnancy = static_cast<int>(person.GetPregnancyState());
         utils::tuple_4i tup =
             std::make_tuple(age_years, gender, drug_behavior, pregnancy);
-        if (GetLinkageType() == data::LinkageType::BACKGROUND) {
+        if (GetLinkageType() == data::LinkageType::kBackground) {
             return _link_data[tup].first;
-        } else if (GetLinkageType() == data::LinkageType::INTERVENTION) {
+        } else if (GetLinkageType() == data::LinkageType::kIntervention) {
             return _link_data[tup].second;
         }
         return 0.0;
@@ -157,7 +157,7 @@ protected:
 
 private:
     // properties
-    data::LinkageType _linkage_type = data::LinkageType::BACKGROUND;
+    data::LinkageType _linkage_type = data::LinkageType::kBackground;
     linkmap_t _link_data;
     int _recent_screen_cutoff = -1;
     double _recent_screen_multiplier = 1.0;

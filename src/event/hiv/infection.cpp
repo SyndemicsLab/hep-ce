@@ -21,7 +21,7 @@ InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
 
 int InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // If already infected, exit immediately
-    if (person.GetHIV() != data::HIV::NONE) {
+    if (person.GetHIV() != data::HIV::kNone) {
         return;
     }
 

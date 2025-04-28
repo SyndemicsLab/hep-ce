@@ -4,8 +4,8 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@ class EventBase;
 
 /// @brief Namespace containing Simulation Level Attributes
 namespace simulation {
-enum class DataType { CSV = 0, SQL = 1, COUNT = 2 };
+enum class DataType { CSV = 0, SQL = 1, kCount = 2 };
 class Simulation {
 private:
     class SimulationIMPL;

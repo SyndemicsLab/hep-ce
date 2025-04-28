@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-26                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ std::string const TEST_TWO_QUERY =
 TEST_F(FibrosisStagingTest, FibrosisStaging_NoFibrosis) {
     // Person Setup
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::NONE));
+        .WillByDefault(Return(person::FibrosisState::kNone));
     ON_CALL(*event_dm, GetFromConfig(_, _)).WillByDefault(Return(0));
 
     // Data Setup
@@ -79,7 +79,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_NoFibrosis) {
 TEST_F(FibrosisStagingTest, FibrosisStaging_RecentlyStaged) {
     // Person Setup
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F0));
+        .WillByDefault(Return(person::FibrosisState::kF0));
     ON_CALL(*testPerson, GetTimeSinceFibrosisStaging())
         .WillByDefault(Return(2));
     ON_CALL(*testPerson, GetTimeOfFibrosisStaging()).WillByDefault(Return(5));
@@ -130,7 +130,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_RecentlyStaged) {
 TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
     // Person Setup
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F0));
+        .WillByDefault(Return(person::FibrosisState::kF0));
     ON_CALL(*testPerson, GetTimeSinceFibrosisStaging())
         .WillByDefault(Return(2));
     ON_CALL(*testPerson, GetTimeOfFibrosisStaging()).WillByDefault(Return(-1));
@@ -173,7 +173,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
 
     // Expectations
     EXPECT_CALL(*testPerson,
-                DiagnoseFibrosis(person::MeasuredFibrosisState::F01))
+                DiagnoseFibrosis(person::MeasuredFibrosisState::kF01))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(1);
 
@@ -186,7 +186,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingNoTestTwo) {
 TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
     // Person Setup
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F0));
+        .WillByDefault(Return(person::FibrosisState::kF0));
     ON_CALL(*testPerson, GetTimeSinceFibrosisStaging())
         .WillByDefault(Return(13));
     ON_CALL(*testPerson, GetTimeOfFibrosisStaging()).WillByDefault(Return(-1));
@@ -230,7 +230,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
         .WillOnce(Return(0)); // F0
     EXPECT_CALL(*testPerson, GiveSecondScreeningTest(true)).Times(1);
     EXPECT_CALL(*testPerson,
-                DiagnoseFibrosis(person::MeasuredFibrosisState::F23))
+                DiagnoseFibrosis(person::MeasuredFibrosisState::kF23))
         .Times(2);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(2);
 
@@ -243,7 +243,7 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoMaxChoice) {
 TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
     // Person Setup
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F0));
+        .WillByDefault(Return(person::FibrosisState::kF0));
     ON_CALL(*testPerson, GetTimeSinceFibrosisStaging())
         .WillByDefault(Return(13));
     ON_CALL(*testPerson, GetTimeOfFibrosisStaging()).WillByDefault(Return(-1));
@@ -287,10 +287,10 @@ TEST_F(FibrosisStagingTest, FibrosisStaging_FirstStagingTestTwoLatestChoice) {
         .WillOnce(Return(0)); // F0
     EXPECT_CALL(*testPerson, GiveSecondScreeningTest(true)).Times(1);
     EXPECT_CALL(*testPerson,
-                DiagnoseFibrosis(person::MeasuredFibrosisState::F23))
+                DiagnoseFibrosis(person::MeasuredFibrosisState::kF23))
         .Times(1);
     EXPECT_CALL(*testPerson,
-                DiagnoseFibrosis(person::MeasuredFibrosisState::F01))
+                DiagnoseFibrosis(person::MeasuredFibrosisState::kF01))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(2);
 

@@ -43,7 +43,7 @@ public:
 
 private:
     inline data::InfectionType GetInfectionType() const override {
-        return data::InfectionType::HCV;
+        return data:: ::kHcv;
     }
 
     hcvtreatmentmap_t _treatment_sql_data;

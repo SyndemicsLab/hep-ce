@@ -42,7 +42,7 @@ int ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // if person isn't infected or is chronic, nothing to do
     // Also skip if person is already on treatment since we want this to
     // count as SVR
-    if (person.GetHCV() != data::HCV::ACUTE &&
+    if (person.GetHCV() != data::HCV::kAcute &&
         !person.HasInitiatedTreatment()) {
         return;
     }

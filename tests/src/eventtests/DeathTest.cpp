@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ TEST_F(DeathTest, Death_OldAge) {
         .WillByDefault(DoAll(SetArg2ToUM_T2I_Double(&ostorage), Return(0)));
 
     // Expectations
-    EXPECT_CALL(*testPerson, Die(person::DeathReason::AGE)).Times(1);
+    EXPECT_CALL(*testPerson, Die(person::DeathReason::kAge)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Death", event_dm);
@@ -71,8 +71,8 @@ TEST_F(DeathTest, Death_Liver_F4_Infected) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F4));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::CHRONIC));
+        .WillByDefault(Return(person::FibrosisState::kF4));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kChronic));
 
     // Data Setup
     EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
@@ -107,7 +107,7 @@ TEST_F(DeathTest, Death_Liver_F4_Infected) {
     // Expectations
     std::vector<double> probs = {0.0, 1.0, 0.0};
     EXPECT_CALL(*decider, GetDecision(probs)).WillOnce(Return(1));
-    EXPECT_CALL(*testPerson, Die(person::DeathReason::LIVER)).Times(1);
+    EXPECT_CALL(*testPerson, Die(person::DeathReason::kLiver)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Death", event_dm);
@@ -118,8 +118,8 @@ TEST_F(DeathTest, Death_Liver_F4_Uninfected) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F4));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
+        .WillByDefault(Return(person::FibrosisState::kF4));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kNone));
 
     // Data Setup
     EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
@@ -154,7 +154,7 @@ TEST_F(DeathTest, Death_Liver_F4_Uninfected) {
     // Expectations
     std::vector<double> probs = {0.0, 1.0, 0.0};
     EXPECT_CALL(*decider, GetDecision(probs)).WillOnce(Return(1));
-    EXPECT_CALL(*testPerson, Die(person::DeathReason::LIVER)).Times(1);
+    EXPECT_CALL(*testPerson, Die(person::DeathReason::kLiver)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Death", event_dm);
@@ -165,8 +165,8 @@ TEST_F(DeathTest, Death_Liver_DECOMP_Infected) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::DECOMP));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::CHRONIC));
+        .WillByDefault(Return(person::FibrosisState::kDecomp));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kChronic));
 
     // Data Setup
     EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
@@ -201,7 +201,7 @@ TEST_F(DeathTest, Death_Liver_DECOMP_Infected) {
     // Expectations
     std::vector<double> probs = {0.0, 1.0, 0.0};
     EXPECT_CALL(*decider, GetDecision(probs)).WillOnce(Return(1));
-    EXPECT_CALL(*testPerson, Die(person::DeathReason::LIVER)).Times(1);
+    EXPECT_CALL(*testPerson, Die(person::DeathReason::kLiver)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Death", event_dm);
@@ -212,8 +212,8 @@ TEST_F(DeathTest, Death_Liver_DECOMP_Uninfected) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::DECOMP));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
+        .WillByDefault(Return(person::FibrosisState::kDecomp));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kNone));
 
     // Data Setup
     EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
@@ -248,7 +248,7 @@ TEST_F(DeathTest, Death_Liver_DECOMP_Uninfected) {
     // Expectations
     std::vector<double> probs = {0.0, 1.0, 0.0};
     EXPECT_CALL(*decider, GetDecision(probs)).WillOnce(Return(1));
-    EXPECT_CALL(*testPerson, Die(person::DeathReason::LIVER)).Times(1);
+    EXPECT_CALL(*testPerson, Die(person::DeathReason::kLiver)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Death", event_dm);
@@ -259,7 +259,7 @@ TEST_F(DeathTest, Death_Background) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F0));
+        .WillByDefault(Return(person::FibrosisState::kF0));
 
     // Data Setup
     EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))
@@ -293,7 +293,7 @@ TEST_F(DeathTest, Death_Background) {
 
     // Expectations
     EXPECT_CALL(*decider, GetDecision(_)).WillOnce(Return(0));
-    EXPECT_CALL(*testPerson, Die(person::DeathReason::BACKGROUND)).Times(1);
+    EXPECT_CALL(*testPerson, Die(person::DeathReason::kBackground)).Times(1);
 
     // Running Test
     std::shared_ptr<event::Event> event = efactory.create("Death", event_dm);
@@ -304,7 +304,7 @@ TEST_F(DeathTest, Death_NoDeath) {
     // Person Setup
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
     ON_CALL(*testPerson, GetTrueFibrosisState())
-        .WillByDefault(Return(person::FibrosisState::F0));
+        .WillByDefault(Return(person::FibrosisState::kF0));
 
     // Data Setup
     EXPECT_CALL(*event_dm, GetFromConfig("mortality.f4_infected", _))

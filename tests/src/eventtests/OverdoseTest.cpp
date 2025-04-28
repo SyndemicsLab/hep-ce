@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ class OverdoseTest : public EventTest {};
 TEST_F(OverdoseTest, FormerUsers) {
     // Person Setup
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::FORMER_INJECTION));
+        .WillByDefault(Return(person::Behavior::kFormerInjection));
 
     // Expectations
     EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _)).Times(0);
@@ -38,7 +38,7 @@ TEST_F(OverdoseTest, FormerUsers) {
 TEST_F(OverdoseTest, NeverUsers) {
     // Person Setup
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
 
     // Expectations
     EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _)).Times(0);
@@ -52,7 +52,7 @@ TEST_F(OverdoseTest, NeverUsers) {
 TEST_F(OverdoseTest, Injection_No_Overdose) {
     // Person Setup
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::INJECTION));
+        .WillByDefault(Return(person::Behavior::kInjection));
 
     // Data Setup
     std::vector<double> prob = {0.0};
@@ -73,7 +73,7 @@ TEST_F(OverdoseTest, Injection_No_Overdose) {
 TEST_F(OverdoseTest, Injection_Overdose) {
     // Person Setup
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::INJECTION));
+        .WillByDefault(Return(person::Behavior::kInjection));
 
     // Data Setup
     std::vector<double> prob = {1.0};

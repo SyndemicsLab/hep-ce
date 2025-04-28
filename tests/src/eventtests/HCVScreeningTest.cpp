@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,17 +37,17 @@ std::string const INTERVENTION_SCREEN_QUERY =
 
 TEST_F(HCVScreeningTest, FirstPeriodicScreening_TTtestResults) {
     // Person Setup
-    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person:: ::kHcv))
         .WillByDefault(Return(12));
-    ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeOfLastScreening(person:: ::kHcv))
         .WillByDefault(Return(0));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
 
     // Data Setup
     double sensitivity = 0.6;
@@ -88,13 +88,13 @@ TEST_F(HCVScreeningTest, FirstPeriodicScreening_TTtestResults) {
     // Screening test decisions
     std::vector<double> expected_sensitivity = {sensitivity};
     EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(2);
-    EXPECT_CALL(*testPerson, MarkScreened(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, AddAbScreen(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, AddRnaScreen(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::INTERVENTION,
-                                            person::InfectionType::HCV))
+    EXPECT_CALL(*testPerson, MarkScreened(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, AddAbScreen(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, AddRnaScreen(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::kIntervention,
+                                            person:: ::kHcv))
         .Times(1);
-    EXPECT_CALL(*testPerson, Diagnose(person::InfectionType::HCV)).Times(1);
+    EXPECT_CALL(*testPerson, Diagnose(person:: ::kHcv)).Times(1);
     EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 
     // Running Test
@@ -105,17 +105,17 @@ TEST_F(HCVScreeningTest, FirstPeriodicScreening_TTtestResults) {
 
 TEST_F(HCVScreeningTest, FirstPeriodicScreening_TFtestResults) {
     // Person Setup
-    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person:: ::kHcv))
         .WillByDefault(Return(7));
-    ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeOfLastScreening(person:: ::kHcv))
         .WillByDefault(Return(0));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -169,9 +169,9 @@ TEST_F(HCVScreeningTest, FirstPeriodicScreening_TFtestResults) {
     // rna screen result -- false
     expected_sensitivity = {rna_sensitivity};
     EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(1);
-    EXPECT_CALL(*testPerson, MarkScreened(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, AddAbScreen(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, AddRnaScreen(person::InfectionType::HCV)).Times(1);
+    EXPECT_CALL(*testPerson, MarkScreened(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, AddAbScreen(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, AddRnaScreen(person:: ::kHcv)).Times(1);
     // because RNA false, no linking
     EXPECT_CALL(*testPerson, SetLinkageType(_, _)).Times(0);
 
@@ -183,17 +183,17 @@ TEST_F(HCVScreeningTest, FirstPeriodicScreening_TFtestResults) {
 
 TEST_F(HCVScreeningTest, BackgroundScreening_TFtestResults) {
     // Person Setup
-    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person:: ::kHcv))
         .WillByDefault(Return(3));
-    ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeOfLastScreening(person:: ::kHcv))
         .WillByDefault(Return(1));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -247,9 +247,9 @@ TEST_F(HCVScreeningTest, BackgroundScreening_TFtestResults) {
     // rna screen result -- false
     expected_sensitivity = {rna_sensitivity};
     EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(1);
-    EXPECT_CALL(*testPerson, MarkScreened(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, AddAbScreen(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, AddRnaScreen(person::InfectionType::HCV)).Times(1);
+    EXPECT_CALL(*testPerson, MarkScreened(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, AddAbScreen(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, AddRnaScreen(person:: ::kHcv)).Times(1);
     EXPECT_CALL(*testPerson, SetLinkageType(_, _)).Times(0);
 
     // Running Test
@@ -260,17 +260,17 @@ TEST_F(HCVScreeningTest, BackgroundScreening_TFtestResults) {
 
 TEST_F(HCVScreeningTest, BackgroundScreening_TTtestResults) {
     // Person Setup
-    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person:: ::kHcv))
         .WillByDefault(Return(3));
-    ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeOfLastScreening(person:: ::kHcv))
         .WillByDefault(Return(1));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
 
     // Data Setup
     double sensitivity = 0.6;
@@ -311,13 +311,13 @@ TEST_F(HCVScreeningTest, BackgroundScreening_TTtestResults) {
     // Screening test decisions
     std::vector<double> expected_sensitivity = {sensitivity};
     EXPECT_CALL(*decider, GetDecision(expected_sensitivity)).Times(2);
-    EXPECT_CALL(*testPerson, MarkScreened(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, AddAbScreen(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, AddRnaScreen(person::InfectionType::HCV)).Times(1);
-    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::BACKGROUND,
-                                            person::InfectionType::HCV))
+    EXPECT_CALL(*testPerson, MarkScreened(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, AddAbScreen(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, AddRnaScreen(person:: ::kHcv)).Times(1);
+    EXPECT_CALL(*testPerson, SetLinkageType(person::LinkageType::kBackground,
+                                            person:: ::kHcv))
         .Times(1);
-    EXPECT_CALL(*testPerson, Diagnose(person::InfectionType::HCV)).Times(1);
+    EXPECT_CALL(*testPerson, Diagnose(person:: ::kHcv)).Times(1);
     EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 
     // Running Test
@@ -328,17 +328,17 @@ TEST_F(HCVScreeningTest, BackgroundScreening_TTtestResults) {
 
 TEST_F(HCVScreeningTest, NoScreen) {
     // Person Setup
-    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person:: ::kHcv))
         .WillByDefault(Return(3));
-    ON_CALL(*testPerson, GetTimeOfLastScreening(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetTimeOfLastScreening(person:: ::kHcv))
         .WillByDefault(Return(1));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(false));
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig(_, _))
@@ -372,9 +372,9 @@ TEST_F(HCVScreeningTest, NoScreen) {
         .WillByDefault(Return(1)); // Do Not Background Screen
 
     // Expectations
-    EXPECT_CALL(*testPerson, MarkScreened(person::InfectionType::HCV)).Times(0);
-    EXPECT_CALL(*testPerson, AddAbScreen(person::InfectionType::HCV)).Times(0);
-    EXPECT_CALL(*testPerson, AddRnaScreen(person::InfectionType::HCV)).Times(0);
+    EXPECT_CALL(*testPerson, MarkScreened(person:: ::kHcv)).Times(0);
+    EXPECT_CALL(*testPerson, AddAbScreen(person:: ::kHcv)).Times(0);
+    EXPECT_CALL(*testPerson, AddRnaScreen(person:: ::kHcv)).Times(0);
     EXPECT_CALL(*testPerson, SetLinkageType(_, _)).Times(0);
     EXPECT_CALL(*testPerson, Unlink(_)).Times(0);
 

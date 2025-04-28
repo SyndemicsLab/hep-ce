@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -51,17 +51,17 @@ std::string const P_INTERVENTION_LINK_QUERY =
 
 TEST_F(HCVLinkingTest, FalsePositive) {
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::NONE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kNone));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::UNLINKED));
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kUnlinked));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
+        .WillByDefault(Return(person::PregnancyState::kNa));
 
     // Data Setup
     double false_positive_test_cost = 12.00;
@@ -100,8 +100,7 @@ TEST_F(HCVLinkingTest, FalsePositive) {
         .WillByDefault(DoAll(SetArg2ToUM_T4I_Double(&istorage), Return(0)));
 
     // Expectations
-    EXPECT_CALL(*testPerson, ClearDiagnosis(person::InfectionType::HCV))
-        .Times(1);
+    EXPECT_CALL(*testPerson, ClearDiagnosis(person:: ::kHcv)).Times(1);
     EXPECT_CALL(*testPerson,
                 AddCost(false_positive_test_cost, false_positive_test_cost,
                         cost::CostCategory::LINKING))
@@ -115,19 +114,19 @@ TEST_F(HCVLinkingTest, FalsePositive) {
 
 TEST_F(HCVLinkingTest, BackgroundLink) {
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageType::BACKGROUND));
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kUnlinked));
+    ON_CALL(*testPerson, GetLinkageType(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageType::kBackground));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
+        .WillByDefault(Return(person::PregnancyState::kNa));
 
     // Data Setup
     ON_CALL(*event_dm, GetFromConfig("linking.intervention_cost", _))
@@ -166,8 +165,8 @@ TEST_F(HCVLinkingTest, BackgroundLink) {
     // Expectations
     std::vector<double> expected_prob = {1.0};
     EXPECT_CALL(*decider, GetDecision(expected_prob)).Times(1);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::BACKGROUND,
-                                  person::InfectionType::HCV))
+    EXPECT_CALL(*testPerson,
+                Link(person::LinkageType::kBackground, person:: ::kHcv))
         .Times(1);
 
     // Running Test
@@ -178,19 +177,19 @@ TEST_F(HCVLinkingTest, BackgroundLink) {
 
 TEST_F(HCVLinkingTest, InterventionLink) {
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::NEVER));
-    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageType::INTERVENTION));
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kNever));
+    ON_CALL(*testPerson, GetLinkageType(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageType::kIntervention));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
+        .WillByDefault(Return(person::PregnancyState::kNa));
 
     // Data Setup
     double intervention_cost = 100.00;
@@ -233,8 +232,8 @@ TEST_F(HCVLinkingTest, InterventionLink) {
     // Expectations
     std::vector<double> expected_link_prob = {link_prob};
     EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
-    EXPECT_CALL(*testPerson, Link(person::LinkageType::INTERVENTION,
-                                  person::InfectionType::HCV))
+    EXPECT_CALL(*testPerson,
+                Link(person::LinkageType::kIntervention, person:: ::kHcv))
         .Times(1);
     EXPECT_CALL(*testPerson, AddCost(intervention_cost, intervention_cost,
                                      cost::CostCategory::LINKING))
@@ -248,20 +247,20 @@ TEST_F(HCVLinkingTest, InterventionLink) {
 
 TEST_F(HCVLinkingTest, DecideNotToLink) {
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageType::INTERVENTION));
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kUnlinked));
+    ON_CALL(*testPerson, GetLinkageType(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageType::kIntervention));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
-    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+        .WillByDefault(Return(person::PregnancyState::kNa));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person:: ::kHcv))
         .WillByDefault(Return(1));
 
     // Data Setup
@@ -299,8 +298,7 @@ TEST_F(HCVLinkingTest, DecideNotToLink) {
     // Expectations
     std::vector<double> expected_link_prob = {0.0};
     EXPECT_CALL(*decider, GetDecision(expected_link_prob)).Times(1);
-    EXPECT_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
-        .Times(1);
+    EXPECT_CALL(*testPerson, GetLinkageType(person:: ::kHcv)).Times(1);
     EXPECT_CALL(*testPerson, Link(_, _)).Times(0);
     EXPECT_CALL(*testPerson, AddCost(_, _, _)).Times(0);
 
@@ -312,20 +310,20 @@ TEST_F(HCVLinkingTest, DecideNotToLink) {
 
 TEST_F(HCVLinkingTest, AlreadyLinked) {
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::LINKED));
-    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageType::INTERVENTION));
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kLinked));
+    ON_CALL(*testPerson, GetLinkageType(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageType::kIntervention));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
-    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+        .WillByDefault(Return(person::PregnancyState::kNa));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person:: ::kHcv))
         .WillByDefault(Return(1));
 
     // Data Setup
@@ -367,20 +365,20 @@ TEST_F(HCVLinkingTest, AlreadyLinked) {
 
 TEST_F(HCVLinkingTest, RecentScreen) {
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageType::BACKGROUND));
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kUnlinked));
+    ON_CALL(*testPerson, GetLinkageType(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageType::kBackground));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
-    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+        .WillByDefault(Return(person::PregnancyState::kNa));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person:: ::kHcv))
         .WillByDefault(Return(0));
 
     // Data Setup
@@ -429,20 +427,20 @@ TEST_F(HCVLinkingTest, RecentScreen) {
 
 TEST_F(HCVLinkingTest, RecentScreenCutoff) {
     // Person Setup
-    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::ACUTE));
-    ON_CALL(*testPerson, IsIdentifiedAsInfected(person::InfectionType::HCV))
+    ON_CALL(*testPerson, GetHCV()).WillByDefault(Return(person::HCV::kAcute));
+    ON_CALL(*testPerson, IsIdentifiedAsInfected(person:: ::kHcv))
         .WillByDefault(Return(true));
-    ON_CALL(*testPerson, GetLinkState(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageState::UNLINKED));
-    ON_CALL(*testPerson, GetLinkageType(person::InfectionType::HCV))
-        .WillByDefault(Return(person::LinkageType::BACKGROUND));
+    ON_CALL(*testPerson, GetLinkState(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageState::kUnlinked));
+    ON_CALL(*testPerson, GetLinkageType(person:: ::kHcv))
+        .WillByDefault(Return(person::LinkageType::kBackground));
     ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::MALE));
+    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
     ON_CALL(*testPerson, GetPregnancyState())
-        .WillByDefault(Return(person::PregnancyState::NA));
-    ON_CALL(*testPerson, GetTimeSinceLastScreening(person::InfectionType::HCV))
+        .WillByDefault(Return(person::PregnancyState::kNa));
+    ON_CALL(*testPerson, GetTimeSinceLastScreening(person:: ::kHcv))
         .WillByDefault(Return(1));
 
     // Data Setup

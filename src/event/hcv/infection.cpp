@@ -36,13 +36,13 @@ InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
 int InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Acute cases progress to chronic after 6 consecutive months of
     // infection
-    if (person.GetHCV() == data::HCV::ACUTE &&
+    if (person.GetHCV() == data::HCV::kAcute &&
         person.GetTimeSinceHCVChanged() == 6) {
-        person.SetHCV(data::HCV::CHRONIC);
+        person.SetHCV(data::HCV::kChronic);
     }
 
     // If already infected, skip
-    if (person.GetHCV() != data::HCV::NONE) {
+    if (person.GetHCV() != data::HCV::kNone) {
         return;
     }
 

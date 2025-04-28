@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ class MOUDTest : public EventTest {};
 TEST_F(MOUDTest, NeverUsed) {
     // Person Setup
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::NEVER));
+        .WillByDefault(Return(person::Behavior::kNever));
 
     // Expectations
     EXPECT_CALL(*event_dm, SelectCustomCallback(_, _, _, _)).Times(0);
@@ -38,7 +38,7 @@ TEST_F(MOUDTest, NeverUsed) {
 TEST_F(MOUDTest, No_Transition) {
     // Person Setup
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::INJECTION));
+        .WillByDefault(Return(person::Behavior::kInjection));
 
     // Data Setup
     std::vector<double> prob = {0.0};
@@ -59,7 +59,7 @@ TEST_F(MOUDTest, No_Transition) {
 TEST_F(MOUDTest, Transition) {
     // Person Setup
     ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::INJECTION));
+        .WillByDefault(Return(person::Behavior::kInjection));
 
     // Data Setup
     std::vector<double> prob = {1.0};

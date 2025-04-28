@@ -31,8 +31,7 @@ TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
 
 int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Ensure that Person is linked to care
-    if (person.GetLinkState(data::InfectionType::HIV) !=
-        data::LinkageState::LINKED) {
+    if (person.GetLinkState(data:: ::kHiv) != data::LinkageState::kLinked) {
         return;
     }
 

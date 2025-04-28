@@ -80,13 +80,13 @@ public:
                  std::shared_ptr<stats::DeciderBase> decider) {
         // Acute cases progress to chronic after 6 consecutive months of
         // infection
-        if (person->GetHCV() == person::HCV::ACUTE &&
+        if (person->GetHCV() == person::HCV::kAcute &&
             person->GetTimeSinceHCVChanged() == 6) {
-            person->SetHCV(person::HCV::CHRONIC);
+            person->SetHCV(person::HCV::kChronic);
         }
 
         // If already infected, skip
-        if (person->GetHCV() != person::HCV::NONE) {
+        if (person->GetHCV() != person::HCV::kNone) {
             return;
         }
 

@@ -4,8 +4,8 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,17 +143,18 @@ public:
         std::stringstream query;
         query << "CREATE TABLE IF NOT EXISTS population (";
         query << "id, age, sex, drugBehaviorClassification, "
-                 "timeLastActiveDrugUse, seropositivity, isGenotypeThree, "
-                 "fibrosisState, identifiedAsPositiveInfection, linkageState";
-        query << "isAlive, timeInfectionIdentified, "
-                 "trueHCVstate, timeHCVStateChanged, "
-                 "timeFibrosisStateChanged, timeLastActiveDrugUse, "
-                 "timeOfLinkChange, linkageType, timesLinked, "
-                 "measuredFibrosisState, "
-                 "timeOfLastStaging, timeOfLastScreening, numABTests, "
-                 "numRNATests, timesInfected, timesCleared, "
-                 "initiatedTreatment, timeOfTreatmentInitiation, "
-                 "minUtility, multUtility";
+                 "timeLastActiveDrugUse, seropositivity, is_genotype_three, "
+                 "fibrosis_state, identifiedAsPositiveInfection, linkageState";
+        query
+            << "isAlive, timeInfectionIdentified, "
+               "trueHCVstate, timeHCVStateChanged, "
+               "time_fibrosis_state_changed, timeLastActiveDrugUse, "
+               "time_link_change, linkageType, timesLinked, "
+               "measured_fibrosis_state, "
+               "time_of_last_staging, time_of_last_screening, number_ab_tests, "
+               "number_rna_tests, times_infected, timesCleared, "
+               "initiated_treatment, time_treatment_initiation, "
+               "minUtility, multUtility";
         query << ")";
         datamanagement::Table table;
         return _dm->Create(query.str(), table);

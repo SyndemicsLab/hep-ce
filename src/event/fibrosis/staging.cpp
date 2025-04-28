@@ -52,7 +52,7 @@ StagingImpl::StagingImpl(datamanagement::ModelData &model_data,
 
 int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Check if Person even has Fibrosis, exit if they are none
-    if (person.GetTrueFibrosisState() == data::FibrosisState::NONE) {
+    if (person.GetTrueFibrosisState() == data::FibrosisState::kNone) {
         return;
     }
 
@@ -73,7 +73,7 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     // 4. Decide which stage is assigned to the person
     int res = sampler.GetDecision(probs);
-    if (res >= static_cast<int>(data::MeasuredFibrosisState::COUNT)) {
+    if (res >= static_cast<int>(data::MeasuredFibrosisState::kCount)) {
         spdlog::get("main")->error("Measured Fibrosis State Decision returned "
                                    "value outside bounds");
         return;
@@ -130,13 +130,14 @@ StagingImpl::ProbabilityBuilder(const model::Person &person,
     // Returning the probability tuples for each diagnosis of a true fibrosis state
     std::vector<utils::tuple_2i> tuples = {
         std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::F01)),
+                        static_cast<int>(data::MeasuredFibrosisState::kF01)),
         std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::F23)),
+                        static_cast<int>(data::MeasuredFibrosisState::kF23)),
         std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::F4)),
-        std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::DECOMP))};
+                        static_cast<int>(data::MeasuredFibrosisState::kF4)),
+        std::make_tuple(
+            fibrosis_state,
+            static_cast<int>(data::MeasuredFibrosisState::kDecomp))};
 
     std::vector<double> probs;
     for (const auto &tup : tuples) {

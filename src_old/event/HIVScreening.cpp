@@ -27,18 +27,18 @@ private:
     // two types of screening - background and intervention
     /// @brief
     enum class SCREEN_TYPE : int {
-        BACKGROUND = 0,
-        INTERVENTION = 1,
-        COUNT = 2
+        kBackground = 0,
+        kIntervention = 1,
+        kCount = 2
     };
     /// @brief
-    const person::InfectionType INF_TYPE = person::InfectionType::HIV;
+    const person::InfectionType INF_TYPE = person:: ::kHiv;
     /// @brief
     const cost::CostCategory COST_CATEGORY = cost::CostCategory::HIV;
     /// @brief
     const std::unordered_map<SCREEN_TYPE, std::string> TYPE_COLUMNS = {
-        {SCREEN_TYPE::BACKGROUND, "hiv_background_screen_probability"},
-        {SCREEN_TYPE::INTERVENTION, "hiv_intervention_screen_probability"}};
+        {SCREEN_TYPE::kBackground, "hiv_background_screen_probability"},
+        {SCREEN_TYPE::kIntervention, "hiv_intervention_screen_probability"}};
 
     // user-provided values
     double discount = 0.0;
@@ -91,9 +91,9 @@ private:
     /// @return A reference to the map used to store data for the screen type
     hivscreenmap_t *PickMap(SCREEN_TYPE type) {
         switch (type) {
-        case SCREEN_TYPE::BACKGROUND:
+        case SCREEN_TYPE::kBackground:
             return &hiv_background_screen_data;
-        case SCREEN_TYPE::INTERVENTION:
+        case SCREEN_TYPE::kIntervention:
             return &hiv_intervention_screen_data;
         default:
             break;
@@ -113,10 +113,10 @@ private:
 
         double probability = 0.0;
         switch (type) {
-        case SCREEN_TYPE::BACKGROUND:
+        case SCREEN_TYPE::kBackground:
             probability = hiv_background_screen_data[tup];
             break;
-        case SCREEN_TYPE::INTERVENTION:
+        case SCREEN_TYPE::kIntervention:
             probability = hiv_intervention_screen_data[tup];
             break;
         default:
@@ -142,7 +142,7 @@ private:
         AddScreeningCost(person, test_data[type].ab_cost);
         // if person is HIV infected, use sensitivity for this probability.
         // otherwise, use (1 - sensitivity), i.e. rate of false positive
-        double prob_positive = (person->GetHIV() != person::HIV::NONE)
+        double prob_positive = (person->GetHIV() != person::HIV::kNone)
                                    ? test_data[type].ab_sensitivity
                                    : 1 - test_data[type].ab_specificity;
 
@@ -164,7 +164,7 @@ private:
         AddScreeningCost(person, test_data[type].rna_cost);
         // if person is HIV infected, use sensitivity for this probability.
         // otherwise, use (1 - sensitivity), i.e. rate of false positive
-        double prob_positive = (person->GetHIV() != person::HIV::NONE)
+        double prob_positive = (person->GetHIV() != person::HIV::kNone)
                                    ? test_data[type].ab_sensitivity
                                    : 1 - test_data[type].ab_specificity;
         // determine the test outcome -- if decider returns 0, true
@@ -177,7 +177,7 @@ private:
     /// @param
     void AttemptScreen(std::shared_ptr<person::PersonBase> person,
                        std::shared_ptr<stats::DeciderBase> decider,
-                       SCREEN_TYPE type = SCREEN_TYPE::BACKGROUND) {
+                       SCREEN_TYPE type = SCREEN_TYPE::kBackground) {
         // get the chance that a person will be screened
         double screen_probability = this->GetScreeningProbability(person, type);
         // do not screen if the decision does not evaluate to 0
@@ -206,11 +206,12 @@ private:
         person->Diagnose(INF_TYPE);
         // if this was an intervention screen, set linkage type to
         // intervention
-        if (type == SCREEN_TYPE::INTERVENTION) {
-            person->SetLinkageType(person::LinkageType::INTERVENTION, INF_TYPE);
+        if (type == SCREEN_TYPE::kIntervention) {
+            person->SetLinkageType(person::LinkageType::kIntervention,
+                                   INF_TYPE);
             return;
         }
-        person->SetLinkageType(person::LinkageType::BACKGROUND, INF_TYPE);
+        person->SetLinkageType(person::LinkageType::kBackground, INF_TYPE);
     }
 
     /// @brief
@@ -239,9 +240,9 @@ private:
     void MakeTestCharacteristics(SCREEN_TYPE type,
                                  datamanagement::ModelData &model_data) {
         std::string prefix = "hiv_screening_";
-        if (type == SCREEN_TYPE::BACKGROUND) {
+        if (type == SCREEN_TYPE::kBackground) {
             prefix += "background";
-        } else if (type == SCREEN_TYPE::INTERVENTION) {
+        } else if (type == SCREEN_TYPE::kIntervention) {
             prefix += "intervention";
         } else {
             // error
@@ -263,7 +264,7 @@ public:
                  datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if Person already linked, skip screening
-        if (person->GetLinkState(INF_TYPE) == person::LinkageState::LINKED) {
+        if (person->GetLinkState(INF_TYPE) == person::LinkageState::kLinked) {
             return;
         }
 
@@ -274,7 +275,7 @@ public:
             (person->GetTimeSinceLastScreening(INF_TYPE) >= screening_period);
 
         if (one_time_screen || periodic_screen) {
-            this->AttemptScreen(person, decider, SCREEN_TYPE::INTERVENTION);
+            this->AttemptScreen(person, decider, SCREEN_TYPE::kIntervention);
         } else {
             this->AttemptScreen(person, decider);
         }
@@ -289,7 +290,7 @@ public:
 
         // iterate through screening types, defining screening data
         for (int screen_type = 0;
-             screen_type < static_cast<int>(SCREEN_TYPE::COUNT);
+             screen_type < static_cast<int>(SCREEN_TYPE::kCount);
              ++screen_type) {
             SCREEN_TYPE type = static_cast<SCREEN_TYPE>(screen_type);
             MakeTestCharacteristics(type, dm);

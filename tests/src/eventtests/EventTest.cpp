@@ -4,8 +4,8 @@
 // Created: 2025-03-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,34 +62,34 @@ protected:
 };
 
 struct person_select {
-    person::Sex sex = person::Sex::MALE;
+    person::Sex sex = person::Sex::kMale;
     int age = 300;
     bool isAlive = true;
-    person::DeathReason deathReason = person::DeathReason::NA;
+    person::DeathReason deathReason = person::DeathReason::kNa;
     int identifiedHCV = false;
     int timeInfectionIdentified = -1;
-    person::HCV hcv = person::HCV::NONE;
-    person::FibrosisState fibrosisState = person::FibrosisState::NONE;
-    bool isGenotypeThree = false;
+    person::HCV hcv = person::HCV::kNone;
+    person::FibrosisState fibrosis_state = person::FibrosisState::kNone;
+    bool is_genotype_three = false;
     bool seropositive = false;
     int timeHCVChanged = -1;
-    int timeFibrosisStateChanged = -1;
-    person::Behavior drugBehavior = person::Behavior::NEVER;
+    int time_fibrosis_state_changed = -1;
+    person::Behavior drugBehavior = person::Behavior::kNever;
     int timeLastActiveDrugUse = -1;
-    person::LinkageState linkageState = person::LinkageState::NEVER;
-    int timeOfLinkChange = -1;
-    person::LinkageType linkageType = person::LinkageType::BACKGROUND;
-    int linkCount = 0;
-    person::MeasuredFibrosisState measuredFibrosisState =
-        person::MeasuredFibrosisState::NONE;
-    int timeOfLastStaging = -1;
-    int timeOfLastScreening = -1;
-    int numABTests = 0;
-    int numRNATests = 0;
-    int timesInfected = 0;
+    person::LinkageState linkageState = person::LinkageState::kNever;
+    int time_link_change = -1;
+    person::LinkageType linkageType = person::LinkageType::kBackground;
+    int link_count = 0;
+    person::MeasuredFibrosisState measured_fibrosis_state =
+        person::MeasuredFibrosisState::kNone;
+    int time_of_last_staging = -1;
+    int time_of_last_screening = -1;
+    int number_ab_tests = 0;
+    int number_rna_tests = 0;
+    int times_infected = 0;
     int timesCleared = 0;
-    bool initiatedTreatment = false;
-    int timeOfTreatmentInitiation = -1;
+    bool initiated_treatment = false;
+    int time_treatment_initiation = -1;
     double minUtility = 1.0;
     double multUtility = 1.0;
     int treatmentWithdrawals = 0;

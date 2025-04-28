@@ -5,7 +5,7 @@
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-04-29                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,10 +15,10 @@
 namespace person {
 std::ostream &operator<<(std::ostream &os, const InfectionType &inst) {
     switch (inst) {
-    case InfectionType::HCV:
+    case ::kHcv:
         os << "HCV";
         break;
-    case InfectionType::HIV:
+    case ::kHiv:
         os << "HIV";
         break;
     default:
@@ -29,19 +29,19 @@ std::ostream &operator<<(std::ostream &os, const InfectionType &inst) {
 }
 InfectionType &operator<<(InfectionType &inst, const std::string &str) {
     if (str == "HIV") {
-        inst = InfectionType::HIV;
+        inst = ::kHiv;
     } else {
-        inst = InfectionType::HCV;
+        inst = ::kHcv;
     }
     return inst;
 }
 InfectionType &operator++(InfectionType &inst) {
     switch (inst) {
-    case InfectionType::HCV:
-        inst = InfectionType::HIV;
+    case ::kHcv:
+        inst = ::kHiv;
         break;
-    case InfectionType::HIV:
-        inst = InfectionType::COUNT;
+    case ::kHiv:
+        inst = ::kCount;
         break;
     default:
         break;
@@ -51,10 +51,10 @@ InfectionType &operator++(InfectionType &inst) {
 
 std::ostream &operator<<(std::ostream &os, const HCV &inst) {
     switch (inst) {
-    case HCV::ACUTE:
+    case HCV::kAcute:
         os << "acute";
         break;
-    case HCV::CHRONIC:
+    case HCV::kChronic:
         os << "chronic";
         break;
     default:
@@ -65,27 +65,27 @@ std::ostream &operator<<(std::ostream &os, const HCV &inst) {
 }
 HCV &operator<<(HCV &inst, const std::string &str) {
     if (str == "acute") {
-        inst = HCV::ACUTE;
+        inst = HCV::kAcute;
     } else if (str == "chronic") {
-        inst = HCV::CHRONIC;
+        inst = HCV::kChronic;
     } else {
-        inst = HCV::NONE;
+        inst = HCV::kNone;
     }
     return inst;
 }
 
 std::ostream &operator<<(std::ostream &os, const HIV &inst) {
     switch (inst) {
-    case HIV::HIUN:
+    case HIV::kHiUn:
         os << "hi-un";
         break;
-    case HIV::HISU:
+    case HIV::kHiSu:
         os << "hi-su";
         break;
-    case HIV::LOUN:
+    case HIV::LoUn:
         os << "lo-un";
         break;
-    case HIV::LOSU:
+    case HIV::LoSu:
         os << "lo-su";
         break;
     default:
@@ -96,34 +96,34 @@ std::ostream &operator<<(std::ostream &os, const HIV &inst) {
 }
 HIV &operator<<(HIV &inst, const std::string &str) {
     if (str == "hi-un") {
-        inst = HIV::HIUN;
+        inst = HIV::kHiUn;
     } else if (str == "hi-su") {
-        inst = HIV::HISU;
+        inst = HIV::kHiSu;
     } else if (str == "lo-un") {
-        inst = HIV::LOUN;
+        inst = HIV::LoUn;
     } else if (str == "lo-su") {
-        inst = HIV::LOSU;
+        inst = HIV::LoSu;
     } else {
-        inst = HIV::NONE;
+        inst = HIV::kNone;
     }
     return inst;
 }
 
 std::ostream &operator<<(std::ostream &os, const DeathReason &inst) {
     switch (inst) {
-    case DeathReason::BACKGROUND:
+    case DeathReason::kBackground:
         os << "background";
         break;
-    case DeathReason::LIVER:
+    case DeathReason::kLiver:
         os << "liver";
         break;
-    case DeathReason::INFECTION:
+    case DeathReason::kInfection:
         os << "infection";
         break;
-    case DeathReason::AGE:
+    case DeathReason::kAge:
         os << "age";
         break;
-    case DeathReason::OVERDOSE:
+    case DeathReason::kOverdose:
         os << "overdose";
         break;
     default:
@@ -134,33 +134,33 @@ std::ostream &operator<<(std::ostream &os, const DeathReason &inst) {
 }
 DeathReason &operator<<(DeathReason &inst, const std::string &str) {
     if (str == "background") {
-        inst = DeathReason::BACKGROUND;
+        inst = DeathReason::kBackground;
     } else if (str == "liver") {
-        inst = DeathReason::LIVER;
+        inst = DeathReason::kLiver;
     } else if (str == "infection") {
-        inst = DeathReason::INFECTION;
+        inst = DeathReason::kInfection;
     } else if (str == "age") {
-        inst = DeathReason::AGE;
+        inst = DeathReason::kAge;
     } else if (str == "overdose") {
-        inst = DeathReason::OVERDOSE;
+        inst = DeathReason::kOverdose;
     } else {
-        inst = DeathReason::NA;
+        inst = DeathReason::kNa;
     }
     return inst;
 }
 
 std::ostream &operator<<(std::ostream &os, const Behavior &inst) {
     switch (inst) {
-    case Behavior::FORMER_INJECTION:
+    case Behavior::kFormerInjection:
         os << "former_injection";
         break;
-    case Behavior::FORMER_NONINJECTION:
+    case Behavior::kFormerNoninjection:
         os << "former_noninjection";
         break;
-    case Behavior::INJECTION:
+    case Behavior::kInjection:
         os << "injection";
         break;
-    case Behavior::NONINJECTION:
+    case Behavior::kNoninjection:
         os << "noninjection";
         break;
     default:
@@ -171,25 +171,25 @@ std::ostream &operator<<(std::ostream &os, const Behavior &inst) {
 }
 Behavior &operator<<(Behavior &inst, const std::string &str) {
     if (str == "former_injection") {
-        inst = Behavior::FORMER_INJECTION;
+        inst = Behavior::kFormerInjection;
     } else if (str == "former_noninjection") {
-        inst = Behavior::FORMER_NONINJECTION;
+        inst = Behavior::kFormerNoninjection;
     } else if (str == "injection") {
-        inst = Behavior::INJECTION;
+        inst = Behavior::kInjection;
     } else if (str == "noninjection") {
-        inst = Behavior::NONINJECTION;
+        inst = Behavior::kNoninjection;
     } else {
-        inst = Behavior::NEVER;
+        inst = Behavior::kNever;
     }
     return inst;
 }
 
 std::ostream &operator<<(std::ostream &os, const LinkageType &inst) {
     switch (inst) {
-    case LinkageType::BACKGROUND:
+    case LinkageType::kBackground:
         os << "background";
         break;
-    case LinkageType::INTERVENTION:
+    case LinkageType::kIntervention:
         os << "intervention";
         break;
     default:
@@ -200,21 +200,21 @@ std::ostream &operator<<(std::ostream &os, const LinkageType &inst) {
 }
 LinkageType &operator<<(LinkageType &inst, const std::string &str) {
     if (str == "background") {
-        inst = LinkageType::BACKGROUND;
+        inst = LinkageType::kBackground;
     } else if (str == "intervention") {
-        inst = LinkageType::INTERVENTION;
+        inst = LinkageType::kIntervention;
     } else {
-        inst = LinkageType::NA;
+        inst = LinkageType::kNa;
     }
     return inst;
 }
 
 std::ostream &operator<<(std::ostream &os, const LinkageState &inst) {
     switch (inst) {
-    case LinkageState::LINKED:
+    case LinkageState::kLinked:
         os << "linked";
         break;
-    case LinkageState::UNLINKED:
+    case LinkageState::kUnlinked:
         os << "unlinked";
         break;
     default:
@@ -225,33 +225,33 @@ std::ostream &operator<<(std::ostream &os, const LinkageState &inst) {
 }
 LinkageState &operator<<(LinkageState &inst, const std::string &str) {
     if (str == "linked") {
-        inst = LinkageState::LINKED;
+        inst = LinkageState::kLinked;
     } else if (str == "unlinked") {
-        inst = LinkageState::UNLINKED;
+        inst = LinkageState::kUnlinked;
     } else {
-        inst == LinkageState::NEVER;
+        inst == LinkageState::kNever;
     }
     return inst;
 }
 
 std::ostream &operator<<(std::ostream &os, const FibrosisState &inst) {
     switch (inst) {
-    case FibrosisState::DECOMP:
+    case FibrosisState::kDecomp:
         os << "decomp";
         break;
-    case FibrosisState::F0:
+    case FibrosisState::kF0:
         os << "f0";
         break;
-    case FibrosisState::F1:
+    case FibrosisState::kF1:
         os << "f1";
         break;
-    case FibrosisState::F2:
+    case FibrosisState::kF2:
         os << "f2";
         break;
-    case FibrosisState::F3:
+    case FibrosisState::kF3:
         os << "f3";
         break;
-    case FibrosisState::F4:
+    case FibrosisState::kF4:
         os << "f4";
         break;
     default:
@@ -262,42 +262,42 @@ std::ostream &operator<<(std::ostream &os, const FibrosisState &inst) {
 }
 FibrosisState &operator<<(FibrosisState &inst, const std::string &str) {
     if (str == "decomp") {
-        inst = FibrosisState::DECOMP;
+        inst = FibrosisState::kDecomp;
     } else if (str == "f0") {
-        inst = FibrosisState::F0;
+        inst = FibrosisState::kF0;
     } else if (str == "f1") {
-        inst = FibrosisState::F1;
+        inst = FibrosisState::kF1;
     } else if (str == "f2") {
-        inst = FibrosisState::F2;
+        inst = FibrosisState::kF2;
     } else if (str == "f3") {
-        inst = FibrosisState::F3;
+        inst = FibrosisState::kF3;
     } else if (str == "f4") {
-        inst = FibrosisState::F4;
+        inst = FibrosisState::kF4;
     } else {
-        inst = FibrosisState::NONE;
+        inst = FibrosisState::kNone;
     }
     return inst;
 }
 
 FibrosisState &operator++(FibrosisState &inst) {
     switch (inst) {
-    case FibrosisState::F0:
-        inst = FibrosisState::F1;
+    case FibrosisState::kF0:
+        inst = FibrosisState::kF1;
         break;
-    case FibrosisState::F1:
-        inst = FibrosisState::F2;
+    case FibrosisState::kF1:
+        inst = FibrosisState::kF2;
         break;
-    case FibrosisState::F2:
-        inst = FibrosisState::F3;
+    case FibrosisState::kF2:
+        inst = FibrosisState::kF3;
         break;
-    case FibrosisState::F3:
-        inst = FibrosisState::F4;
+    case FibrosisState::kF3:
+        inst = FibrosisState::kF4;
         break;
-    case FibrosisState::F4:
-        inst = FibrosisState::DECOMP;
+    case FibrosisState::kF4:
+        inst = FibrosisState::kDecomp;
         break;
-    case FibrosisState::DECOMP:
-        inst = FibrosisState::DECOMP;
+    case FibrosisState::kDecomp:
+        inst = FibrosisState::kDecomp;
         break;
     default:
         break;
@@ -312,10 +312,10 @@ FibrosisState operator++(FibrosisState &inst, int) {
 
 std::ostream &operator<<(std::ostream &os, const HCCState &inst) {
     switch (inst) {
-    case HCCState::EARLY:
+    case HCCState::kEarly:
         os << "early";
         break;
-    case HCCState::LATE:
+    case HCCState::kLate:
         os << "late";
         break;
     default:
@@ -326,27 +326,27 @@ std::ostream &operator<<(std::ostream &os, const HCCState &inst) {
 }
 HCCState &operator<<(HCCState &inst, const std::string &str) {
     if (str == "early") {
-        inst = HCCState::EARLY;
+        inst = HCCState::kEarly;
     } else if (str == "late") {
-        inst = HCCState::LATE;
+        inst = HCCState::kLate;
     } else {
-        inst = HCCState::NONE;
+        inst = HCCState::kNone;
     }
     return inst;
 }
 
 std::ostream &operator<<(std::ostream &os, const MeasuredFibrosisState &inst) {
     switch (inst) {
-    case MeasuredFibrosisState::DECOMP:
+    case MeasuredFibrosisState::kDecomp:
         os << "decomp";
         break;
-    case MeasuredFibrosisState::F01:
+    case MeasuredFibrosisState::kF01:
         os << "f01";
         break;
-    case MeasuredFibrosisState::F23:
+    case MeasuredFibrosisState::kF23:
         os << "f23";
         break;
-    case MeasuredFibrosisState::F4:
+    case MeasuredFibrosisState::kF4:
         os << "f4";
         break;
     default:
@@ -358,32 +358,32 @@ std::ostream &operator<<(std::ostream &os, const MeasuredFibrosisState &inst) {
 MeasuredFibrosisState &operator<<(MeasuredFibrosisState &inst,
                                   const std::string &str) {
     if (str == "decomp") {
-        inst = MeasuredFibrosisState::DECOMP;
+        inst = MeasuredFibrosisState::kDecomp;
     } else if (str == "f01") {
-        inst = MeasuredFibrosisState::F01;
+        inst = MeasuredFibrosisState::kF01;
     } else if (str == "f23") {
-        inst = MeasuredFibrosisState::F23;
+        inst = MeasuredFibrosisState::kF23;
     } else if (str == "f4") {
-        inst = MeasuredFibrosisState::F4;
+        inst = MeasuredFibrosisState::kF4;
     } else {
-        inst = MeasuredFibrosisState::NONE;
+        inst = MeasuredFibrosisState::kNone;
     }
     return inst;
 }
 
 MeasuredFibrosisState &operator++(MeasuredFibrosisState &inst) {
     switch (inst) {
-    case MeasuredFibrosisState::F01:
-        inst = MeasuredFibrosisState::F23;
+    case MeasuredFibrosisState::kF01:
+        inst = MeasuredFibrosisState::kF23;
         break;
-    case MeasuredFibrosisState::F23:
-        inst = MeasuredFibrosisState::F4;
+    case MeasuredFibrosisState::kF23:
+        inst = MeasuredFibrosisState::kF4;
         break;
-    case MeasuredFibrosisState::F4:
-        inst = MeasuredFibrosisState::DECOMP;
+    case MeasuredFibrosisState::kF4:
+        inst = MeasuredFibrosisState::kDecomp;
         break;
-    case MeasuredFibrosisState::DECOMP:
-        inst = MeasuredFibrosisState::DECOMP;
+    case MeasuredFibrosisState::kDecomp:
+        inst = MeasuredFibrosisState::kDecomp;
         break;
     default:
         break;
@@ -398,10 +398,10 @@ MeasuredFibrosisState operator++(MeasuredFibrosisState &inst, int) {
 
 std::ostream &operator<<(std::ostream &os, const MOUD &inst) {
     switch (inst) {
-    case MOUD::CURRENT:
+    case MOUD::kCurrent:
         os << "current";
         break;
-    case MOUD::POST:
+    case MOUD::kPost:
         os << "post";
         break;
     default:
@@ -412,21 +412,21 @@ std::ostream &operator<<(std::ostream &os, const MOUD &inst) {
 }
 MOUD &operator<<(MOUD &inst, const std::string &str) {
     if (str == "current") {
-        inst = MOUD::CURRENT;
+        inst = MOUD::kCurrent;
     } else if (str == "post") {
-        inst = MOUD::POST;
+        inst = MOUD::kPost;
     } else {
-        inst = MOUD::NONE;
+        inst = MOUD::kNone;
     }
     return inst;
 }
 
 std::ostream &operator<<(std::ostream &os, const Sex &inst) {
     switch (inst) {
-    case Sex::MALE:
+    case Sex::kMale:
         os << "male";
         break;
-    case Sex::FEMALE:
+    case Sex::kFemale:
         os << "female";
         break;
     default:
@@ -437,19 +437,19 @@ std::ostream &operator<<(std::ostream &os, const Sex &inst) {
 }
 Sex &operator<<(Sex &inst, const std::string &str) {
     if (str == "male") {
-        inst = Sex::MALE;
+        inst = Sex::kMale;
     } else {
-        inst = Sex::FEMALE;
+        inst = Sex::kFemale;
     }
     return inst;
 }
 
 std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
     switch (inst) {
-    case PregnancyState::POSTPARTUM:
+    case PregnancyState::kPostpartum:
         os << "postpartum";
         break;
-    case PregnancyState::PREGNANT:
+    case PregnancyState::kPregnant:
         os << "pregnant";
         break;
     case PregnancyState::NONE:
@@ -463,13 +463,13 @@ std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
 }
 PregnancyState &operator<<(PregnancyState &inst, const std::string &str) {
     if (str == "postpartum") {
-        inst = PregnancyState::POSTPARTUM;
+        inst = PregnancyState::kPostpartum;
     } else if (str == "pregnant") {
-        inst = PregnancyState::PREGNANT;
+        inst = PregnancyState::kPregnant;
     } else if (str == "none") {
-        inst = PregnancyState::NONE;
+        inst = PregnancyState::kNone;
     } else {
-        inst = PregnancyState::NA;
+        inst = PregnancyState::kNa;
     }
     return inst;
 }

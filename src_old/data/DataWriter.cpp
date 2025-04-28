@@ -60,7 +60,7 @@ private:
         compiled_attributes << cu.at(utility::UtilityCategory::BEHAVIOR) << ","
                             << cu.at(utility::UtilityCategory::LIVER) << ","
                             << cu.at(utility::UtilityCategory::TREATMENT) << ","
-                            << cu.at(utility::UtilityCategory::BACKGROUND)
+                            << cu.at(utility::UtilityCategory::kBackground)
                             << "," << cu.at(utility::UtilityCategory::HIV)
                             << "," << person->GetLifeSpan() << ","
                             << person->GetDiscountedLifeSpan() << ","

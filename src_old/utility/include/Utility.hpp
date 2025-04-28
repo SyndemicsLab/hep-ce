@@ -4,8 +4,8 @@
 // Created: 2025-02-24                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-12                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,9 +23,9 @@ enum class UtilityCategory {
     BEHAVIOR = 0,
     LIVER = 1,
     TREATMENT = 2,
-    BACKGROUND = 3,
+    kBackground = 3,
     HIV = 4,
-    COUNT = 5
+    kCount = 5
 };
 std::ostream &operator<<(std::ostream &os, const UtilityCategory &uc);
 

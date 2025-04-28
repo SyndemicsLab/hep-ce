@@ -44,12 +44,12 @@ VoluntaryRelinkImpl::VoluntaryRelinkImpl(datamanagement::ModelData &model_data,
 int VoluntaryRelinkImpl::Execute(model::Person &person,
                                  model::Sampler &sampler) {
     // if linked or never linked OR too long since last linked
-    if ((person.GetLinkState() == data::LinkageState::UNLINKED) &&
+    if ((person.GetLinkState() == data::LinkageState::kUnlinked) &&
         ((person.GetTimeSinceLinkChange()) < _voluntary_relink_duration) &&
         (sampler.GetDecision({_relink_probability}) == 0) &&
-        (person.GetHCV() != data::HCV::NONE)) {
+        (person.GetHCV() != data::HCV::kNone)) {
         AddRNATest(person);
-        person.Link(data::LinkageType::BACKGROUND);
+        person.Link(data::LinkageType::kBackground);
     }
 }
 

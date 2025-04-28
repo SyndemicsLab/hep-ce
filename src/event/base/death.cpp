@@ -24,7 +24,7 @@ Death::Create(datamanagement::ModelData &model_data,
 
 bool DeathImpl::ReachedMaxAge(model::Person &person) {
     if (person.GetAge() >= 1200) {
-        Die(person, data::DeathReason::AGE);
+        Die(person, data::DeathReason::kAge);
         return true;
     }
     return false;
@@ -119,21 +119,21 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &decider) {
         person.ToggleOverdose();
         return false;
     }
-    Die(person, data::DeathReason::OVERDOSE);
+    Die(person, data::DeathReason::kOverdose);
     return true;
 }
 
 void DeathImpl::GetFibrosisMortalityProb(model::Person &person, double &prob) {
 
-    if (person.GetTrueFibrosisState() == data::FibrosisState::F4) {
-        if (person.GetHCV() == data::HCV::NONE) {
+    if (person.GetTrueFibrosisState() == data::FibrosisState::kF4) {
+        if (person.GetHCV() == data::HCV::kNone) {
             prob = _f4_uninfected_probability;
         } else {
             prob = _f4_infected_probability;
         }
 
-    } else if (person.GetTrueFibrosisState() == data::FibrosisState::DECOMP) {
-        if (person.GetHCV() == data::HCV::NONE) {
+    } else if (person.GetTrueFibrosisState() == data::FibrosisState::kDecomp) {
+        if (person.GetHCV() == data::HCV::kNone) {
             prob = _decomp_uninfected_probability;
         } else {
             prob = _decomp_infected_probability;
@@ -191,9 +191,9 @@ int DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     int retIdx = sampler.GetDecision(probVec);
     if (retIdx == 0) {
-        Die(person, data::DeathReason::BACKGROUND);
+        Die(person, data::DeathReason::kBackground);
     } else if (retIdx == 1) {
-        Die(person, data::DeathReason::LIVER);
+        Die(person, data::DeathReason::kLiver);
     }
 }
 

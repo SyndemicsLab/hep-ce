@@ -27,15 +27,15 @@ public:
     ~LinkingImpl() = default;
 
     data::InfectionType GetInfectionType() const override {
-        return data::InfectionType::HCV;
+        return data:: ::kHcv;
     }
 
 private:
     inline bool FalsePositive(model::Person &person) override {
-        if (person.GetHCV() != data::HCV::NONE) {
+        if (person.GetHCV() != data::HCV::kNone) {
             return false;
         }
-        person.ClearDiagnosis(data::InfectionType::HCV);
+        person.ClearDiagnosis(data:: ::kHcv);
         AddFalsePositiveCost(person, GetCostCategory());
         return true;
     }
