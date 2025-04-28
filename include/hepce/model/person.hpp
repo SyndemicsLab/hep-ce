@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -16,7 +16,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 
 #include <hepce/data/types.hpp>
 #include <hepce/model/cost.hpp>
@@ -27,8 +27,8 @@ namespace model {
 class Person {
 public:
     // Functionality
-    virtual int CreatePersonFromTable(
-        int id, std::shared_ptr<datamanagement::DataManagerBase> dm) = 0;
+    virtual int
+    CreatePersonFromTable(int id, datamanagement::ModelData &model_data) = 0;
     virtual int Grow() = 0;
     virtual int
     Die(data::DeathReason deathReason = data::DeathReason::BACKGROUND) = 0;

@@ -5,7 +5,7 @@
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
 // Last Modified: 2025-04-29                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@
 #include "Utils.hpp"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <filesystem>
 #include <fstream>
 
@@ -78,12 +78,12 @@ private:
 public:
     int UpdatePopulation(
         std::vector<std::shared_ptr<person::PersonBase>> new_population,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        datamanagement::ModelData &model_data) {
         return -1;
     }
     int WriteOutputPopulationToTable(
         std::vector<std::shared_ptr<person::PersonBase>> new_population,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+        datamanagement::ModelData &model_data) {
         return -1;
     }
     std::string PopulationToString(
@@ -126,7 +126,7 @@ DataWriter::~DataWriter() = default;
 
 int DataWriter::UpdatePopulation(
     std::vector<std::shared_ptr<person::PersonBase>> new_population,
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    datamanagement::ModelData &model_data) {
     return impl->UpdatePopulation(new_population, dm);
 }
 

@@ -4,8 +4,8 @@
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-08                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <functional>
 #include <sstream>
 #include <string>
@@ -73,8 +73,7 @@ private:
     }
 
     bool runABTest(std::shared_ptr<person::PersonBase> person,
-                   std::shared_ptr<datamanagement::DataManagerBase> dm,
-                   std::string prefix,
+                   datamanagement::ModelData &model_data, std::string prefix,
                    std::shared_ptr<stats::DeciderBase> decider) {
         bool test =
             this->test(person->GetHCV(), dm, prefix + "_ab", decider,
@@ -85,8 +84,7 @@ private:
     }
 
     bool runRNATest(std::shared_ptr<person::PersonBase> person,
-                    std::shared_ptr<datamanagement::DataManagerBase> dm,
-                    std::string prefix,
+                    datamanagement::ModelData &model_data, std::string prefix,
                     std::shared_ptr<stats::DeciderBase> decider) {
         bool test =
             this->test(person->GetHCV(), dm, prefix + "_rna", decider,
@@ -136,8 +134,7 @@ private:
     }
 
     bool test(person::HCV infectionStatus,
-              std::shared_ptr<datamanagement::DataManagerBase> dm,
-              std::string configKey,
+              datamanagement::ModelData &model_data, std::string configKey,
               std::shared_ptr<stats::DeciderBase> decider,
               std::function<int(void)> testFunc) {
         double probability =
@@ -153,7 +150,7 @@ private:
     /// @param person The Person undergoing an Intervention Screening
     void Screen(std::string screenkey,
                 std::shared_ptr<person::PersonBase> person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
+                datamanagement::ModelData &model_data,
                 std::shared_ptr<stats::DeciderBase> decider) {
         person->MarkScreened();
         // if person has had a history of HCV Infections
@@ -175,9 +172,9 @@ private:
         }
     }
 
-    double GetScreeningProbability(
-        std::string colname, std::shared_ptr<person::PersonBase> person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    double GetScreeningProbability(std::string colname,
+                                   std::shared_ptr<person::PersonBase> person,
+                                   datamanagement::ModelData &model_data) {
         int age_years = (int)(person->GetAge() / 12.0);
         int gender = (int)person->GetSex();
         int drug_behavior = (int)person->GetBehavior();
@@ -196,7 +193,7 @@ private:
     }
 
     int InterventionScreen(std::shared_ptr<person::PersonBase> person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           datamanagement::ModelData &model_data,
                            std::shared_ptr<stats::DeciderBase> decider) {
         double interventionProbability = this->GetScreeningProbability(
             "intervention_screen_probability", person, dm);
@@ -208,7 +205,7 @@ private:
     }
 
     int BackgroundScreen(std::shared_ptr<person::PersonBase> person,
-                         std::shared_ptr<datamanagement::DataManagerBase> dm,
+                         datamanagement::ModelData &model_data,
                          std::shared_ptr<stats::DeciderBase> decider) {
         double backgroundProbability = this->GetScreeningProbability(
             "background_screen_probability", person, dm);
@@ -222,10 +219,9 @@ private:
     /// @brief Insert cost for screening of type \code{type}
     /// @param person The person who is accruing cost
     /// @param type The screening type, used to discern the cost to add
-    void
-    InsertScreeningCost(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        std::string configKey, std::string screeningName) {
+    void InsertScreeningCost(std::shared_ptr<person::PersonBase> person,
+                             datamanagement::ModelData &model_data,
+                             std::string configKey, std::string screeningName) {
         double screeningCost;
         if (configKey == "screening_background_rna") {
             screeningCost = background_rna_cost;
@@ -247,7 +243,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if a person is already linked, skip screening
         if (person->GetLinkState() == person::LinkageState::LINKED) {
@@ -269,7 +265,7 @@ public:
             this->BackgroundScreen(person, dm, decider);
         }
     }
-    HCVScreeningIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    HCVScreeningIMPL(datamanagement::ModelData &model_data) {
         std::string discount_data;
         int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
         if (!discount_data.empty()) {
@@ -362,8 +358,7 @@ public:
     }
 };
 
-HCVScreening::HCVScreening(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+HCVScreening::HCVScreening(datamanagement::ModelData &model_data) {
     impl = std::make_unique<HCVScreeningIMPL>(dm);
 }
 
@@ -372,7 +367,7 @@ HCVScreening::HCVScreening(HCVScreening &&) noexcept = default;
 HCVScreening &HCVScreening::operator=(HCVScreening &&) noexcept = default;
 
 void HCVScreening::DoEvent(std::shared_ptr<person::PersonBase> person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           datamanagement::ModelData &model_data,
                            std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

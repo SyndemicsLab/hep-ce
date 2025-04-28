@@ -4,8 +4,8 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 
 namespace event {
@@ -57,8 +57,7 @@ private:
         return 0;
     }
 
-    int LoadBackgroundMortality(
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadBackgroundMortality(datamanagement::ModelData &model_data) {
         std::string query = this->BackgroundMortalitySQL();
         std::string error;
         int rc = dm->SelectCustomCallback(query, this->callback_background,
@@ -98,8 +97,7 @@ private:
         return 0;
     }
 
-    int
-    CheckOverdoseTable(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int CheckOverdoseTable(datamanagement::ModelData &model_data) {
         std::string query =
             "SELECT name FROM sqlite_master WHERE type='table' AND "
             "name='overdoses';";
@@ -113,7 +111,7 @@ private:
         return rc;
     }
 
-    int LoadOverdoseData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadOverdoseData(datamanagement::ModelData &model_data) {
         int rc = CheckOverdoseTable(dm);
         if (rc != 0) {
             return rc;
@@ -136,9 +134,9 @@ private:
         person->Die(deathReason);
     }
 
-    void getFibrosisMortalityProb(
-        std::shared_ptr<person::PersonBase> person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm, double &prob) {
+    void getFibrosisMortalityProb(std::shared_ptr<person::PersonBase> person,
+                                  datamanagement::ModelData &model_data,
+                                  double &prob) {
 
         if (person->GetTrueFibrosisState() == person::FibrosisState::F4) {
             if (person->GetHCV() == person::HCV::NONE) {
@@ -159,10 +157,9 @@ private:
         }
     }
 
-    void
-    getSMRandBackgroundProb(std::shared_ptr<person::PersonBase> person,
-                            std::shared_ptr<datamanagement::DataManagerBase> dm,
-                            double &backgroundMortProb, double &smr) {
+    void getSMRandBackgroundProb(std::shared_ptr<person::PersonBase> person,
+                                 datamanagement::ModelData &model_data,
+                                 double &backgroundMortProb, double &smr) {
 
         if (background_data.empty()) {
             spdlog::get("main")->warn(
@@ -191,7 +188,7 @@ private:
     }
 
     bool FatalOverdose(std::shared_ptr<person::PersonBase> person,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm,
+                       datamanagement::ModelData &model_data,
                        std::shared_ptr<stats::DeciderBase> decider) {
         if (!person->GetCurrentlyOverdosing()) {
             return false;
@@ -218,7 +215,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         if (ReachedMaxAge(person)) {
             return;
@@ -252,7 +249,7 @@ public:
         }
     }
 
-    DeathIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    DeathIMPL(datamanagement::ModelData &model_data) {
         this->f4_infected_probability =
             Utils::GetDoubleFromConfig("mortality.f4_infected", dm);
         this->f4_uninfected_probability =
@@ -267,7 +264,7 @@ public:
     }
 };
 
-Death::Death(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+Death::Death(datamanagement::ModelData &model_data) {
     impl = std::make_unique<DeathIMPL>(dm);
 }
 
@@ -276,7 +273,7 @@ Death::Death(Death &&) noexcept = default;
 Death &Death::operator=(Death &&) noexcept = default;
 
 void Death::DoEvent(std::shared_ptr<person::PersonBase> person,
-                    std::shared_ptr<datamanagement::DataManagerBase> dm,
+                    datamanagement::ModelData &model_data,
                     std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

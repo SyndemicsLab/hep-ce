@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,12 +13,12 @@
 #include "EventFactory.hpp"
 #include "AllEvents.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 
 namespace event {
 std::shared_ptr<Event>
 EventFactory::create(std::string eventName,
-                     std::shared_ptr<datamanagement::DataManagerBase> dm) {
+                     datamanagement::ModelData &model_data) {
     if (eventName == "Aging") {
         return makeEvent<Aging>(dm);
     }

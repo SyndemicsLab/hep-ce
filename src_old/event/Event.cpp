@@ -4,8 +4,8 @@
 // Created: 2025-01-10                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@
 
 namespace event {
 int Event::Execute(std::shared_ptr<person::PersonBase> person,
-                   std::shared_ptr<datamanagement::DataManagerBase> dm,
+                   datamanagement::ModelData &model_data,
                    std::shared_ptr<stats::DeciderBase> decider) {
     if (person->IsAlive()) {
         if (dm == nullptr) {

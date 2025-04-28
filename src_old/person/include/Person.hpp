@@ -4,8 +4,8 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-29                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,8 +27,8 @@ namespace person {
 class PersonBase {
 public:
     // Functionality
-    virtual int CreatePersonFromTable(
-        int id, std::shared_ptr<datamanagement::DataManagerBase> dm) = 0;
+    virtual int
+    CreatePersonFromTable(int id, datamanagement::ModelData &model_data) = 0;
     virtual int Grow() = 0;
     virtual int Die(DeathReason deathReason = DeathReason::BACKGROUND) = 0;
 
@@ -247,9 +247,7 @@ public:
     Person &operator=(Person &&) noexcept;
 
     // Functionality
-    int
-    CreatePersonFromTable(int id,
-                          std::shared_ptr<datamanagement::DataManagerBase> dm);
+    int CreatePersonFromTable(int id, datamanagement::ModelData &model_data);
     int Grow();
     int Die(DeathReason deathReason = DeathReason::BACKGROUND);
 

@@ -4,8 +4,8 @@
 // Created: 2023-09-13                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@
 #include "Utility.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 
 namespace event {
@@ -81,9 +81,8 @@ private:
         return 0;
     }
 
-    void calculateCostAndUtility(
-        std::shared_ptr<person::PersonBase> person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    void calculateCostAndUtility(std::shared_ptr<person::PersonBase> person,
+                                 datamanagement::ModelData &model_data) {
         int gender = ((int)person->GetSex());
         int behavior = ((int)person->GetBehavior());
         Utils::tuple_2i tup = std::make_tuple(gender, behavior);
@@ -95,7 +94,7 @@ private:
         person->SetUtility(cost_data[tup].util, util_category);
     }
 
-    int LoadCostData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadCostData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(CostSQL(), this->callback_costs,
                                           &cost_data, error);
@@ -113,7 +112,7 @@ private:
         return rc;
     }
 
-    int LoadBehaviorData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadBehaviorData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(TransitionSQL(), this->callback_trans,
                                           &behavior_data, error);
@@ -131,7 +130,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
 
         // Typical Behavior Change
@@ -166,7 +165,7 @@ public:
         this->calculateCostAndUtility(person, dm);
     }
 
-    BehaviorChangesIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    BehaviorChangesIMPL(datamanagement::ModelData &model_data) {
         this->discount =
             Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
         LoadCostData(dm);
@@ -174,8 +173,7 @@ public:
     }
 };
 
-BehaviorChanges::BehaviorChanges(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+BehaviorChanges::BehaviorChanges(datamanagement::ModelData &model_data) {
     impl = std::make_unique<BehaviorChangesIMPL>(dm);
 }
 
@@ -184,10 +182,9 @@ BehaviorChanges::BehaviorChanges(BehaviorChanges &&) noexcept = default;
 BehaviorChanges &
 BehaviorChanges::operator=(BehaviorChanges &&) noexcept = default;
 
-void BehaviorChanges::DoEvent(
-    std::shared_ptr<person::PersonBase> person,
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    std::shared_ptr<stats::DeciderBase> decider) {
+void BehaviorChanges::DoEvent(std::shared_ptr<person::PersonBase> person,
+                              datamanagement::ModelData &model_data,
+                              std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }
 } // namespace event

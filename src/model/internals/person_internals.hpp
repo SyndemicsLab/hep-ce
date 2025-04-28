@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -21,8 +21,8 @@ public:
     PersonImpl(const std::string &log_name = "console") {}
     ~PersonImpl() = default;
     // Functionality
-    int CreatePersonFromTable(
-        int id, std::shared_ptr<datamanagement::DataManagerBase> dm) override;
+    int CreatePersonFromTable(int id,
+                              datamanagement::ModelData &model_data) override;
     int Grow() override;
     int
     Die(data::DeathReason deathReason = data::DeathReason::BACKGROUND) override;

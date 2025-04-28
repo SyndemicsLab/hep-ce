@@ -25,9 +25,7 @@ namespace event {
 class Event {
 public:
     virtual ~Event() = default;
-    virtual int Execute(model::Person &person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        model::Sampler &sampler) = 0;
+    virtual int Execute(model::Person &person, model::Sampler &sampler) = 0;
 };
 } // namespace event
 } // namespace hepce

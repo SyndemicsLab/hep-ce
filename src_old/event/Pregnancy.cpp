@@ -4,8 +4,8 @@
 // Created: 2024-06-13                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-30                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 
 namespace event {
@@ -40,7 +40,7 @@ private:
     }
 
     bool CheckMiscarriage(std::shared_ptr<person::PersonBase> person,
-                          std::shared_ptr<datamanagement::DataManagerBase> dm,
+                          datamanagement::ModelData &model_data,
                           std::shared_ptr<stats::DeciderBase> decider) {
         std::vector<double> prob =
             this->GetSingleProbability(person, dm, "miscarriage");
@@ -49,7 +49,7 @@ private:
 
     std::vector<double>
     GetSingleProbability(std::shared_ptr<person::PersonBase> person,
-                         std::shared_ptr<datamanagement::DataManagerBase> dm,
+                         datamanagement::ModelData &model_data,
                          std::string column) {
         std::string query = this->buildSQL(person, column);
         double storage = 0.0;
@@ -65,7 +65,7 @@ private:
     }
 
     int GetNumberOfBirths(std::shared_ptr<person::PersonBase> person,
-                          std::shared_ptr<datamanagement::DataManagerBase> dm,
+                          datamanagement::ModelData &model_data,
                           std::shared_ptr<stats::DeciderBase> decider) {
 
         std::vector<double> result = {multiple_delivery_probability,
@@ -74,16 +74,15 @@ private:
         return (decider->GetDecision(result) == 0) ? 2 : 1;
     }
 
-    bool
-    DoChildrenGetTested(std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        std::shared_ptr<stats::DeciderBase> decider) {
+    bool DoChildrenGetTested(datamanagement::ModelData &model_data,
+                             std::shared_ptr<stats::DeciderBase> decider) {
 
         std::vector<double> result = {infant_hcv_tested_probability,
                                       1 - infant_hcv_tested_probability};
         return (decider->GetDecision(result) == 0) ? true : false;
     }
 
-    bool DrawChildInfection(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    bool DrawChildInfection(datamanagement::ModelData &model_data,
                             std::shared_ptr<stats::DeciderBase> decider) {
         std::vector<double> result = {vertical_hcv_transition_probability,
                                       1 - vertical_hcv_transition_probability};
@@ -91,7 +90,7 @@ private:
     }
 
     void AttemptHaveChild(std::shared_ptr<person::PersonBase> person,
-                          std::shared_ptr<datamanagement::DataManagerBase> dm,
+                          datamanagement::ModelData &model_data,
                           std::shared_ptr<stats::DeciderBase> decider) {
         if (CheckMiscarriage(person, dm, decider)) {
             person->Stillbirth();
@@ -121,10 +120,9 @@ private:
         person->SetPregnancyState(person::PregnancyState::POSTPARTUM);
     }
 
-    void
-    AttemptHealthyMonth(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
-                        std::shared_ptr<stats::DeciderBase> decider) {
+    void AttemptHealthyMonth(std::shared_ptr<person::PersonBase> person,
+                             datamanagement::ModelData &model_data,
+                             std::shared_ptr<stats::DeciderBase> decider) {
         if (CheckMiscarriage(person, dm, decider)) {
             person->Miscarry();
         }
@@ -132,7 +130,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
 
         if (person->GetSex() == person::Sex::MALE || person->GetAge() < 180 ||
@@ -164,7 +162,7 @@ public:
         return;
     }
 
-    PregnancyIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    PregnancyIMPL(datamanagement::ModelData &model_data) {
         std::string storage;
         dm->GetFromConfig("pregnancy.multiple_delivery_probability", storage);
         if (storage.empty()) {
@@ -195,7 +193,7 @@ public:
     }
 };
 
-Pregnancy::Pregnancy(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+Pregnancy::Pregnancy(datamanagement::ModelData &model_data) {
     impl = std::make_unique<PregnancyIMPL>(dm);
 }
 
@@ -204,7 +202,7 @@ Pregnancy::Pregnancy(Pregnancy &&) noexcept = default;
 Pregnancy &Pregnancy::operator=(Pregnancy &&) noexcept = default;
 
 void Pregnancy::DoEvent(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
+                        datamanagement::ModelData &model_data,
                         std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

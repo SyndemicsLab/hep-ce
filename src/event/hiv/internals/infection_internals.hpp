@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -26,22 +26,21 @@ public:
     using hivincidencemap_t =
         std::unordered_map<utils::tuple_3i, double, utils::key_hash_3i,
                            utils::key_equal_3i>;
-    InfectionImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    InfectionImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");
 
     ~InfectionImpl() = default;
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override;
+    int Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     hivincidencemap_t _infection_data;
-    static int Callback(void *storage, int count, char **data, char **columns) {
-        utils::tuple_3i tup = std::make_tuple(
-            std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-        (*((hivincidencemap_t *)storage))[tup] = utils::SToDPositive(data[3]);
-        return 0;
+    static void Callback(std::any &storage, const SQLite::Statement &stmt) {
+        utils::tuple_3i tup = std::make_tuple(stmt.getColumn(0).getInt(),
+                                              stmt.getColumn(1).getInt(),
+                                              stmt.getColumn(2).getInt());
+        std::any_cast<hivincidencemap_t>(storage)[tup] =
+            stmt.getColumn(3).getDouble();
     }
 
     inline const std::string HIVIncidenceSQL() const {
@@ -49,9 +48,7 @@ private:
                "hiv_incidence;";
     }
 
-    std::vector<double> GetInfectionProbability(
-        const model::Person &person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::vector<double> GetInfectionProbability(const model::Person &person) {
         if (_infection_data.empty()) {
             // Warn Empty
             return {0.0};

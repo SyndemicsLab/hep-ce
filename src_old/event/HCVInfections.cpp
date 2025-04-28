@@ -4,8 +4,8 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-19                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 namespace event {
 class HCVInfections::HCVInfectionsIMPL {
@@ -39,9 +39,9 @@ private:
                "incidence;";
     }
 
-    std::vector<double> GetInfectionProbability(
-        std::shared_ptr<person::PersonBase> person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::vector<double>
+    GetInfectionProbability(std::shared_ptr<person::PersonBase> person,
+                            datamanagement::ModelData &model_data) {
         if (incidence_data.empty()) {
             spdlog::get("main")->warn(
                 "No result found for Infection Probability!");
@@ -57,7 +57,7 @@ private:
         return {incidence};
     }
 
-    int LoadIncidenceData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadIncidenceData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(
             IncidenceSQL(), this->callback_incidence, &incidence_data, error);
@@ -76,7 +76,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // Acute cases progress to chronic after 6 consecutive months of
         // infection
@@ -102,7 +102,7 @@ public:
         }
     }
 
-    HCVInfectionsIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    HCVInfectionsIMPL(datamanagement::ModelData &model_data) {
         int rc = LoadIncidenceData(dm);
         std::string data;
         dm->GetFromConfig("infection.genotype_three_prob", data);
@@ -116,8 +116,7 @@ public:
         }
     }
 };
-HCVInfections::HCVInfections(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+HCVInfections::HCVInfections(datamanagement::ModelData &model_data) {
     impl = std::make_unique<HCVInfectionsIMPL>(dm);
 }
 
@@ -126,7 +125,7 @@ HCVInfections::HCVInfections(HCVInfections &&) noexcept = default;
 HCVInfections &HCVInfections::operator=(HCVInfections &&) noexcept = default;
 
 void HCVInfections::DoEvent(std::shared_ptr<person::PersonBase> person,
-                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            datamanagement::ModelData &model_data,
                             std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

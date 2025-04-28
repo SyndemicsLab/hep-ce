@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -17,13 +17,13 @@
 namespace hepce {
 namespace event {
 namespace hiv {
-ScreeningImpl::ScreeningImpl(
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    const std::string &log_name)
-    : ScreeningBase(dm, log_name) {
-    SetInterventionType(
-        utils::GetStringFromConfig("hiv_screening.intervention_type", dm));
-    SetScreeningPeriod(utils::GetIntFromConfig("hiv_screening.period", dm));
+ScreeningImpl::ScreeningImpl(datamanagement::ModelData &model_data,
+                             const std::string &log_name)
+    : ScreeningBase(model_data, log_name) {
+    SetInterventionType(utils::GetStringFromConfig(
+        "hiv_screening.intervention_type", model_data));
+    SetScreeningPeriod(
+        utils::GetIntFromConfig("hiv_screening.period", model_data));
 }
 } // namespace hiv
 } // namespace event

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: screening.hpp                                                        //
+// File: treatment.hpp                                                        //
 // Project: HEPCESimulationv2                                                 //
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
@@ -9,8 +9,8 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef HEPCE_EVENT_HCV_SCREENING_HPP_
-#define HEPCE_EVENT_HCV_SCREENING_HPP_
+#ifndef HEPCE_EVENT_HIV_TREATMENT_HPP_
+#define HEPCE_EVENT_HIV_TREATMENT_HPP_
 
 #include <memory>
 #include <string>
@@ -19,17 +19,17 @@
 
 namespace hepce {
 namespace event {
-namespace hcv {
-class Screening : public virtual Event {
+namespace hiv {
+class Treatment : public virtual Event {
 public:
-    virtual ~Screening() = default;
+    virtual ~Treatment() = default;
 
     static std::unique_ptr<Event>
     Create(datamanagement::ModelData &model_data,
            const std::string &log_name = "console");
 };
-} // namespace hcv
+} // namespace hiv
 } // namespace event
 } // namespace hepce
 
-#endif // HEPCE_EVENT_HCV_SCREENINGS_HPP_
+#endif // HEPCE_EVENT_HIV_TREATMENTS_HPP_

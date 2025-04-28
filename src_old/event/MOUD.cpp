@@ -4,8 +4,8 @@
 // Created: 2024-04-10                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 
 namespace event {
@@ -41,7 +41,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if the person has never used, no MOUD change
         if (person->GetBehavior() == person::Behavior::NEVER) {
@@ -69,7 +69,7 @@ public:
         }
     }
 };
-MOUD::MOUD(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+MOUD::MOUD(datamanagement::ModelData &model_data) {
     impl = std::make_unique<MOUDIMPL>();
 }
 
@@ -78,7 +78,7 @@ MOUD::MOUD(MOUD &&) noexcept = default;
 MOUD &MOUD::operator=(MOUD &&) noexcept = default;
 
 void MOUD::DoEvent(std::shared_ptr<person::PersonBase> person,
-                   std::shared_ptr<datamanagement::DataManagerBase> dm,
+                   datamanagement::ModelData &model_data,
                    std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

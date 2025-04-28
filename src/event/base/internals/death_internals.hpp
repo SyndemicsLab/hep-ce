@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,25 +34,23 @@ public:
         std::unordered_map<utils::tuple_2i, double, utils::key_hash_2i,
                            utils::key_equal_2i>;
 
-    DeathImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    DeathImpl(datamanagement::ModelData &model_data,
               const std::string &log_name = "console") {
         _f4_infected_probability =
-            utils::GetDoubleFromConfig("mortality.f4_infected", dm);
+            utils::GetDoubleFromConfig("mortality.f4_infected", model_data);
         _f4_uninfected_probability =
-            utils::GetDoubleFromConfig("mortality.f4_uninfected", dm);
+            utils::GetDoubleFromConfig("mortality.f4_uninfected", model_data);
         _decomp_infected_probability =
-            utils::GetDoubleFromConfig("mortality.decomp_infected", dm);
-        _decomp_uninfected_probability =
-            utils::GetDoubleFromConfig("mortality.decomp_uninfected", dm);
+            utils::GetDoubleFromConfig("mortality.decomp_infected", model_data);
+        _decomp_uninfected_probability = utils::GetDoubleFromConfig(
+            "mortality.decomp_uninfected", model_data);
 
-        LoadOverdoseData(dm);
-        LoadBackgroundMortality(dm);
+        LoadOverdoseData(model_data);
+        LoadBackgroundMortality(model_data);
     }
     ~DeathImpl() = default;
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override;
+    int Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     double _f4_infected_probability;
@@ -62,24 +60,6 @@ private:
 
     backgroundmap_t _background_data;
     overdosemap_t _overdose_data;
-
-    static int CallbackOverdose(void *storage, int count, char **data,
-                                char **columns) {
-        utils::tuple_2i tup =
-            std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-        (*((overdosemap_t *)storage))[tup] = utils::SToDPositive(data[2]);
-        return 0;
-    }
-
-    static int CallbackBackground(void *storage, int count, char **data,
-                                  char **columns) {
-        utils::tuple_3i tup = std::make_tuple(
-            std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-        struct BackgroundSmr temp = {utils::SToDPositive(data[3]),
-                                     utils::SToDPositive(data[4])};
-        (*((backgroundmap_t *)storage))[tup] = temp;
-        return 0;
-    }
 
     inline const std::string OverdoseSQL() const {
         return "SELECT moud, drug_behavior, fatality_probability FROM "
@@ -96,31 +76,28 @@ private:
         return sql.str();
     }
 
+    inline const std::string OverdoseTableSQL() const {
+        return "SELECT name FROM sqlite_master WHERE type = ? AND name = ?;";
+    }
+
     inline void Die(model::Person &person, const data::DeathReason &reason) {
         person.Die(reason);
     }
 
-    int CheckOverdoseTable(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    int CheckOverdoseTable(datamanagement::ModelData &model_data);
 
-    int LoadOverdoseData(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    int LoadOverdoseData(datamanagement::ModelData &model_data);
 
-    int LoadBackgroundMortality(
-        std::shared_ptr<datamanagement::DataManagerBase> dm);
+    int LoadBackgroundMortality(datamanagement::ModelData &model_data);
 
     bool DeathImpl::ReachedMaxAge(model::Person &person);
 
-    bool FatalOverdose(model::Person &person,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm,
-                       model::Sampler &decider);
+    bool FatalOverdose(model::Person &person, model::Sampler &decider);
 
-    void GetFibrosisMortalityProb(
-        model::Person &person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm, double &prob);
+    void GetFibrosisMortalityProb(model::Person &person, double &prob);
 
-    void
-    GetSMRandBackgroundProb(model::Person &person,
-                            std::shared_ptr<datamanagement::DataManagerBase> dm,
-                            double &backgroundMortProb, double &smr);
+    void GetSMRandBackgroundProb(model::Person &person,
+                                 double &backgroundMortProb, double &smr);
 };
 } // namespace base
 } // namespace event

@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -21,20 +21,20 @@ namespace event {
 namespace hiv {
 class LinkingImpl : public virtual hiv::Linking, public event::LinkingBase {
 public:
-    LinkingImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    LinkingImpl(datamanagement::ModelData &model_data,
                 const std::string &log_name = "console") {
         SetCostCategory(model::CostCategory::kHiv);
-        SetLinkingStratifiedByPregnancy(CheckForPregnancyEvent(dm));
-        LoadLinkingData(dm);
+        SetLinkingStratifiedByPregnancy(CheckForPregnancyEvent(model_data));
+        LoadLinkingData(model_data);
 
-        SetInterventionCost(
-            utils::GetDoubleFromConfig("hiv_linking.intervention_cost", dm));
+        SetInterventionCost(utils::GetDoubleFromConfig(
+            "hiv_linking.intervention_cost", model_data));
         SetFalsePositiveCost(utils::GetDoubleFromConfig(
-            "hiv_linking.false_positive_test_cost", dm));
+            "hiv_linking.false_positive_test_cost", model_data));
         SetRecentScreenMultiplier(utils::GetDoubleFromConfig(
-            "hiv_linking.recent_screen_multiplier", dm));
-        SetRecentScreenCutoff(
-            utils::GetIntFromConfig("hiv_linking.recent_screen_cutoff", dm));
+            "hiv_linking.recent_screen_multiplier", model_data));
+        SetRecentScreenCutoff(utils::GetIntFromConfig(
+            "hiv_linking.recent_screen_cutoff", model_data));
     }
 
     ~LinkingImpl() = default;

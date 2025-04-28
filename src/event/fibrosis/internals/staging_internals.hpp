@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -27,13 +27,11 @@ public:
         std::unordered_map<utils::tuple_2i, double, utils::key_hash_2i,
                            utils::key_equal_2i>;
 
-    StagingImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    StagingImpl(datamanagement::ModelData &model_data,
                 const std::string &log_name = "console");
     ~StagingImpl() = default;
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override;
+    int Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     const std::string _test_one;
@@ -46,11 +44,10 @@ private:
     testmap_t _test1_data;
     testmap_t _test2_data;
 
-    static int Callback(void *storage, int count, char **data, char **columns) {
-        utils::tuple_2i tup =
-            std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-        (*((testmap_t *)storage))[tup] = utils::SToDPositive(data[2]);
-        return 0;
+    static void Callback(std::any &storage, const SQLite::Statement &stmt) {
+        utils::tuple_2i tup = std::make_tuple(stmt.getColumn(0).getInt(),
+                                              stmt.getColumn(1).getInt());
+        std::any_cast<testmap_t>(storage)[tup] = stmt.getColumn(2).getDouble();
     }
 
     inline const std::string StagingSQL(const std::string &column) const {
@@ -66,7 +63,9 @@ private:
         AddEventCost(person);
     }
 
-    int LoadStagingData(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    int LoadStagingData(datamanagement::ModelData &model_data);
+    void LoadTestOneStagingData(datamanagement::ModelData &model_data);
+    void LoadTestTwoStagingData(datamanagement::ModelData &model_data);
 };
 } // namespace fibrosis
 } // namespace event

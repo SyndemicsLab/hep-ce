@@ -4,8 +4,8 @@
 // Created: 2023-08-31                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -25,11 +25,11 @@ private:
     /// @brief Implementation of Virtual Function DoEvent
     /// @param person Individual Person undergoing Event
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) override;
 
 public:
-    Aging(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    Aging(datamanagement::ModelData &model_data);
     ~Aging();
 
     // Copy Operations

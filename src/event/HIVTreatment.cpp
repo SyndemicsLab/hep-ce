@@ -4,8 +4,8 @@
 // Created: 2025-04-17                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ private:
         return 0;
     }
 
-    void LoadUtilityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    void LoadUtilityData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(
             HIVUtilitySQL(), this->callback_hivutility, &utility_data, error);
@@ -81,7 +81,7 @@ private:
     }
 
     void LoadCourseData(std::string course,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+                        datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(HIVTreatmentSQL(course),
                                           this->callback_hivtreatment,
@@ -124,7 +124,7 @@ private:
     }
 
     bool Withdraws(std::shared_ptr<person::PersonBase> person,
-                   std::shared_ptr<datamanagement::DataManagerBase> dm,
+                   datamanagement::ModelData &model_data,
                    std::shared_ptr<stats::DeciderBase> decider) {
         if (this->treatment_data.withdrawal_prob == 0) {
             spdlog::get("main")->warn(
@@ -225,7 +225,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // Ensure that Person is linked to care
         if (person->GetLinkState(INF_TYPE) != person::LinkageState::LINKED) {
@@ -276,7 +276,7 @@ public:
         }
     }
 
-    HIVTreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
+    HIVTreatmentIMPL(datamanagement::ModelData &model_data)
         : TreatmentIMPL(dm) {
         this->INF_TYPE = person::InfectionType::HIV;
         this->COST_CATEGORY = cost::CostCategory::HIV;
@@ -302,8 +302,7 @@ public:
     }
 };
 
-HIVTreatment::HIVTreatment(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+HIVTreatment::HIVTreatment(datamanagement::ModelData &model_data) {
     impl = std::make_unique<HIVTreatmentIMPL>(dm);
 }
 HIVTreatment::~HIVTreatment() = default;
@@ -311,7 +310,7 @@ HIVTreatment::HIVTreatment(HIVTreatment &&) noexcept = default;
 HIVTreatment &HIVTreatment::operator=(HIVTreatment &&) noexcept = default;
 
 void HIVTreatment::DoEvent(std::shared_ptr<person::PersonBase> person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           datamanagement::ModelData &model_data,
                            std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

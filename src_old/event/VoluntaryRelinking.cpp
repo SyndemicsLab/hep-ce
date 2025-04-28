@@ -4,8 +4,8 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <string>
 
 namespace event {
@@ -39,7 +39,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if linked or never linked OR too long since last linked
         if ((person->GetLinkState() == person::LinkageState::UNLINKED) &&
@@ -51,8 +51,7 @@ public:
         }
     }
 
-    VoluntaryRelinkingIMPL(
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    VoluntaryRelinkingIMPL(datamanagement::ModelData &model_data) {
         std::string discount_data;
         int rc = dm->GetFromConfig("cost.discounting_rate", discount_data);
         if (!discount_data.empty()) {
@@ -80,8 +79,7 @@ public:
     }
 };
 
-VoluntaryRelinking::VoluntaryRelinking(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+VoluntaryRelinking::VoluntaryRelinking(datamanagement::ModelData &model_data) {
     impl = std::make_unique<VoluntaryRelinkingIMPL>(dm);
 }
 
@@ -92,10 +90,9 @@ VoluntaryRelinking::VoluntaryRelinking(VoluntaryRelinking &&) noexcept =
 VoluntaryRelinking &
 VoluntaryRelinking::operator=(VoluntaryRelinking &&) noexcept = default;
 
-void VoluntaryRelinking::DoEvent(
-    std::shared_ptr<person::PersonBase> person,
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    std::shared_ptr<stats::DeciderBase> decider) {
+void VoluntaryRelinking::DoEvent(std::shared_ptr<person::PersonBase> person,
+                                 datamanagement::ModelData &model_data,
+                                 std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }
 } // namespace event

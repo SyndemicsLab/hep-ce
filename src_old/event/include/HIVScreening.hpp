@@ -4,8 +4,8 @@
 // Created: 2025-03-06                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-06                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,11 +26,11 @@ private:
     /// @param dm DataManager object containing data for the event
     /// @param decider Pseudorandom number generator for decision-making
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) override;
 
 public:
-    HIVScreening(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    HIVScreening(datamanagement::ModelData &model_data);
     ~HIVScreening();
 
     // Copy Operations

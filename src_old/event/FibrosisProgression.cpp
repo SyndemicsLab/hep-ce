@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -16,7 +16,7 @@
 #include "Utility.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 
 namespace event {
@@ -52,9 +52,8 @@ private:
         return 0;
     }
 
-    std::vector<double>
-    getTransition(person::FibrosisState fs,
-                  std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::vector<double> getTransition(person::FibrosisState fs,
+                                      datamanagement::ModelData &model_data) {
         // get the probability of transitioning to the next fibrosis state
         double data;
 
@@ -103,8 +102,7 @@ private:
         person->SetUtility(costutil_data[tup].util, util_category);
     }
 
-    void
-    GetLiverFibrosisData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    void GetLiverFibrosisData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(SQLQuery(), callback, &costutil_data,
                                           error);
@@ -122,7 +120,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // can only progress in fibrosis state if actively infected with HCV
         if (person->GetHCV() == person::HCV::NONE) {
@@ -148,8 +146,7 @@ public:
         }
         this->SetLiverUtility(person);
     }
-    FibrosisProgressionIMPL(
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    FibrosisProgressionIMPL(datamanagement::ModelData &model_data) {
         this->discount =
             Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
 
@@ -167,7 +164,7 @@ public:
 };
 
 FibrosisProgression::FibrosisProgression(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    datamanagement::ModelData &model_data) {
     impl = std::make_unique<FibrosisProgressionIMPL>(dm);
 }
 
@@ -177,10 +174,9 @@ FibrosisProgression::FibrosisProgression(FibrosisProgression &&) noexcept =
 FibrosisProgression &
 FibrosisProgression::operator=(FibrosisProgression &&) noexcept = default;
 
-void FibrosisProgression::DoEvent(
-    std::shared_ptr<person::PersonBase> person,
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    std::shared_ptr<stats::DeciderBase> decider) {
+void FibrosisProgression::DoEvent(std::shared_ptr<person::PersonBase> person,
+                                  datamanagement::ModelData &model_data,
+                                  std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }
 } // namespace event

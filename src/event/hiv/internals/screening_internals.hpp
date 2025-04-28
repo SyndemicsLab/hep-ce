@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -24,7 +24,7 @@ namespace event {
 namespace hiv {
 class ScreeningImpl : public virtual hiv::Screening, public ScreeningBase {
 public:
-    ScreeningImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    ScreeningImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");
 
     ~ScreeningImpl() = default;

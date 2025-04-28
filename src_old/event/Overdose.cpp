@@ -4,8 +4,8 @@
 // Created: 2023-10-19                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 
 namespace event {
@@ -39,7 +39,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if not using, return
         if (person->GetBehavior() != person::Behavior::INJECTION &&
@@ -69,7 +69,7 @@ public:
     }
 };
 
-Overdose::Overdose(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+Overdose::Overdose(datamanagement::ModelData &model_data) {
     impl = std::make_unique<OverdoseIMPL>();
 }
 
@@ -78,7 +78,7 @@ Overdose::Overdose(Overdose &&) noexcept = default;
 Overdose &Overdose::operator=(Overdose &&) noexcept = default;
 
 void Overdose::DoEvent(std::shared_ptr<person::PersonBase> person,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm,
+                       datamanagement::ModelData &model_data,
                        std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

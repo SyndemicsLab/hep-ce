@@ -4,8 +4,8 @@
 // Created: 2024-04-10                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -25,11 +25,11 @@ private:
     /// @brief Implementation of Virtual Function DoEvent
     /// @param person Individual Person undergoing Event
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) override;
 
 public:
-    MOUD(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    MOUD(datamanagement::ModelData &model_data);
     ~MOUD();
 
     // Copy Operations

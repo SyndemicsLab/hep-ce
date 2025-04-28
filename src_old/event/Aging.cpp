@@ -4,8 +4,8 @@
 // Created: 2023-08-31                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@
 #include "Utility.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 #include <tuple>
 #include <unordered_map>
@@ -62,9 +62,8 @@ private:
 
     /// @brief Adds person's background cost
     /// @param person The person to whom cost will be added
-    void addBackgroundCostAndUtility(
-        std::shared_ptr<person::PersonBase> person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    void addBackgroundCostAndUtility(std::shared_ptr<person::PersonBase> person,
+                                     datamanagement::ModelData &model_data) {
         int age_years = (int)(person->GetAge() / 12.0);
         int gender = ((int)person->GetSex());
         int behavior = ((int)person->GetBehavior());
@@ -82,7 +81,7 @@ private:
         person->AccumulateTotalUtility(utilities, discount_utilities);
     }
 
-    int LoadData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadData(datamanagement::ModelData &model_data) {
         std::string query = this->buildSQL();
         std::string error;
         int rc =
@@ -101,7 +100,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm) {
+                 datamanagement::ModelData &model_data) {
         person->Grow();
         this->addBackgroundCostAndUtility(person, dm);
 
@@ -109,7 +108,7 @@ public:
         person->AddDiscountedLifeSpan(
             Utils::discount(1, discount, person->GetCurrentTimestep()));
     }
-    AgingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    AgingIMPL(datamanagement::ModelData &model_data) {
         this->discount =
             Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
         this->data.clear();
@@ -117,7 +116,7 @@ public:
     }
 };
 
-Aging::Aging(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+Aging::Aging(datamanagement::ModelData &model_data) {
     impl = std::make_unique<AgingIMPL>(dm);
 }
 
@@ -126,7 +125,7 @@ Aging::Aging(Aging &&) noexcept = default;
 Aging &Aging::operator=(Aging &&) noexcept = default;
 
 void Aging::DoEvent(std::shared_ptr<person::PersonBase> person,
-                    std::shared_ptr<datamanagement::DataManagerBase> dm,
+                    datamanagement::ModelData &model_data,
                     std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm);
 }

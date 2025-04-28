@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,8 +24,7 @@ class MOCKPerson : public PersonBase {
 public:
     // Functionality
     MOCK_METHOD(int, CreatePersonFromTable,
-                (int id, std::shared_ptr<datamanagement::DataManagerBase> dm),
-                (override));
+                (int id, datamanagement::ModelData &model_data), (override));
     MOCK_METHOD(int, Grow, (), (override));
     MOCK_METHOD(int, Die, (DeathReason deathReason), (override));
 

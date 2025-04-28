@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -19,36 +19,38 @@ namespace hepce {
 namespace event {
 namespace fibrosis {
 std::unique_ptr<hepce::event::Event>
-Staging::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+Staging::Create(datamanagement::ModelData &model_data,
                 const std::string &log_name) {
-    return std::make_unique<StagingImpl>(dm, log_name);
+    return std::make_unique<StagingImpl>(model_data, log_name);
 }
 
-StagingImpl::StagingImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+StagingImpl::StagingImpl(datamanagement::ModelData &model_data,
                          const std::string &log_name)
-    : _test_one(utils::GetStringFromConfig("fibrosis_staging.test_one", dm)),
-      _test_two(utils::GetStringFromConfig("fibrosis_staging.test_two", dm)) {
+    : _test_one(
+          utils::GetStringFromConfig("fibrosis_staging.test_one", model_data)),
+      _test_two(
+          utils::GetStringFromConfig("fibrosis_staging.test_two", model_data)) {
 
-    SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
+    SetDiscount(
+        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
     SetCostCategory(model::CostCategory::kStaging);
-    LoadStagingData(dm);
+    LoadStagingData(model_data);
 
-    _staging_period = utils::GetIntFromConfig("fibrosis_staging.period", dm);
-    _test_one_cost =
-        utils::GetDoubleFromConfig("fibrosis_staging.test_one_cost", dm);
-    _test_two_cost =
-        utils::GetDoubleFromConfig("fibrosis_staging.test_two_cost", dm);
+    _staging_period =
+        utils::GetIntFromConfig("fibrosis_staging.period", model_data);
+    _test_one_cost = utils::GetDoubleFromConfig(
+        "fibrosis_staging.test_one_cost", model_data);
+    _test_two_cost = utils::GetDoubleFromConfig(
+        "fibrosis_staging.test_two_cost", model_data);
     _testtwo_eligible_fibs = utils::SplitToVecT<data::FibrosisState>(
         utils::GetStringFromConfig("fibrosis_staging.test_two_eligible_stages",
-                                   dm),
+                                   model_data),
         ',');
     _multitest_result_method = utils::GetStringFromConfig(
-        "fibrosis_staging.multitest_result_method", dm);
+        "fibrosis_staging.multitest_result_method", model_data);
 }
 
-int StagingImpl::Execute(model::Person &person,
-                         std::shared_ptr<datamanagement::DataManagerBase> dm,
-                         model::Sampler &sampler) {
+int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Check if Person even has Fibrosis, exit if they are none
     if (person.GetTrueFibrosisState() == data::FibrosisState::NONE) {
         return;
@@ -142,19 +144,25 @@ StagingImpl::ProbabilityBuilder(const model::Person &person,
     }
     return probs;
 }
+void StagingImpl::LoadTestOneStagingData(
+    datamanagement::ModelData &model_data) {
+    std::any storage = _test1_data;
+    model_data.GetDBSource("inputs").Select(StagingSQL(_test_one), Callback,
+                                            storage);
+    _test1_data = std::any_cast<testmap_t>(storage);
+}
+void StagingImpl::LoadTestTwoStagingData(
+    datamanagement::ModelData &model_data) {
+    std::any storage = _test2_data;
+    model_data.GetDBSource("inputs").Select(StagingSQL(_test_two), Callback,
+                                            storage);
+    _test2_data = std::any_cast<testmap_t>(storage);
+}
 
-int StagingImpl::LoadStagingData(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    std::string error;
-    int rc = dm->SelectCustomCallback(StagingSQL(_test_one), Callback,
-                                      &_test1_data, error);
-    if (rc != 0) {
-        // Logging error
-    }
-
-    rc = dm->SelectCustomCallback(StagingSQL(_test_two), Callback, &_test2_data,
-                                  error);
-    return rc;
+int StagingImpl::LoadStagingData(datamanagement::ModelData &model_data) {
+    LoadTestOneStagingData(model_data);
+    LoadTestTwoStagingData(model_data);
+    return 0;
 }
 
 } // namespace fibrosis

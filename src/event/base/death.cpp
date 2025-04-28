@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -17,9 +17,9 @@ namespace hepce {
 namespace event {
 namespace base {
 std::unique_ptr<hepce::event::Event>
-Death::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+Death::Create(datamanagement::ModelData &model_data,
               const std::string &log_name) {
-    return std::make_unique<DeathImpl>(dm, log_name);
+    return std::make_unique<DeathImpl>(model_data, log_name);
 }
 
 bool DeathImpl::ReachedMaxAge(model::Person &person) {
@@ -30,63 +30,76 @@ bool DeathImpl::ReachedMaxAge(model::Person &person) {
     return false;
 }
 
-int DeathImpl::LoadBackgroundMortality(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+int DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
     std::string query = BackgroundMortalitySQL();
-    std::string error;
-    int rc = dm->SelectCustomCallback(query, CallbackBackground,
-                                      &_background_data, error);
-    if (rc != 0) {
-        spdlog::get("main")->error(
-            "Error extracting Death Data from background_mortality and "
-            "SMR! Error Message: {}",
-            error);
-        spdlog::get("main")->info("Query: {}", query);
-    }
+    std::any storage = _background_data;
+
+    model_data.GetDBSource("inputs").Select(
+        query,
+        [](std::any &storage, const SQLite::Statement &stmt) {
+            utils::tuple_3i tup = std::make_tuple(stmt.getColumn(0).getInt(),
+                                                  stmt.getColumn(1).getInt(),
+                                                  stmt.getColumn(2).getInt());
+            struct BackgroundSmr temp = {stmt.getColumn(3).getDouble(),
+                                         stmt.getColumn(4).getDouble()};
+            std::any_cast<backgroundmap_t>(storage)[tup] = temp;
+        },
+        storage);
+
+    _background_data = std::any_cast<backgroundmap_t>(storage);
+
     if (_background_data.empty()) {
-        spdlog::get("main")->warn(
-            "Setting background death probability to zero. No Data "
-            "Found for background_mortality and "
-            "SMR with the query: {}",
-            query);
+        // Warn Empty
     }
-    return rc;
+    return 0;
 }
 
-int DeathImpl::CheckOverdoseTable(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    std::string query = "SELECT name FROM sqlite_master WHERE type='table' AND "
-                        "name='overdoses';";
-    datamanagement::Table table;
-    int rc = dm->Select(query, table);
-    if (rc == 0 && table.empty()) {
-        spdlog::get("main")->info(
-            "No Overdoses table Found During Death. Ignoring.");
-        rc = -1;
+int DeathImpl::CheckOverdoseTable(datamanagement::ModelData &model_data) {
+    std::unordered_map<int, datamanagement::source::BindingVariant> bindings;
+    bindings[1] = 'table';
+    bindings[2] = 'overdoses';
+    std::vector<std::string> names;
+    std::any storage = names;
+    model_data.GetDBSource("inputs").Select(
+        OverdoseTableSQL(),
+        [](std::any &storage, const SQLite::Statement &stmt) {
+            std::any_cast<std::vector<std::string>>(storage).emplace_back(
+                stmt.getColumn(0).getString());
+        },
+        storage);
+
+    names = std::any_cast<std::vector<std::string>>(storage);
+    if (names.empty()) {
+        // Warn Empty
+        return -1;
     }
-    return rc;
+    return 0;
 }
 
-int DeathImpl::LoadOverdoseData(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    int rc = CheckOverdoseTable(dm);
+int DeathImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
+    int rc = CheckOverdoseTable(model_data);
     if (rc != 0) {
         return rc;
     }
-    std::string error;
-    rc = dm->SelectCustomCallback(OverdoseSQL(), CallbackOverdose,
-                                  &_overdose_data, error);
-    if (rc != 0) {
-        spdlog::get("main")->error("Error extracting Fatal Overdose "
-                                   "Probability! Error Message: {}",
-                                   error);
+    std::any storage = _overdose_data;
+    model_data.GetDBSource("inputs").Select(
+        OverdoseSQL(),
+        [](std::any &storage, const SQLite::Statement &stmt) {
+            utils::tuple_2i tup = std::make_tuple(stmt.getColumn(0).getInt(),
+                                                  stmt.getColumn(1).getInt());
+            std::any_cast<overdosemap_t>(storage)[tup] =
+                stmt.getColumn(2).getDouble();
+        },
+        storage);
+
+    _overdose_data = std::any_cast<overdosemap_t>(storage);
+    if (_overdose_data.empty()) {
+        // Warn Empty
     }
-    return rc;
+    return 0;
 }
 
-bool DeathImpl::FatalOverdose(
-    model::Person &person, std::shared_ptr<datamanagement::DataManagerBase> dm,
-    model::Sampler &decider) {
+bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &decider) {
     if (!person.GetCurrentlyOverdosing()) {
         return false;
     }
@@ -110,9 +123,7 @@ bool DeathImpl::FatalOverdose(
     return true;
 }
 
-void DeathImpl::GetFibrosisMortalityProb(
-    model::Person &person, std::shared_ptr<datamanagement::DataManagerBase> dm,
-    double &prob) {
+void DeathImpl::GetFibrosisMortalityProb(model::Person &person, double &prob) {
 
     if (person.GetTrueFibrosisState() == data::FibrosisState::F4) {
         if (person.GetHCV() == data::HCV::NONE) {
@@ -132,9 +143,9 @@ void DeathImpl::GetFibrosisMortalityProb(
     }
 }
 
-void DeathImpl::GetSMRandBackgroundProb(
-    model::Person &person, std::shared_ptr<datamanagement::DataManagerBase> dm,
-    double &backgroundMortProb, double &smr) {
+void DeathImpl::GetSMRandBackgroundProb(model::Person &person,
+                                        double &backgroundMortProb,
+                                        double &smr) {
 
     if (_background_data.empty()) {
         spdlog::get("main")->warn(
@@ -154,24 +165,22 @@ void DeathImpl::GetSMRandBackgroundProb(
     smr = _background_data[tup].smr;
 }
 
-int DeathImpl::Execute(model::Person &person,
-                       std::shared_ptr<datamanagement::DataManagerBase> dm,
-                       model::Sampler &sampler) {
+int DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (ReachedMaxAge(person)) {
         return;
     }
-    if (FatalOverdose(person, dm, sampler)) {
+    if (FatalOverdose(person, sampler)) {
         return;
     }
 
     // Calculate background mortality rate based on age, gender, and IDU
     double fibrosisDeathProb = 0.0;
-    GetFibrosisMortalityProb(person, dm, fibrosisDeathProb);
+    GetFibrosisMortalityProb(person, fibrosisDeathProb);
 
     // 2. Get fatal OD probability.
     double backgroundMortProb = 0.0;
     double smr = 0.0;
-    GetSMRandBackgroundProb(person, dm, backgroundMortProb, smr);
+    GetSMRandBackgroundProb(person, backgroundMortProb, smr);
 
     // 3. Decide whether the person dies. If not, unset their overdose
     // property.

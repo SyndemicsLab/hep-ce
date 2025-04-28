@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -19,28 +19,21 @@ namespace hepce {
 namespace event {
 namespace hcv {
 std::unique_ptr<hepce::event::Event>
-Infection::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+Infection::Create(datamanagement::ModelData &model_data,
                   const std::string &log_name) {
-    return std::make_unique<InfectionImpl>(dm, log_name);
+    return std::make_unique<InfectionImpl>(model_data, log_name);
 }
 
-InfectionImpl::InfectionImpl(
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    const std::string &log_name = "console") {
-    SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
-    int rc = LoadIncidenceData(dm);
-    std::string data;
-    dm->GetFromConfig("infection.genotype_three_prob", data);
-    if (data.empty()) {
-        // Warn Empty
-    } else {
-        _gt3_prob = utils::SToDPositive(data);
-    }
+InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
+                             const std::string &log_name = "console") {
+    SetDiscount(
+        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
+    int rc = LoadIncidenceData(model_data);
+    _gt3_prob =
+        utils::GetDoubleFromConfig("infection.genotype_three_prob", model_data);
 }
 
-int InfectionImpl::Execute(model::Person &person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
-                           model::Sampler &sampler) {
+int InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Acute cases progress to chronic after 6 consecutive months of
     // infection
     if (person.GetHCV() == data::HCV::ACUTE &&
@@ -54,7 +47,7 @@ int InfectionImpl::Execute(model::Person &person,
     }
 
     // draw new infection probability
-    std::vector<double> prob = GetInfectionProbability(person, dm);
+    std::vector<double> prob = GetInfectionProbability(person);
     // decide whether person is infected; if value == 0, infect
     if (sampler.GetDecision(prob) == 0) {
         person.InfectHCV();

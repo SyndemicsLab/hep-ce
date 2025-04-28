@@ -4,8 +4,8 @@
 // Created: 2025-04-16                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,14 +80,14 @@ protected:
     /// @return
     std::vector<std::string>
     LoadEligibilityVectors(std::string config_key,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm);
+                           datamanagement::ModelData &model_data);
     /// @brief
     /// @param
     /// @return
     bool IsEligible(std::shared_ptr<person::PersonBase> person) const;
 
 public:
-    TreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    TreatmentIMPL(datamanagement::ModelData &model_data);
 };
 } // namespace event
 #endif

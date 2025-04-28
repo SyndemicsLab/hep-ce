@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -15,7 +15,7 @@
 #include <memory>
 #include <string>
 
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 
 #include <hepce/event/event.hpp>
 
@@ -27,7 +27,7 @@ public:
     virtual ~Aging() = default;
 
     static std::unique_ptr<Event>
-    Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    Create(datamanagement::ModelData &model_data,
            const std::string &log_name = "console");
 };
 } // namespace base

@@ -4,8 +4,8 @@
 // Created: 2023-09-13                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-07                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,7 +14,7 @@
 #include "Decider.hpp"
 #include "Person.hpp"
 #include "Utils.hpp"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 
 namespace event {
 class Clearance::ClearanceIMPL {
@@ -23,7 +23,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if person isn't infected or is chronic, nothing to do
         // Also skip if person is already on treatment since we want this to
@@ -36,7 +36,7 @@ public:
             person->ClearHCV(true);
         }
     }
-    ClearanceIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    ClearanceIMPL(datamanagement::ModelData &model_data) {
         std::string data;
         int rc = dm->GetFromConfig("infection.clearance_prob", data);
         if (data.empty()) {
@@ -50,7 +50,7 @@ public:
         }
     }
 };
-Clearance::Clearance(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+Clearance::Clearance(datamanagement::ModelData &model_data) {
     impl = std::make_unique<ClearanceIMPL>(dm);
 }
 
@@ -59,7 +59,7 @@ Clearance::Clearance(Clearance &&) noexcept = default;
 Clearance &Clearance::operator=(Clearance &&) noexcept = default;
 
 void Clearance::DoEvent(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
+                        datamanagement::ModelData &model_data,
                         std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

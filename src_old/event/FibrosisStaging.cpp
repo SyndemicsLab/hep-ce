@@ -4,8 +4,8 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 
 namespace event {
@@ -70,10 +70,10 @@ private:
     /// @param table
     /// @param configLookupKey
     /// @return Vector of fibrosis staging outcome probabilities
-    std::vector<double> GetMeasurementProbabilities(
-        std::shared_ptr<person::PersonBase> person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm,
-        std::string column) {
+    std::vector<double>
+    GetMeasurementProbabilities(std::shared_ptr<person::PersonBase> person,
+                                datamanagement::ModelData &model_data,
+                                std::string column) {
         int fibrosis_state = (int)person->GetTrueFibrosisState();
         if (column == test_one) {
             return test_one_data[fibrosis_state];
@@ -84,7 +84,7 @@ private:
     }
 
     void addStagingCost(std::shared_ptr<person::PersonBase> person,
-                        std::shared_ptr<datamanagement::DataManagerBase> dm,
+                        datamanagement::ModelData &model_data,
                         const bool testTwo = false) {
 
         double cost = testTwo ? test_one_cost : test_two_cost;
@@ -95,7 +95,7 @@ private:
                         cost::CostCategory::STAGING);
     }
 
-    int LoadTestOneData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadTestOneData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(FibrosisTestSQL(test_one),
                                           this->callback_fibrosis_test,
@@ -109,7 +109,7 @@ private:
         return rc;
     }
 
-    int LoadTestTwoData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadTestTwoData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(FibrosisTestSQL(test_two),
                                           this->callback_fibrosis_test,
@@ -125,7 +125,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
 
         // 0. Check if Person even has Fibrosis, exit if they are none
@@ -201,7 +201,7 @@ public:
         person->DiagnoseFibrosis(measured);
         this->addStagingCost(person, dm, true);
     }
-    FibrosisStagingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    FibrosisStagingIMPL(datamanagement::ModelData &model_data) {
         this->discount =
             Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
 
@@ -230,8 +230,7 @@ public:
     }
 };
 
-FibrosisStaging::FibrosisStaging(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+FibrosisStaging::FibrosisStaging(datamanagement::ModelData &model_data) {
     impl = std::make_unique<FibrosisStagingIMPL>(dm);
 }
 
@@ -240,10 +239,9 @@ FibrosisStaging::FibrosisStaging(FibrosisStaging &&) noexcept = default;
 FibrosisStaging &
 FibrosisStaging::operator=(FibrosisStaging &&) noexcept = default;
 
-void FibrosisStaging::DoEvent(
-    std::shared_ptr<person::PersonBase> person,
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    std::shared_ptr<stats::DeciderBase> decider) {
+void FibrosisStaging::DoEvent(std::shared_ptr<person::PersonBase> person,
+                              datamanagement::ModelData &model_data,
+                              std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }
 

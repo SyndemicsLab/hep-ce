@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -18,14 +18,11 @@
 namespace hepce {
 namespace event {
 namespace hcv {
-TreatmentImpl::TreatmentImpl(
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    const std::string &log_name)
-    : TreatmentBase(dm, log_name) {}
+TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
+                             const std::string &log_name)
+    : TreatmentBase(model_data, log_name) {}
 
-int TreatmentImpl::Execute(model::Person &person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
-                           model::Sampler &sampler) {
+int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Verify the person is linked before starting treatment
     if (person.GetLinkState() != data::LinkageState::LINKED) {
         return;
@@ -57,7 +54,7 @@ int TreatmentImpl::Execute(model::Person &person,
     CheckIfExperienceToxicity(person, sampler);
 
     // 6. Determine if the person withdraws from the treatment
-    if (Withdraws(person, dm, sampler)) {
+    if (Withdraws(person, sampler)) {
         return;
     }
 

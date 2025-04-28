@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -41,9 +41,7 @@ public:
 
     virtual data::InfectionType GetInfectionType() const = 0;
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override {
+    int Execute(model::Person &person, model::Sampler &sampler) override {
         SetLinkageType(person.GetLinkageType(GetInfectionType()));
         bool is_linked = (person.GetLinkState(GetInfectionType()) ==
                           data::LinkageState::LINKED);
@@ -79,28 +77,21 @@ public:
     }
 
 protected:
-    static int CallbackLink(void *storage, int count, char **data,
-                            char **columns) {
-        utils::tuple_4i tup =
-            std::make_tuple(std::stoi(data[0]), std::stoi(data[1]),
-                            std::stoi(data[2]), std::stoi(data[3]));
-        (*((linkmap_t *)storage))[tup] = {utils::SToDPositive(data[4]),
-                                          utils::SToDPositive(data[5])};
-        return 0;
+    static void CallbackLink(std::any &storage, const SQLite::Statement &stmt) {
+        utils::tuple_4i tup = std::make_tuple(
+            stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt(),
+            stmt.getColumn(2).getInt(), stmt.getColumn(3).getInt());
+        std::any_cast<linkmap_t>(storage)[tup] = {
+            stmt.getColumn(4).getDouble(), stmt.getColumn(5).getDouble()};
     }
 
-    void LoadLinkingData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string error;
-        int rc = dm->SelectCustomCallback(LinkSQL("screening_and_linkage"),
-                                          CallbackLink, &GetLinkData(), error);
-        if (rc != 0) {
-            spdlog::get("main")->error(
-                "Error retrieving Linking values "
-                "for table screening_and_linkage;! Error Message: {}",
-                error);
-        }
+    void LoadLinkingData(datamanagement::ModelData &model_data) {
+        std::any storage = GetLinkData();
+        model_data.GetDBSource("inputs").Select(
+            LinkSQL("screening_and_linkage"), CallbackLink, storage);
+        SetLinkData(std::any_cast<linkmap_t>(storage));
         if (GetLinkData().empty()) {
-            spdlog::get("main")->warn("No HCV linking data found.");
+            // Warn Empty
         }
     }
 
@@ -156,10 +147,9 @@ protected:
     double ApplyMultiplier(double prob, double mult) {
         return utils::RateToProbability(utils::ProbabilityToRate(prob) * mult);
     }
-    bool CheckForPregnancyEvent(
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    bool CheckForPregnancyEvent(datamanagement::ModelData &model_data) {
         std::vector<std::string> event_list = utils::SplitToVecT<std::string>(
-            utils::GetStringFromConfig("simulation.events", dm), ',');
+            utils::GetStringFromConfig("simulation.events", model_data), ',');
 
         return (std::find(event_list.begin(), event_list.end(), "pregnancy") !=
                 event_list.end());

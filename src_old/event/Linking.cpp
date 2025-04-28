@@ -4,8 +4,8 @@
 // Created: 2025-04-02                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@
 #include "Linking.hpp"
 #include "Decider.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <string>
 
 namespace event {
@@ -77,7 +77,7 @@ double LinkingIMPL::ApplyMultiplier(double prob, double mult) {
 }
 
 bool LinkingIMPL::CheckForPregnancyEvent(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    datamanagement::ModelData &model_data) {
     std::vector<std::string> event_list = Utils::split2vecT<std::string>(
         Utils::GetStringFromConfig("simulation.events", dm), ',');
 
@@ -85,9 +85,8 @@ bool LinkingIMPL::CheckForPregnancyEvent(
             event_list.end());
 }
 
-void LinkingIMPL::LoadLinkingData(
-    person::LinkageType type,
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+void LinkingIMPL::LoadLinkingData(person::LinkageType type,
+                                  datamanagement::ModelData &model_data) {
     std::string infection =
         (this->COST_CATEGORY == cost::CostCategory::LINKING) ? "HCV" : "HIV";
     linkmap_t *chosen_linkmap = (type == person::LinkageType::BACKGROUND)
@@ -127,7 +126,7 @@ bool LinkingIMPL::FalsePositive(std::shared_ptr<person::PersonBase> person) {
 }
 
 void LinkingIMPL::DoEvent(std::shared_ptr<person::PersonBase> person,
-                          std::shared_ptr<datamanagement::DataManagerBase> dm,
+                          datamanagement::ModelData &model_data,
                           std::shared_ptr<stats::DeciderBase> decider) {
     bool is_linked =
         (person->GetLinkState(this->INF_TYPE) == person::LinkageState::LINKED);
@@ -160,7 +159,7 @@ void LinkingIMPL::DoEvent(std::shared_ptr<person::PersonBase> person,
     }
 }
 
-LinkingIMPL::LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+LinkingIMPL::LinkingIMPL(datamanagement::ModelData &model_data) {
     this->discount = Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
     this->pregnancy_strata = CheckForPregnancyEvent(dm);
 }

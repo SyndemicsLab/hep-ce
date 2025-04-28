@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -26,35 +26,32 @@ public:
         std::unordered_map<utils::tuple_3i, double, utils::key_hash_3i,
                            utils::key_equal_3i>;
 
-    InfectionImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    InfectionImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");
 
     ~InfectionImpl() = default;
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override;
+    int Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     incidencemap_t _infection_data;
     double _gt3_prob = 0;
 
-    static int CallbackInfection(void *storage, int count, char **data,
-                                 char **columns) {
-        utils::tuple_3i tup = std::make_tuple(
-            std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-        (*((incidencemap_t *)storage))[tup] = utils::SToDPositive(data[3]);
-        return 0;
+    static void CallbackInfection(std::any &storage,
+                                  const SQLite::Statement &stmt) {
+        utils::tuple_3i tup = std::make_tuple(stmt.getColumn(0).getInt(),
+                                              stmt.getColumn(1).getInt(),
+                                              stmt.getColumn(2).getInt());
+        std::any_cast<incidencemap_t>(storage)[tup] =
+            stmt.getColumn(3).getDouble();
     }
 
-    std::string IncidenceSQL() {
+    inline const std::string IncidenceSQL() const {
         return "SELECT age_years, gender, drug_behavior, incidence FROM "
                "incidence;";
     }
 
-    std::vector<double> GetInfectionProbability(
-        model::Person &person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::vector<double> GetInfectionProbability(const model::Person &person) {
         if (_infection_data.empty()) {
             // Warn Empty
             return {0.0};
@@ -69,17 +66,16 @@ private:
         return {incidence};
     }
 
-    int LoadIncidenceData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadIncidenceData(datamanagement::ModelData &model_data) {
         std::string error;
-        int rc = dm->SelectCustomCallback(IncidenceSQL(), CallbackInfection,
-                                          &_infection_data, error);
-        if (rc != 0) {
-            // Log Error
-        }
+        std::any storage = _infection_data;
+        model_data.GetDBSource("inputs").Select(IncidenceSQL(),
+                                                CallbackInfection, storage);
+        _infection_data = std::any_cast<incidencemap_t>(storage);
         if (_infection_data.empty()) {
             // Warn Empty
         }
-        return rc;
+        return 0;
     }
 };
 } // namespace hcv

@@ -14,9 +14,9 @@
 #include "ConfigUtils.hpp"
 #include "PersonTableOperations.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
 #include <algorithm>
 #include <cstdint>
+#include <datamanagement/datamanagement.hpp>
 #include <map>
 #include <string>
 #include <vector>
@@ -99,9 +99,7 @@ public:
         }
     }
 
-    int
-    CreatePersonFromTable(int id,
-                          std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int CreatePersonFromTable(int id, datamanagement::ModelData &model_data) {
         this->id = id;
         if (dm == nullptr) {
             // Let default values stay
@@ -1216,8 +1214,8 @@ Person::~Person() = default;
 Person::Person(Person &&p) noexcept = default;
 Person &Person::operator=(Person &&) noexcept = default;
 
-int Person::CreatePersonFromTable(
-    int id, std::shared_ptr<datamanagement::DataManagerBase> dm) {
+int Person::CreatePersonFromTable(int id,
+                                  datamanagement::ModelData &model_data) {
     return pImplPERSON->CreatePersonFromTable(id, dm);
 }
 

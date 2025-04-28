@@ -4,8 +4,8 @@
 // Created: 2025-04-09                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,16 +59,15 @@ protected:
                    cost::CostCategory category = cost::CostCategory::LINKING);
     double ApplyMultiplier(double prob, double mult);
     bool FalsePositive(std::shared_ptr<person::PersonBase> person);
-    bool
-    CheckForPregnancyEvent(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    bool CheckForPregnancyEvent(datamanagement::ModelData &model_data);
     void LoadLinkingData(person::LinkageType type,
-                         std::shared_ptr<datamanagement::DataManagerBase> dm);
+                         datamanagement::ModelData &model_data);
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider);
-    LinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    LinkingIMPL(datamanagement::ModelData &model_data);
 };
 } // namespace event
 #endif

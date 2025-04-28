@@ -4,7 +4,7 @@
 // Created: 2025-04-16                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -87,9 +87,9 @@ void TreatmentIMPL::ChargeCost(std::shared_ptr<person::PersonBase> person,
     person->AddCost(cost, discounted_cost, this->COST_CATEGORY);
 }
 
-std::vector<std::string> TreatmentIMPL::LoadEligibilityVectors(
-    std::string config_key,
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+std::vector<std::string>
+TreatmentIMPL::LoadEligibilityVectors(std::string config_key,
+                                      datamanagement::ModelData &model_data) {
     std::string data = Utils::GetStringFromConfig(config_key, dm, true);
     if (data.empty()) {
         return {};
@@ -123,8 +123,7 @@ bool TreatmentIMPL::IsEligible(
     return false;
 }
 
-TreatmentIMPL::TreatmentIMPL(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+TreatmentIMPL::TreatmentIMPL(datamanagement::ModelData &model_data) {
     this->discount = Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
 }
 } // namespace event

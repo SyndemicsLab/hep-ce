@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -14,7 +14,7 @@
 
 #include <hepce/event/hcv/treatment.hpp>
 
-#include "internals/treatment_internals.hpp"
+#include "../../internals/treatment_internals.hpp"
 #include <hepce/utils/pair_hashing.hpp>
 
 namespace hepce {
@@ -35,13 +35,11 @@ public:
         std::unordered_map<utils::tuple_3i, TreatmentSQLData,
                            utils::key_hash_3i, utils::key_equal_3i>;
 
-    TreatmentImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    TreatmentImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");
     ~TreatmentImpl() = default;
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override;
+    int Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     inline data::InfectionType GetInfectionType() const override {
@@ -54,17 +52,17 @@ private:
     double retreatment_cost;
     double treatment_utility;
 
-    static int Callback(void *storage, int count, char **data, char **columns) {
-        utils::tuple_3i key = std::make_tuple(
-            std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-        (*((hcvtreatmentmap_t *)storage))[key] = {
-            std::stoi(data[3]), utils::SToDPositive(data[4]),
-            utils::SToDPositive(data[5]), utils::SToDPositive(data[6]),
-            utils::SToDPositive(data[7])};
-        return 0;
+    static void Callback(std::any &storage, const SQLite::Statement &stmt) {
+        utils::tuple_3i key = std::make_tuple(stmt.getColumn(0).getInt(),
+                                              stmt.getColumn(1).getInt(),
+                                              stmt.getColumn(2).getInt());
+        std::any_cast<hcvtreatmentmap_t>(storage)[key] = {
+            stmt.getColumn(3).getInt(), stmt.getColumn(4).getDouble(),
+            stmt.getColumn(5).getDouble(), stmt.getColumn(6).getDouble(),
+            stmt.getColumn(7).getDouble()};
     }
 
-    std::string TreatmentSQL() {
+    inline const std::string TreatmentSQL() const {
         return "SELECT retreatment, genotype_three, cirrhotic, duration, cost, "
                "svr_prob_if_completed, toxicity_prob_if_withdrawal, withdrawal "
                "FROM treatments;";
@@ -85,9 +83,7 @@ private:
         AddEventUtility(person);
     }
 
-    bool Withdraws(model::Person &person,
-                   std::shared_ptr<datamanagement::DataManagerBase> dm,
-                   model::Sampler &sampler) {
+    bool Withdraws(model::Person &person, model::Sampler &sampler) {
         if (sampler.GetDecision(
                 {_treatment_sql_data[GetTreatmentThruple(person)]
                      .withdrawal_probability}) == 0) {
@@ -132,17 +128,15 @@ private:
         return _treatment_sql_data[GetTreatmentThruple(person)].duration;
     }
 
-    int
-    LoadTreatmentSQLData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string error;
-        int rc = dm->SelectCustomCallback(TreatmentSQL(), Callback,
-                                          &_treatment_sql_data, error);
-        if (rc != 0) {
-            spdlog::get("main")->error("Error extracting Treatment Data "
-                                       "from treatments! Error Message: {}",
-                                       error);
+    int LoadTreatmentSQLData(datamanagement::ModelData &model_data) {
+        std::any storage = _treatment_sql_data;
+        model_data.GetDBSource("inputs").Select(TreatmentSQL(), Callback,
+                                                storage);
+        _treatment_sql_data = std::any_cast<hcvtreatmentmap_t>(storage);
+        if (_treatment_sql_data.empty()) {
+            // Warn Empty
         }
-        return rc;
+        return 0;
     }
 };
 } // namespace hcv

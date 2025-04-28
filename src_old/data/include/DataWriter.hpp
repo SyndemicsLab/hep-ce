@@ -4,8 +4,8 @@
 // Created: 2024-06-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-12                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ public:
     ~DataWriter();
     int UpdatePopulation(
         std::vector<std::shared_ptr<person::PersonBase>> new_population,
-        std::shared_ptr<datamanagement::DataManagerBase> dm);
+        datamanagement::ModelData &model_data);
     std::string PopulationToString(
         std::vector<std::shared_ptr<person::PersonBase>> population);
     int WritePopulationToFile(

@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -18,7 +18,7 @@ namespace event {
 class HCVTreatmentIMPL : public TreatmentIMPL {
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // 0. Verify the person is linked before starting treatment
         if (person->GetLinkState() != person::LinkageState::LINKED) {
@@ -75,7 +75,7 @@ public:
             }
         }
     }
-    HCVTreatmentIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
+    HCVTreatmentIMPL(datamanagement::ModelData &model_data)
         : TreatmentIMPL(dm) {
         this->allow_retreatment =
             Utils::GetBoolFromConfig("treatment.allow_retreatment", dm);
@@ -150,7 +150,7 @@ private:
     }
 
     bool Withdraws(std::shared_ptr<person::PersonBase> person,
-                   std::shared_ptr<datamanagement::DataManagerBase> dm,
+                   datamanagement::ModelData &model_data,
                    std::shared_ptr<stats::DeciderBase> decider) {
         if (withdrawal_data.empty()) {
             spdlog::get("main")->warn("No Withdrawal Data Found.");
@@ -208,7 +208,7 @@ private:
         return decider->GetDecision({svr});
     }
 
-    int LoadCostData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadCostData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(
             TreatmentSQL("cost"), this->callback_treament, &cost_data, error);
@@ -220,8 +220,7 @@ private:
         return rc;
     }
 
-    int
-    LoadWithdrawalData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadWithdrawalData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(TreatmentSQL("withdrawal"),
                                           this->callback_treament,
@@ -236,7 +235,7 @@ private:
         return rc;
     }
 
-    int LoadToxicityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadToxicityData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(TreatmentSQL("toxicity_prob"),
                                           this->callback_treament,
@@ -251,7 +250,7 @@ private:
         return rc;
     }
 
-    int LoadSVRData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadSVRData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc =
             dm->SelectCustomCallback(TreatmentSQL("svr_prob_if_completed"),
@@ -266,7 +265,7 @@ private:
         return rc;
     }
 
-    int LoadDurationData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadDurationData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(TreatmentSQL("duration"),
                                           this->callback_treament,
@@ -281,8 +280,7 @@ private:
         return rc;
     }
 
-    void
-    LoadEligibilityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    void LoadEligibilityData(datamanagement::ModelData &model_data) {
         this->ineligible_behaviors =
             LoadEligibilityVectors("eligibility.ineligible_drug_use", dm);
         this->ineligible_fibrosis = LoadEligibilityVectors(
@@ -305,8 +303,7 @@ private:
     }
 };
 
-HCVTreatment::HCVTreatment(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+HCVTreatment::HCVTreatment(datamanagement::ModelData &model_data) {
     impl = std::make_unique<HCVTreatmentIMPL>(dm);
 }
 HCVTreatment::~HCVTreatment() = default;
@@ -314,7 +311,7 @@ HCVTreatment::HCVTreatment(HCVTreatment &&) noexcept = default;
 HCVTreatment &HCVTreatment::operator=(HCVTreatment &&) noexcept = default;
 
 void HCVTreatment::DoEvent(std::shared_ptr<person::PersonBase> person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           datamanagement::ModelData &model_data,
                            std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

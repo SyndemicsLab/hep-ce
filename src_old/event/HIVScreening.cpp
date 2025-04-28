@@ -4,8 +4,8 @@
 // Created: 2025-03-06                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <string>
 #include <unordered_map>
 
@@ -215,9 +215,8 @@ private:
 
     /// @brief
     /// @param
-    void
-    LoadScreeningData(SCREEN_TYPE type,
-                      std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    void LoadScreeningData(SCREEN_TYPE type,
+                           datamanagement::ModelData &model_data) {
         hivscreenmap_t *chosen_screenmap = PickMap(type);
         std::string column = TYPE_COLUMNS.at(type);
         std::string error;
@@ -237,8 +236,8 @@ private:
     /// @brief
     /// @param
     /// @return
-    void MakeTestCharacteristics(
-        SCREEN_TYPE type, std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    void MakeTestCharacteristics(SCREEN_TYPE type,
+                                 datamanagement::ModelData &model_data) {
         std::string prefix = "hiv_screening_";
         if (type == SCREEN_TYPE::BACKGROUND) {
             prefix += "background";
@@ -261,7 +260,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // if Person already linked, skip screening
         if (person->GetLinkState(INF_TYPE) == person::LinkageState::LINKED) {
@@ -281,7 +280,7 @@ public:
         }
     }
 
-    HIVScreeningIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    HIVScreeningIMPL(datamanagement::ModelData &model_data) {
         discount = Utils::GetDoubleFromConfig("cost.discounting_rate", dm);
 
         intervention_type =
@@ -299,8 +298,7 @@ public:
     }
 };
 
-HIVScreening::HIVScreening(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+HIVScreening::HIVScreening(datamanagement::ModelData &model_data) {
     impl = std::make_unique<HIVScreeningIMPL>(dm);
 }
 
@@ -309,7 +307,7 @@ HIVScreening::HIVScreening(HIVScreening &&) noexcept = default;
 HIVScreening &HIVScreening::operator=(HIVScreening &&) noexcept = default;
 
 void HIVScreening::DoEvent(std::shared_ptr<person::PersonBase> person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
+                           datamanagement::ModelData &model_data,
                            std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

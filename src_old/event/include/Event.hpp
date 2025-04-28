@@ -4,8 +4,8 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ namespace event {
 class Event {
 protected:
     virtual void DoEvent(std::shared_ptr<person::PersonBase> person,
-                         std::shared_ptr<datamanagement::DataManagerBase> dm,
+                         datamanagement::ModelData &model_data,
                          std::shared_ptr<stats::DeciderBase> decider) = 0;
 
 public:
@@ -47,7 +47,7 @@ public:
     Event &operator=(Event &&) noexcept;
 
     int Execute(std::shared_ptr<person::PersonBase> person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
+                datamanagement::ModelData &model_data,
                 std::shared_ptr<stats::DeciderBase> decider);
     static double DiscountEventCost(double cost, double discount_rate,
                                     int timestep, bool annual = false);

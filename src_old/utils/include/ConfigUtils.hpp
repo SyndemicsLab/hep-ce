@@ -4,8 +4,8 @@
 // Created: 2025-04-11                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -25,10 +25,9 @@ namespace Utils {
 /// @brief
 /// @param
 /// @return
-inline bool
-GetBoolFromConfig(std::string config_key,
-                  std::shared_ptr<datamanagement::DataManagerBase> dm,
-                  bool quiet = false) {
+inline bool GetBoolFromConfig(std::string config_key,
+                              datamanagement::ModelData &model_data,
+                              bool quiet = false) {
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
@@ -47,7 +46,7 @@ GetBoolFromConfig(std::string config_key,
 /// @param
 /// @return
 inline int GetIntFromConfig(std::string config_key,
-                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            datamanagement::ModelData &model_data,
                             bool quiet = false) {
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
@@ -63,10 +62,9 @@ inline int GetIntFromConfig(std::string config_key,
 /// @brief
 /// @param
 /// @return
-inline double
-GetDoubleFromConfig(std::string config_key,
-                    std::shared_ptr<datamanagement::DataManagerBase> dm,
-                    bool positive = true, bool quiet = false) {
+inline double GetDoubleFromConfig(std::string config_key,
+                                  datamanagement::ModelData &model_data,
+                                  bool positive = true, bool quiet = false) {
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (config_data.empty()) {
@@ -84,10 +82,9 @@ GetDoubleFromConfig(std::string config_key,
 /// @brief
 /// @param
 /// @return
-inline std::string
-GetStringFromConfig(std::string config_key,
-                    std::shared_ptr<datamanagement::DataManagerBase> dm,
-                    bool quiet = false) {
+inline std::string GetStringFromConfig(std::string config_key,
+                                       datamanagement::ModelData &model_data,
+                                       bool quiet = false) {
     std::string config_data;
     dm->GetFromConfig(config_key, config_data);
     if (!quiet && config_data.empty()) {

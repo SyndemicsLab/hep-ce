@@ -4,8 +4,8 @@
 // Created: 2025-02-28                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-14                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include "Person.hpp"
 #include "Utils.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 #include <sstream>
 
 namespace event {
@@ -40,9 +40,9 @@ private:
                "hiv_incidence;";
     }
 
-    std::vector<double> GetInfectionProbability(
-        std::shared_ptr<person::PersonBase> person,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    std::vector<double>
+    GetInfectionProbability(std::shared_ptr<person::PersonBase> person,
+                            datamanagement::ModelData &model_data) {
         if (incidence_data.empty()) {
             spdlog::get("main")->warn(
                 "No result found for HIV Infection Probability!");
@@ -58,7 +58,7 @@ private:
         return {incidence};
     }
 
-    int LoadIncidenceData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    int LoadIncidenceData(datamanagement::ModelData &model_data) {
         std::string error;
         int rc = dm->SelectCustomCallback(HIVIncidenceSQL(),
                                           this->callback_hivincidence,
@@ -78,7 +78,7 @@ private:
 
 public:
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) {
         // If already infected, exit immediately
         if (person->GetHIV() != person::HIV::NONE) {
@@ -93,13 +93,12 @@ public:
         }
     }
 
-    HIVInfectionsIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+    HIVInfectionsIMPL(datamanagement::ModelData &model_data) {
         int rc = LoadIncidenceData(dm);
     }
 };
 
-HIVInfections::HIVInfections(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
+HIVInfections::HIVInfections(datamanagement::ModelData &model_data) {
     impl = std::make_unique<HIVInfectionsIMPL>(dm);
 }
 
@@ -108,7 +107,7 @@ HIVInfections::HIVInfections(HIVInfections &&) noexcept = default;
 HIVInfections &HIVInfections::operator=(HIVInfections &&) noexcept = default;
 
 void HIVInfections::DoEvent(std::shared_ptr<person::PersonBase> person,
-                            std::shared_ptr<datamanagement::DataManagerBase> dm,
+                            datamanagement::ModelData &model_data,
                             std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

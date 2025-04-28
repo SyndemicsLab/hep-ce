@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -20,39 +20,29 @@ namespace hepce {
 namespace event {
 namespace hcv {
 std::unique_ptr<hepce::event::Event>
-VoluntaryRelink::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+VoluntaryRelink::Create(datamanagement::ModelData &model_data,
                         const std::string &log_name) {
-    return std::make_unique<VoluntaryRelinkImpl>(dm, log_name);
+    return std::make_unique<VoluntaryRelinkImpl>(model_data, log_name);
 }
 
-VoluntaryRelinkImpl::VoluntaryRelinkImpl(
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    const std::string &log_name) {
-    SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
+VoluntaryRelinkImpl::VoluntaryRelinkImpl(datamanagement::ModelData &model_data,
+                                         const std::string &log_name) {
+    SetDiscount(
+        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
     SetCostCategory(model::CostCategory::kScreening);
 
-    std::string data;
-    dm->GetFromConfig("linking.voluntary_relinkage_probability", data);
-    if (data.empty()) {
-        // Warn Empty
-        data = "0.0";
-    }
-    _relink_probability = utils::SToDPositive(data);
+    _relink_probability = utils::GetDoubleFromConfig(
+        "linking.voluntary_relinkage_probability", model_data);
 
-    dm->GetFromConfig("linking.voluntary_relink_duration", data);
-    if (data.empty()) {
-        // Warn Empty
-        data = "0.0";
-    }
-    _voluntary_relink_duration = std::stoi(data);
+    _voluntary_relink_duration = utils::GetDoubleFromConfig(
+        "linking.voluntary_relink_duration", model_data);
 
-    dm->GetFromConfig("screening_background_rna.cost", data);
-    _cost = utils::SToDPositive(data);
+    _cost =
+        utils::GetDoubleFromConfig("screening_background_rna.cost", model_data);
 }
 
-int VoluntaryRelinkImpl::Execute(
-    model::Person &person, std::shared_ptr<datamanagement::DataManagerBase> dm,
-    model::Sampler &sampler) {
+int VoluntaryRelinkImpl::Execute(model::Person &person,
+                                 model::Sampler &sampler) {
     // if linked or never linked OR too long since last linked
     if ((person.GetLinkState() == data::LinkageState::UNLINKED) &&
         ((person.GetTimeSinceLinkChange()) < _voluntary_relink_duration) &&

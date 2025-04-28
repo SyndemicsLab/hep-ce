@@ -4,8 +4,8 @@
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-15                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,13 +14,12 @@
 #include "Decider.hpp"
 #include "Linking.hpp"
 #include "spdlog/spdlog.h"
-#include <DataManagement/DataManagerBase.hpp>
+#include <datamanagement/datamanagement.hpp>
 
 namespace event {
 class HCVLinkingIMPL : public LinkingIMPL {
 public:
-    HCVLinkingIMPL(std::shared_ptr<datamanagement::DataManagerBase> dm)
-        : LinkingIMPL(dm) {
+    HCVLinkingIMPL(datamanagement::ModelData &model_data) : LinkingIMPL(dm) {
         this->INF_TYPE = person::InfectionType::HCV;
         this->LINK_COLUMNS = {
             {person::LinkageType::BACKGROUND, "background_link_probability"},
@@ -46,7 +45,7 @@ public:
     }
 };
 
-HCVLinking::HCVLinking(std::shared_ptr<datamanagement::DataManagerBase> dm) {
+HCVLinking::HCVLinking(datamanagement::ModelData &model_data) {
     impl = std::make_unique<HCVLinkingIMPL>(dm);
 }
 
@@ -55,7 +54,7 @@ HCVLinking::HCVLinking(HCVLinking &&) noexcept = default;
 HCVLinking &HCVLinking::operator=(HCVLinking &&) noexcept = default;
 
 void HCVLinking::DoEvent(std::shared_ptr<person::PersonBase> person,
-                         std::shared_ptr<datamanagement::DataManagerBase> dm,
+                         datamanagement::ModelData &model_data,
                          std::shared_ptr<stats::DeciderBase> decider) {
     impl->DoEvent(person, dm, decider);
 }

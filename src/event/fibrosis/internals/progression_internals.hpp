@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -35,26 +35,16 @@ public:
         std::unordered_map<utils::tuple_2i, data::CostUtil, utils::key_hash_2i,
                            utils::key_equal_2i>;
 
-    ProgressionImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    ProgressionImpl(datamanagement::ModelData &model_data,
                     const std::string &log_name = "console");
     ~ProgressionImpl() = default;
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override;
+    int Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     bool _add_cost_data = false;
     progression_probabilities _probabilities;
     costutilmap_t _cost_data;
-
-    static int Callback(void *storage, int count, char **data, char **columns) {
-        utils::tuple_2i tup =
-            std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-        (*((costutilmap_t *)storage))[tup] = {utils::SToDPositive(data[2]),
-                                              utils::SToDPositive(data[3])};
-        return 0;
-    }
 
     const std::vector<double>
     GetTransitionProbability(const data::FibrosisState &fs) const;
@@ -81,14 +71,19 @@ private:
         AddEventUtility(person);
     }
 
-    void
-    GetProgressionData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string error;
-        int rc = dm->SelectCustomCallback(ProgressionSQL(), Callback,
-                                          &_cost_data, error);
-        if (rc != 0) {
-            // Log Error
-        }
+    void GetProgressionData(datamanagement::ModelData &model_data) {
+        std::any storage = _cost_data;
+        model_data.GetDBSource("inputs").Select(
+            ProgressionSQL(),
+            [](std::any &storage, const SQLite::Statement &stmt) {
+                utils::tuple_2i tup = std::make_tuple(
+                    stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt());
+                std::any_cast<costutilmap_t>(storage)[tup] = {
+                    stmt.getColumn(2).getDouble(),
+                    stmt.getColumn(3).getDouble()};
+            },
+            storage);
+        _cost_data = std::any_cast<costutilmap_t>(storage);
         if (_cost_data.empty()) {
             // Warn No Data
         }

@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -18,24 +18,24 @@ namespace hepce {
 namespace event {
 namespace behavior {
 std::unique_ptr<hepce::event::Event>
-BehaviorChanges::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+BehaviorChanges::Create(datamanagement::ModelData &model_data,
                         const std::string &log_name) {
-    return std::make_unique<BehaviorChangesImpl>(dm, log_name);
+    return std::make_unique<BehaviorChangesImpl>(model_data, log_name);
 }
 
 BehaviorChangesImpl::BehaviorChangesImpl(
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
+    datamanagement::ModelData &model_data,
     const std::string &log_name = "console") {
     SetCostCategory(model::CostCategory::kBehavior);
     SetUtilityCategory(model::UtilityCategory::kBehavior);
-    SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
-    LoadCostData(dm);
-    LoadBehaviorData(dm);
+    SetDiscount(
+        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
+    LoadCostData(model_data);
+    LoadBehaviorData(model_data);
 }
 
-int BehaviorChangesImpl::Execute(
-    model::Person &person, std::shared_ptr<datamanagement::DataManagerBase> dm,
-    model::Sampler &sampler) {
+int BehaviorChangesImpl::Execute(model::Person &person,
+                                 model::Sampler &sampler) {
 
     // Typical Behavior Change
     // 1. Generate the transition probabilities based on the starting
@@ -64,32 +64,48 @@ int BehaviorChangesImpl::Execute(
     CalculateCostAndUtility(person);
 }
 
-int BehaviorChangesImpl::LoadCostData(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    std::string error;
-    int rc =
-        dm->SelectCustomCallback(CostSQL(), CallbackCosts, &_cost_data, error);
-    if (rc != 0) {
-        // Log Error
-    }
+int BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
+    std::any storage = _cost_data;
+
+    model_data.GetDBSource("inputs").Select(
+        CostSQL(),
+        [](std::any &storage, const SQLite::Statement &stmt) {
+            utils::tuple_2i tup = std::make_tuple(stmt.getColumn(0).getInt(),
+                                                  stmt.getColumn(1).getInt());
+            data::CostUtil cu = {stmt.getColumn(2).getDouble(),
+                                 stmt.getColumn(3).getDouble()};
+            std::any_cast<costmap_t>(storage)[tup] = cu;
+        },
+        storage);
+    _cost_data = std::any_cast<costmap_t>(storage);
     if (_cost_data.empty()) {
         // Warn Empty
     }
-    return rc;
+    return 0;
 }
 
 int BehaviorChangesImpl::LoadBehaviorData(
-    std::shared_ptr<datamanagement::DataManagerBase> dm) {
-    std::string error;
-    int rc = dm->SelectCustomCallback(TransitionSQL(), CallbackTransitions,
-                                      &_behavior_data, error);
-    if (rc != 0) {
-        // Log Error
-    }
+    datamanagement::ModelData &model_data) {
+    std::any storage = _behavior_data;
+
+    model_data.GetDBSource("inputs").Select(
+        TransitionSQL(),
+        [](std::any &storage, const SQLite::Statement &stmt) {
+            utils::tuple_4i tup = std::make_tuple(
+                stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt(),
+                stmt.getColumn(2).getInt(), stmt.getColumn(3).getInt());
+            struct behavior_transitions behavior = {
+                stmt.getColumn(4).getDouble(), stmt.getColumn(5).getDouble(),
+                stmt.getColumn(6).getDouble(), stmt.getColumn(7).getDouble(),
+                stmt.getColumn(8).getDouble()};
+            std::any_cast<behaviormap_t>(storage)[tup] = behavior;
+        },
+        storage);
+
     if (_behavior_data.empty()) {
         // Warn Empty
     }
-    return rc;
+    return 0;
 }
 
 void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {

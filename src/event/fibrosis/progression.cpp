@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -18,33 +18,31 @@ namespace hepce {
 namespace event {
 namespace fibrosis {
 std::unique_ptr<hepce::event::Event>
-Progression::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+Progression::Create(datamanagement::ModelData &model_data,
                     const std::string &log_name) {
-    return std::make_unique<ProgressionImpl>(dm, log_name);
+    return std::make_unique<ProgressionImpl>(model_data, log_name);
 }
 
-ProgressionImpl::ProgressionImpl(
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    const std::string &log_name = "console") {
+ProgressionImpl::ProgressionImpl(datamanagement::ModelData &model_data,
+                                 const std::string &log_name = "console") {
     SetUtilityCategory(model::UtilityCategory::kLiver);
     SetCostCategory(model::CostCategory::kLiver);
-    SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
+    SetDiscount(
+        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
 
-    _probabilities = {utils::GetDoubleFromConfig("fibrosis.f01", dm),
-                      utils::GetDoubleFromConfig("fibrosis.f12", dm),
-                      utils::GetDoubleFromConfig("fibrosis.f23", dm),
-                      utils::GetDoubleFromConfig("fibrosis.f34", dm),
-                      utils::GetDoubleFromConfig("fibrosis.f4d", dm)};
+    _probabilities = {utils::GetDoubleFromConfig("fibrosis.f01", model_data),
+                      utils::GetDoubleFromConfig("fibrosis.f12", model_data),
+                      utils::GetDoubleFromConfig("fibrosis.f23", model_data),
+                      utils::GetDoubleFromConfig("fibrosis.f34", model_data),
+                      utils::GetDoubleFromConfig("fibrosis.f4d", model_data)};
 
-    _add_cost_data =
-        utils::GetBoolFromConfig("fibrosis.add_cost_only_if_identified", dm);
+    _add_cost_data = utils::GetBoolFromConfig(
+        "fibrosis.add_cost_only_if_identified", model_data);
 
-    GetProgressionData(dm);
+    GetProgressionData(model_data);
 }
 
-int ProgressionImpl::Execute(
-    model::Person &person, std::shared_ptr<datamanagement::DataManagerBase> dm,
-    model::Sampler &sampler) {
+int ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // can only progress in fibrosis state if actively infected with HCV
     if (person.GetHCV() == data::HCV::NONE) {
         return;

@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -43,28 +43,30 @@ public:
         double initialization = 0.0;
     };
 
-    TreatmentBase(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    TreatmentBase(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console") {
-        SetDiscount(utils::GetDoubleFromConfig("cost.discounting_rate", dm));
+        SetDiscount(
+            utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
         SetCostCategory(model::CostCategory::kTreatment);
         SetUtilityCategory(model::UtilityCategory::kTreatment);
-        LoadEligibilityData(dm);
-        SetRetreatment(
-            utils::GetBoolFromConfig("treatment.allow_retreatment", dm));
+        LoadEligibilityData(model_data);
+        SetRetreatment(utils::GetBoolFromConfig("treatment.allow_retreatment",
+                                                model_data));
 
-        _probabilities.loss_to_follow_up =
-            utils::GetDoubleFromConfig("treatment.ltfu_probability", dm);
+        _probabilities.loss_to_follow_up = utils::GetDoubleFromConfig(
+            "treatment.ltfu_probability", model_data);
         _costs.treatment =
-            utils::GetDoubleFromConfig("treatment.treatment_cost", dm);
-        _utilities.treatment =
-            utils::GetDoubleFromConfig("treatment.treatment_utility", dm);
-        _costs.retreatment =
-            utils::GetDoubleFromConfig("treatment.retreatment_cost", dm);
-        _probabilities.initialization =
-            utils::GetDoubleFromConfig("treatment.treatment_initiation", dm);
-        _costs.toxicity = utils::GetDoubleFromConfig("treatment.tox_cost", dm);
+            utils::GetDoubleFromConfig("treatment.treatment_cost", model_data);
+        _utilities.treatment = utils::GetDoubleFromConfig(
+            "treatment.treatment_utility", model_data);
+        _costs.retreatment = utils::GetDoubleFromConfig(
+            "treatment.retreatment_cost", model_data);
+        _probabilities.initialization = utils::GetDoubleFromConfig(
+            "treatment.treatment_initiation", model_data);
+        _costs.toxicity =
+            utils::GetDoubleFromConfig("treatment.tox_cost", model_data);
         _utilities.toxicity =
-            utils::GetDoubleFromConfig("treatment.tox_utility", dm);
+            utils::GetDoubleFromConfig("treatment.tox_utility", model_data);
     }
 
 protected:
@@ -93,18 +95,17 @@ protected:
         return _probabilities;
     }
 
-    void
-    LoadEligibilityData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        _eligibilities.behavior_states =
-            LoadEligibilityVectors("eligibility.ineligible_drug_use", dm);
+    void LoadEligibilityData(datamanagement::ModelData &model_data) {
+        _eligibilities.behavior_states = LoadEligibilityVectors(
+            "eligibility.ineligible_drug_use", model_data);
         _eligibilities.fibrosis_states = LoadEligibilityVectors(
-            "eligibility.ineligible_fibrosis_stages", dm);
+            "eligibility.ineligible_fibrosis_stages", model_data);
         _eligibilities.pregnancy_states = LoadEligibilityVectors(
-            "eligibility.ineligible_pregnancy_states", dm);
+            "eligibility.ineligible_pregnancy_states", model_data);
         _eligibilities.time_since_linked = utils::GetIntFromConfig(
-            "eligibility.ineligible_time_since_linked", dm);
+            "eligibility.ineligible_time_since_linked", model_data);
         _eligibilities.time_since_last_use = utils::GetIntFromConfig(
-            "eligibility.ineligible_time_former_threshold", dm);
+            "eligibility.ineligible_time_former_threshold", model_data);
     }
 
     /// @brief
@@ -142,10 +143,10 @@ protected:
     /// @brief
     /// @param
     /// @return
-    std::vector<std::string> LoadEligibilityVectors(
-        const std::string &config_key,
-        std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string data = utils::GetStringFromConfig(config_key, dm);
+    std::vector<std::string>
+    LoadEligibilityVectors(const std::string &config_key,
+                           datamanagement::ModelData &model_data) {
+        std::string data = utils::GetStringFromConfig(config_key, model_data);
         if (data.empty()) {
             // Warn empty
             return {};

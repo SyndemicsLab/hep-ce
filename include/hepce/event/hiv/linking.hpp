@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -25,7 +25,7 @@ public:
     virtual ~Linking() = default;
 
     static std::unique_ptr<Event>
-    Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    Create(datamanagement::ModelData &model_data,
            const std::string &log_name = "console");
 };
 } // namespace hiv

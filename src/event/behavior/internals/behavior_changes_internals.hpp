@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -14,9 +14,10 @@
 
 #include <hepce/event/behavior/behavior_changes.hpp>
 
-#include "internals/event_internals.hpp"
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/pair_hashing.hpp>
+
+#include "../../internals/event_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -38,13 +39,11 @@ public:
         std::unordered_map<utils::tuple_2i, data::CostUtil, utils::key_hash_2i,
                            utils::key_equal_2i>;
 
-    BehaviorChangesImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    BehaviorChangesImpl(datamanagement::ModelData &model_data,
                         const std::string &log_name = "console");
     ~BehaviorChangesImpl() = default;
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override;
+    int Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     behaviormap_t _behavior_data;
@@ -83,9 +82,9 @@ private:
                "behavior_impacts;";
     }
 
-    int LoadCostData(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    int LoadCostData(datamanagement::ModelData &model_data);
 
-    int LoadBehaviorData(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    int LoadBehaviorData(datamanagement::ModelData &model_data);
 
     void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person);
 };

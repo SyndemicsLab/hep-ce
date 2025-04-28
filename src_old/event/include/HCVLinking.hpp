@@ -4,8 +4,8 @@
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-28                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,11 +29,11 @@ private:
     /// @param dm DataManager object containing data for the event
     /// @param decider Pseudorandom number generator for decision-making
     void DoEvent(std::shared_ptr<person::PersonBase> person,
-                 std::shared_ptr<datamanagement::DataManagerBase> dm,
+                 datamanagement::ModelData &model_data,
                  std::shared_ptr<stats::DeciderBase> decider) override;
 
 public:
-    HCVLinking(std::shared_ptr<datamanagement::DataManagerBase> dm);
+    HCVLinking(datamanagement::ModelData &model_data);
     ~HCVLinking();
 
     // Copy Operations

@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -16,8 +16,9 @@
 
 #include <sstream>
 
-#include "internals/event_internals.hpp"
 #include <hepce/utils/formatting.hpp>
+
+#include "../../internals/event_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -31,12 +32,10 @@ public:
     using pregnancymap_t =
         std::unordered_map<int, struct pregnancy_probabilities>;
 
-    PregnancyImpl(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    PregnancyImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");
     ~PregnancyImpl() = default;
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override;
+    int Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     pregnancymap_t _pregnancy_data;
@@ -44,12 +43,6 @@ private:
     double _infant_hcv_tested_probability;
     double _vertical_hcv_transition_probability;
 
-    static int Callback(void *storage, int count, char **data, char **columns) {
-        struct pregnancy_probabilities d = {utils::SToDPositive(data[1]),
-                                            utils::SToDPositive(data[2])};
-        (*((pregnancymap_t *)storage))[std::stoi(data[0])] = d;
-        return 0;
-    }
     inline const std::string PregnancySQL() const {
         return "SELECT age_years, miscarriage, pregnancy_probability FROM "
                "pregnancy;";
@@ -63,14 +56,24 @@ private:
         return !sampler.GetDecision(probs);
     }
 
-    int LoadPregnancyData(std::shared_ptr<datamanagement::DataManagerBase> dm) {
-        std::string error;
-        int rc = dm->SelectCustomCallback(PregnancySQL(), Callback,
-                                          &_pregnancy_data, error);
-        if (rc != 0) {
-            // spdlog::get("main")->error(
-            //     "No probabilities avaliable for Pregnancy!");
-            return rc;
+    int LoadPregnancyData(datamanagement::ModelData &model_data) {
+        std::any storage = _pregnancy_data;
+
+        model_data.GetDBSource("inputs").Select(
+            PregnancySQL(),
+            [](std::any &storage, const SQLite::Statement &stmt) {
+                struct pregnancy_probabilities d = {
+                    stmt.getColumn(1).getDouble(),
+                    stmt.getColumn(2).getDouble()};
+                std::any_cast<pregnancymap_t>(
+                    storage)[stmt.getColumn(0).getInt()] = d;
+            },
+            storage);
+
+        _pregnancy_data = std::any_cast<pregnancymap_t>(storage);
+
+        if (_pregnancy_data.empty()) {
+            // Warn Empty
         }
         return 0;
     }

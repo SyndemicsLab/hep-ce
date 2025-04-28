@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -39,23 +39,18 @@ public:
         std::unordered_map<utils::tuple_3i, struct ScreeningProbabilities,
                            utils::key_hash_3i, utils::key_equal_3i>;
 
-    ScreeningBase(std::shared_ptr<datamanagement::DataManagerBase> dm,
+    ScreeningBase(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console") {
-        std::string error;
-        int rc = dm->SelectCustomCallback(ScreenSQL(), CallbackScreening,
-                                          &_probability, error);
-        if (rc != 0) {
-            // Log Error
-        }
-
+        std::any storage = _probability;
+        model_data.GetDBSource("inputs").Select(ScreenSQL(), CallbackScreening,
+                                                storage);
+        _probability = std::any_cast<screenmap_t>(storage);
         if (_probability.empty()) {
             // Warn Empty
         }
     }
 
-    int Execute(model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
-                model::Sampler &sampler) override {
+    int Execute(model::Person &person, model::Sampler &sampler) override {
         // if a person is already linked, skip screening
         if (person.GetLinkState(GetInfectionType()) ==
             data::LinkageState::LINKED) {
@@ -72,9 +67,9 @@ public:
         // If it is time to do a one-time intervention screen or periodic
         // screen, run an intervention screen
         if (do_one_time_screen || do_periodic_screen) {
-            this->InterventionScreen(person, dm, sampler);
+            this->InterventionScreen(person, sampler);
         } else {
-            this->BackgroundScreen(person, dm, sampler);
+            this->BackgroundScreen(person, sampler);
         }
     }
 
@@ -115,13 +110,13 @@ protected:
     int GetScreeningPeriod() const { return _screening_period; }
     std::string GetInterventionType() const { return _intervention_type; }
 
-    static int CallbackScreening(void *storage, int count, char **data,
-                                 char **columns) {
-        utils::tuple_3i tup = std::make_tuple(
-            std::stoi(data[0]), std::stoi(data[1]), std::stoi(data[2]));
-        (*((screenmap_t *)storage))[tup] = {utils::SToDPositive(data[3]),
-                                            utils::SToDPositive(data[4])};
-        return 0;
+    static void CallbackScreening(std::any &storage,
+                                  const SQLite::Statement &stmt) {
+        utils::tuple_3i tup = std::make_tuple(stmt.getColumn(0).getInt(),
+                                              stmt.getColumn(1).getInt(),
+                                              stmt.getColumn(2).getInt());
+        std::any_cast<screenmap_t>(storage)[tup] = {
+            stmt.getColumn(3).getDouble(), stmt.getColumn(4).getDouble()};
     }
 
     inline const std::string ScreenSQL() const {
@@ -132,9 +127,8 @@ protected:
                "sl.age_years) AND (at.drug_behavior = sl.drug_behavior));";
     }
 
-    bool RunAbTest(model::Person &person,
-                   std::shared_ptr<datamanagement::DataManagerBase> dm,
-                   const std::string &prefix, model::Sampler &sampler) {
+    bool RunAbTest(model::Person &person, const std::string &prefix,
+                   model::Sampler &sampler) {
         std::string key = prefix + "_ab";
         bool test = RunTest(person.GetHCV(), key, sampler, [&person]() -> int {
             return person.AddAbScreen();
@@ -143,9 +137,8 @@ protected:
         return test;
     }
 
-    bool RunRnaTest(model::Person &person,
-                    std::shared_ptr<datamanagement::DataManagerBase> dm,
-                    const std::string &prefix, model::Sampler &sampler) {
+    bool RunRnaTest(model::Person &person, const std::string &prefix,
+                    model::Sampler &sampler) {
         std::string key = prefix + "_rna";
         bool test = RunTest(person.GetHCV(), key, sampler, [&person]() -> int {
             return person.AddRnaScreen();
@@ -207,7 +200,6 @@ protected:
     /// @brief The Intervention Screening Event Undertaken on a Person
     /// @param person The Person undergoing an Intervention Screening
     void Screen(std::string screenkey, model::Person &person,
-                std::shared_ptr<datamanagement::DataManagerBase> dm,
                 model::Sampler &sampler) {
         person.MarkScreened();
         // if person has had a history of HCV Infections
@@ -215,12 +207,12 @@ protected:
               !person.IsIdentifiedAsInfected(data::InfectionType::HIV)) ||
              screenkey == "screening_background") &&
             (!person.CheckAntibodyPositive(data::InfectionType::HIV))) {
-            if (!RunAbTest(person, dm, screenkey, sampler)) {
+            if (!RunAbTest(person, screenkey, sampler)) {
                 return;
             }
         }
 
-        if (RunRnaTest(person, dm, screenkey, sampler)) {
+        if (RunRnaTest(person, screenkey, sampler)) {
             data::LinkageType type = (screenkey == "screening_background")
                                          ? data::LinkageType::BACKGROUND
                                          : data::LinkageType::INTERVENTION;
@@ -248,26 +240,22 @@ protected:
         return probability;
     }
 
-    int InterventionScreen(model::Person &person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
-                           model::Sampler &sampler) {
+    int InterventionScreen(model::Person &person, model::Sampler &sampler) {
         double interventionProbability =
             GetScreeningProbability(person, "intervention_screen_probability");
         int decision = sampler.GetDecision({interventionProbability});
         if (decision == 0) {
-            Screen("screening_intervention", person, dm, sampler);
+            Screen("screening_intervention", person, sampler);
         }
         return decision;
     }
 
-    int BackgroundScreen(model::Person &person,
-                         std::shared_ptr<datamanagement::DataManagerBase> dm,
-                         model::Sampler &sampler) {
+    int BackgroundScreen(model::Person &person, model::Sampler &sampler) {
         double backgroundProbability =
             GetScreeningProbability(person, "background_screen_probability");
         int decision = sampler.GetDecision({backgroundProbability});
         if (decision == 0) {
-            Screen("screening_background", person, dm, sampler);
+            Screen("screening_background", person, sampler);
         }
         return decision;
     }

@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -13,53 +13,36 @@
 #include <hepce/event/behavior/pregnancy.hpp>
 
 #include "internals/pregnancy_internals.hpp"
+#include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
 
 namespace hepce {
 namespace event {
 namespace behavior {
 std::unique_ptr<hepce::event::Event>
-Pregnancy::Create(std::shared_ptr<datamanagement::DataManagerBase> dm,
+Pregnancy::Create(datamanagement::ModelData &model_data,
                   const std::string &log_name) {
-    return std::make_unique<PregnancyImpl>(dm, log_name);
+    return std::make_unique<PregnancyImpl>(model_data, log_name);
 }
 
-PregnancyImpl::PregnancyImpl(
-    std::shared_ptr<datamanagement::DataManagerBase> dm,
-    const std::string &log_name) {
+PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
+                             const std::string &log_name) {
     std::string storage;
-    dm->GetFromConfig("pregnancy.multiple_delivery_probability", storage);
-    if (storage.empty()) {
-        // spdlog::get("main")->warn(
-        //     "No Multiple Delivery Probability Found! Assuming 0.");
-        storage = "0";
-    }
-    _multiple_delivery_probability = utils::SToDPositive(storage);
+    _multiple_delivery_probability = utils::GetDoubleFromConfig(
+        "pregnancy.multiple_delivery_probability", model_data);
 
     storage.clear();
-    dm->GetFromConfig("pregnancy.infant_hcv_tested_probability", storage);
-    if (storage.empty()) {
-        // spdlog::get("main")->warn(
-        //     "No Infant HCV Testing Probability Found! Assuming 0.");
-        storage = "0";
-    }
-    _infant_hcv_tested_probability = utils::SToDPositive(storage);
+    _infant_hcv_tested_probability = utils::GetDoubleFromConfig(
+        "pregnancy.infant_hcv_tested_probability", model_data);
 
     storage.clear();
-    dm->GetFromConfig("pregnancy.vertical_hcv_transition_probability", storage);
-    if (storage.empty()) {
-        // spdlog::get("main")->warn("No Infant HCV Vertical Transmission "
-        //                           "Probability Found! Assuming 0.");
-        storage = "0";
-    }
-    _vertical_hcv_transition_probability = utils::SToDPositive(storage);
+    _vertical_hcv_transition_probability = utils::GetDoubleFromConfig(
+        "pregnancy.vertical_hcv_transition_probability", model_data);
 
-    LoadPregnancyData(dm);
+    LoadPregnancyData(model_data);
 }
 
-int PregnancyImpl::Execute(model::Person &person,
-                           std::shared_ptr<datamanagement::DataManagerBase> dm,
-                           model::Sampler &sampler) {
+int PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (person.GetSex() == data::Sex::MALE || person.GetAge() < 180 ||
         person.GetAge() > 540 ||
         (person.GetPregnancyState() == data::PregnancyState::POSTPARTUM &&
