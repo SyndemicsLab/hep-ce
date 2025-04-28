@@ -1,13 +1,11 @@
-cmake_minimum_required(VERSION 3.22)
-set(CMAKE_CXX_STANDARD 17)
-project(hepceTest CXX)
+cmake_minimum_required(VERSION 3.27)
+project(hepce_tests VERSION ${HEPCE_VERSION} LANGUAGES CXX)
 
-find_package(DataManagement 1 REQUIRED
-HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
-)
-find_package(spdlog)
+if(PROJECT_IS_TOP_LEVEL OR NOT HEPCE_BUILD_TESTS)
+    message(STATUS "Attempted to Build tests, but HEPCE_BUILD_TESTS is OFF!")
+    return()
+endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin)
 
 enable_testing()
 
@@ -40,17 +38,9 @@ add_executable(${PROJECT_NAME}
 # BE VERY CAREFUL WITH GTEST AS ITS A PAIN IN THE BUTT
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        GTest::gtest_main
+        hepce
         GTest::gmock_main
-        data
-        person
-        simulation
-        event
-        utils
-        cost
-        utility
-        stats
-        DataManagement::DataManagement
+        datamanagement::datamanagement
         spdlog::spdlog
 )
 
@@ -59,5 +49,4 @@ target_include_directories(${PROJECT_NAME}
         "mocks/"
 )
 
-include(GoogleTest)
 gtest_discover_tests(${PROJECT_NAME})
