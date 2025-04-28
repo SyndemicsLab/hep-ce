@@ -830,7 +830,7 @@ public:
     bool GetSeropositivity() const { return this->hcv_details.seropositive; }
 
     int GetTimeHCVIdentified() const {
-        return this->screening_details.at(::kHcv).time_identified;
+        return this->screening_details.at(InfectionType::kHcv).time_identified;
     }
 
     /// @brief Getter for Link State

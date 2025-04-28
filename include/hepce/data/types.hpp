@@ -244,6 +244,7 @@ struct HCVDetails {
     // Counters
     int times_infected = 0;
     int times_acute_cleared = 0;
+    int svrs = 0;
 };
 std::ostream &operator<<(std::ostream &os, const HCVDetails &inst);
 
@@ -287,9 +288,14 @@ std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 /// @brief Attributes describing pregnancy
 struct PregnancyDetails {
     PregnancyState pregnancy_state = PregnancyState::kNa;
-    int time_pregnancy_change = -1;
-    int number_infants = 0;
-    int number_miscarriages = 0;
+    int time_of_pregnancy_change = -1;
+    int count = 0;
+    int num_infants = 0;
+    int num_miscarriages = 0;
+    int num_hcv_exposures = 0;
+    int num_hcv_infections = 0;
+    int num_hcv_tests = 0;
+    std::vector<Child> children = {};
 };
 std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
 
@@ -323,9 +329,13 @@ std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 /// @brief Attributes describing treatment state
 struct TreatmentDetails {
     bool initiated_treatment = false;
-    int time_treatment_initiation = 0;
+    int time_of_treatment_initiation = -1;
+    int num_starts = 0;
+    int num_withdrawals = 0;
+    int num_toxic_reactions = 0;
+    int num_completed = 0;
+    int num_retreatments = 0;
     bool retreatment = false;
-    int number_treatment_starts = 0;
 };
 std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 
