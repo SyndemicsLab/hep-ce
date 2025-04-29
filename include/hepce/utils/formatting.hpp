@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -76,6 +76,17 @@ inline bool SToBool(std::string string) {
 
 inline std::string const BoolToString(bool b) {
     return b ? std::string("true") : std::string("false");
+}
+
+template <typename T>
+inline bool FindInVector(std::vector<T> searched, std::vector<T> queries) {
+    for (T &query : queries) {
+        if (std::find(searched.begin(), searched.end(), query) !=
+            searched.end()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 } // namespace utils

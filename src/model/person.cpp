@@ -4,7 +4,7 @@
 // Created Date: Mo Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -50,6 +50,81 @@ void PersonImpl::UpdateTimers() {
     }
     _moud_details.current_state_concurrent_months++;
 }
+
+void PersonImpl::InitiateTreatment(data::InfectionType it) {
+    data::TreatmentDetails &td = _treatment_details[it];
+    // cannot continue being treated if already in retreatment
+    if (td.initiated_treatment && td.retreatment) {
+        return;
+    } else if (td.initiated_treatment) {
+        td.retreatment = true;
+        td.num_retreatments++;
+    } else {
+        td.initiated_treatment = true;
+    }
+    // treatment starts counts treatment regimens
+    td.num_starts++;
+    td.time_of_treatment_initiation = _current_time;
+}
+void PersonImpl::SetBehavior(data::Behavior bc) {
+    // nothing to do -- cannot go back to kNever
+    if (bc == _behavior_details.behavior || bc == data::Behavior::kNever) {
+        return;
+    }
+    if ((bc == data::Behavior::kNoninjection ||
+         bc == data::Behavior::kInjection) &&
+        (_behavior_details.behavior == data::Behavior::kNever ||
+         _behavior_details.behavior == data::Behavior::kFormerInjection ||
+         _behavior_details.behavior == data::Behavior::kFormerNoninjection)) {
+        _behavior_details.time_last_active = _current_time;
+    }
+    _behavior_details.behavior = bc;
+}
+bool PersonImpl::IsCirrhotic() const {
+    if (GetHCVDetails().fibrosis_state == data::FibrosisState::kF4 ||
+        GetHCVDetails().fibrosis_state == data::FibrosisState::kDecomp) {
+        return true;
+    }
+    return false;
+}
+std::string PersonImpl::GetPersonDataString() const {
+    std::stringstream data;
+    data
+        << GetAge() << "," << GetSex() << "," << GetBehaviorDetails().behavior
+        << "," << GetBehaviorDetails().time_last_active << ","
+        << GetHCVDetails().seropositive << ","
+        << GetHCVDetails().is_genotype_three << ","
+        << GetHCVDetails().fibrosis_state << ","
+        << GetScreeningDetails(data::InfectionType::kHcv).identified << ","
+        << GetLinkageDetails(data::InfectionType::kHcv).link_state << ","
+        << IsAlive() << "," << GetDeathReason() << ","
+        << GetScreeningDetails(data::InfectionType::kHcv).time_identified << ","
+        << GetHCVDetails().hcv << "," << GetHCVDetails().time_changed << ","
+        << GetHCVDetails().time_fibrosis_state_changed << ","
+        << GetBehaviorDetails().time_last_active << ","
+        << GetLinkageDetails(data::InfectionType::kHcv).time_link_change << ","
+        << GetLinkageDetails(data::InfectionType::kHcv).link_type << ","
+        << GetLinkageDetails(data::InfectionType::kHcv).link_count << ","
+        << GetFibrosisStagingDetails().measured_fibrosis_state << ","
+        << GetFibrosisStagingDetails().time_of_last_staging << ","
+        << GetScreeningDetails(data::InfectionType::kHcv).time_of_last_screening
+        << "," << GetScreeningDetails(data::InfectionType::kHcv).number_ab_tests
+        << ","
+        << GetScreeningDetails(data::InfectionType::kHcv).number_rna_tests
+        << "," << GetHCVDetails().times_infected << ","
+        << GetHCVDetails().times_acute_cleared << "," << std::boolalpha
+        << GetTreatmentDetails(data::InfectionType::kHcv).initiated_treatment
+        << ","
+        << GetTreatmentDetails(data::InfectionType::kHcv)
+               .time_of_treatment_initiation
+        << "," << std::to_string(GetTotalUtility().min_util) << ","
+        << std::to_string(GetTotalUtility().mult_util);
+    return data.str();
+}
+inline void PersonImpl::AddChild(data::HCV hcv, bool test) {}
+void PersonImpl::TransitionMOUD() {}
+void PersonImpl::DevelopHCC(data::HCCState state) {}
+std::string PersonImpl::MakePopulationRow() const {}
 } // namespace person
 } // namespace model
 } // namespace hepce

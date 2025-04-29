@@ -1,26 +1,28 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: PersonMock.hpp                                                       //
+// File: person_mock.hpp                                                      //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PERSONMOCK_HPP_
-#define PERSONMOCK_HPP_
+#ifndef HEPCE_TESTS_PERSONMOCK_HPP_
+#define HEPCE_TESTS_PERSONMOCK_HPP_
 
-#include "Person.hpp"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
+#include <hepce/model/person.hpp>
+
 #include <string>
 #include <vector>
 
-namespace person {
-class MOCKPerson : public PersonBase {
+#include <gmock/gmock.h>
+
+namespace hepce {
+namespace model {
+class MockPerson : public virtual Person {
 public:
     // Functionality
     MOCK_METHOD(int, CreatePersonFromTable,
@@ -222,6 +224,7 @@ public:
     // OUTPUTS
     MOCK_METHOD(std::string, MakePopulationRow, (), (const, override));
 };
-} // namespace person
+} // namespace model
+} // namespace hepce
 
 #endif

@@ -1,29 +1,30 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: DeciderMock.hpp                                                      //
+// File: sampler_mock.hpp                                                     //
 // Project: HEPCESimulationv2                                                 //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-29                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef DECIDERMOCK_HPP_
-#define DECIDERMOCK_HPP_
+#ifndef HEPCE_TESTS_SAMPLERMOCK_HPP_
+#define HEPCE_TESTS_SAMPLERMOCK_HPP_
 
-#include "Decider.hpp"
-#include "gmock/gmock.h"
-#include "gtest/gtest.h"
+#include <hepce/model/sampler.hpp>
 
-namespace stats {
-class MOCKDecider : public DeciderBase {
+#include <gmock/gmock.h>
+
+namespace hepce {
+namespace model {
+class MockSampler : public virtual Sampler {
 public:
-    MOCK_METHOD(int, LoadGenerator, (std::mt19937_64 const generator),
+    MOCK_METHOD(const int, GetDecision, (const std::vector<double> &probs),
                 (override));
-    MOCK_METHOD(int, GetDecision, (std::vector<double> probs), (override));
 };
-} // namespace stats
+} // namespace model
+} // namespace hepce
 
 #endif
