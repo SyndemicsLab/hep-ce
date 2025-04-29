@@ -4,7 +4,7 @@
 // Created: 2023-12-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -34,27 +34,27 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
                "acute_cleared,svrs,";
     // HIVDetails
     std::string hiv_details =
-        hiv ? "hiv,time_hiv_changed,low_cd4_months_count," : "-1,-1,-1,";
+        hiv ? "hiv,time_hiv_changed,low_cd4_months_count," : "none,-1,0,";
     headers << hiv_details;
     // HCCDetails
-    std::string hcc_details = hcc ? "hcc_state,hcc_diagnosed," : "-1,-1,";
+    std::string hcc_details = hcc ? "hcc_state,hcc_diagnosed," : "none,false,";
     headers << hcc_details;
     // overdose characteristics
     std::string overdoses =
-        overdose ? "currently_overdosing,num_overdoses," : "-1,-1,";
+        overdose ? "currently_overdosing,num_overdoses," : "false,0,";
     headers << overdoses;
     // MOUDDetails
     std::string moud_details =
         moud ? "moud_state,time_started_moud,current_moud_state_concurrent_"
                "months,total_moud_months,"
-             : "-1,-1,-1,-1,";
+             : "none,-1,0,0,";
     headers << moud_details;
     // PregnancyDetails
     std::string pregnancy_details =
         pregnancy ? "pregnancy_state,time_of_pregnancy_change,pregnancy_count,"
                     "num_infants,num_miscarriages,num_infant_hcv_exposures,num_"
                     "infant_hcv_infections,num_infant_hcv_tests,"
-                  : "-1,-1,-1,-1,-1,-1,-1,-1,";
+                  : "na,-1,0,0,0,0,0,0,";
     headers << pregnancy;
     // StagingDetails
     headers << "measured_fibrosis_state,had_second_test,time_of_last_staging,";
@@ -65,7 +65,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
         headers << "hiv_link_state,time_of_hiv_link_change,hiv_link_type,hiv_"
                    "link_count,";
     } else {
-        headers << "-1,-1,-1,-1,";
+        headers << "never,-1,na,0,";
     }
     // ScreeningDetails
     headers << "time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,"
@@ -75,7 +75,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
             << "time_of_last_hiv_screening,num_hiv_ab_tests,num_hiv_rna_tests,"
                "hiv_antibody_positive,hiv_identified,time_hiv_identified,";
     } else {
-        headers << "-1,-1,-1,-1,-1,-1,";
+        headers << "-1,0,0,false,false,-1,";
     }
     // TreatmentDetails
     headers << "initiated_hcv_treatment,time_of_hcv_treatment_initiation,num_"
@@ -87,7 +87,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
                    "num_hiv_treatment_starts,num_hiv_treatment_withdrawals,num_"
                    "hiv_treatment_toxic_reactions,";
     } else {
-        headers << "-1,-1,-1,-1,-1,";
+        headers << "false,-1,0,0,0,";
     }
     // Utility - NOTE: While LifetimeUtility values are listed here, they cannot
     // be assigned when creating a new Person. They are effectively read-only.
@@ -96,7 +96,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
     if (hiv) {
         headers << "hiv_utility,";
     } else {
-        headers << "-1,";
+        headers << "1.0,";
     }
     headers << "min_utility,mult_utility,discounted_min_utility,discounted_"
                "mult_utility,";
