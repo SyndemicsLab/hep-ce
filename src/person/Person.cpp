@@ -4,15 +4,15 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "Person.hpp"
+#include "ConfigUtils.hpp"
 #include "PersonTableOperations.hpp"
-#include "Utils.hpp"
 #include "spdlog/spdlog.h"
 #include <DataManagement/DataManagerBase.hpp>
 #include <algorithm>
@@ -107,8 +107,26 @@ public:
             // Let default values stay
             return 0;
         }
+
         std::stringstream query;
-        query << "SELECT " << person::POPULATION_HEADERS;
+        std::vector<std::string> events = Utils::split2vecT<std::string>(
+            Utils::GetStringFromConfig("simulation.events", dm), ',');
+
+        // this is a stopgap with plans to make Event-scoped CheckFor<X>Event
+        // functions that are static / usable throughout the model.
+        bool pregnancy =
+            Utils::FindInVector<std::string>(events, {"pregnancy"});
+        bool hcc = Utils::FindInVector<std::string>(events, {"HCCScreening"});
+        bool overdose =
+            Utils::FindInVector<std::string>(events, {"BehaviorChanges"});
+        bool hiv = Utils::FindInVector<std::string>(
+            events,
+            {"HIVInfections", "HIVLinking", "HIVScreening", "HIVTreatment"});
+        bool moud = Utils::FindInVector<std::string>(events, {"MOUD"});
+
+        query << "SELECT "
+              << person::POPULATION_HEADERS(pregnancy, hcc, overdose, hiv,
+                                            moud);
         query << "FROM population ";
         query << "WHERE id = " << std::to_string(id);
 

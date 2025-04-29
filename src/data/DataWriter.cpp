@@ -4,7 +4,7 @@
 // Created: 2024-06-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-24                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -89,13 +89,13 @@ public:
     std::string PopulationToString(
         std::vector<std::shared_ptr<person::PersonBase>> population) {
         std::stringstream population_table;
-        population_table << "id," << person::POPULATION_HEADERS
+        // write headers
+        population_table << "id,"
+                         << person::POPULATION_HEADERS(true, true, true, true,
+                                                       true)
                          << ",cost,discount_cost" << std::endl;
         for (std::shared_ptr<person::PersonBase> &person : population) {
-            std::pair<double, double> costTotals = person->GetCostTotals();
-            population_table << GrabPersonDetailsAsStringInHeaderOrder(person)
-                             << "," << costTotals.first << ","
-                             << costTotals.second << std::endl;
+            population_table << person->MakePopulationRow();
         }
         return population_table.str();
     }
@@ -108,13 +108,12 @@ public:
         if (!csvStream) {
             return -1;
         }
-        csvStream << "id," << person::POPULATION_HEADERS
+        // write headers
+        csvStream << "id,"
+                  << person::POPULATION_HEADERS(true, true, true, true, true)
                   << ",cost,discount_cost" << std::endl;
         for (std::shared_ptr<person::PersonBase> &person : new_population) {
-            std::pair<double, double> costTotals = person->GetCostTotals();
-            csvStream << GrabPersonDetailsAsStringInHeaderOrder(person) << ","
-                      << costTotals.first << "," << costTotals.second
-                      << std::endl;
+            csvStream << person->MakePopulationRow();
         }
         csvStream.close();
         return 0;

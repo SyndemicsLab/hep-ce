@@ -4,7 +4,7 @@
 // Created: 2023-08-14                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
+// Last Modified: 2025-04-28                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -13,6 +13,7 @@
 #ifndef UTILS_UTILS_HPP_
 #define UTILS_UTILS_HPP_
 
+#include <algorithm>
 #include <cmath>
 #include <sstream>
 #include <stdexcept>
@@ -119,6 +120,17 @@ inline std::vector<T> split2vecT(const std::string &s, char delim) {
         elems.push_back(temp);
     }
     return elems;
+}
+
+template <typename T>
+inline bool FindInVector(std::vector<T> searched, std::vector<T> queries) {
+    for (T &query : queries) {
+        if (std::find(searched.begin(), searched.end(), query) !=
+            searched.end()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 inline double stod_positive(const std::string &s) {
