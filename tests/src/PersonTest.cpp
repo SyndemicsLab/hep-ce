@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -430,7 +430,7 @@ TEST_F(PersonTest, MakePopulationRow) {
     // all traits are default
     const std::string expected =
         // basic characteristics
-        "male,0,true,false,"
+        "4321,male,0,true,false,"
         // DeathReason
         "na,"
         // BehaviorDetails

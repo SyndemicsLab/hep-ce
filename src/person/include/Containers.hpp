@@ -55,7 +55,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
                     "num_infants,num_miscarriages,num_infant_hcv_exposures,num_"
                     "infant_hcv_infections,num_infant_hcv_tests,"
                   : "na,-1,0,0,0,0,0,0,";
-    headers << pregnancy;
+    headers << pregnancy_details;
     // StagingDetails
     headers << "measured_fibrosis_state,had_second_test,time_of_last_staging,";
     // LinkageDetails
