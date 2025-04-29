@@ -300,7 +300,8 @@ public:
         std::stringstream population_row;
         // clang-format off
         // basic characteristics
-        population_row << this->sex << ","
+        population_row << this->id << ","
+                       << this->sex << ","
                        << this->age << ","
                        << std::boolalpha << this->is_alive << ","
                        << std::boolalpha << this->boomer_classification << ","

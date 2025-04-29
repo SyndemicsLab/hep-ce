@@ -4,7 +4,7 @@
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -158,4 +158,34 @@ protected:
     void TearDown() override { spdlog::drop("main"); }
 };
 
-TEST_F(DataWriterTest, PopulationString) {}
+TEST_F(DataWriterTest, PopulationHeaders) {
+    const std::string expected =
+        "id,sex,age,is_alive,boomer_classification,death_reason,drug_behavior,"
+        "time_last_active_drug_use,hcv,fibrosis_state,is_genotype_three,"
+        "seropositive,time_hcv_changed,time_fibrosis_state_changed,"
+        "times_hcv_infected,times_acute_cleared,svrs,hiv,time_hiv_changed,"
+        "low_cd4_months_count,hcc_state,hcc_diagnosed,currently_overdosing,"
+        "num_overdoses,moud_state,time_started_moud,"
+        "current_moud_state_concurrent_months,total_moud_months,"
+        "pregnancy_state,time_of_pregnancy_change,pregnancy_count,num_infants,"
+        "num_miscarriages,num_infant_hcv_exposures,num_infant_hcv_infections,"
+        "num_infant_hcv_tests,measured_fibrosis_state,had_second_test,"
+        "time_of_last_staging,hcv_link_state,time_of_hcv_link_change,"
+        "hcv_link_type,hcv_link_count,hiv_link_state,time_of_hiv_link_change,"
+        "hiv_link_type,hiv_link_count,time_of_last_hcv_screening,"
+        "num_hcv_ab_tests,num_hcv_rna_tests,hcv_antibody_positive,"
+        "hcv_identified,time_hcv_identified,time_of_last_hiv_screening,"
+        "num_hiv_ab_tests,num_hiv_rna_tests,hiv_antibody_positive,"
+        "hiv_identified,time_hiv_identified,initiated_hcv_treatment,"
+        "time_of_hcv_treatment_initiation,num_hcv_treatment_starts,"
+        "num_hcv_treatment_withdrawals,num_hcv_treatment_toxic_reactions,"
+        "num_completed_hcv_treatments,num_hcv_retreatments,in_hcv_retreatment,"
+        "initiated_hiv_treatment,time_of_hiv_treatment_initiation,"
+        "num_hiv_treatment_starts,num_hiv_treatment_withdrawals,"
+        "num_hiv_treatment_toxic_reactions,behavior_utility,liver_utility,"
+        "treatment_utility,background_utility,hiv_utility,min_utility,"
+        "mult_utility,discounted_min_utility,discounted_mult_utility,life_span,"
+        "discounted_life_span,cost,discount_cost\n";
+    writer::DataWriter writer;
+    EXPECT_EQ(writer.PopulationToString({}), expected);
+}

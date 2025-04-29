@@ -4,7 +4,7 @@
 // Created: 2024-06-13                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-18                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -116,6 +116,8 @@ private:
                 person->AddChild(person::HCV::NONE, tested);
             }
         }
+        // after giving birth, set postpartum
+        person->SetPregnancyState(person::PregnancyState::POSTPARTUM);
     }
 
     void
