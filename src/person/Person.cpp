@@ -4,7 +4,7 @@
 // Created: 2023-08-02                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -678,6 +678,7 @@ public:
             this->pregnancy_details.num_hcv_tests++;
         }
         this->pregnancy_details.children.push_back(child);
+        this->pregnancy_details.num_infants++;
     }
 
     void TransitionMOUD() {
