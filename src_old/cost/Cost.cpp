@@ -4,7 +4,7 @@
 // Created: 2024-04-10                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
@@ -22,12 +22,12 @@ private:
 public:
     CostTrackerIMPL() {
         costs[CostCategory::MISC] = {0.0, 0.0};
-        costs[CostCategory::BEHAVIOR] = {0.0, 0.0};
+        costs[CostCategory::kBehavior] = {0.0, 0.0};
         costs[CostCategory::SCREENING] = {0.0, 0.0};
         costs[CostCategory::LINKING] = {0.0, 0.0};
         costs[CostCategory::STAGING] = {0.0, 0.0};
-        costs[CostCategory::LIVER] = {0.0, 0.0};
-        costs[CostCategory::TREATMENT] = {0.0, 0.0};
+        costs[CostCategory::kLiver] = {0.0, 0.0};
+        costs[CostCategory::kTreatment] = {0.0, 0.0};
         costs[CostCategory::kBackground] = {0.0, 0.0};
     }
     ~CostTrackerIMPL() {};
@@ -87,7 +87,7 @@ std::ostream &operator<<(std::ostream &os, const CostCategory &inst) {
     case CostCategory::MISC:
         os << "MISC";
         break;
-    case CostCategory::BEHAVIOR:
+    case CostCategory::kBehavior:
         os << "BEHAVIOR";
         break;
     case CostCategory::SCREENING:
@@ -99,10 +99,10 @@ std::ostream &operator<<(std::ostream &os, const CostCategory &inst) {
     case CostCategory::STAGING:
         os << "STAGING";
         break;
-    case CostCategory::LIVER:
+    case CostCategory::kLiver:
         os << "LIVER";
         break;
-    case CostCategory::TREATMENT:
+    case CostCategory::kTreatment:
         os << "TREATMENT";
         break;
     case CostCategory::kBackground:

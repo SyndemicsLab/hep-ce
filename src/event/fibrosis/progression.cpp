@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -17,18 +17,20 @@
 namespace hepce {
 namespace event {
 namespace fibrosis {
+
+// Factory
 std::unique_ptr<hepce::event::Event>
 Progression::Create(datamanagement::ModelData &model_data,
                     const std::string &log_name) {
     return std::make_unique<ProgressionImpl>(model_data, log_name);
 }
 
+// Constructor
 ProgressionImpl::ProgressionImpl(datamanagement::ModelData &model_data,
-                                 const std::string &log_name = "console") {
-    SetUtilityCategory(model::UtilityCategory::kLiver);
-    SetCostCategory(model::CostCategory::kLiver);
-    SetDiscount(
-        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
+                                 const std::string &log_name = "console")
+    : EventBase(model_data, log_name) {
+    SetEventUtilityCategory(model::UtilityCategory::kLiver);
+    SetEventCostCategory(model::CostCategory::kLiver);
 
     _probabilities = {utils::GetDoubleFromConfig("fibrosis.f01", model_data),
                       utils::GetDoubleFromConfig("fibrosis.f12", model_data),
@@ -42,32 +44,35 @@ ProgressionImpl::ProgressionImpl(datamanagement::ModelData &model_data,
     GetProgressionData(model_data);
 }
 
+// Execute
 int ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // can only progress in fibrosis state if actively infected with HCV
-    if (person.GetHCV() == data::HCV::kNone) {
+    if (person.GetHCVDetails().hcv == data::HCV::kNone) {
         return;
     }
     // 1. Get current fibrosis status
-    data::FibrosisState fs = person.GetTrueFibrosisState();
+    data::FibrosisState fs = person.GetHCVDetails().fibrosis_state;
     // 2. Get the transition probability
     std::vector<double> prob = GetTransitionProbability(fs);
     // 3. Draw whether the person's fibrosis state progresses (0
     // progresses)
     (sampler.GetDecision(prob) == 0) ? ++fs : fs;
 
-    if (fs != person.GetTrueFibrosisState()) {
+    if (fs != person.GetHCVDetails().fibrosis_state) {
         // 4. Apply the result state
         person.UpdateTrueFibrosis(fs);
     }
 
     // insert Person's liver-related disease cost (taking the highest
     // fibrosis state) only if the person is identified as infected
-    if (_add_cost_data && person.IsIdentifiedAsInfected()) {
+    if (_add_cost_data &&
+        person.GetScreeningDetails(data::InfectionType::kHcv).identified) {
         AddProgressionCost(person);
     }
     AddProgressionUtility(person);
 }
 
+// Private Methods
 const std::vector<double>
 ProgressionImpl::GetTransitionProbability(const data::FibrosisState &fs) const {
     switch (fs) {

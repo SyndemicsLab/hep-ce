@@ -4,7 +4,7 @@
 // Created: 2025-04-16                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -24,8 +24,8 @@ class TreatmentIMPL {
 protected:
     // event-specific variables
     utility::UtilityCategory UTIL_CATEGORY =
-        utility::UtilityCategory::TREATMENT;
-    cost::CostCategory COST_CATEGORY = cost::CostCategory::TREATMENT;
+        utility::UtilityCategory::kTreatment;
+    cost::CostCategory COST_CATEGORY = cost::CostCategory::kTreatment;
     // default infection type is HCV
     person::InfectionType INF_TYPE = person:: ::kHcv;
 

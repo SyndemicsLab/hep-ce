@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -19,14 +19,18 @@
 namespace hepce {
 namespace event {
 namespace behavior {
+
+// Factory
 std::unique_ptr<hepce::event::Event>
 Pregnancy::Create(datamanagement::ModelData &model_data,
                   const std::string &log_name) {
     return std::make_unique<PregnancyImpl>(model_data, log_name);
 }
 
+// Constructor
 PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
-                             const std::string &log_name) {
+                             const std::string &log_name)
+    : EventBase(model_data, log_name) {
     std::string storage;
     _multiple_delivery_probability = utils::GetDoubleFromConfig(
         "pregnancy.multiple_delivery_probability", model_data);
@@ -42,20 +46,26 @@ PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
     LoadPregnancyData(model_data);
 }
 
+// Execute
 int PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (person.GetSex() == data::Sex::kMale || person.GetAge() < 180 ||
         person.GetAge() > 540 ||
-        (person.GetPregnancyState() == data::PregnancyState::kPostpartum &&
-         person.GetTimeSincePregnancyChange() < 3)) {
+        (person.GetPregnancyDetails().pregnancy_state ==
+             data::PregnancyState::kPostpartum &&
+         (person.GetCurrentTimestep() -
+          person.GetPregnancyDetails().time_of_pregnancy_change) < 3)) {
         return;
     }
 
-    if (person.GetPregnancyState() == data::PregnancyState::kPostpartum) {
+    if (person.GetPregnancyDetails().pregnancy_state ==
+        data::PregnancyState::kPostpartum) {
         person.EndPostpartum();
     }
 
-    if (person.GetPregnancyState() == data::PregnancyState::kPregnant) {
-        if (person.GetTimeSincePregnancyChange() >= 9) {
+    if (person.GetPregnancyDetails().pregnancy_state ==
+        data::PregnancyState::kPregnant) {
+        if ((person.GetCurrentTimestep() -
+             person.GetPregnancyDetails().time_of_pregnancy_change) >= 9) {
             AttemptHaveChild(person, sampler);
         } else {
             AttemptHealthyMonth(person, sampler);
@@ -70,6 +80,7 @@ int PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
     return 0;
 }
 
+// Private Methods
 void PregnancyImpl::AttemptHaveChild(model::Person &person,
                                      model::Sampler &sampler) {
     if (CheckMiscarriage(person, sampler)) {
@@ -79,7 +90,7 @@ void PregnancyImpl::AttemptHaveChild(model::Person &person,
 
     int numberOfBirths = GetNumberOfBirths(person, sampler);
 
-    if (person.GetHCV() != data::HCV::kChronic) {
+    if (person.GetHCVDetails().hcv != data::HCV::kChronic) {
         for (int child = 0; child < numberOfBirths; ++child) {
             person.AddChild(data::HCV::kNone, false);
         }
@@ -88,7 +99,7 @@ void PregnancyImpl::AttemptHaveChild(model::Person &person,
 
     bool tested = DoChildrenGetTested(sampler);
     for (int child = 0; child < numberOfBirths; ++child) {
-        person.ExposeInfant();
+        person.AddInfantExposure();
         data::HCV hcv = (DrawChildInfection(sampler)) ? data::HCV::kChronic
                                                       : data::HCV::kNone;
         person.AddChild(hcv, tested);

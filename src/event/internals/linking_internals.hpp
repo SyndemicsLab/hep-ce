@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -30,6 +30,10 @@ public:
         std::unordered_map<utils::tuple_4i, std::pair<double, double>,
                            utils::key_hash_4i, utils::key_equal_4i>;
 
+    LinkingBase(datamanagement::ModelData &model_data,
+                const std::string &log_name)
+        : EventBase(model_data, log_name) {}
+
     virtual ~LinkingBase() = default;
 
     data::LinkageType GetLinkageType() const { return _linkage_type; }
@@ -42,11 +46,12 @@ public:
     virtual data::InfectionType GetInfectionType() const = 0;
 
     int Execute(model::Person &person, model::Sampler &sampler) override {
-        SetLinkageType(person.GetLinkageType(GetInfectionType()));
-        bool is_linked = (person.GetLinkState(GetInfectionType()) ==
-                          data::LinkageState::kLinked);
+        SetLinkageType(person.GetLinkageDetails(GetInfectionType()).link_type);
+        bool is_linked =
+            (person.GetLinkageDetails(GetInfectionType()).link_state ==
+             data::LinkageState::kLinked);
         bool is_not_identified =
-            (!person.IsIdentifiedAsInfected(GetInfectionType()));
+            (!person.GetScreeningDetails(GetInfectionType()).identified);
         if (is_linked || is_not_identified) {
             return;
         }
@@ -58,8 +63,9 @@ public:
         double prob = GetLinkProbability(person);
         // check if the person was recently screened, for multiplier
         bool recently_screened =
-            (person.GetTimeSinceLastScreening(GetInfectionType()) <=
-             _recent_screen_cutoff);
+            ((person.GetCurrentTimestep() -
+              person.GetScreeningDetails(GetInfectionType())
+                  .time_of_last_screening) <= _recent_screen_cutoff);
         // apply the multiplier to recently screened persons
         if (recently_screened && (prob < 1)) {
             prob = ApplyMultiplier(prob, _recent_screen_multiplier);
@@ -67,10 +73,11 @@ public:
 
         // draw from link probability
         if (sampler.GetDecision({prob}) == 0) {
-            data::LinkageType lt = person.GetLinkageType(GetInfectionType());
+            data::LinkageType lt =
+                person.GetLinkageDetails(GetInfectionType()).link_type;
             person.Link(lt, GetInfectionType());
             if (lt == data::LinkageType::kIntervention) {
-                SetCost(GetInterventionCost());
+                SetEventCost(GetInterventionCost());
                 AddEventCost(person);
             }
         }
@@ -126,8 +133,10 @@ protected:
     double GetLinkProbability(model::Person &person) {
         int age_years = static_cast<int>((person.GetAge() / 12.0));
         int gender = static_cast<int>(person.GetSex());
-        int drug_behavior = static_cast<int>(person.GetBehavior());
-        int pregnancy = static_cast<int>(person.GetPregnancyState());
+        int drug_behavior =
+            static_cast<int>(person.GetBehaviorDetails().behavior);
+        int pregnancy =
+            static_cast<int>(person.GetPregnancyDetails().pregnancy_state);
         utils::tuple_4i tup =
             std::make_tuple(age_years, gender, drug_behavior, pregnancy);
         if (GetLinkageType() == data::LinkageType::kBackground) {
@@ -140,7 +149,7 @@ protected:
     void AddFalsePositiveCost(model::Person &person,
                               const model::CostCategory &category) {
         double discounted_cost =
-            utils::Discount(GetFalsePositiveCost(), GetDiscount(),
+            utils::Discount(GetFalsePositiveCost(), GetEventDiscount(),
                             person.GetCurrentTimestep(), false);
         person.AddCost(GetFalsePositiveCost(), discounted_cost, category);
     }

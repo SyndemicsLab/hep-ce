@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -56,18 +56,20 @@ private:
 
     inline const utils::tuple_2i
     TupleBuilder(const model::Person &person) const {
-        int hcv_status = (person.GetHCV() == data::HCV::kNone) ? 0 : 1;
-        int fibrosis_state = static_cast<int>(person.GetTrueFibrosisState());
+        int hcv_status =
+            (person.GetHCVDetails().hcv == data::HCV::kNone) ? 0 : 1;
+        int fibrosis_state =
+            static_cast<int>(person.GetHCVDetails().fibrosis_state);
         return std::make_tuple(hcv_status, fibrosis_state);
     }
 
     inline void AddProgressionCost(model::Person &person) {
-        SetCost(_cost_data[TupleBuilder(person)].cost);
+        SetEventCost(_cost_data[TupleBuilder(person)].cost);
         AddEventCost(person);
     }
 
     inline void AddProgressionUtility(model::Person &person) {
-        SetUtil(_cost_data[TupleBuilder(person)].util);
+        SetEventUtility(_cost_data[TupleBuilder(person)].util);
         AddEventUtility(person);
     }
 

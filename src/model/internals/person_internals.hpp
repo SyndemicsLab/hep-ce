@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -14,8 +14,12 @@
 
 #include <hepce/model/person.hpp>
 
+#include <execution>
+#include <numeric>
+
 #include <hepce/data/types.hpp>
 #include <hepce/model/cost.hpp>
+#include <hepce/utils/math.hpp>
 
 namespace hepce {
 namespace model {
@@ -62,6 +66,9 @@ public:
     }
     inline data::PregnancyDetails GetPregnancyDetails() const override {
         return _pregnancy_details;
+    }
+    inline data::MOUDDetails GetMoudDetails() const override {
+        return _moud_details;
     }
 
     // Inline Functions
@@ -192,13 +199,23 @@ public:
     inline data::LifetimeUtility GetTotalUtility() const override {
         return _life_utilites;
     }
-    inline void
-    AccumulateTotalUtility(std::pair<double, double> util,
-                           std::pair<double, double> discount_util) override {
-        _life_utilites.min_util += util.first;
-        _life_utilites.mult_util += util.second;
-        _life_utilites.discount_min_util += discount_util.first;
-        _life_utilites.discount_mult_util += discount_util.second;
+    inline void AccumulateTotalUtility(double discount) override {
+        _life_utilites.min_util += GetMinimizedUtility();
+        _life_utilites.mult_util += GetMultipliedUtility();
+        _life_utilites.discount_min_util += utils::Discount(
+            GetMinimizedUtility(), discount, GetCurrentTimestep());
+        _life_utilites.discount_mult_util += utils::Discount(
+            GetMultipliedUtility(), discount, GetCurrentTimestep());
+    }
+    inline double GetMinimizedUtility() const {
+        auto minimized = [](auto min, auto val) { return std::min(min, val); };
+        return std::reduce(std::execution::par, _utilities.begin(),
+                           _utilities.end(), 1, minimized);
+    }
+    inline double GetMultipliedUtility() const {
+        auto multiplied = [](auto mult, auto val) { return mult * val; };
+        return std::reduce(std::execution::par, _utilities.begin(),
+                           _utilities.end(), 1, multiplied);
     }
     inline std::unordered_map<model::UtilityCategory, double>
     GetUtilities() const override {

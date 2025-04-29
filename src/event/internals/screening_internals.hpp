@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -40,7 +40,8 @@ public:
                            utils::key_hash_3i, utils::key_equal_3i>;
 
     ScreeningBase(datamanagement::ModelData &model_data,
-                  const std::string &log_name = "console") {
+                  const std::string &log_name = "console")
+        : EventBase(model_data, log_name) {
         std::any storage = _probability;
         model_data.GetDBSource("inputs").Select(ScreenSQL(), CallbackScreening,
                                                 storage);
@@ -52,7 +53,7 @@ public:
 
     int Execute(model::Person &person, model::Sampler &sampler) override {
         // if a person is already linked, skip screening
-        if (person.GetLinkState(GetInfectionType()) ==
+        if (person.GetLinkageDetails(GetInfectionType()).link_state ==
             data::LinkageState::kLinked) {
             return;
         }
@@ -62,7 +63,9 @@ public:
 
         bool do_periodic_screen =
             (GetInterventionType() == "periodic") &&
-            (person.GetTimeSinceLastScreening() >= GetScreeningPeriod());
+            ((person.GetCurrentTimestep() -
+              person.GetScreeningDetails(GetInfectionType())
+                  .time_of_last_screening) >= GetScreeningPeriod());
 
         // If it is time to do a one-time intervention screen or periodic
         // screen, run an intervention screen
@@ -130,9 +133,10 @@ protected:
     bool RunAbTest(model::Person &person, const std::string &prefix,
                    model::Sampler &sampler) {
         std::string key = prefix + "_ab";
-        bool test = RunTest(person.GetHCV(), key, sampler, [&person]() -> int {
-            return person.AddAbScreen();
-        });
+        bool test = RunTest(person.GetHCVDetails().hcv, key, sampler,
+                            [this, &person]() -> void {
+                                return person.AddAbScreen(GetInfectionType());
+                            });
         InsertScreeningCost(person, key);
         return test;
     }
@@ -140,9 +144,10 @@ protected:
     bool RunRnaTest(model::Person &person, const std::string &prefix,
                     model::Sampler &sampler) {
         std::string key = prefix + "_rna";
-        bool test = RunTest(person.GetHCV(), key, sampler, [&person]() -> int {
-            return person.AddRnaScreen();
-        });
+        bool test = RunTest(person.GetHCVDetails().hcv, key, sampler,
+                            [this, &person]() -> void {
+                                return person.AddRnaScreen(GetInfectionType());
+                            });
         InsertScreeningCost(person, key);
         return test;
     }
@@ -187,7 +192,7 @@ protected:
     }
 
     bool RunTest(const data::HCV &hcv_status, const std::string &key,
-                 model::Sampler &sampler, std::function<int(void)> testFunc) {
+                 model::Sampler &sampler, std::function<void(void)> testFunc) {
         double probability =
             GetScreeningTypeSensitivitySpecificity(hcv_status, key);
 
@@ -201,12 +206,14 @@ protected:
     /// @param person The Person undergoing an Intervention Screening
     void Screen(std::string screenkey, model::Person &person,
                 model::Sampler &sampler) {
-        person.MarkScreened();
+        person.MarkScreened(GetInfectionType());
         // if person has had a history of HCV Infections
         if (((screenkey == "screening_intervention" &&
-              !person.IsIdentifiedAsInfected(data:: ::kHiv)) ||
+              !person.GetScreeningDetails(data::InfectionType::kHiv)
+                   .identified) ||
              screenkey == "screening_background") &&
-            (!person.CheckAntibodyPositive(data:: ::kHiv))) {
+            (!person.GetScreeningDetails(data::InfectionType::kHiv)
+                  .ab_positive)) {
             if (!RunAbTest(person, screenkey, sampler)) {
                 return;
             }
@@ -216,8 +223,8 @@ protected:
             data::LinkageType type = (screenkey == "screening_background")
                                          ? data::LinkageType::kBackground
                                          : data::LinkageType::kIntervention;
-            person.SetLinkageType(type);
-            person.Diagnose();
+            person.SetLinkageType(type, GetInfectionType());
+            person.Diagnose(GetInfectionType());
         }
     }
 
@@ -225,7 +232,8 @@ protected:
                                    const std::string &colname) {
         int age_years = static_cast<int>(person.GetAge() / 12.0);
         int gender = static_cast<int>(person.GetSex());
-        int drug_behavior = static_cast<int>(person.GetBehavior());
+        int drug_behavior =
+            static_cast<int>(person.GetBehaviorDetails().behavior);
         utils::tuple_3i tup = std::make_tuple(age_years, gender, drug_behavior);
 
         double probability = 0.0;
@@ -265,13 +273,13 @@ protected:
     /// @param type The screening type, used to discern the cost to add
     void InsertScreeningCost(model::Person &person, const std::string &key) {
         if (key == "screening_background_rna") {
-            SetCost(_background_rna_data.cost);
+            SetEventCost(_background_rna_data.cost);
         } else if (key == "screening_background_ab") {
-            SetCost(_background_ab_data.cost);
+            SetEventCost(_background_ab_data.cost);
         } else if (key == "screening_intervention_rna") {
-            SetCost(_intervention_rna_data.cost);
+            SetEventCost(_intervention_rna_data.cost);
         } else if (key == "screening_intervention_ab") {
-            SetCost(_intervention_ab_data.cost);
+            SetEventCost(_intervention_ab_data.cost);
         }
 
         AddEventCost(person);

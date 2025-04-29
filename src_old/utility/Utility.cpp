@@ -4,7 +4,7 @@
 // Created: 2025-02-24                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -21,9 +21,9 @@ private:
 
 public:
     UtilityTrackerIMPL() {
-        utilities[UtilityCategory::BEHAVIOR] = 1.0;
-        utilities[UtilityCategory::LIVER] = 1.0;
-        utilities[UtilityCategory::TREATMENT] = 1.0;
+        utilities[UtilityCategory::kBehavior] = 1.0;
+        utilities[UtilityCategory::kLiver] = 1.0;
+        utilities[UtilityCategory::kTreatment] = 1.0;
         utilities[UtilityCategory::kBackground] = 1.0;
         utilities[UtilityCategory::HIV] = 1.0;
     }
@@ -32,9 +32,9 @@ public:
     std::pair<double, double> GetUtilities() const {
         double minUtility = std::min(
             std::min(
-                std::min(this->utilities.at(UtilityCategory::BEHAVIOR),
-                         this->utilities.at(UtilityCategory::LIVER)),
-                std::min(this->utilities.at(UtilityCategory::TREATMENT),
+                std::min(this->utilities.at(UtilityCategory::kBehavior),
+                         this->utilities.at(UtilityCategory::kLiver)),
+                std::min(this->utilities.at(UtilityCategory::kTreatment),
                          this->utilities.at(UtilityCategory::kBackground))),
             this->utilities.at(UtilityCategory::HIV));
         // avoid numeric overflow by not multiplying if any of the
@@ -42,9 +42,9 @@ public:
         double multUtility =
             minUtility == 0
                 ? 0.0
-                : (this->utilities.at(UtilityCategory::BEHAVIOR) *
-                   this->utilities.at(UtilityCategory::LIVER) *
-                   this->utilities.at(UtilityCategory::TREATMENT) *
+                : (this->utilities.at(UtilityCategory::kBehavior) *
+                   this->utilities.at(UtilityCategory::kLiver) *
+                   this->utilities.at(UtilityCategory::kTreatment) *
                    this->utilities.at(UtilityCategory::kBackground) *
                    this->utilities.at(UtilityCategory::HIV));
         return {minUtility, multUtility};
@@ -92,13 +92,13 @@ std::ostream &operator<<(std::ostream &os, const UtilityTracker &utility) {
 
 std::ostream &operator<<(std::ostream &os, const UtilityCategory &uc) {
     switch (uc) {
-    case UtilityCategory::BEHAVIOR:
+    case UtilityCategory::kBehavior:
         os << "BEHAVIOR";
         break;
-    case UtilityCategory::LIVER:
+    case UtilityCategory::kLiver:
         os << "LIVER";
         break;
-    case UtilityCategory::TREATMENT:
+    case UtilityCategory::kTreatment:
         os << "TREATMENT";
         break;
     case UtilityCategory::kBackground:

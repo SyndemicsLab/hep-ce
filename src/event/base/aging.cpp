@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -20,18 +20,31 @@
 namespace hepce {
 namespace event {
 namespace base {
+
+// Factory
 std::unique_ptr<hepce::event::Event>
 Aging::Create(datamanagement::ModelData &model_data,
               const std::string &log_name) {
     return std::make_unique<AgingImpl>(model_data, log_name);
 }
+
+// Constructor
+AgingImpl::AgingImpl(datamanagement::ModelData &model_data,
+                     const std::string &log_name)
+    : EventBase(model_data, log_name) {
+    _age_data.clear();
+    LoadData(model_data);
+}
+
+// Execution
 int AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     person.Grow();
     AddBackgroundCostAndUtility(person);
     person.AddDiscountedLifeSpan(
-        utils::Discount(1, GetDiscount(), person.GetCurrentTimestep()));
+        utils::Discount(1, GetEventDiscount(), person.GetCurrentTimestep()));
 }
 
+// Private Methods
 int AgingImpl::LoadData(datamanagement::ModelData &model_data) {
     std::string query = BuildSQL();
     std::string error;
@@ -57,20 +70,14 @@ int AgingImpl::LoadData(datamanagement::ModelData &model_data) {
 void AgingImpl::AddBackgroundCostAndUtility(model::Person &person) {
     int age_years = static_cast<int>(person.GetAge() / 12.0);
     int gender = static_cast<int>(person.GetSex());
-    int behavior = static_cast<int>(person.GetBehavior());
+    int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_3i tup = std::make_tuple(age_years, gender, behavior);
 
-    SetCost(_age_data[tup].cost);
+    SetEventCost(_age_data[tup].cost);
     AddEventCost(person);
 
-    person.SetUtility(_age_data[tup].util, GetUtilityCategory());
-    std::pair<double, double> utilities = person.GetUtility();
-    std::pair<double, double> discount_utilities = {
-        utils::Discount(utilities.first, GetDiscount(),
-                        person.GetCurrentTimestep()),
-        utils::Discount(utilities.second, GetDiscount(),
-                        person.GetCurrentTimestep())};
-    person.AccumulateTotalUtility(utilities, discount_utilities);
+    SetEventUtility(_age_data[tup].util);
+    AddEventUtility(person);
 }
 } // namespace base
 } // namespace event

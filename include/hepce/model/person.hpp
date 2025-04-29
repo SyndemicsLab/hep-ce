@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -78,6 +78,7 @@ public:
     virtual bool GetCurrentlyOverdosing() const = 0;
 
     virtual int GetNumberOfOverdoses() const = 0;
+    virtual data::MOUDDetails GetMoudDetails() const = 0;
 
     // Fibrosis
     virtual void DiagnoseFibrosis(data::MeasuredFibrosisState) = 0;
@@ -91,11 +92,12 @@ public:
 
     // Life, Quality of Life
     virtual data::LifetimeUtility GetTotalUtility() const = 0;
-    virtual void
-    AccumulateTotalUtility(std::pair<double, double> util,
-                           std::pair<double, double> discount_util) = 0;
+    virtual void AccumulateTotalUtility(double discount) = 0;
     virtual std::unordered_map<model::UtilityCategory, double>
     GetUtilities() const = 0;
+
+    virtual double GetMinimizedUtility() const = 0;
+    virtual double GetMultipliedUtility() const = 0;
     virtual void SetUtility(double util, model::UtilityCategory category) = 0;
     virtual int GetLifeSpan() const = 0;
     virtual double GetDiscountedLifeSpan() const = 0;

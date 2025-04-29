@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,32 +51,9 @@ private:
                "incidence;";
     }
 
-    std::vector<double> GetInfectionProbability(const model::Person &person) {
-        if (_infection_data.empty()) {
-            // Warn Empty
-            return {0.0};
-        }
+    std::vector<double> GetInfectionProbability(const model::Person &person);
 
-        int age_years = static_cast<int>(person.GetAge() / 12.0);
-        int gender = static_cast<int>(person.GetSex());
-        int drug_behavior = static_cast<int>(person.GetBehavior());
-        utils::tuple_3i tup = std::make_tuple(age_years, gender, drug_behavior);
-        double incidence = _infection_data[tup];
-
-        return {incidence};
-    }
-
-    int LoadIncidenceData(datamanagement::ModelData &model_data) {
-        std::string error;
-        std::any storage = _infection_data;
-        model_data.GetDBSource("inputs").Select(IncidenceSQL(),
-                                                CallbackInfection, storage);
-        _infection_data = std::any_cast<incidencemap_t>(storage);
-        if (_infection_data.empty()) {
-            // Warn Empty
-        }
-        return 0;
-    }
+    int LoadIncidenceData(datamanagement::ModelData &model_data);
 };
 } // namespace hcv
 } // namespace event

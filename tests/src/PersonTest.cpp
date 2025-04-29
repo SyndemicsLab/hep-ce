@@ -338,7 +338,7 @@ TEST_F(PersonTest, CurrentUtility) {
     EXPECT_EQ(expected_utils, testPerson->GetUtility());
 
     expected_utils = {0.6, 0.48};
-    testPerson->SetUtility(0.6, utility::UtilityCategory::TREATMENT);
+    testPerson->SetUtility(0.6, utility::UtilityCategory::kTreatment);
     EXPECT_EQ(expected_utils, testPerson->GetUtility());
 
     expected_utils = {0.6, 0.6};
@@ -378,8 +378,8 @@ TEST_F(PersonTest, TotalUtility) {
 
     // more complex case
     testPerson->Grow();
-    testPerson->SetUtility(0.8, utility::UtilityCategory::LIVER);
-    testPerson->SetUtility(0.8, utility::UtilityCategory::BEHAVIOR);
+    testPerson->SetUtility(0.8, utility::UtilityCategory::kLiver);
+    testPerson->SetUtility(0.8, utility::UtilityCategory::kBehavior);
     // { 0.8, 0.64}
     undiscounted_utils = testPerson->GetUtility();
     discounted_utils = {Utils::discount(undiscounted_utils.first, discount_rate,

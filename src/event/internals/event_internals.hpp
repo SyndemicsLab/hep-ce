@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-25                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -23,36 +23,48 @@ namespace hepce {
 namespace event {
 class EventBase : public virtual Event {
 public:
-    void SetDiscount(const double &d) { _discount = d; }
+    EventBase(datamanagement::ModelData &model_data,
+              const std::string &log_name = "console") {
+        SetEventDiscount(
+            utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
+        SetEventCostCategory(model::CostCategory::kBackground);
+        SetEventUtilityCategory(model::UtilityCategory::kBackground);
+    }
+    ~EventBase() = default;
+    void SetEventDiscount(const double &d) { _discount = d; }
 
-    void SetCost(const double &cost) { _cu.cost = cost; }
-    void SetCostCategory(const model::CostCategory &cc) {
+    void SetEventCost(const double &cost) { _cu.cost = cost; }
+    void SetEventCostCategory(const model::CostCategory &cc) {
         _event_cost_category = cc;
     }
 
-    void SetUtil(const double &util) { _cu.util = util; }
-    void SetUtilityCategory(const model::UtilityCategory &uc) {
+    void SetEventUtility(const double &util) { _cu.util = util; }
+    void SetEventUtilityCategory(const model::UtilityCategory &uc) {
         _event_utility_category = uc;
     }
 
-    double GetDiscount() const { return _discount; }
+    double GetEventDiscount() const { return _discount; }
 
-    double GetCost() const { return _cu.cost; }
-    model::CostCategory GetCostCategory() const { return _event_cost_category; }
+    double GetEventCost() const { return _cu.cost; }
+    model::CostCategory GetEventCostCategory() const {
+        return _event_cost_category;
+    }
 
-    double GetUtil() const { return _cu.util; }
-    model::UtilityCategory GetUtilityCategory() const {
+    double GetEventUtility() const { return _cu.util; }
+    model::UtilityCategory GetEventUtilityCategory() const {
         return _event_utility_category;
     }
 
     void AddEventCost(model::Person &person, bool annual = false) const {
-        double discounted_cost = utils::Discount(
-            GetCost(), GetDiscount(), person.GetCurrentTimestep(), annual);
-        person.AddCost(GetCost(), discounted_cost, GetCostCategory());
+        double discounted_cost =
+            utils::Discount(GetEventCost(), GetEventDiscount(),
+                            person.GetCurrentTimestep(), annual);
+        person.AddCost(GetEventCost(), discounted_cost, GetEventCostCategory());
     }
 
     void AddEventUtility(model::Person &person) const {
-        person.SetUtility(GetUtil(), GetUtilityCategory());
+        person.SetUtility(GetEventUtility(), GetEventUtilityCategory());
+        person.AccumulateTotalUtility(GetEventDiscount());
     }
 
 private:

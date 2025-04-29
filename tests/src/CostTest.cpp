@@ -4,8 +4,8 @@
 // Created: 2024-04-10                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-03-10                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-04-29                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2024-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ TEST(CostTest, GetTotalSingleCostCategory) {
     double base_sum = 0.0;
     double discount_sum = 0.0;
     for (int i = 0; i < ELEMENT_COUNT; ++i) {
-        ct.AddCost((double)i, ((double)i / 2), cost::CostCategory::BEHAVIOR);
+        ct.AddCost((double)i, ((double)i / 2), cost::CostCategory::kBehavior);
         base_sum += (double)i;
         discount_sum += ((double)i / 2);
     }
@@ -52,7 +52,7 @@ TEST(CostTest, GetTotalMultiCostCategory) {
             ct.AddCost((double)i, ((double)i / 2), cost::CostCategory::MISC);
         } else {
             ct.AddCost((double)i, ((double)i / 2),
-                       cost::CostCategory::BEHAVIOR);
+                       cost::CostCategory::kBehavior);
         }
 
         sum += (double)i;
@@ -77,14 +77,14 @@ TEST(CostTest, GetCostCategory) {
             misc_d_sum += ((double)i / 2);
         } else {
             ct.AddCost((double)i, ((double)i / 2),
-                       cost::CostCategory::BEHAVIOR);
+                       cost::CostCategory::kBehavior);
             behavior_sum += (double)i;
             behavior_d_sum += ((double)i / 2);
         }
     }
     EXPECT_EQ(ct.GetCosts()[cost::CostCategory::MISC].first, misc_sum);
     EXPECT_EQ(ct.GetCosts()[cost::CostCategory::MISC].second, misc_d_sum);
-    EXPECT_EQ(ct.GetCosts()[cost::CostCategory::BEHAVIOR].first, behavior_sum);
-    EXPECT_EQ(ct.GetCosts()[cost::CostCategory::BEHAVIOR].second,
+    EXPECT_EQ(ct.GetCosts()[cost::CostCategory::kBehavior].first, behavior_sum);
+    EXPECT_EQ(ct.GetCosts()[cost::CostCategory::kBehavior].second,
               behavior_d_sum);
 }

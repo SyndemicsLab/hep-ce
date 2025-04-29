@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -17,23 +17,26 @@
 namespace hepce {
 namespace event {
 namespace behavior {
+
+// Factory
 std::unique_ptr<hepce::event::Event>
 BehaviorChanges::Create(datamanagement::ModelData &model_data,
                         const std::string &log_name) {
     return std::make_unique<BehaviorChangesImpl>(model_data, log_name);
 }
 
+// Constructor
 BehaviorChangesImpl::BehaviorChangesImpl(
     datamanagement::ModelData &model_data,
-    const std::string &log_name = "console") {
-    SetCostCategory(model::CostCategory::kBehavior);
-    SetUtilityCategory(model::UtilityCategory::kBehavior);
-    SetDiscount(
-        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
+    const std::string &log_name = "console")
+    : EventBase(model_data, log_name) {
+    SetEventCostCategory(model::CostCategory::kBehavior);
+    SetEventUtilityCategory(model::UtilityCategory::kBehavior);
     LoadCostData(model_data);
     LoadBehaviorData(model_data);
 }
 
+// Execute
 int BehaviorChangesImpl::Execute(model::Person &person,
                                  model::Sampler &sampler) {
 
@@ -42,8 +45,8 @@ int BehaviorChangesImpl::Execute(model::Person &person,
     // state
     int age_years = static_cast<int>(person.GetAge() / 12.0);
     int gender = static_cast<int>(person.GetSex());
-    int moud = static_cast<int>(person.GetMoudState());
-    int behavior = static_cast<int>(person.GetBehavior());
+    int moud = static_cast<int>(person.GetMoudDetails().moud_state);
+    int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_4i tup = std::make_tuple(age_years, gender, moud, behavior);
     std::vector<double> probs = {
         _behavior_data[tup].never, _behavior_data[tup].fni,
@@ -64,6 +67,7 @@ int BehaviorChangesImpl::Execute(model::Person &person,
     CalculateCostAndUtility(person);
 }
 
+// Private Methods
 int BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
     std::any storage = _cost_data;
 
@@ -110,13 +114,13 @@ int BehaviorChangesImpl::LoadBehaviorData(
 
 void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {
     int gender = static_cast<int>(person.GetSex());
-    int behavior = static_cast<int>(person.GetBehavior());
+    int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_2i tup = std::make_tuple(gender, behavior);
 
-    SetCost(_cost_data[tup].cost);
+    SetEventCost(_cost_data[tup].cost);
     AddEventCost(person);
 
-    SetUtil(_cost_data[tup].util);
+    SetEventUtility(_cost_data[tup].util);
     AddEventUtility(person);
 }
 } // namespace behavior

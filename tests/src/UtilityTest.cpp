@@ -4,7 +4,7 @@
 // Created: 2025-02-27                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -18,9 +18,9 @@ TEST(UtilityTest, SetUtility) {
     utility::UtilityTracker ut;
 
     double util = 0.8;
-    ut.SetUtility(util, utility::UtilityCategory::BEHAVIOR);
+    ut.SetUtility(util, utility::UtilityCategory::kBehavior);
     auto test = ut.GetRawUtilities();
-    EXPECT_EQ(test.at(utility::UtilityCategory::BEHAVIOR), 0.8);
+    EXPECT_EQ(test.at(utility::UtilityCategory::kBehavior), 0.8);
 }
 
 TEST(UtilityTest, GetUtilities) {

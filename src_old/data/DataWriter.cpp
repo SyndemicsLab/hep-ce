@@ -57,15 +57,15 @@ private:
             << person->GetCompletedTreatments() << "," << person->GetSVRs()
             << ",";
         const auto &cu = person->GetCurrentUtilities();
-        compiled_attributes << cu.at(utility::UtilityCategory::BEHAVIOR) << ","
-                            << cu.at(utility::UtilityCategory::LIVER) << ","
-                            << cu.at(utility::UtilityCategory::TREATMENT) << ","
-                            << cu.at(utility::UtilityCategory::kBackground)
-                            << "," << cu.at(utility::UtilityCategory::HIV)
-                            << "," << person->GetLifeSpan() << ","
-                            << person->GetDiscountedLifeSpan() << ","
-                            << person->GetNumberOfTreatmentStarts() << ","
-                            << person->GetRetreatments() << ",";
+        compiled_attributes
+            << cu.at(utility::UtilityCategory::kBehavior) << ","
+            << cu.at(utility::UtilityCategory::kLiver) << ","
+            << cu.at(utility::UtilityCategory::kTreatment) << ","
+            << cu.at(utility::UtilityCategory::kBackground) << ","
+            << cu.at(utility::UtilityCategory::HIV) << ","
+            << person->GetLifeSpan() << "," << person->GetDiscountedLifeSpan()
+            << "," << person->GetNumberOfTreatmentStarts() << ","
+            << person->GetRetreatments() << ",";
         // pregnancy quantities
         const auto &preg = person->GetPregnancyDetails();
         compiled_attributes

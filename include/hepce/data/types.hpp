@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -230,6 +230,8 @@ enum class PregnancyState {
 };
 std::ostream &operator<<(std::ostream &os, const PregnancyState &inst);
 PregnancyState &operator<<(PregnancyState &inst, const std::string &str);
+
+enum class UtilityType : int { kMin = 0, kMult = 1, kCount = 2 };
 
 /// @brief Attributes describing an HCV Infection
 struct HCVDetails {

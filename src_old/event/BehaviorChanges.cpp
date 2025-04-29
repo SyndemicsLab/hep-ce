@@ -4,7 +4,7 @@
 // Created: 2023-09-13                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -22,7 +22,8 @@
 namespace event {
 class BehaviorChanges::BehaviorChangesIMPL {
 private:
-    utility::UtilityCategory util_category = utility::UtilityCategory::BEHAVIOR;
+    utility::UtilityCategory util_category =
+        utility::UtilityCategory::kBehavior;
     double discount = 0.0;
     struct behavior_transitions {
         double never = 0.0;
@@ -90,7 +91,7 @@ private:
         double discountAdjustedCost = Event::DiscountEventCost(
             cost_data[tup].cost, discount, person->GetCurrentTimestep());
         person->AddCost(cost_data[tup].cost, discountAdjustedCost,
-                        cost::CostCategory::BEHAVIOR);
+                        cost::CostCategory::kBehavior);
         person->SetUtility(cost_data[tup].util, util_category);
     }
 

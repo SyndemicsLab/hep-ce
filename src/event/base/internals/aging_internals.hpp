@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -31,13 +31,7 @@ public:
         std::unordered_map<utils::tuple_3i, data::CostUtil, utils::key_hash_3i,
                            utils::key_equal_3i>;
     AgingImpl(datamanagement::ModelData &model_data,
-              const std::string &log_name = "console") {
-        SetDiscount(
-            utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
-        SetCostCategory(model::CostCategory::kBackground);
-        _age_data.clear();
-        LoadData(model_data);
-    }
+              const std::string &log_name = "console");
     ~AgingImpl() = default;
 
     int Execute(model::Person &person, model::Sampler &sampler) override;

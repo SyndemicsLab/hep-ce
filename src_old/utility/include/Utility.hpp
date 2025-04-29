@@ -4,7 +4,7 @@
 // Created: 2025-02-24                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -19,10 +19,10 @@
 
 namespace utility {
 /// @brief Categories for classifying utility items
-enum class UtilityCategory {
-    BEHAVIOR = 0,
-    LIVER = 1,
-    TREATMENT = 2,
+enum class UtilityCategory : int {
+    kBehavior = 0,
+    kLiver = 1,
+    kTreatment = 2,
     kBackground = 3,
     HIV = 4,
     kCount = 5

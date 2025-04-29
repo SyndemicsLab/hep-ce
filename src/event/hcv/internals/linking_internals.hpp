@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -27,16 +27,16 @@ public:
     ~LinkingImpl() = default;
 
     data::InfectionType GetInfectionType() const override {
-        return data:: ::kHcv;
+        return data::InfectionType::kHcv;
     }
 
 private:
     inline bool FalsePositive(model::Person &person) override {
-        if (person.GetHCV() != data::HCV::kNone) {
+        if (person.GetHCVDetails().hcv != data::HCV::kNone) {
             return false;
         }
-        person.ClearDiagnosis(data:: ::kHcv);
-        AddFalsePositiveCost(person, GetCostCategory());
+        person.ClearDiagnosis(data::InfectionType::kHcv);
+        AddFalsePositiveCost(person, GetEventCostCategory());
         return true;
     }
 };

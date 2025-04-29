@@ -280,11 +280,11 @@ public:
 
         // UtilityTracker
         this->utility_tracker.SetUtility(storage.behavior_utility,
-                                         utility::UtilityCategory::BEHAVIOR);
+                                         utility::UtilityCategory::kBehavior);
         this->utility_tracker.SetUtility(storage.liver_utility,
-                                         utility::UtilityCategory::LIVER);
+                                         utility::UtilityCategory::kLiver);
         this->utility_tracker.SetUtility(storage.treatment_utility,
-                                         utility::UtilityCategory::TREATMENT);
+                                         utility::UtilityCategory::kTreatment);
         this->utility_tracker.SetUtility(storage.background_utility,
                                          utility::UtilityCategory::kBackground);
         this->utility_tracker.SetUtility(storage.hiv_utility,
@@ -395,9 +395,9 @@ public:
         // Utilities
         // current utilities
         const auto &cu = this->GetCurrentUtilities();
-        population_row << cu.at(utility::UtilityCategory::BEHAVIOR) << ","
-                       << cu.at(utility::UtilityCategory::LIVER) << ","
-                       << cu.at(utility::UtilityCategory::TREATMENT) << ","
+        population_row << cu.at(utility::UtilityCategory::kBehavior) << ","
+                       << cu.at(utility::UtilityCategory::kLiver) << ","
+                       << cu.at(utility::UtilityCategory::kTreatment) << ","
                        << cu.at(utility::UtilityCategory::kBackground) << ","
                        << cu.at(utility::UtilityCategory::HIV) << ",";
         // total/lifetime utilities

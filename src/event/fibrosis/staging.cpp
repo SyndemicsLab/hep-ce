@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -18,22 +18,24 @@
 namespace hepce {
 namespace event {
 namespace fibrosis {
+
+// Factory
 std::unique_ptr<hepce::event::Event>
 Staging::Create(datamanagement::ModelData &model_data,
                 const std::string &log_name) {
     return std::make_unique<StagingImpl>(model_data, log_name);
 }
 
+// Constructor
 StagingImpl::StagingImpl(datamanagement::ModelData &model_data,
                          const std::string &log_name)
     : _test_one(
           utils::GetStringFromConfig("fibrosis_staging.test_one", model_data)),
       _test_two(
-          utils::GetStringFromConfig("fibrosis_staging.test_two", model_data)) {
+          utils::GetStringFromConfig("fibrosis_staging.test_two", model_data)),
+      EventBase(model_data, log_name) {
 
-    SetDiscount(
-        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
-    SetCostCategory(model::CostCategory::kStaging);
+    SetEventCostCategory(model::CostCategory::kStaging);
     LoadStagingData(model_data);
 
     _staging_period =
@@ -50,17 +52,19 @@ StagingImpl::StagingImpl(datamanagement::ModelData &model_data,
         "fibrosis_staging.multitest_result_method", model_data);
 }
 
+// Execute
 int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Check if Person even has Fibrosis, exit if they are none
-    if (person.GetTrueFibrosisState() == data::FibrosisState::kNone) {
+    if (person.GetHCVDetails().fibrosis_state == data::FibrosisState::kNone) {
         return;
     }
+
+    int time = person.GetFibrosisStagingDetails().time_of_last_staging;
 
     // 1. Check the time since the person's last fibrosis staging test.
     // If the person's last test is more recent than the limit, exit
     // event. If they've never been staged they have a -1
-    if (person.GetTimeSinceFibrosisStaging() < _staging_period &&
-        person.GetTimeOfFibrosisStaging() != -1) {
+    if ((person.GetCurrentTimestep() - time) < _staging_period && time != -1) {
         return;
     }
 
@@ -91,7 +95,7 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // End
     if (_test_two.empty() ||
         std::find(_testtwo_eligible_fibs.begin(), _testtwo_eligible_fibs.end(),
-                  person.GetTrueFibrosisState()) ==
+                  person.GetHCVDetails().fibrosis_state) ==
             _testtwo_eligible_fibs.end()) {
         return;
     }
@@ -122,10 +126,12 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     AddStagingCost(person, _test_two_cost);
 }
 
+// Private Methods
 const std::vector<double>
 StagingImpl::ProbabilityBuilder(const model::Person &person,
                                 const testmap_t &test) const {
-    int fibrosis_state = static_cast<int>(person.GetTrueFibrosisState());
+    int fibrosis_state =
+        static_cast<int>(person.GetHCVDetails().fibrosis_state);
 
     // Returning the probability tuples for each diagnosis of a true fibrosis state
     std::vector<utils::tuple_2i> tuples = {

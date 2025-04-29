@@ -4,7 +4,7 @@
 // Created: 2023-08-21                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
@@ -22,7 +22,7 @@
 namespace event {
 class FibrosisProgression::FibrosisProgressionIMPL {
 private:
-    utility::UtilityCategory util_category = utility::UtilityCategory::LIVER;
+    utility::UtilityCategory util_category = utility::UtilityCategory::kLiver;
     double discount = 0.0;
     double f01_probability;
     double f12_probability;
@@ -91,7 +91,7 @@ private:
         double discountAdjustedCost = Event::DiscountEventCost(
             costutil_data[tup].cost, discount, person->GetCurrentTimestep());
         person->AddCost(costutil_data[tup].cost, discountAdjustedCost,
-                        cost::CostCategory::LIVER);
+                        cost::CostCategory::kLiver);
     }
 
     void SetLiverUtility(std::shared_ptr<person::PersonBase> person) {

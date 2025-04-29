@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -58,8 +58,8 @@ private:
     const std::vector<double> ProbabilityBuilder(const model::Person &person,
                                                  const testmap_t &test) const;
 
-    void AddStagingCost(model::Person &person, const double &cost) {
-        SetCost(cost);
+    inline void AddStagingCost(model::Person &person, const double &cost) {
+        SetEventCost(cost);
         AddEventCost(person);
     }
 

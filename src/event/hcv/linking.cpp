@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -17,17 +17,19 @@
 namespace hepce {
 namespace event {
 namespace hcv {
+
+// Factory
 std::unique_ptr<hepce::event::Event>
 hcv::Linking::Create(datamanagement::ModelData &model_data,
                      const std::string &log_name) {
     return std::make_unique<hcv::LinkingImpl>(model_data, log_name);
 }
 
+// Constructor
 LinkingImpl::LinkingImpl(datamanagement::ModelData &model_data,
-                         const std::string &log_name) {
-    SetDiscount(
-        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
-    SetCostCategory(model::CostCategory::kLinking);
+                         const std::string &log_name)
+    : LinkingBase(model_data, log_name) {
+    SetEventCostCategory(model::CostCategory::kLinking);
     SetLinkingStratifiedByPregnancy(CheckForPregnancyEvent(model_data));
     LoadLinkingData(model_data);
     SetInterventionCost(

@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -35,19 +35,7 @@ public:
                            utils::key_equal_2i>;
 
     DeathImpl(datamanagement::ModelData &model_data,
-              const std::string &log_name = "console") {
-        _f4_infected_probability =
-            utils::GetDoubleFromConfig("mortality.f4_infected", model_data);
-        _f4_uninfected_probability =
-            utils::GetDoubleFromConfig("mortality.f4_uninfected", model_data);
-        _decomp_infected_probability =
-            utils::GetDoubleFromConfig("mortality.decomp_infected", model_data);
-        _decomp_uninfected_probability = utils::GetDoubleFromConfig(
-            "mortality.decomp_uninfected", model_data);
-
-        LoadOverdoseData(model_data);
-        LoadBackgroundMortality(model_data);
-    }
+              const std::string &log_name = "console");
     ~DeathImpl() = default;
 
     int Execute(model::Person &person, model::Sampler &sampler) override;

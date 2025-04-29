@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -27,9 +27,7 @@ Screening::Create(datamanagement::ModelData &model_data,
 ScreeningImpl::ScreeningImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
     : ScreeningBase(model_data, log_name) {
-    SetDiscount(
-        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
-    SetCostCategory(model::CostCategory::kScreening);
+    SetEventCostCategory(model::CostCategory::kScreening);
 
     ScreeningData temp;
 
