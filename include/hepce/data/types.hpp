@@ -13,6 +13,7 @@
 #define HEPCE_DATA_TYPES_HPP_
 
 #include <ostream>
+#include <vector>
 
 namespace hepce {
 namespace data {

@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -38,8 +38,8 @@ private:
     /// person. This has no impact outside of costs to the person.
     /// @param person person who is being relinked
     inline void AddRNATest(model::Person &person) {
-        person.AddRnaScreen();
-        SetCost(_cost);
+        person.AddRnaScreen(data::InfectionType::kHcv);
+        SetEventCost(_cost);
         AddEventCost(person);
     }
 };

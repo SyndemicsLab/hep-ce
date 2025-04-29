@@ -18,12 +18,15 @@
 namespace hepce {
 namespace event {
 namespace hcv {
+
+// Factory
 std::unique_ptr<hepce::event::Event>
 Screening::Create(datamanagement::ModelData &model_data,
                   const std::string &log_name) {
     return std::make_unique<ScreeningImpl>(model_data, log_name);
 }
 
+// Constructor
 ScreeningImpl::ScreeningImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
     : ScreeningBase(model_data, log_name) {

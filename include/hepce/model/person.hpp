@@ -113,7 +113,7 @@ public:
     virtual int GetAge() const = 0;
     virtual void SetAge(int age) = 0;
 
-    virtual bool IsCirrhotic() = 0;
+    virtual bool IsCirrhotic() const = 0;
 
     virtual std::string GetPersonDataString() const = 0;
     virtual int GetCurrentTimestep() const = 0;

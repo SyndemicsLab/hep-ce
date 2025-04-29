@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -18,13 +18,23 @@
 namespace hepce {
 namespace event {
 namespace hcv {
+
+// Factory
+std::unique_ptr<hepce::event::Event>
+Treatment::Create(datamanagement::ModelData &model_data,
+                  const std::string &log_name) {
+    return std::make_unique<TreatmentImpl>(model_data, log_name);
+}
+
+// Constructor
 TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
     : TreatmentBase(model_data, log_name) {}
 
 int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Verify the person is linked before starting treatment
-    if (person.GetLinkState() != data::LinkageState::kLinked) {
+    if (person.GetLinkageDetails(GetInfectionType()).link_state !=
+        data::LinkageState::kLinked) {
         return;
     }
 
@@ -35,14 +45,15 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     // 2. Charge the Cost of the Visit (varies if this is retreatment)
     int num_treatments =
-        person.GetWithdrawals() + person.GetCompletedTreatments();
+        person.GetTreatmentDetails(GetInfectionType()).num_withdrawals +
+        person.GetTreatmentDetails(GetInfectionType()).num_completed;
     double visit_cost = (num_treatments > 0) ? GetTreatmentCosts().retreatment
                                              : GetTreatmentCosts().treatment;
     ChargeCost(person, visit_cost);
 
     // 3. Attempt to start primary treatment, if already on treatment
     // nothing happens
-    if (!person.HasInitiatedTreatment() &&
+    if (!person.GetTreatmentDetails(GetInfectionType()).initiated_treatment &&
         !InitiateTreatment(person, sampler)) {
         return;
     }
@@ -61,17 +72,20 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 7. Determine if the person has been treated long enough and, if so,
     // if they achieve SVR
     int duration = GetTreatmentDuration(person);
-    if (person.GetTimeSinceTreatmentInitiation() == duration) {
-        person.AddCompletedTreatment();
+    if ((person.GetCurrentTimestep() -
+         person.GetTreatmentDetails(GetInfectionType())
+             .time_of_treatment_initiation) == duration) {
+        person.AddCompletedTreatment(GetInfectionType());
         int decision = DecideIfPersonAchievesSVR(person, sampler);
         if (decision == 0) {
             person.AddSVR();
             person.ClearHCV();
-            person.ClearDiagnosis();
+            person.ClearDiagnosis(GetInfectionType());
             QuitEngagement(person);
-        } else if (!person.IsInRetreatment()) {
+        } else if (!person.GetTreatmentDetails(GetInfectionType())
+                        .retreatment) {
             // initiate retreatment
-            person.InitiateTreatment();
+            person.InitiateTreatment(GetInfectionType());
         } else {
             // if retreatment fails, it is a failure and treatment ceases
             QuitEngagement(person);

@@ -32,7 +32,7 @@ public:
     void InfectHCV() override;
     void InitiateTreatment(data::InfectionType it) override;
     void SetBehavior(data::Behavior) override;
-    bool IsCirrhotic() override;
+    bool IsCirrhotic() const override;
     std::string GetPersonDataString() const override;
     inline void AddChild(data::HCV hcv, bool test) override;
     void TransitionMOUD() override;

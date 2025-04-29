@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -43,7 +43,7 @@ public:
 
 private:
     inline data::InfectionType GetInfectionType() const override {
-        return data:: ::kHcv;
+        return data::InfectionType::kHcv;
     }
 
     hcvtreatmentmap_t _treatment_sql_data;
@@ -69,17 +69,17 @@ private:
     }
 
     utils::tuple_3i GetTreatmentThruple(const model::Person &person) const {
-        int geno3 = (person.IsGenotypeThree()) ? 1 : 0;
+        int geno3 = (person.GetHCVDetails().is_genotype_three) ? 1 : 0;
         int cirr = (person.IsCirrhotic()) ? 1 : 0;
-        int retreatment = static_cast<int>(person.IsInRetreatment());
+        int retreatment = static_cast<int>(
+            person.GetTreatmentDetails(GetInfectionType()).retreatment);
         return std::make_tuple(retreatment, geno3, cirr);
     }
 
     void ChargeCostOfCourse(model::Person &person) {
-        double course_cost =
-            _treatment_sql_data[GetTreatmentThruple(person)].cost;
-        ChargeCost(person, course_cost);
-        SetUtil(treatment_utility);
+        ChargeCost(person,
+                   _treatment_sql_data[GetTreatmentThruple(person)].cost);
+        SetEventUtility(treatment_utility);
         AddEventUtility(person);
     }
 
@@ -87,7 +87,7 @@ private:
         if (sampler.GetDecision(
                 {_treatment_sql_data[GetTreatmentThruple(person)]
                      .withdrawal_probability}) == 0) {
-            person.AddWithdrawal();
+            person.AddWithdrawal(GetInfectionType());
             QuitEngagement(person);
             return true;
         }
@@ -101,9 +101,9 @@ private:
                      .toxicity_probability}) == 1) {
             return;
         }
-        person.AddToxicReaction();
+        person.AddToxicReaction(GetInfectionType());
         ChargeCost(person, GetTreatmentCosts().toxicity);
-        SetUtil(GetTreatmentUtilities().toxicity);
+        SetEventUtility(GetTreatmentUtilities().toxicity);
         AddEventUtility(person);
     }
 
@@ -112,7 +112,7 @@ private:
         if (IsEligible(person) &&
             (sampler.GetDecision(
                  {GetTreatmentProbabilities().initialization}) == 0)) {
-            person.InitiateTreatment();
+            person.InitiateTreatment(GetInfectionType());
             return true;
         }
         return false;

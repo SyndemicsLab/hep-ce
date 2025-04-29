@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -22,30 +22,17 @@ namespace hiv {
 class LinkingImpl : public virtual hiv::Linking, public event::LinkingBase {
 public:
     LinkingImpl(datamanagement::ModelData &model_data,
-                const std::string &log_name = "console") {
-        SetCostCategory(model::CostCategory::kHiv);
-        SetLinkingStratifiedByPregnancy(CheckForPregnancyEvent(model_data));
-        LoadLinkingData(model_data);
-
-        SetInterventionCost(utils::GetDoubleFromConfig(
-            "hiv_linking.intervention_cost", model_data));
-        SetFalsePositiveCost(utils::GetDoubleFromConfig(
-            "hiv_linking.false_positive_test_cost", model_data));
-        SetRecentScreenMultiplier(utils::GetDoubleFromConfig(
-            "hiv_linking.recent_screen_multiplier", model_data));
-        SetRecentScreenCutoff(utils::GetIntFromConfig(
-            "hiv_linking.recent_screen_cutoff", model_data));
-    }
+                const std::string &log_name = "console");
 
     ~LinkingImpl() = default;
 
 private:
     inline bool FalsePositive(model::Person &person) override {
-        if (person.GetHIV() != data::HIV::kNone) {
+        if (person.GetHIVDetails().hiv != data::HIV::kNone) {
             return false;
         }
-        person.ClearDiagnosis(data:: ::kHcv);
-        AddFalsePositiveCost(person, GetCostCategory());
+        person.ClearDiagnosis(data::InfectionType::kHcv);
+        AddFalsePositiveCost(person, GetEventCostCategory());
         return true;
     }
 };

@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -19,17 +19,18 @@
 namespace hepce {
 namespace event {
 namespace hcv {
+// Factory
 std::unique_ptr<hepce::event::Event>
 VoluntaryRelink::Create(datamanagement::ModelData &model_data,
                         const std::string &log_name) {
     return std::make_unique<VoluntaryRelinkImpl>(model_data, log_name);
 }
 
+// Constructor
 VoluntaryRelinkImpl::VoluntaryRelinkImpl(datamanagement::ModelData &model_data,
-                                         const std::string &log_name) {
-    SetDiscount(
-        utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
-    SetCostCategory(model::CostCategory::kScreening);
+                                         const std::string &log_name)
+    : EventBase(model_data, log_name) {
+    SetEventCostCategory(model::CostCategory::kScreening);
 
     _relink_probability = utils::GetDoubleFromConfig(
         "linking.voluntary_relinkage_probability", model_data);
@@ -41,15 +42,19 @@ VoluntaryRelinkImpl::VoluntaryRelinkImpl(datamanagement::ModelData &model_data,
         utils::GetDoubleFromConfig("screening_background_rna.cost", model_data);
 }
 
+// Execute
 int VoluntaryRelinkImpl::Execute(model::Person &person,
                                  model::Sampler &sampler) {
     // if linked or never linked OR too long since last linked
-    if ((person.GetLinkState() == data::LinkageState::kUnlinked) &&
-        ((person.GetTimeSinceLinkChange()) < _voluntary_relink_duration) &&
+    if ((person.GetLinkageDetails(data::InfectionType::kHcv).link_state ==
+         data::LinkageState::kUnlinked) &&
+        ((person.GetCurrentTimestep() -
+          person.GetLinkageDetails(data::InfectionType::kHcv)
+              .time_link_change) < _voluntary_relink_duration) &&
         (sampler.GetDecision({_relink_probability}) == 0) &&
-        (person.GetHCV() != data::HCV::kNone)) {
+        (person.GetHCVDetails().hcv != data::HCV::kNone)) {
         AddRNATest(person);
-        person.Link(data::LinkageType::kBackground);
+        person.Link(data::LinkageType::kBackground, data::InfectionType::kHcv);
     }
 }
 

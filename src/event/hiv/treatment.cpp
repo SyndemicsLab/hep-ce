@@ -4,7 +4,7 @@
 // Created Date: Mo Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -18,6 +18,14 @@
 namespace hepce {
 namespace event {
 namespace hiv {
+// Factory
+std::unique_ptr<hepce::event::Event>
+Treatment::Create(datamanagement::ModelData &model_data,
+                  const std::string &log_name) {
+    return std::make_unique<TreatmentImpl>(model_data, log_name);
+}
+
+// Constructor
 TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name = "console")
     : TreatmentBase(model_data, log_name) {
@@ -29,9 +37,11 @@ TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
     LoadUtilityData(model_data);
 }
 
+// Execute
 int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Ensure that Person is linked to care
-    if (person.GetLinkState(data:: ::kHiv) != data::LinkageState::kLinked) {
+    if (person.GetLinkageDetails(GetInfectionType()).link_state !=
+        data::LinkageState::kLinked) {
         return;
     }
 
@@ -44,7 +54,7 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     ChargeCost(person, GetTreatmentCosts().treatment);
 
     // Determine if Person initiates treatment
-    if (!person.HasInitiatedTreatment() &&
+    if (!person.GetTreatmentDetails(GetInfectionType()).initiated_treatment &&
         !InitiateTreatment(person, sampler)) {
         return;
     }
@@ -62,10 +72,13 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
         this->LoseSuppression(person);
     }
 
+    int time_since_init = person.GetCurrentTimestep() -
+                          person.GetTreatmentDetails(GetInfectionType())
+                              .time_of_treatment_initiation;
     // apply suppression if the person has been in treatment long enough
     // must equal suppression months so that this is only triggered at the
     // time of having been in treatment long enough
-    if (person.GetTimeSinceTreatmentInitiation() ==
+    if (time_since_init ==
         _treatment_sql_data[_course_name].suppression_months) {
         ApplySuppression(person);
     }
@@ -73,11 +86,125 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // if person is has a low CD4/T-cell count and has been on treatment
     // long enough, restore their CD4 count to high
     if (IsLowCD4(person) &&
-        person.GetTimeSinceTreatmentInitiation() ==
+        time_since_init ==
             _treatment_sql_data[_course_name].restore_high_cd4_months) {
-        this->RestoreHighCD4(person);
+        RestoreHighCD4(person);
     }
 }
+
+// Private Methods
+bool TreatmentImpl::InitiateTreatment(model::Person &person,
+                                      model::Sampler &sampler) {
+    // do not start treatment if the individual is not eligible
+    if (!IsEligible(person)) {
+        return false;
+    }
+    if (sampler.GetDecision({GetTreatmentProbabilities().initialization}) ==
+        0) {
+        person.InitiateTreatment(GetInfectionType());
+        return true;
+    }
+    return false;
+}
+
+bool TreatmentImpl::Withdraws(model::Person &person, model::Sampler &sampler) {
+    if (_treatment_sql_data[_course_name].withdrawal_prob == 0) {
+        // spdlog::get("main")->warn(
+        //     "HIV treatment withdrawal probability is "
+        //     "0. If this isn't intended, check your inputs!");
+    }
+
+    if (sampler.GetDecision(
+            {_treatment_sql_data[_course_name].withdrawal_prob}) == 0) {
+        person.AddWithdrawal(GetInfectionType());
+        QuitEngagement(person);
+        return true;
+    }
+    return false;
+}
+
+void TreatmentImpl::CheckIfExperienceToxicity(model::Person &person,
+                                              model::Sampler &sampler) {
+    if (sampler.GetDecision(
+            {_treatment_sql_data[_course_name].toxicity_prob}) == 1) {
+        return;
+    }
+    person.AddToxicReaction(GetInfectionType());
+    ChargeCost(person, GetTreatmentCosts().toxicity);
+    SetEventUtility(GetTreatmentUtilities().toxicity);
+    AddEventUtility(person);
+}
+
+/// @brief Used to set person's HIV utility after engaging with treatment
+/// @param
+void TreatmentImpl::SetTreatmentUtility(model::Person &person) {
+    utils::tuple_2i key;
+    switch (person.GetHIVDetails().hiv) {
+    case data::HIV::kHiSu:
+    case data::HIV::kHiUn:
+        key = std::make_tuple(1, 1);
+        SetEventUtility(_utility_data[key]);
+        AddEventUtility(person);
+        break;
+    case data::HIV::LoSu:
+    case data::HIV::LoUn:
+        key = std::make_tuple(1, 0);
+        SetEventUtility(_utility_data[key]);
+        AddEventUtility(person);
+        break;
+    default:
+        break;
+    }
+}
+
+/// @brief Used to reset person's HIV utility after discontinuing treatment
+/// @param
+void TreatmentImpl::ResetUtility(model::Person &person) {
+    utils::tuple_2i key;
+    switch (person.GetHIVDetails().hiv) {
+    case data::HIV::kHiSu:
+    case data::HIV::kHiUn:
+        key = std::make_tuple(0, 1);
+        SetEventUtility(_utility_data[key]);
+        AddEventUtility(person);
+        break;
+    case data::HIV::LoSu:
+    case data::HIV::LoUn:
+        key = std::make_tuple(0, 0);
+        SetEventUtility(_utility_data[key]);
+        AddEventUtility(person);
+        break;
+    default:
+        break;
+    }
+}
+
+void TreatmentImpl::ApplySuppression(model::Person &person) {
+    switch (person.GetHIVDetails().hiv) {
+    case data::HIV::kHiUn:
+        person.SetHIV(data::HIV::kHiSu);
+        break;
+    case data::HIV::LoUn:
+        person.SetHIV(data::HIV::LoSu);
+        break;
+    default:
+        break;
+    }
+}
+
+void TreatmentImpl::LoseSuppression(model::Person &person) {
+    switch (person.GetHIVDetails().hiv) {
+    case data::HIV::kHiSu:
+        person.SetHIV(data::HIV::kHiUn);
+        break;
+    case data::HIV::LoSu:
+        person.SetHIV(data::HIV::LoUn);
+        break;
+    default:
+        break;
+    }
+}
+
 } // namespace hiv
 } // namespace event
 } // namespace hepce

@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -56,7 +56,8 @@ private:
 
         int age_years = static_cast<int>(person.GetAge() / 12.0);
         int gender = static_cast<int>(person.GetSex());
-        int drug_behavior = static_cast<int>(person.GetBehavior());
+        int drug_behavior =
+            static_cast<int>(person.GetBehaviorDetails().behavior);
         utils::tuple_3i tup = std::make_tuple(age_years, gender, drug_behavior);
         double incidence = _infection_data[tup];
 

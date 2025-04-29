@@ -4,7 +4,7 @@
 // Created Date: Mo Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -78,152 +78,59 @@ private:
             stmt.getColumn(2).getDouble();
     }
 
-    void LoadUtilityData(datamanagement::ModelData &model_data) {
+    inline void LoadUtilityData(datamanagement::ModelData &model_data) {
         std::any storage = _utility_data;
         model_data.GetDBSource("inputs").Select(HIVUtilitySQL(),
                                                 CallbackUtility, storage);
         _utility_data = std::any_cast<hivutilitymap_t>(storage);
     }
 
-    void LoadCourseData(datamanagement::ModelData &model_data) {
+    inline void LoadCourseData(datamanagement::ModelData &model_data) {
         std::any storage = _treatment_sql_data;
         model_data.GetDBSource("inputs").Select(HIVTreatmentSQL(),
                                                 CallbackTreatment, storage);
         _treatment_sql_data = std::any_cast<hivtreatmentmap_t>(storage);
     }
 
-    bool IsLowCD4(model::Person &person) {
-        if ((person.GetHIV() == data::HIV::LoUn) ||
-            (person.GetHIV() == data::HIV::LoSu)) {
+    inline bool IsLowCD4(model::Person &person) {
+        if ((person.GetHIVDetails().hiv == data::HIV::LoUn) ||
+            (person.GetHIVDetails().hiv == data::HIV::LoSu)) {
             return true;
         }
         return false;
     }
 
-    void RestoreHighCD4(model::Person &person) {
-        if (person.GetHIV() == data::HIV::LoUn) {
+    inline void RestoreHighCD4(model::Person &person) {
+        if (person.GetHIVDetails().hiv == data::HIV::LoUn) {
             person.SetHIV(data::HIV::kHiUn);
-        } else if (person.GetHIV() == data::HIV::LoSu) {
+        } else if (person.GetHIVDetails().hiv == data::HIV::LoSu) {
             person.SetHIV(data::HIV::kHiSu);
         }
     }
 
-    bool InitiateTreatment(model::Person &person, model::Sampler &sampler) {
-        // do not start treatment if the individual is not eligible
-        if (!IsEligible(person)) {
-            return false;
-        }
-        if (sampler.GetDecision({GetTreatmentProbabilities().initialization}) ==
-            0) {
-            person.InitiateTreatment();
-            return true;
-        }
-        return false;
-    }
-
-    bool Withdraws(model::Person &person, model::Sampler &sampler) {
-        if (_treatment_sql_data[_course_name].withdrawal_prob == 0) {
-            // spdlog::get("main")->warn(
-            //     "HIV treatment withdrawal probability is "
-            //     "0. If this isn't intended, check your inputs!");
-        }
-
-        if (sampler.GetDecision(
-                {_treatment_sql_data[_course_name].withdrawal_prob}) == 0) {
-            person.AddWithdrawal();
-            QuitEngagement(person);
-            return true;
-        }
-        return false;
-    }
-
-    void ChargeCostOfCourse(model::Person &person) {
+    inline void ChargeCostOfCourse(model::Person &person) {
         ChargeCost(person, _treatment_sql_data[_course_name].course_cost);
-        this->SetUtility(person);
+        SetTreatmentUtility(person);
     }
+
+    bool InitiateTreatment(model::Person &person, model::Sampler &sampler);
+
+    bool Withdraws(model::Person &person, model::Sampler &sampler);
 
     void CheckIfExperienceToxicity(model::Person &person,
-                                   model::Sampler &sampler) {
-        if (sampler.GetDecision(
-                {_treatment_sql_data[_course_name].toxicity_prob}) == 1) {
-            return;
-        }
-        person.AddToxicReaction();
-        ChargeCost(person, GetTreatmentCosts().toxicity);
-        SetUtil(GetTreatmentUtilities().toxicity);
-        AddEventUtility(person);
-    }
+                                   model::Sampler &sampler);
 
     /// @brief Used to set person's HIV utility after engaging with treatment
     /// @param
-    void SetUtility(model::Person &person) {
-        utils::tuple_2i key;
-        switch (person.GetHIV()) {
-        case data::HIV::kHiSu:
-        case data::HIV::kHiUn:
-            key = std::make_tuple(1, 1);
-            SetUtil(_utility_data[key]);
-            AddEventUtility(person);
-            break;
-        case data::HIV::LoSu:
-        case data::HIV::LoUn:
-            key = std::make_tuple(1, 0);
-            SetUtil(_utility_data[key]);
-            AddEventUtility(person);
-            break;
-        default:
-            break;
-        }
-    }
+    void SetTreatmentUtility(model::Person &person);
 
     /// @brief Used to reset person's HIV utility after discontinuing treatment
     /// @param
-    void ResetUtility(model::Person &person) {
-        utils::tuple_2i key;
-        switch (person.GetHIV()) {
-        case data::HIV::kHiSu:
-        case data::HIV::kHiUn:
-            key = std::make_tuple(0, 1);
-            SetUtil(_utility_data[key]);
-            AddEventUtility(person);
-            break;
-        case data::HIV::LoSu:
-        case data::HIV::LoUn:
-            key = std::make_tuple(0, 0);
-            SetUtil(_utility_data[key]);
-            AddEventUtility(person);
-            break;
-        default:
-            break;
-        }
-    }
+    void ResetUtility(model::Person &person);
 
-    void ApplySuppression(model::Person &person) {
-        switch (person.GetHIV()) {
-        case data::HIV::kHiUn:
-            person.SetHIV(data::HIV::kHiSu);
-            break;
-        case data::HIV::LoUn:
-            person.SetHIV(data::HIV::LoSu);
-            break;
-        default:
-            break;
-        }
-    }
+    void ApplySuppression(model::Person &person);
 
-    void LoseSuppression(model::Person &person) {
-        switch (person.GetHIV()) {
-        case data::HIV::kHiSu:
-
-            person.SetHIV(data::HIV::kHiUn);
-            break;
-        case data::HIV::LoSu:
-            person.SetHIV(data::HIV::LoUn);
-            break;
-        default:
-            break;
-        }
-    }
+    void LoseSuppression(model::Person &person);
 };
 } // namespace hiv
 } // namespace event

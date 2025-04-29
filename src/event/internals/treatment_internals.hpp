@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -44,11 +44,10 @@ public:
     };
 
     TreatmentBase(datamanagement::ModelData &model_data,
-                  const std::string &log_name = "console") {
-        SetDiscount(
-            utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
-        SetCostCategory(model::CostCategory::kTreatment);
-        SetUtilityCategory(model::UtilityCategory::kTreatment);
+                  const std::string &log_name = "console")
+        : EventBase(model_data, log_name) {
+        SetEventCostCategory(model::CostCategory::kTreatment);
+        SetEventUtilityCategory(model::UtilityCategory::kTreatment);
         LoadEligibilityData(model_data);
         SetRetreatment(utils::GetBoolFromConfig("treatment.allow_retreatment",
                                                 model_data));
@@ -127,7 +126,8 @@ protected:
     inline bool LostToFollowUp(model::Person &person, model::Sampler &sampler) {
         // If the person is already on treatment, they can't be lost to
         // follow up
-        if (!person.HasInitiatedTreatment(GetInfectionType()) ||
+        if (!person.GetTreatmentDetails(GetInfectionType())
+                 .initiated_treatment ||
             (sampler.GetDecision({_probabilities.loss_to_follow_up}) != 0)) {
             QuitEngagement(person);
             return true;
@@ -137,7 +137,7 @@ protected:
     /// @brief
     /// @param
     void ChargeCost(model::Person &person, const double &cost) {
-        SetCost(cost);
+        SetEventCost(cost);
         AddEventCost(person);
     }
     /// @brief
@@ -164,15 +164,18 @@ protected:
     /// @param
     /// @return
     bool IsEligible(const model::Person &person) const {
-        return ((_retreatment ||
-                 !person.HasInitiatedTreatment(GetInfectionType())) &&
-                IsEligibleFibrosisStage(person.GetTrueFibrosisState()) &&
-                IsEligibleBehavior(person.GetBehavior()) &&
-                IsEligiblePregnancy(person.GetPregnancyState()) &&
-                (person.GetTimeBehaviorChange() >
+        return ((_retreatment || !person.GetTreatmentDetails(GetInfectionType())
+                                      .initiated_treatment) &&
+                IsEligibleFibrosisStage(
+                    person.GetHCVDetails().fibrosis_state) &&
+                IsEligibleBehavior(person.GetBehaviorDetails().behavior) &&
+                IsEligiblePregnancy(
+                    person.GetPregnancyDetails().pregnancy_state) &&
+                (person.GetBehaviorDetails().time_last_active >
                  _eligibilities.time_since_last_use) &&
-                (person.GetTimeSinceLinkChange(GetInfectionType()) >
-                 _eligibilities.time_since_linked))
+                ((person.GetCurrentTimestep() -
+                  person.GetLinkageDetails(GetInfectionType())
+                      .time_link_change) > _eligibilities.time_since_linked))
                    ? true
                    : false;
     }

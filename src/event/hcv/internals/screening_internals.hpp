@@ -16,7 +16,7 @@
 
 #include <functional>
 
-#include "internals/screening_internals.hpp"
+#include "../../internals/screening_internals.hpp"
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/pair_hashing.hpp>
 
