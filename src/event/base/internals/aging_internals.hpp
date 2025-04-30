@@ -16,7 +16,7 @@
 
 #include <datamanagement/datamanagement.hpp>
 
-#include <hepce/model/cost.hpp>
+#include <hepce/model/costing.hpp>
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/pair_hashing.hpp>
 

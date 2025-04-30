@@ -15,7 +15,7 @@
 #include <hepce/event/event.hpp>
 
 #include <hepce/data/types.hpp>
-#include <hepce/model/cost.hpp>
+#include <hepce/model/costing.hpp>
 #include <hepce/model/utility.hpp>
 #include <hepce/utils/math.hpp>
 

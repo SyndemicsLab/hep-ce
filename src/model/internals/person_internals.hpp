@@ -18,7 +18,7 @@
 #include <numeric>
 
 #include <hepce/data/types.hpp>
-#include <hepce/model/cost.hpp>
+#include <hepce/model/costing.hpp>
 #include <hepce/utils/math.hpp>
 
 namespace hepce {
@@ -38,6 +38,7 @@ public:
     void TransitionMOUD() override;
     void DevelopHCC(data::HCCState state) override;
     std::string MakePopulationRow() const override;
+    void SetMoudState(data::MOUD moud) override;
 
     // Section Getters
     inline data::HCVDetails GetHCVDetails() const override {
@@ -123,7 +124,7 @@ public:
         return _staging_details.had_second_test;
     }
 
-    inline void SetAntibodyPositive(bool result = true,
+    inline void SetAntibodyPositive(bool result,
                                     data::InfectionType it) override {
         _screening_details[it].ab_positive = result;
     }
@@ -260,6 +261,8 @@ public:
     inline std::pair<double, double> GetCostTotals() const override {
         return _costs->GetTotals();
     }
+
+    inline void DiagnoseHCC() override { _hcc_details.hcc_diagnosed = true; }
 
     inline void SetHIV(data::HIV hiv) override { _hiv_details.hiv = hiv; }
     inline void InfectHIV() override {

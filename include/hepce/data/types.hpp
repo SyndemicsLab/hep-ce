@@ -260,6 +260,7 @@ std::ostream &operator<<(std::ostream &os, const HIVDetails &inst);
 
 struct HCCDetails {
     HCCState hcc_state = HCCState::kNone;
+    bool hcc_diagnosed = false;
 };
 std::ostream &operator<<(std::ostream &os, const HCCDetails &inst);
 
@@ -289,6 +290,11 @@ struct MOUDDetails {
 std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 
 /// @brief Attributes describing pregnancy
+struct Child {
+    HCV hcv = HCV::kNone;
+    bool tested = false;
+};
+std::ostream &operator<<(std::ostream &os, Child const &inst);
 struct PregnancyDetails {
     PregnancyState pregnancy_state = PregnancyState::kNa;
     int time_of_pregnancy_change = -1;
@@ -301,12 +307,6 @@ struct PregnancyDetails {
     std::vector<Child> children = {};
 };
 std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
-
-struct Child {
-    HCV hcv = HCV::kNone;
-    bool tested = false;
-};
-std::ostream &operator<<(std::ostream &os, Child const &inst);
 
 /// @brief Person attributes describing clinically assessed liver stage
 struct StagingDetails {

@@ -4,27 +4,19 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-// File: main.cpp                                                             //
-// Project: HEPCESimulationv2                                                 //
-// Created: 2023-08-14                                                        //
-// Author: Matthew Carroll                                                    //
-// -----                                                                      //
-// Last Modified: 2025-04-17                                                  //
-// Modified By: Matthew Carroll                                               //
-// -----                                                                      //
-// Copyright (c) 2023-2025 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <filesystem>
 #include <iostream>
 #include <string>
+#include <vector>
 
+#include <hepce/event/event.hpp>
+#include <hepce/model/person.hpp>
 #include <hepce/model/simulation.hpp>
 
 /// @brief
@@ -83,11 +75,14 @@ int main(int argc, char *argv[]) {
         std::filesystem::path dbfile = inputSet / "inputs.db";
         std::filesystem::path cffile = inputSet / "sim.conf";
         std::filesystem::path logfile = outputSet / "log.txt";
-        hepce::model::Hepce sim(logfile.string(), false);
-        sim.LoadData(dbfile.string(), cffile.string(),
-                     simulation::DataType::SQL);
-        sim.Run();
-        sim.WriteResults(outputSet.string());
+        auto sim = hepce::model::Hepce::Create(logfile.string());
+        // sim->LoadData(dbfile.string(), cffile.string(),
+        //               simulation::DataType::SQL);
+        std::vector<hepce::model::Person> people = {};
+        std::vector<hepce::event::Event> discrete_events = {};
+        int duration = 0;
+        sim->Run(people, discrete_events, 0);
+        // sim.WriteResults(outputSet.string());
     }
 
     return 0;

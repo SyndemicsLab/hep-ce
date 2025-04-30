@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -25,14 +25,14 @@ public:
     virtual void Run(std::vector<model::Person> &people,
                      const std::vector<event::Event> &discrete_events,
                      const int duration) = 0;
-
-    static std::unique_ptr<Hepce>
-    Create(const std::string &log_name = "console");
     virtual int
     CreatePersonFromTable(model::Person &person,
                           datamanagement::ModelData &model_data) = 0;
     virtual int LoadICValues(model::Person &person,
                              const std::vector<std::string> &icValues) = 0;
+
+    static std::unique_ptr<Hepce>
+    Create(const std::string &log_name = "console");
 };
 } // namespace model
 } // namespace hepce

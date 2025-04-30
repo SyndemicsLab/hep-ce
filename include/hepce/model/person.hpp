@@ -19,7 +19,7 @@
 #include <datamanagement/datamanagement.hpp>
 
 #include <hepce/data/types.hpp>
-#include <hepce/model/cost.hpp>
+#include <hepce/model/costing.hpp>
 #include <hepce/model/utility.hpp>
 
 namespace hepce {
@@ -40,6 +40,7 @@ public:
     virtual void SetSeropositivity(bool seropositive_state) = 0;
     virtual void Diagnose(data::InfectionType it) = 0;
     virtual void ClearDiagnosis(data::InfectionType it) = 0;
+    virtual bool IsCirrhotic() const = 0;
 
     // Screening
     virtual data::ScreeningDetails
@@ -48,8 +49,7 @@ public:
     virtual void AddAbScreen(data::InfectionType it) = 0;
     virtual void AddRnaScreen(data::InfectionType it) = 0;
     virtual bool HadSecondScreeningTest() const = 0;
-    virtual void SetAntibodyPositive(bool result = true,
-                                     data::InfectionType it) = 0;
+    virtual void SetAntibodyPositive(bool result, data::InfectionType it) = 0;
     virtual void GiveSecondScreeningTest(bool state) = 0;
 
     // Linking
@@ -74,16 +74,19 @@ public:
     virtual void SetBehavior(data::Behavior) = 0;
     virtual data::BehaviorDetails GetBehaviorDetails() const = 0;
 
+    // Overdoses
     virtual void ToggleOverdose() = 0;
     virtual bool GetCurrentlyOverdosing() const = 0;
-
     virtual int GetNumberOfOverdoses() const = 0;
+
+    // MOUD Details
     virtual data::MOUDDetails GetMoudDetails() const = 0;
+    virtual void SetMoudState(data::MOUD moud) = 0;
+    virtual void TransitionMOUD() = 0;
 
     // Fibrosis
     virtual void DiagnoseFibrosis(data::MeasuredFibrosisState) = 0;
     virtual void UpdateTrueFibrosis(data::FibrosisState) = 0;
-
     virtual data::StagingDetails GetFibrosisStagingDetails() const = 0;
 
     // Cost Effectiveness
@@ -95,7 +98,6 @@ public:
     virtual void AccumulateTotalUtility(double discount) = 0;
     virtual std::unordered_map<model::UtilityCategory, double>
     GetUtilities() const = 0;
-
     virtual double GetMinimizedUtility() const = 0;
     virtual double GetMultipliedUtility() const = 0;
     virtual void SetUtility(double util, model::UtilityCategory category) = 0;
@@ -112,10 +114,6 @@ public:
     virtual data::DeathReason GetDeathReason() const = 0;
     virtual int GetAge() const = 0;
     virtual void SetAge(int age) = 0;
-
-    virtual bool IsCirrhotic() const = 0;
-
-    virtual std::string GetPersonDataString() const = 0;
     virtual int GetCurrentTimestep() const = 0;
     virtual data::Sex GetSex() const = 0;
     virtual std::unordered_map<model::CostCategory, std::pair<double, double>>
@@ -128,7 +126,7 @@ public:
     virtual void SetHIV(data::HIV hiv) = 0;
     virtual void InfectHIV() = 0;
 
-    // TODO
+    // Pregnancy
     virtual data::PregnancyDetails GetPregnancyDetails() const = 0;
     virtual void Miscarry() = 0;
     virtual void Stillbirth() = 0;
@@ -139,12 +137,12 @@ public:
     virtual void SetPregnancyState(data::PregnancyState state) = 0;
     virtual void SetNumMiscarriages(int miscarriages) = 0;
 
-    virtual void TransitionMOUD() = 0;
-
     // HCC
     virtual void DevelopHCC(data::HCCState state) = 0;
+    virtual void DiagnoseHCC() = 0;
 
     // Person Output
+    virtual std::string GetPersonDataString() const = 0;
     virtual std::string MakePopulationRow() const = 0;
 
     static std::unique_ptr<Person>

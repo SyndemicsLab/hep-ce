@@ -36,7 +36,7 @@ inline std::vector<T> SplitToVecT(const std::string &s, char delim) {
     while (std::getline(ss, item, delim)) {
         T temp;
         if constexpr (std::is_same_v<T, std::string>) {
-            Utils::trim(item);
+            utils::Trim(item);
             temp = item;
         } else {
             temp << item;

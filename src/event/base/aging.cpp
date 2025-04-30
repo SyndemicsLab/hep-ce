@@ -42,6 +42,7 @@ int AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     AddBackgroundCostAndUtility(person);
     person.AddDiscountedLifeSpan(
         utils::Discount(1, GetEventDiscount(), person.GetCurrentTimestep()));
+    return 0;
 }
 
 // Private Methods
