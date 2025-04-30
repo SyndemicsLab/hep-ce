@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -101,6 +101,8 @@ private:
     }
 
     void AttemptHaveChild(model::Person &person, model::Sampler &sampler);
+
+    data::Child MakeChild(data::HCV hcv, bool test);
 
     void AttemptHealthyMonth(model::Person &person, model::Sampler &sampler) {
         if (CheckMiscarriage(person, sampler)) {

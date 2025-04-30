@@ -4,7 +4,7 @@
 // Created Date: Th Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -130,7 +130,7 @@ public:
     virtual data::PregnancyDetails GetPregnancyDetails() const = 0;
     virtual void Miscarry() = 0;
     virtual void Stillbirth() = 0;
-    virtual void AddChild(data::HCV hcv, bool test) = 0;
+    virtual void Birth(const data::Child &child) = 0;
     virtual void EndPostpartum() = 0;
     virtual void Impregnate() = 0;
     virtual void AddInfantExposure() = 0;

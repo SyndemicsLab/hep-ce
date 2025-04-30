@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,7 +34,8 @@ public:
     void SetBehavior(data::Behavior) override;
     bool IsCirrhotic() const override;
     std::string GetPersonDataString() const override;
-    inline void AddChild(data::HCV hcv, bool test) override;
+    void Birth(const data::Child &child) override;
+    void AddChild(data::HCV hcv, bool test) override;
     void TransitionMOUD() override;
     void DevelopHCC(data::HCCState state) override;
     std::string MakePopulationRow() const override;

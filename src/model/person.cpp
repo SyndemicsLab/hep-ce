@@ -4,7 +4,7 @@
 // Created Date: Mo Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -128,19 +128,20 @@ std::string PersonImpl::GetPersonDataString() const {
         << std::to_string(GetTotalUtility().mult_util);
     return data.str();
 }
-inline void PersonImpl::AddChild(data::HCV hcv, bool test) {
-    data::Child child;
-    child.hcv = hcv;
-    if (hcv != data::HCV::kNone) {
+
+// NOTE: A person can be in postpartum state before giving birth (i.e. multiple births)
+void PersonImpl::Birth(const data::Child &child) {
+    if (child.hcv != data::HCV::kNone) {
         _pregnancy_details.num_hcv_infections++;
     }
-    child.tested = test;
-    if (test) {
+    if (child.tested) {
         _pregnancy_details.num_hcv_tests++;
     }
     _pregnancy_details.children.push_back(child);
     _pregnancy_details.num_infants++;
+    _pregnancy_details.pregnancy_state = data::PregnancyState::kPostpartum;
 }
+
 void PersonImpl::TransitionMOUD() {
     if (GetBehaviorDetails().behavior == data::Behavior::kNever) {
         return;

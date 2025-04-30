@@ -4,7 +4,7 @@
 // Created Date: We Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -88,22 +88,25 @@ void PregnancyImpl::AttemptHaveChild(model::Person &person,
         return;
     }
 
-    int numberOfBirths = GetNumberOfBirths(person, sampler);
+    int num_births = GetNumberOfBirths(person, sampler);
 
-    if (person.GetHCVDetails().hcv != data::HCV::kChronic) {
-        for (int child = 0; child < numberOfBirths; ++child) {
-            person.AddChild(data::HCV::kNone, false);
+    for (int child = 0; child < num_births; ++child) {
+        bool tested = false;
+        data::HCV hcv = data::HCV::kNone;
+        if (person.GetHCVDetails().hcv == data::HCV::kChronic) {
+            tested = DoChildrenGetTested(sampler);
+            person.AddInfantExposure();
+            if (DrawChildInfection(sampler)) {
+                hcv = data::HCV::kChronic;
+            }
         }
-        return;
+        person.Birth(MakeChild(hcv, tested));
     }
+}
 
-    bool tested = DoChildrenGetTested(sampler);
-    for (int child = 0; child < numberOfBirths; ++child) {
-        person.AddInfantExposure();
-        data::HCV hcv = (DrawChildInfection(sampler)) ? data::HCV::kChronic
-                                                      : data::HCV::kNone;
-        person.AddChild(hcv, tested);
-    }
+data::Child PregnancyImpl::MakeChild(data::HCV hcv, bool test) {
+    data::Child child = {hcv, test};
+    return child;
 }
 } // namespace behavior
 } // namespace event
