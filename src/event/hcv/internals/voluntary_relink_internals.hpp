@@ -12,9 +12,11 @@
 #ifndef HEPCE_EVENT_HCV_VOLUNTARYRELINKINTERNALS_HPP_
 #define HEPCE_EVENT_HCV_VOLUNTARYRELINKINTERNALS_HPP_
 
+// File Header
 #include <hepce/event/hcv/voluntary_relink.hpp>
 
-#include "internals/event_internals.hpp"
+// Local Includes
+#include "../../internals/event_internals.hpp"
 
 namespace hepce {
 namespace event {

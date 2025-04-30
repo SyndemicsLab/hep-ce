@@ -12,11 +12,15 @@
 #ifndef HEPCE_EVENT_BASE_DEATHINTERNALS_HPP_
 #define HEPCE_EVENT_BASE_DEATHINTERNALS_HPP_
 
+// File Header
 #include <hepce/event/base/death.hpp>
 
-#include "internals/event_internals.hpp"
+// Library Includes
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/pair_hashing.hpp>
+
+// Local Includes
+#include "../../internals/event_internals.hpp"
 
 namespace hepce {
 namespace event {

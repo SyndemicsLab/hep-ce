@@ -56,7 +56,7 @@ StagingImpl::StagingImpl(datamanagement::ModelData &model_data,
 int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Check if Person even has Fibrosis, exit if they are none
     if (person.GetHCVDetails().fibrosis_state == data::FibrosisState::kNone) {
-        return;
+        return 0;
     }
 
     int time = person.GetFibrosisStagingDetails().time_of_last_staging;
@@ -65,7 +65,7 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // If the person's last test is more recent than the limit, exit
     // event. If they've never been staged they have a -1
     if ((person.GetCurrentTimestep() - time) < _staging_period && time != -1) {
-        return;
+        return 0;
     }
 
     // 2. Check the person's true fibrosis state and use it to search
@@ -80,7 +80,7 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (res >= static_cast<int>(data::MeasuredFibrosisState::kCount)) {
         spdlog::get("main")->error("Measured Fibrosis State Decision returned "
                                    "value outside bounds");
-        return;
+        return 0;
     }
     data::MeasuredFibrosisState stateOne =
         static_cast<data::MeasuredFibrosisState>(res);
@@ -97,13 +97,13 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
         std::find(_testtwo_eligible_fibs.begin(), _testtwo_eligible_fibs.end(),
                   person.GetHCVDetails().fibrosis_state) ==
             _testtwo_eligible_fibs.end()) {
-        return;
+        return 0;
     }
     probs = ProbabilityBuilder(person, _test2_data);
 
     // 7. Decide which stage is assigned to the person.
     if (probs.empty()) {
-        return;
+        return 0;
     }
 
     person.GiveSecondScreeningTest(true);
@@ -119,11 +119,12 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
         measured = std::max<data::MeasuredFibrosisState>(stateOne, stateTwo);
     } else {
         // log an error
-        return;
+        return 0;
     }
     // 8. Assign this state to the person.
     person.DiagnoseFibrosis(measured);
     AddStagingCost(person, _test_two_cost);
+    return 0;
 }
 
 // Private Methods

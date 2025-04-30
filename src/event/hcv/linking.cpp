@@ -9,10 +9,15 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
+
+// File Header
 #include <hepce/event/hcv/linking.hpp>
 
-#include "hcv/internals/linking_internals.hpp"
+// Library Includes
 #include <hepce/utils/config.hpp>
+
+// Local Includes
+#include "internals/linking_internals.hpp"
 
 namespace hepce {
 namespace event {

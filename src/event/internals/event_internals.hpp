@@ -12,11 +12,14 @@
 #ifndef HEPCE_EVENT_EVENTINTERNALS_HPP_
 #define HEPCE_EVENT_EVENTINTERNALS_HPP_
 
+// File Header
 #include <hepce/event/event.hpp>
 
+// Library Includes
 #include <hepce/data/types.hpp>
 #include <hepce/model/costing.hpp>
 #include <hepce/model/utility.hpp>
+#include <hepce/utils/config.hpp>
 #include <hepce/utils/math.hpp>
 
 namespace hepce {

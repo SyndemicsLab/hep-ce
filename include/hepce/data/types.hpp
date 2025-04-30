@@ -67,9 +67,9 @@ enum class HIV : int {
     /// High CD4 count, suppressed
     kHiSu = 2,
     /// Low CD4 count, unsuppressed
-    LoUn = 3,
+    kLoUn = 3,
     /// Low CD4 count, suppressed
-    LoSu = 4,
+    kLoSu = 4,
 
     kCount = 5
 };

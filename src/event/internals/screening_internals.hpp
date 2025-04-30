@@ -12,12 +12,15 @@
 #ifndef HEPCE_EVENT_SCREENINGINTERNALS_HPP_
 #define HEPCE_EVENT_SCREENINGINTERNALS_HPP_
 
-#include "event_internals.hpp"
-
+// STL Includes
 #include <functional>
 
+// Library Includes
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/pair_hashing.hpp>
+
+// Local Includes
+#include "event_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -55,7 +58,7 @@ public:
         // if a person is already linked, skip screening
         if (person.GetLinkageDetails(GetInfectionType()).link_state ==
             data::LinkageState::kLinked) {
-            return;
+            return 0;
         }
 
         bool do_one_time_screen = (GetInterventionType() == "one-time") &&

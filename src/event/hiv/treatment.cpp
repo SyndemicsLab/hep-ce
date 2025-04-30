@@ -10,10 +10,14 @@
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
+// File Header
 #include <hepce/event/hiv/treatment.hpp>
 
-#include "internals/treatment_internals.hpp"
+// Library Includes
 #include <hepce/utils/config.hpp>
+
+// Local Includes
+#include "internals/treatment_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -27,7 +31,7 @@ Treatment::Create(datamanagement::ModelData &model_data,
 
 // Constructor
 TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
-                             const std::string &log_name = "console")
+                             const std::string &log_name)
     : TreatmentBase(model_data, log_name) {
 
     // load treatment course data - course defined in sim.conf
@@ -42,12 +46,12 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Ensure that Person is linked to care
     if (person.GetLinkageDetails(GetInfectionType()).link_state !=
         data::LinkageState::kLinked) {
-        return;
+        return 0;
     }
 
     // Determine if Person is lost to follow up before beginning treatment
     if (LostToFollowUp(person, sampler)) {
-        return;
+        return 0;
     }
 
     // Charge the cost of the visit
@@ -56,7 +60,7 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Determine if Person initiates treatment
     if (!person.GetTreatmentDetails(GetInfectionType()).initiated_treatment &&
         !InitiateTreatment(person, sampler)) {
-        return;
+        return 0;
     }
 
     // Charge the cost of the treatment
@@ -107,6 +111,24 @@ bool TreatmentImpl::InitiateTreatment(model::Person &person,
     return false;
 }
 
+void TreatmentImpl::ResetUtility(model::Person &person) const {
+    utils::tuple_2i key;
+    switch (person.GetHIVDetails().hiv) {
+    case data::HIV::kHiSu:
+    case data::HIV::kHiUn:
+        key = std::make_tuple(0, 1);
+        person.SetUtility(_utility_data.at(key), GetEventUtilityCategory());
+        break;
+    case data::HIV::kLoSu:
+    case data::HIV::kLoUn:
+        key = std::make_tuple(0, 0);
+        person.SetUtility(_utility_data.at(key), GetEventUtilityCategory());
+        break;
+    default:
+        break;
+    }
+}
+
 bool TreatmentImpl::Withdraws(model::Person &person, model::Sampler &sampler) {
     if (_treatment_sql_data[_course_name].withdrawal_prob == 0) {
         // spdlog::get("main")->warn(
@@ -146,8 +168,8 @@ void TreatmentImpl::SetTreatmentUtility(model::Person &person) {
         SetEventUtility(_utility_data[key]);
         AddEventUtility(person);
         break;
-    case data::HIV::LoSu:
-    case data::HIV::LoUn:
+    case data::HIV::kLoSu:
+    case data::HIV::kLoUn:
         key = std::make_tuple(1, 0);
         SetEventUtility(_utility_data[key]);
         AddEventUtility(person);
@@ -168,8 +190,8 @@ void TreatmentImpl::ResetUtility(model::Person &person) {
         SetEventUtility(_utility_data[key]);
         AddEventUtility(person);
         break;
-    case data::HIV::LoSu:
-    case data::HIV::LoUn:
+    case data::HIV::kLoSu:
+    case data::HIV::kLoUn:
         key = std::make_tuple(0, 0);
         SetEventUtility(_utility_data[key]);
         AddEventUtility(person);
@@ -184,8 +206,8 @@ void TreatmentImpl::ApplySuppression(model::Person &person) {
     case data::HIV::kHiUn:
         person.SetHIV(data::HIV::kHiSu);
         break;
-    case data::HIV::LoUn:
-        person.SetHIV(data::HIV::LoSu);
+    case data::HIV::kLoUn:
+        person.SetHIV(data::HIV::kLoSu);
         break;
     default:
         break;
@@ -197,8 +219,8 @@ void TreatmentImpl::LoseSuppression(model::Person &person) {
     case data::HIV::kHiSu:
         person.SetHIV(data::HIV::kHiUn);
         break;
-    case data::HIV::LoSu:
-        person.SetHIV(data::HIV::LoUn);
+    case data::HIV::kLoSu:
+        person.SetHIV(data::HIV::kLoUn);
         break;
     default:
         break;

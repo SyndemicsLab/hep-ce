@@ -9,9 +9,12 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
+
+// File Header
 #include <hepce/event/hiv/linking.hpp>
 
-#include "hiv/internals/linking_internals.hpp"
+// Local Includes
+#include "internals/linking_internals.hpp"
 
 namespace hepce {
 namespace event {

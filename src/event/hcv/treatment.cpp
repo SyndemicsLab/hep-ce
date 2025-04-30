@@ -10,10 +10,14 @@
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
+// File Header
 #include <hepce/event/hcv/treatment.hpp>
 
-#include "hcv/internals/treatment_internals.hpp"
+// Library Includes
 #include <hepce/utils/config.hpp>
+
+// Local Includes
+#include "internals/treatment_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -35,12 +39,12 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Verify the person is linked before starting treatment
     if (person.GetLinkageDetails(GetInfectionType()).link_state !=
         data::LinkageState::kLinked) {
-        return;
+        return 0;
     }
 
     // 1. Check if the Person is Lost To Follow Up (LTFU)
     if (LostToFollowUp(person, sampler)) {
-        return;
+        return 0;
     }
 
     // 2. Charge the Cost of the Visit (varies if this is retreatment)
@@ -55,7 +59,7 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // nothing happens
     if (!person.GetTreatmentDetails(GetInfectionType()).initiated_treatment &&
         !InitiateTreatment(person, sampler)) {
-        return;
+        return 0;
     }
 
     // 4. Charge the person for the Course they are on
@@ -66,7 +70,7 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     // 6. Determine if the person withdraws from the treatment
     if (Withdraws(person, sampler)) {
-        return;
+        return 0;
     }
 
     // 7. Determine if the person has been treated long enough and, if so,

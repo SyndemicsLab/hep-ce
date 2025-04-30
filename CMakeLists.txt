@@ -63,22 +63,33 @@ set(HEPCE_DATA
 
 set(HEPCE_EVENT_BASE
     src/event/base/aging.cpp
+    src/event/base/death.cpp
 )
 
 set(HEPCE_EVENT_BEHAVIOR
-
+    src/event/behavior/behavior_changes.cpp
+    src/event/behavior/pregnancy.cpp
 )
 
 set(HEPCE_EVENT_FIBROSIS
-
+    src/event/fibrosis/progression.cpp
+    src/event/fibrosis/staging.cpp
 )
 
 set(HEPCE_EVENT_HCV
-
+    src/event/hcv/clearance.cpp
+    src/event/hcv/infection.cpp
+    src/event/hcv/linking.cpp
+    src/event/hcv/screening.cpp
+    src/event/hcv/treatment.cpp
+    src/event/hcv/voluntary_relink.cpp
 )
 
 set(HEPCE_EVENT_HIV
-
+    src/event/hiv/infection.cpp
+    src/event/hiv/linking.cpp
+    src/event/hiv/screening.cpp
+    src/event/hiv/treatment.cpp
 )
 
 set(HEPCE_EVENT
@@ -90,11 +101,13 @@ set(HEPCE_EVENT
 )
 
 set(HEPCE_MODEL
-
+    src/model/costing.cpp
+    src/model/person.cpp
+    src/model/simulation.cpp
 )
 
 set(HEPCE_UTILS
-
+    src/utils/logging.cpp
 )
 
 set(HEPCE_SRCS 

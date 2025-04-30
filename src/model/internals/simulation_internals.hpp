@@ -28,7 +28,7 @@ public:
                      const std::vector<std::string> &icValues) override;
 
 private:
-}
+};
 } // namespace model
 } // namespace hepce
 

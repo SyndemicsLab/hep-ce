@@ -4,7 +4,7 @@
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -27,6 +27,9 @@ const int POPULATION_SIZE = 10;
 
 using namespace hepce::data;
 using namespace hepce::model;
+
+namespace hepce {
+namespace testing {
 
 class DataWriterTest : public ::testing::Test {
 protected:
@@ -53,3 +56,6 @@ protected:
 };
 
 TEST_F(DataWriterTest, PopulationString) {}
+
+} // namespace testing
+} // namespace hepce

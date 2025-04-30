@@ -49,6 +49,10 @@ private:
     hivtreatmentmap_t _treatment_sql_data;
     std::string _course_name;
 
+    inline data::InfectionType GetInfectionType() const override {
+        return data::InfectionType::kHiv;
+    }
+
     inline const std::string HIVTreatmentSQL() const {
         return "SELECT course, cost, toxicity_prob, withdrawal_prob, "
                "months_to_suppression, months_to_high_cd4 FROM hiv_treatments;";
@@ -93,17 +97,17 @@ private:
     }
 
     inline bool IsLowCD4(model::Person &person) {
-        if ((person.GetHIVDetails().hiv == data::HIV::LoUn) ||
-            (person.GetHIVDetails().hiv == data::HIV::LoSu)) {
+        if ((person.GetHIVDetails().hiv == data::HIV::kLoUn) ||
+            (person.GetHIVDetails().hiv == data::HIV::kLoSu)) {
             return true;
         }
         return false;
     }
 
     inline void RestoreHighCD4(model::Person &person) {
-        if (person.GetHIVDetails().hiv == data::HIV::LoUn) {
+        if (person.GetHIVDetails().hiv == data::HIV::kLoUn) {
             person.SetHIV(data::HIV::kHiUn);
-        } else if (person.GetHIVDetails().hiv == data::HIV::LoSu) {
+        } else if (person.GetHIVDetails().hiv == data::HIV::kLoSu) {
             person.SetHIV(data::HIV::kHiSu);
         }
     }
@@ -112,6 +116,8 @@ private:
         ChargeCost(person, _treatment_sql_data[_course_name].course_cost);
         SetTreatmentUtility(person);
     }
+
+    void ResetUtility(model::Person &person) const override;
 
     bool InitiateTreatment(model::Person &person, model::Sampler &sampler);
 

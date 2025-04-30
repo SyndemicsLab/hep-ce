@@ -10,11 +10,15 @@
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
+// File Header
 #include <hepce/event/behavior/pregnancy.hpp>
 
-#include "internals/pregnancy_internals.hpp"
+// Library Includes
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
+
+// Local Includes
+#include "internals/pregnancy_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -54,7 +58,7 @@ int PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
              data::PregnancyState::kPostpartum &&
          (person.GetCurrentTimestep() -
           person.GetPregnancyDetails().time_of_pregnancy_change) < 3)) {
-        return;
+        return 0;
     }
 
     if (person.GetPregnancyDetails().pregnancy_state ==

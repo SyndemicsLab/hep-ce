@@ -12,11 +12,15 @@
 #ifndef HEPCE_EVENT_TREATMENTINTERNALS_HPP_
 #define HEPCE_EVENT_TREATMENTINTERNALS_HPP_
 
-#include "event_internals.hpp"
-
+// STL Includes
 #include <string>
 
+// Library Includes
+#include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
+
+// Local Includes
+#include "event_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -69,12 +73,6 @@ public:
     }
 
 protected:
-    bool _retreatment = true;
-    TreatmentUtilities _utilities;
-    TreatmentCosts _costs;
-    TreatmentProbabilities _probabilities;
-    Eligibilities _eligibilities;
-
     inline void SetRetreatment(const bool &r) { _retreatment = r; }
     inline void SetTreatmentUtilities(const TreatmentUtilities &u) {
         _utilities = u;

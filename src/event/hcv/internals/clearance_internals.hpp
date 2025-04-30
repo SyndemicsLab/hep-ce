@@ -12,9 +12,11 @@
 #ifndef HEPCE_EVENT_HCV_CLEARANCEINTERNALS_HPP_
 #define HEPCE_EVENT_HCV_CLEARANCEINTERNALS_HPP_
 
+// File Header
 #include <hepce/event/hcv/clearance.hpp>
 
-#include "internals/event_internals.hpp"
+// Local Includes
+#include "../../internals/event_internals.hpp"
 
 namespace hepce {
 namespace event {

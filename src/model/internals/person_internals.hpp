@@ -12,11 +12,15 @@
 #ifndef HEPCE_MODEL_PERSONINTERNALS_HPP_
 #define HEPCE_MODEL_PERSONINTERNALS_HPP_
 
+// File Header
 #include <hepce/model/person.hpp>
 
+// STL Includes
+#include <algorithm>
 #include <execution>
 #include <numeric>
 
+// Library Includes
 #include <hepce/data/types.hpp>
 #include <hepce/model/costing.hpp>
 #include <hepce/utils/math.hpp>
@@ -214,7 +218,7 @@ public:
                            _utilities.end(), 1, minimized);
     }
     inline double GetMultipliedUtility() const {
-        auto multiplied = [](auto mult, auto val) { return mult * val; };
+        auto multiplied = [](auto mult, auto val) { return (mult * val); };
         return std::reduce(std::execution::par, _utilities.begin(),
                            _utilities.end(), 1, multiplied);
     }

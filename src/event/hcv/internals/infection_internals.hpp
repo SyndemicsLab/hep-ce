@@ -12,11 +12,15 @@
 #ifndef HEPCE_EVENT_HCV_INFECTIONINTERNALS_HPP_
 #define HEPCE_EVENT_HCV_INFECTIONINTERNALS_HPP_
 
+// File Header
 #include <hepce/event/hcv/infection.hpp>
 
-#include "internals/event_internals.hpp"
+// Library Includes
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/pair_hashing.hpp>
+
+// Local Includes
+#include "../../internals/event_internals.hpp"
 namespace hepce {
 namespace event {
 namespace hcv {

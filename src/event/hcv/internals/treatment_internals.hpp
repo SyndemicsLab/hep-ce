@@ -83,6 +83,10 @@ private:
         AddEventUtility(person);
     }
 
+    inline void ResetUtility(model::Person &person) const override {
+        person.SetUtility(1.0, GetEventUtilityCategory());
+    }
+
     bool Withdraws(model::Person &person, model::Sampler &sampler) {
         if (sampler.GetDecision(
                 {_treatment_sql_data[GetTreatmentThruple(person)]

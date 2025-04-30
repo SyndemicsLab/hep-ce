@@ -12,9 +12,11 @@
 #ifndef HEPCE_EVENT_HIV_LINKINGINTERNALS_HPP_
 #define HEPCE_EVENT_HIV_LINKINGINTERNALS_HPP_
 
+// Header File
 #include <hepce/event/hiv/linking.hpp>
 
-#include "internals/linking_internals.hpp"
+// Local Includes
+#include "../../internals/linking_internals.hpp"
 
 namespace hepce {
 namespace event {

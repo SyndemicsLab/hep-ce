@@ -29,7 +29,7 @@ Clearance::Create(datamanagement::ModelData &model_data,
 
 // Constructor
 ClearanceImpl::ClearanceImpl(datamanagement::ModelData &model_data,
-                             const std::string &log_name = "console")
+                             const std::string &log_name)
     : EventBase(model_data, log_name) {
     _probability =
         utils::GetDoubleFromConfig("infection.clearance_prob", model_data);
@@ -46,11 +46,12 @@ int ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // count as SVR
     if (person.GetHCVDetails().hcv != data::HCV::kAcute &&
         !person.GetScreeningDetails(data::InfectionType::kHcv).identified) {
-        return;
+        return 0;
     }
     if (sampler.GetDecision({_probability, 1 - _probability}) == 0) {
         person.ClearHCV(true);
     }
+    return 0;
 }
 } // namespace hcv
 } // namespace event

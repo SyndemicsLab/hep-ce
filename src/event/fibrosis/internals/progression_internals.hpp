@@ -12,11 +12,15 @@
 #ifndef HEPCE_EVENT_FIBROSIS_PROGRESSIONINTERNALS_HPP_
 #define HEPCE_EVENT_FIBROSIS_PROGRESSIONINTERNALS_HPP_
 
+// File Header
 #include <hepce/event/fibrosis/progression.hpp>
 
-#include "internals/event_internals.hpp"
+// Library Includes
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/pair_hashing.hpp>
+
+// Local Includes
+#include "../../internals/event_internals.hpp"
 
 namespace hepce {
 namespace event {

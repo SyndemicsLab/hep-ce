@@ -10,16 +10,16 @@
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
+// File Header
 #include <hepce/model/person.hpp>
 
+// Local Includes
 #include "internals/person_internals.hpp"
 
 namespace hepce {
 namespace model {
-namespace person {
 // Factory
-std::unique_ptr<Person>
-Person::Create(const std::string &log_name = "console") {
+std::unique_ptr<Person> Person::Create(const std::string &log_name) {
     return std::make_unique<PersonImpl>(log_name);
 }
 
@@ -51,8 +51,8 @@ void PersonImpl::UpdateTimers() {
     if (_moud_details.moud_state == data::MOUD::kCurrent) {
         _moud_details.total_moud_months++;
     }
-    if (_hiv_details.hiv == data::HIV::LoUn ||
-        _hiv_details.hiv == data::HIV::LoSu) {
+    if (_hiv_details.hiv == data::HIV::kLoUn ||
+        _hiv_details.hiv == data::HIV::kLoSu) {
         _hiv_details.low_cd4_months_count++;
     }
     _moud_details.current_state_concurrent_months++;
@@ -300,6 +300,5 @@ std::string PersonImpl::MakePopulationRow() const {
     // clang-format on
     return population_row.str();
 }
-} // namespace person
 } // namespace model
 } // namespace hepce

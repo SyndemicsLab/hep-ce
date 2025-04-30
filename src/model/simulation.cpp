@@ -18,7 +18,7 @@ namespace hepce {
 namespace model {
 
 //Factory
-std::unique_ptr<Hepce> Hepce::Create(const std::string &log_name = "console") {
+std::unique_ptr<Hepce> Hepce::Create(const std::string &log_name) {
     return std::make_unique<HepceImpl>(log_name);
 }
 

@@ -9,10 +9,15 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
+
+// File Header
 #include <hepce/event/behavior/behavior_changes.hpp>
 
-#include "behavior/internals/behavior_changes_internals.hpp"
+// Library Includes
 #include <hepce/utils/config.hpp>
+
+// Local Includes
+#include "internals/behavior_changes_internals.hpp"
 
 namespace hepce {
 namespace event {

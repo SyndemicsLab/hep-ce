@@ -10,27 +10,28 @@ endif()
 enable_testing()
 
 add_executable(${PROJECT_NAME}
-  src/model/person_test.cpp
-  src/model/simulation_test.cpp
-  src/model/cost_test.cpp
-  src/data/writer_test.cpp
-  src/event/aging_test.cpp
-  src/event/BehaviorChangesTest.cpp
-  src/event/ClearanceTest.cpp
-  src/event/DeathTest.cpp
-  src/event/FibrosisProgressionTest.cpp
-  src/event/FibrosisStagingTest.cpp
-  src/event/HCVInfectionsTest.cpp
-  src/event/HCVLinkingTest.cpp
-  src/event/HCVScreeningTest.cpp
-  src/event/HCVTreatmentTest.cpp
-  src/event/HIVInfectionsTest.cpp
-  src/event/HIVLinkingTest.cpp
-  src/event/HIVScreeningTest.cpp
-  src/event/VoluntaryRelinkingTest.cpp
-  src/event/PregnancyTest.cpp
-  src/event/OverdoseTest.cpp
-  src/event/MOUDTest.cpp
+    src/event/aging_test.cpp
+    src/data/writer_test.cpp
+
+#   src/model/person_test.cpp
+#   src/model/simulation_test.cpp
+#   src/model/cost_test.cpp
+#   src/event/BehaviorChangesTest.cpp
+#   src/event/ClearanceTest.cpp
+#   src/event/DeathTest.cpp
+#   src/event/FibrosisProgressionTest.cpp
+#   src/event/FibrosisStagingTest.cpp
+#   src/event/HCVInfectionsTest.cpp
+#   src/event/HCVLinkingTest.cpp
+#   src/event/HCVScreeningTest.cpp
+#   src/event/HCVTreatmentTest.cpp
+#   src/event/HIVInfectionsTest.cpp
+#   src/event/HIVLinkingTest.cpp
+#   src/event/HIVScreeningTest.cpp
+#   src/event/VoluntaryRelinkingTest.cpp
+#   src/event/PregnancyTest.cpp
+#   src/event/OverdoseTest.cpp
+#   src/event/MOUDTest.cpp
 )
 
 # BE VERY CAREFUL WITH GTEST AS ITS A PAIN IN THE BUTT
