@@ -14,8 +14,7 @@ add_executable(${PROJECT_NAME}
   src/model/simulation_test.cpp
   src/model/cost_test.cpp
   src/data/writer_test.cpp
-  src/event/EventTest.cpp
-  src/event/AgingTest.cpp
+  src/event/aging_test.cpp
   src/event/BehaviorChangesTest.cpp
   src/event/ClearanceTest.cpp
   src/event/DeathTest.cpp
@@ -46,6 +45,7 @@ target_link_libraries(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
     PUBLIC
         "mocks/"
+        "constants/"
 )
 
 gtest_discover_tests(${PROJECT_NAME})

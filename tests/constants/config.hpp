@@ -12,50 +12,123 @@
 #ifndef HEPCE_TESTS_CONSTANTS_CONFIG_HPP_
 #define HEPCE_TESTS_CONSTANTS_CONFIG_HPP_
 
+#include <fstream>
 #include <sstream>
 #include <string>
 
 namespace hepce {
 namespace testing {
-std::string BuildSimConf() {
+void BuildSimConf(const std::string &name) {
     std::stringstream s;
     s << "[simulation]" << std::endl
-      << "duration = 52" << std::endl
-      << "aging_interval = 260" << std::endl
-      << "intervention_change_times = 52" << std::endl
-      << "entering_sample_change_times = 52" << std::endl
-      << "overdose_change_times = 52" << std::endl
-      << "stratified_entering_cohort = false" << std::endl
+      << "seed =" << std::endl
+      << "population_size = 100" << std::endl
+      << "events = Aging, BehaviorChanges, Clearance, FibrosisProgression, "
+         "HCVInfections, HCVScreening, HCVLinking, HCVTreatment, "
+         "HIVInfections, HIVScreening, HIVLinking, Death"
       << std::endl
-      << "[state]" << std::endl
-      << "interventions = No_Treatment, Buprenorphine,"
-         "Naltrexone, Methadone, Detox, Post-Buprenorphine,"
-         "Post-Naltrexone, Post-Methadone, Post-Detox"
+      << "duration = 60" << std::endl
+      << "start_time = 0" << std::endl
+      << "[mortality]" << std::endl
+      << "f4_infected = 0.000451633598615886" << std::endl
+      << "f4_uninfected = 0.0000271037696334409" << std::endl
+      << "decomp_infected = 0.01734776" << std::endl
+      << "decomp_uninfected = 0.005688756" << std::endl
+      << "[infection]" << std::endl
       << std::endl
-      << "ouds = Active_Noninjection, Active_Injection,"
-         "Nonactive_Noninjection, Nonactive_Injection"
-      << std::endl
-      << std::endl
-      << "[demographic]" << std::endl
-      << "age_groups = 10_14, 15_19, 20_24, 25_29, 30_34, "
-         "35_39, 40_44, 45_49, 50_54, 55_59, 60_64, 65_69, "
-         "70_74, 75_79, 80_84, 85_89, 90_94, 95_99 "
-      << std::endl
-      << "sex = Male, Female " << std::endl
-      << std::endl
+      << "clearance_prob = 0.0489" << std::endl
+      << "genotype_three_prob = 0.153" << std::endl
+      << "[eligibility]" << std::endl
+      << "ineligible_drug_use =" << std::endl
+      << "ineligible_fibrosis_stages =" << std::endl
+      << "ineligible_time_former_threshold =" << std::endl
+      << "ineligible_time_since_linked =" << std::endl
+      << "[fibrosis]" << std::endl
+      << "f01 = 0.008877" << std::endl
+      << "f12 = 0.00681" << std::endl
+      << "f23 = 0.0097026" << std::endl
+      << "f34 = 0.0096201" << std::endl
+      << "f4d = 0.00558434922840212" << std::endl
+      << "add_cost_only_if_identified = false" << std::endl
+      << "[fibrosis_staging]" << std::endl
+      << "period = 12" << std::endl
+      << "test_one = fib4" << std::endl
+      << "test_one_cost = 0" << std::endl
+      << "test_two = fibroscan" << std::endl
+      << "test_two_cost = 140" << std::endl
+      << "multitest_result_method = latest" << std::endl
+      << "test_two_eligible_stages = f1,f2,f3" << std::endl
+      << "[screening]" << std::endl
+      << "intervention_type = one-time" << std::endl
+      << "period = 12" << std::endl
+      << "[screening_background_ab]" << std::endl
+      << "cost = 14.27" << std::endl
+      << "acute_sensitivity = 0.98" << std::endl
+      << "chronic_sensitivity = 0.98" << std::endl
+      << "specificity = 0.98" << std::endl
+      << "[screening_background_rna]" << std::endl
+      << "cost = 31.22" << std::endl
+      << "acute_sensitivity = 0.988" << std::endl
+      << "chronic_sensitivity = 0.988" << std::endl
+      << "specificity = 1.0" << std::endl
+      << "[screening_intervention_ab]" << std::endl
+      << "cost = 14.27" << std::endl
+      << "acute_sensitivity = 0.98" << std::endl
+      << "chronic_sensitivity = 0.98" << std::endl
+      << "specificity = 0.98" << std::endl
+      << "[screening_intervention_rna]" << std::endl
+      << "cost = 31.22" << std::endl
+      << "acute_sensitivity = 0.988" << std::endl
+      << "chronic_sensitivity = 0.988" << std::endl
+      << "specificity = 1.0" << std::endl
+      << "[linking]" << std::endl
+      << "intervention_cost = 0" << std::endl
+      << "voluntary_relinkage_probability = 0.001113" << std::endl
+      << "voluntary_relink_duration = 3" << std::endl
+      << "false_positive_test_cost = 442.39" << std::endl
+      << "recent_screen_multiplier = 1.0" << std::endl
+      << "recent_screen_cutoff = 0" << std::endl
+      << "[treatment]" << std::endl
+      << "allow_retreatment = true" << std::endl
+      << "ltfu_probability = 0" << std::endl
+      << "treatment_cost = 12603.02" << std::endl
+      << "retreatment_cost = 19332.50" << std::endl
+      << "treatment_utility = 0.99" << std::endl
+      << "treatment_initiation = 0.92" << std::endl
+      << "tox_cost = 201.28" << std::endl
+      << "tox_utility = 0.21" << std::endl
+      << "[hiv_screening]" << std::endl
+      << "intervention_type = null" << std::endl
+      << "hiv_screening.period = 12" << std::endl
+      << "[hiv_screening_background]" << std::endl
+      << "ab_cost = 14.27" << std::endl
+      << "ab_sensitivity = 0.98" << std::endl
+      << "ab_specificity = 0.98" << std::endl
+      << "rna_cost = 31.22" << std::endl
+      << "rna_sensitivity = 0.988" << std::endl
+      << "rna_specificity = 1.0" << std::endl
+      << "[hiv_screening_intervention]" << std::endl
+      << "ab_cost = 14.27" << std::endl
+      << "ab_sensitivity = 0.98" << std::endl
+      << "ab_specificity = 0.98" << std::endl
+      << "rna_cost = 31.22" << std::endl
+      << "rna_sensitivity = 0.988" << std::endl
+      << "rna_specificity = 1.0" << std::endl
+      << "[hiv_linking]" << std::endl
+      << "intervention_cost = 100.00" << std::endl
+      << "false_positive_test_cost = 1800.00" << std::endl
+      << "recent_screen_multiplier = 2.0" << std::endl
+      << "recent_screen_cutoff = 2" << std::endl
+      << "[pregnancy]" << std::endl
+      << "multiple_delivery_probability = 0.03283" << std::endl
+      << "infant_hcv_tested_probability = 0.4" << std::endl
+      << "vertical_hcv_transition_probability = 0.08" << std::endl
       << "[cost]" << std::endl
-      << "cost_analysis = true" << std::endl
-      << "cost_perspectives = healthcare" << std::endl
-      << "discount_rate = 0.0025 " << std::endl
-      << "reporting_interval = 1" << std::endl
-      << "cost_utility_output_timesteps = 52 " << std::endl
-      << "cost_category_outputs = false " << std::endl
-      << std::endl
-      << "[output] " << std::endl
-      << "per_intervention_predictions = true " << std::endl
-      << "general_outputs = false " << std::endl
-      << "general_stats_output_timesteps = 52";
-    return s.str();
+      << "discounting_rate = 0.0025" << std::endl;
+
+    std::ofstream f(name);
+    f << s.str();
+    f.close();
 }
 } // namespace testing
 } // namespace hepce

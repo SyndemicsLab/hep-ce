@@ -14,6 +14,7 @@
 #include <hepce/event/base/aging.hpp>
 
 // STL Includes
+#include <cstdio>
 #include <memory>
 #include <string>
 #include <vector>
@@ -25,6 +26,8 @@
 #include <hepce/utils/pair_hashing.hpp>
 
 // Local Includes
+#include "config.hpp"
+#include "inputs_db.hpp"
 #include "person_mock.hpp"
 #include "sampler_mock.hpp"
 
@@ -38,26 +41,36 @@ using ::testing::SetArgReferee;
 using namespace hepce::data;
 using namespace hepce::event;
 
+namespace hepce {
+namespace testing {
+
 class AgingTest : public ::testing::Test {
 protected:
-    NiceMock<hepce::model::MockPerson> mock_person;
-    NiceMock<hepce::model::MockSampler> mock_sampler;
+    NiceMock<MockPerson> mock_person;
+    NiceMock<MockSampler> mock_sampler;
+    std::string test_db = "inputs.db";
+    std::string test_conf = "sim.conf";
     void SetUp() override {
+        data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
+
         ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
+        ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+        ON_CALL(mock_person, GetSex()).WillByDefault(Return(Sex::kMale));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behaviors));
+
+        ExecuteQueries(test_db, {CreateBackgroundImpacts(),
+                                 "INSERT INTO background_impacts "
+                                 "VALUES (25, 0, 4, 0.821, 370.75);"});
+        BuildSimConf(test_conf);
     }
-    void TearDown() override {}
+    void TearDown() override { std::remove(test_db.c_str()); }
 };
 
 std::string SQLQuery = "SELECT age_years, gender, drug_behavior, cost, utility "
                        "FROM background_impacts;";
 
 TEST_F(AgingTest, Aging) {
-    // Person Setup
-    ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
-    ON_CALL(mock_person, GetSex()).WillByDefault(Return(Sex::kMale));
-    ON_CALL(mock_person, GetBehavior())
-        .WillByDefault(Return(Behavior::kInjection));
-
     // Data Setup
     double discount_rate = 0.025;
     ON_CALL(*event_dm, GetFromConfig("cost.discounting_rate", _))
@@ -99,3 +112,6 @@ TEST_F(AgingTest, Aging) {
     std::shared_ptr<event::Event> event = efactory.create("Aging", event_dm);
     event->Execute(testPerson, event_dm, decider);
 }
+
+} // namespace testing
+} // namespace hepce

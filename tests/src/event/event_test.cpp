@@ -25,8 +25,8 @@
 #include <hepce/utils/pair_hashing.hpp>
 
 // Local Includes
-#include "person_mock.hpp"
-#include "sampler_mock.hpp"
+#include <person_mock.hpp>
+#include <sampler_mock.hpp>
 
 using ::testing::_;
 using ::testing::DoAll;

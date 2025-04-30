@@ -4,7 +4,7 @@
 // Created Date: Fr Apr 2025                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -47,11 +47,9 @@ int AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
 // Private Methods
 int AgingImpl::LoadData(datamanagement::ModelData &model_data) {
-    std::string query = BuildSQL();
-    std::string error;
     std::any storage = _age_data;
     model_data.GetDBSource("inputs").Select(
-        query,
+        BuildSQL(),
         [](std::any &storage, const SQLite::Statement &stmt) {
             utils::tuple_3i tup = std::make_tuple(stmt.getColumn(0).getInt(),
                                                   stmt.getColumn(1).getInt(),
