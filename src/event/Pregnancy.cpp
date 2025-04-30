@@ -104,6 +104,7 @@ private:
             for (int child = 0; child < numberOfBirths; ++child) {
                 person->AddChild(person::HCV::NONE, false);
             }
+            person->SetPregnancyState(person::PregnancyState::POSTPARTUM);
             return;
         }
 
