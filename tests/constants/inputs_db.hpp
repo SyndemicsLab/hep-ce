@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: inputs_db.hpp                                                        //
 // Project: HEPCESimulationv2                                                 //
-// Created Date: We Apr 2025                                                  //
+// Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-04-30                                                  //
