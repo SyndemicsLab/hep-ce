@@ -43,7 +43,7 @@ public:
                         const std::string &log_name = "console");
     ~BehaviorChangesImpl() = default;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     behaviormap_t _behavior_data;
@@ -86,7 +86,7 @@ private:
 
     int LoadBehaviorData(datamanagement::ModelData &model_data);
 
-    void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person);
+    void CalculateCostAndUtility(model::Person &person);
 };
 } // namespace behavior
 } // namespace event

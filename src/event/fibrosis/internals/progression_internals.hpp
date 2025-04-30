@@ -43,7 +43,7 @@ public:
                     const std::string &log_name = "console");
     ~ProgressionImpl() = default;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     bool _add_cost_data = false;

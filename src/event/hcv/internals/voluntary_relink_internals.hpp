@@ -29,7 +29,7 @@ public:
 
     ~VoluntaryRelinkImpl() = default;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     double _relink_probability = 0.0;

@@ -35,7 +35,7 @@ public:
                 const std::string &log_name = "console");
     ~StagingImpl() = default;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     const std::string _test_one;

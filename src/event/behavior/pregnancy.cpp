@@ -51,14 +51,14 @@ PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
 }
 
 // Execute
-int PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (person.GetSex() == data::Sex::kMale || person.GetAge() < 180 ||
         person.GetAge() > 540 ||
         (person.GetPregnancyDetails().pregnancy_state ==
              data::PregnancyState::kPostpartum &&
          (person.GetCurrentTimestep() -
           person.GetPregnancyDetails().time_of_pregnancy_change) < 3)) {
-        return 0;
+        return;
     }
 
     if (person.GetPregnancyDetails().pregnancy_state ==
@@ -81,7 +81,7 @@ int PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
             person.Impregnate();
         }
     }
-    return 0;
+    return;
 }
 
 // Private Methods

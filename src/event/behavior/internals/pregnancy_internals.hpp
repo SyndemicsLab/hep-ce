@@ -35,7 +35,7 @@ public:
     PregnancyImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");
     ~PregnancyImpl() = default;
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     pregnancymap_t _pregnancy_data;

@@ -43,8 +43,8 @@ VoluntaryRelinkImpl::VoluntaryRelinkImpl(datamanagement::ModelData &model_data,
 }
 
 // Execute
-int VoluntaryRelinkImpl::Execute(model::Person &person,
-                                 model::Sampler &sampler) {
+void VoluntaryRelinkImpl::Execute(model::Person &person,
+                                  model::Sampler &sampler) {
     // if linked or never linked OR too long since last linked
     if ((person.GetLinkageDetails(data::InfectionType::kHcv).link_state ==
          data::LinkageState::kUnlinked) &&

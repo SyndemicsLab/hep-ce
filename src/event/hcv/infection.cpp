@@ -28,7 +28,7 @@ Infection::Create(datamanagement::ModelData &model_data,
 
 // Constructor
 InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
-                             const std::string &log_name = "console")
+                             const std::string &log_name)
     : EventBase(model_data, log_name) {
     int rc = LoadIncidenceData(model_data);
     _gt3_prob =
@@ -36,7 +36,7 @@ InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
 }
 
 // Execute
-int InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Acute cases progress to chronic after 6 consecutive months of
     // infection
     if (person.GetHCVDetails().hcv == data::HCV::kAcute &&

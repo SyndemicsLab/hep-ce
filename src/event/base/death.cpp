@@ -26,7 +26,7 @@ Death::Create(datamanagement::ModelData &model_data,
 
 // Constructor
 DeathImpl::DeathImpl(datamanagement::ModelData &model_data,
-                     const std::string &log_name = "console")
+                     const std::string &log_name)
     : EventBase(model_data, log_name) {
     _f4_infected_probability =
         utils::GetDoubleFromConfig("mortality.f4_infected", model_data);
@@ -42,7 +42,7 @@ DeathImpl::DeathImpl(datamanagement::ModelData &model_data,
 }
 
 // Execute
-int DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (ReachedMaxAge(person)) {
         return;
     }
@@ -109,8 +109,8 @@ int DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
 
 int DeathImpl::CheckOverdoseTable(datamanagement::ModelData &model_data) {
     std::unordered_map<int, datamanagement::source::BindingVariant> bindings;
-    bindings[1] = 'table';
-    bindings[2] = 'overdoses';
+    bindings[1] = "table";
+    bindings[2] = "overdoses";
     std::vector<std::string> names;
     std::any storage = names;
     model_data.GetDBSource("inputs").Select(

@@ -25,10 +25,12 @@ int ExecuteQueries(const std::string &db_name,
     try {
         SQLite::Database db(db_name,
                             SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+        SQLite::Transaction transaction(db);
         db.exec("VACUUM;");
         for (const std::string &query : queries) {
             db.exec(query);
         }
+        transaction.commit();
         return EXIT_SUCCESS;
     } catch (std::exception &e) {
         std::cout << "SQLite Exception in Creating Inputs Database: "
@@ -39,13 +41,13 @@ int ExecuteQueries(const std::string &db_name,
 
 const std::string CreateBackgroundImpacts() {
     std::stringstream s;
-    s << ("CREATE TABLE \"background_impacts\" (\"age_years\"	INTEGER NOT "
-          "NULL, \"gender\"	INTEGER NOT NULL, \"drug_behavior\"	"
-          "INTEGER NOT NULL, \"utility\"	REAL NOT NULL, \"cost\"	REAL "
-          "NOT NULL DEFAULT 0.0, PRIMARY "
-          "KEY(\"age_years\",\"gender\",\"drug_behavior\"), FOREIGN "
-          "KEY(\"drug_behavior\") REFERENCES \"drug_behaviors\"(\"id\"), "
-          "FOREIGN KEY(\"gender\") REFERENCES \"sex\"(\"id\")");
+    s << ("CREATE TABLE background_impacts("
+          "age_years INTEGER NOT NULL, "
+          "gender INTEGER NOT NULL, "
+          "drug_behavior INTEGER NOT NULL, "
+          "utility REAL NOT NULL, "
+          "cost REAL NOT NULL DEFAULT 0.0, "
+          "PRIMARY KEY(age_years, gender, drug_behavior));");
     return s.str();
 }
 } // namespace testing

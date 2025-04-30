@@ -14,7 +14,6 @@
 #include <hepce/event/base/aging.hpp>
 
 // STL Includes
-#include <cstdio>
 #include <memory>
 #include <string>
 #include <vector>
@@ -55,20 +54,21 @@ protected:
     void SetUp() override {
         data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
 
-        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
-        ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
-        ON_CALL(mock_person, GetSex()).WillByDefault(Return(Sex::kMale));
-        ON_CALL(mock_person, GetBehaviorDetails())
-            .WillByDefault(Return(behaviors));
+        EXPECT_CALL(mock_person, IsAlive()).WillOnce(Return(true));
+        EXPECT_CALL(mock_person, GetAge()).WillOnce(Return(300));
+        EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(Sex::kMale));
+        EXPECT_CALL(mock_person, GetBehaviorDetails())
+            .WillOnce(Return(behaviors));
 
-        ExecuteQueries(test_db, {CreateBackgroundImpacts(),
+        ExecuteQueries(test_db, {"DROP TABLE IF EXISTS background_impacts;",
+                                 CreateBackgroundImpacts(),
                                  "INSERT INTO background_impacts "
                                  "VALUES (25, 0, 4, 0.821, 370.75);"});
         BuildSimConf(test_conf);
     }
     void TearDown() override {
-        std::remove(test_db.c_str());
-        std::remove(test_conf.c_str());
+        std::filesystem::remove(test_db);
+        std::filesystem::remove(test_conf);
     }
 };
 
@@ -79,6 +79,7 @@ TEST_F(AgingTest, Execute) {
     double discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
     double discounted_life = utils::Discount(1, 0.0025, 1, false);
     auto model_data = datamanagement::ModelData(test_conf);
+    model_data.AddSource(test_db);
 
     // Expectations
     EXPECT_CALL(mock_person, Grow()).Times(1);

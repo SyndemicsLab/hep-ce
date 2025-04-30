@@ -34,7 +34,7 @@ public:
               const std::string &log_name = "console");
     ~AgingImpl() = default;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     agemap_t _age_data;

@@ -28,7 +28,8 @@ public:
 
     ~LinkingImpl() = default;
 
-    data::InfectionType GetInfectionType() const override {
+protected:
+    inline data::InfectionType GetInfectionType() const override {
         return data::InfectionType::kHcv;
     }
 

@@ -39,7 +39,7 @@ public:
                   const std::string &log_name = "console");
     ~TreatmentImpl() = default;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     inline data::InfectionType GetInfectionType() const override {

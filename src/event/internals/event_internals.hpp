@@ -27,7 +27,8 @@ namespace event {
 class EventBase : public virtual Event {
 public:
     EventBase(datamanagement::ModelData &model_data,
-              const std::string &log_name = "console") {
+              const std::string &log_name = "console")
+        : _log_name(log_name) {
         SetEventDiscount(
             utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
         SetEventCostCategory(model::CostCategory::kBackground);
@@ -58,6 +59,8 @@ public:
         return _event_utility_category;
     }
 
+    std::string GetLogName() const { return _log_name; }
+
     void AddEventCost(model::Person &person, bool annual = false) const {
         double discounted_cost =
             utils::Discount(GetEventCost(), GetEventDiscount(),
@@ -71,6 +74,7 @@ public:
     }
 
 private:
+    const std::string _log_name;
     double _discount = 0.0;
     model::UtilityCategory _event_utility_category =
         model::UtilityCategory::kBackground;

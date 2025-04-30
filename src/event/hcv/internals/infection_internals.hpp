@@ -35,7 +35,7 @@ public:
 
     ~InfectionImpl() = default;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     incidencemap_t _infection_data;

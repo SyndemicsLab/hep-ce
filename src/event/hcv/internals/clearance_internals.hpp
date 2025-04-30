@@ -28,7 +28,7 @@ public:
 
     ~ClearanceImpl() = default;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     double _probability = 0.0;

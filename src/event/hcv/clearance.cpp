@@ -40,18 +40,18 @@ ClearanceImpl::ClearanceImpl(datamanagement::ModelData &model_data,
 }
 
 // Execute
-int ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // if person isn't infected or is chronic, nothing to do
     // Also skip if person is already on treatment since we want this to
     // count as SVR
     if (person.GetHCVDetails().hcv != data::HCV::kAcute &&
         !person.GetScreeningDetails(data::InfectionType::kHcv).identified) {
-        return 0;
+        return;
     }
     if (sampler.GetDecision({_probability, 1 - _probability}) == 0) {
         person.ClearHCV(true);
     }
-    return 0;
+    return;
 }
 } // namespace hcv
 } // namespace event

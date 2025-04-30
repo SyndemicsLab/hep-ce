@@ -213,12 +213,18 @@ public:
             GetMultipliedUtility(), discount, GetCurrentTimestep());
     }
     inline double GetMinimizedUtility() const {
-        auto minimized = [](auto min, auto val) { return std::min(min, val); };
+        auto minimized = [](double min,
+                            std::pair<UtilityCategory, double> val) {
+            return std::min(min, val.second);
+        };
         return std::reduce(std::execution::par, _utilities.begin(),
                            _utilities.end(), 1, minimized);
     }
     inline double GetMultipliedUtility() const {
-        auto multiplied = [](auto mult, auto val) { return (mult * val); };
+        auto multiplied = [](double mult,
+                             std::pair<UtilityCategory, double> val) {
+            return (mult * val.second);
+        };
         return std::reduce(std::execution::par, _utilities.begin(),
                            _utilities.end(), 1, multiplied);
     }

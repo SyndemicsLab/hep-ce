@@ -9,12 +9,17 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
+
+// File Header
 #include <hepce/event/base/aging.hpp>
 
+// Library Includes
 #include <hepce/model/person.hpp>
 #include <hepce/model/sampler.hpp>
+#include <hepce/utils/logging.hpp>
 #include <hepce/utils/math.hpp>
 
+// Local Includes
 #include "internals/aging_internals.hpp"
 
 namespace hepce {
@@ -37,31 +42,36 @@ AgingImpl::AgingImpl(datamanagement::ModelData &model_data,
 }
 
 // Execution
-int AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     person.Grow();
     AddBackgroundCostAndUtility(person);
     person.AddDiscountedLifeSpan(
         utils::Discount(1, GetEventDiscount(), person.GetCurrentTimestep()));
-    return 0;
 }
 
 // Private Methods
 int AgingImpl::LoadData(datamanagement::ModelData &model_data) {
-    std::any storage = _age_data;
-    model_data.GetDBSource("inputs").Select(
-        BuildSQL(),
-        [](std::any &storage, const SQLite::Statement &stmt) {
-            utils::tuple_3i tup = std::make_tuple(stmt.getColumn(0).getInt(),
-                                                  stmt.getColumn(1).getInt(),
-                                                  stmt.getColumn(2).getInt());
-            data::CostUtil cu = {stmt.getColumn(3).getDouble(),
-                                 stmt.getColumn(4).getDouble()};
-            std::any_cast<agemap_t>(storage)[tup] = cu;
-        },
-        storage);
+    std::any storage = agemap_t{};
+    try {
+        model_data.GetDBSource("inputs").Select(
+            BuildSQL(),
+            [](std::any &storage, const SQLite::Statement &stmt) {
+                agemap_t *temp = std::any_cast<agemap_t>(&storage);
+                utils::tuple_3i tup = std::make_tuple(
+                    stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt(),
+                    stmt.getColumn(2).getInt());
+                data::CostUtil cu = {stmt.getColumn(3).getDouble(),
+                                     stmt.getColumn(4).getDouble()};
+                (*temp)[tup] = cu;
+            },
+            storage);
+    } catch (std::exception &e) {
+        hepce::utils::LogError(GetLogName(), e.what());
+        return -1;
+    }
     _age_data = std::any_cast<agemap_t>(storage);
     if (_age_data.empty()) {
-        // Warn Empty
+        hepce::utils::LogWarning(GetLogName(), "Age Data is Empty...");
     }
     return 0;
 }

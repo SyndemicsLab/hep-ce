@@ -42,7 +42,7 @@ public:
               const std::string &log_name = "console");
     ~DeathImpl() = default;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, model::Sampler &sampler) override;
 
 private:
     double _f4_infected_probability;
@@ -82,7 +82,7 @@ private:
 
     int LoadBackgroundMortality(datamanagement::ModelData &model_data);
 
-    bool DeathImpl::ReachedMaxAge(model::Person &person);
+    bool ReachedMaxAge(model::Person &person);
 
     bool FatalOverdose(model::Person &person, model::Sampler &decider);
 

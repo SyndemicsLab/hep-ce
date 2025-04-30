@@ -27,7 +27,7 @@ Progression::Create(datamanagement::ModelData &model_data,
 
 // Constructor
 ProgressionImpl::ProgressionImpl(datamanagement::ModelData &model_data,
-                                 const std::string &log_name = "console")
+                                 const std::string &log_name)
     : EventBase(model_data, log_name) {
     SetEventUtilityCategory(model::UtilityCategory::kLiver);
     SetEventCostCategory(model::CostCategory::kLiver);
@@ -45,7 +45,7 @@ ProgressionImpl::ProgressionImpl(datamanagement::ModelData &model_data,
 }
 
 // Execute
-int ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // can only progress in fibrosis state if actively infected with HCV
     if (person.GetHCVDetails().hcv == data::HCV::kNone) {
         return;

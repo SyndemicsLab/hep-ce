@@ -45,7 +45,7 @@ public:
 
     virtual data::InfectionType GetInfectionType() const = 0;
 
-    int Execute(model::Person &person, model::Sampler &sampler) override {
+    void Execute(model::Person &person, model::Sampler &sampler) override {
         SetLinkageType(person.GetLinkageDetails(GetInfectionType()).link_type);
         bool is_linked =
             (person.GetLinkageDetails(GetInfectionType()).link_state ==

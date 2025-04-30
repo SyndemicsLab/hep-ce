@@ -42,16 +42,16 @@ TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
 }
 
 // Execute
-int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Ensure that Person is linked to care
     if (person.GetLinkageDetails(GetInfectionType()).link_state !=
         data::LinkageState::kLinked) {
-        return 0;
+        return;
     }
 
     // Determine if Person is lost to follow up before beginning treatment
     if (LostToFollowUp(person, sampler)) {
-        return 0;
+        return;
     }
 
     // Charge the cost of the visit
@@ -60,7 +60,7 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Determine if Person initiates treatment
     if (!person.GetTreatmentDetails(GetInfectionType()).initiated_treatment &&
         !InitiateTreatment(person, sampler)) {
-        return 0;
+        return;
     }
 
     // Charge the cost of the treatment

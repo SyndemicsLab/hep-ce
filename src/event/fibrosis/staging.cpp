@@ -53,10 +53,10 @@ StagingImpl::StagingImpl(datamanagement::ModelData &model_data,
 }
 
 // Execute
-int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Check if Person even has Fibrosis, exit if they are none
     if (person.GetHCVDetails().fibrosis_state == data::FibrosisState::kNone) {
-        return 0;
+        return;
     }
 
     int time = person.GetFibrosisStagingDetails().time_of_last_staging;
@@ -65,7 +65,7 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // If the person's last test is more recent than the limit, exit
     // event. If they've never been staged they have a -1
     if ((person.GetCurrentTimestep() - time) < _staging_period && time != -1) {
-        return 0;
+        return;
     }
 
     // 2. Check the person's true fibrosis state and use it to search
@@ -80,7 +80,7 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (res >= static_cast<int>(data::MeasuredFibrosisState::kCount)) {
         spdlog::get("main")->error("Measured Fibrosis State Decision returned "
                                    "value outside bounds");
-        return 0;
+        return;
     }
     data::MeasuredFibrosisState stateOne =
         static_cast<data::MeasuredFibrosisState>(res);
@@ -97,13 +97,13 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
         std::find(_testtwo_eligible_fibs.begin(), _testtwo_eligible_fibs.end(),
                   person.GetHCVDetails().fibrosis_state) ==
             _testtwo_eligible_fibs.end()) {
-        return 0;
+        return;
     }
     probs = ProbabilityBuilder(person, _test2_data);
 
     // 7. Decide which stage is assigned to the person.
     if (probs.empty()) {
-        return 0;
+        return;
     }
 
     person.GiveSecondScreeningTest(true);
@@ -119,12 +119,11 @@ int StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
         measured = std::max<data::MeasuredFibrosisState>(stateOne, stateTwo);
     } else {
         // log an error
-        return 0;
+        return;
     }
     // 8. Assign this state to the person.
     person.DiagnoseFibrosis(measured);
     AddStagingCost(person, _test_two_cost);
-    return 0;
 }
 
 // Private Methods

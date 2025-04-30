@@ -28,6 +28,11 @@ public:
 
     ~LinkingImpl() = default;
 
+protected:
+    inline data::InfectionType GetInfectionType() const override {
+        return data::InfectionType::kHiv;
+    }
+
 private:
     inline bool FalsePositive(model::Person &person) override {
         if (person.GetHIVDetails().hiv != data::HIV::kNone) {

@@ -35,16 +35,17 @@ TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
     : TreatmentBase(model_data, log_name) {}
 
-int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
+// Execute
+void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 0. Verify the person is linked before starting treatment
     if (person.GetLinkageDetails(GetInfectionType()).link_state !=
         data::LinkageState::kLinked) {
-        return 0;
+        return;
     }
 
     // 1. Check if the Person is Lost To Follow Up (LTFU)
     if (LostToFollowUp(person, sampler)) {
-        return 0;
+        return;
     }
 
     // 2. Charge the Cost of the Visit (varies if this is retreatment)
@@ -59,7 +60,7 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // nothing happens
     if (!person.GetTreatmentDetails(GetInfectionType()).initiated_treatment &&
         !InitiateTreatment(person, sampler)) {
-        return 0;
+        return;
     }
 
     // 4. Charge the person for the Course they are on
@@ -70,7 +71,7 @@ int TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     // 6. Determine if the person withdraws from the treatment
     if (Withdraws(person, sampler)) {
-        return 0;
+        return;
     }
 
     // 7. Determine if the person has been treated long enough and, if so,

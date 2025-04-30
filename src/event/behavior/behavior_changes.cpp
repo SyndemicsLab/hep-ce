@@ -31,9 +31,8 @@ BehaviorChanges::Create(datamanagement::ModelData &model_data,
 }
 
 // Constructor
-BehaviorChangesImpl::BehaviorChangesImpl(
-    datamanagement::ModelData &model_data,
-    const std::string &log_name = "console")
+BehaviorChangesImpl::BehaviorChangesImpl(datamanagement::ModelData &model_data,
+                                         const std::string &log_name)
     : EventBase(model_data, log_name) {
     SetEventCostCategory(model::CostCategory::kBehavior);
     SetEventUtilityCategory(model::UtilityCategory::kBehavior);
@@ -42,8 +41,8 @@ BehaviorChangesImpl::BehaviorChangesImpl(
 }
 
 // Execute
-int BehaviorChangesImpl::Execute(model::Person &person,
-                                 model::Sampler &sampler) {
+void BehaviorChangesImpl::Execute(model::Person &person,
+                                  model::Sampler &sampler) {
 
     // Typical Behavior Change
     // 1. Generate the transition probabilities based on the starting

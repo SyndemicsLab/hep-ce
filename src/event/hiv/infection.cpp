@@ -32,7 +32,7 @@ InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
     : EventBase(model_data, log_name) {}
 
 // Execute
-int InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // If already infected, exit immediately
     if (person.GetHIVDetails().hiv != data::HIV::kNone) {
         return;

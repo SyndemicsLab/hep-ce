@@ -59,6 +59,7 @@ endif()
 # ---------------------------------------------------------------------------------------
 set(HEPCE_DATA
     src/data/writer.cpp
+    src/data/types.cpp
 )
 
 set(HEPCE_EVENT_BASE
@@ -104,6 +105,7 @@ set(HEPCE_MODEL
     src/model/costing.cpp
     src/model/person.cpp
     src/model/simulation.cpp
+    src/model/utility.cpp
 )
 
 set(HEPCE_UTILS

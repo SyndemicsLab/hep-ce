@@ -28,7 +28,7 @@ Linking::Create(datamanagement::ModelData &model_data,
 
 // Constructor
 LinkingImpl::LinkingImpl(datamanagement::ModelData &model_data,
-                         const std::string &log_name = "console")
+                         const std::string &log_name)
     : LinkingBase(model_data, log_name) {
     SetEventCostCategory(model::CostCategory::kHiv);
     SetLinkingStratifiedByPregnancy(CheckForPregnancyEvent(model_data));

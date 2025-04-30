@@ -54,11 +54,11 @@ public:
         }
     }
 
-    int Execute(model::Person &person, model::Sampler &sampler) override {
+    void Execute(model::Person &person, model::Sampler &sampler) override {
         // if a person is already linked, skip screening
         if (person.GetLinkageDetails(GetInfectionType()).link_state ==
             data::LinkageState::kLinked) {
-            return 0;
+            return;
         }
 
         bool do_one_time_screen = (GetInterventionType() == "one-time") &&

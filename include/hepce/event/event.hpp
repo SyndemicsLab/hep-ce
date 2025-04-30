@@ -25,7 +25,7 @@ namespace event {
 class Event {
 public:
     virtual ~Event() = default;
-    virtual int Execute(model::Person &person, model::Sampler &sampler) = 0;
+    virtual void Execute(model::Person &person, model::Sampler &sampler) = 0;
 };
 } // namespace event
 } // namespace hepce
