@@ -4,33 +4,59 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "Aging.hpp"
-#include "EventTest.cpp"
-#include "Utils.hpp"
+// Testing File
+#include <hepce/event/base/aging.hpp>
+
+// STL Includes
+#include <memory>
+#include <string>
+#include <vector>
+
+// 3rd Party Dependencies
+#include <gtest/gtest.h>
+
+// Library Headers
+#include <hepce/utils/pair_hashing.hpp>
+
+// Local Includes
+#include "person_mock.hpp"
+#include "sampler_mock.hpp"
 
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::SetArgReferee;
 
-class AgingTest : public EventTest {};
+using namespace hepce::data;
+using namespace hepce::event;
+
+class AgingTest : public ::testing::Test {
+protected:
+    NiceMock<hepce::model::MockPerson> mock_person;
+    NiceMock<hepce::model::MockSampler> mock_sampler;
+    void SetUp() override {
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
+    }
+    void TearDown() override {}
+};
 
 std::string SQLQuery = "SELECT age_years, gender, drug_behavior, cost, utility "
                        "FROM background_impacts;";
 
 TEST_F(AgingTest, Aging) {
     // Person Setup
-    ON_CALL(*testPerson, GetAge()).WillByDefault(Return(300));
-    ON_CALL(*testPerson, GetSex()).WillByDefault(Return(person::Sex::kMale));
-    ON_CALL(*testPerson, GetBehavior())
-        .WillByDefault(Return(person::Behavior::kInjection));
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+    ON_CALL(mock_person, GetSex()).WillByDefault(Return(Sex::kMale));
+    ON_CALL(mock_person, GetBehavior())
+        .WillByDefault(Return(Behavior::kInjection));
 
     // Data Setup
     double discount_rate = 0.025;
@@ -54,19 +80,19 @@ TEST_F(AgingTest, Aging) {
     double expected_discounted_life = Utils::discount(1, discount_rate, 1);
 
     // Expectations
-    EXPECT_CALL(*testPerson, Grow()).Times(1);
-    EXPECT_CALL(*testPerson, GetCurrentTimestep()).WillRepeatedly(Return(1));
-    EXPECT_CALL(*testPerson, AddCost(cu.cost, discounted_cost,
+    EXPECT_CALL(mock_person, Grow()).Times(1);
+    EXPECT_CALL(mock_person, GetCurrentTimestep()).WillRepeatedly(Return(1));
+    EXPECT_CALL(mock_person, AddCost(cu.cost, discounted_cost,
                                      cost::CostCategory::kBackground))
         .Times(1);
-    EXPECT_CALL(*testPerson,
+    EXPECT_CALL(mock_person,
                 SetUtility(cu.util, utility::UtilityCategory::kBackground))
         .Times(1);
-    EXPECT_CALL(*testPerson, GetUtility()).WillOnce(Return(expected_utils));
-    EXPECT_CALL(*testPerson, AccumulateTotalUtility(expected_utils,
+    EXPECT_CALL(mock_person, GetUtility()).WillOnce(Return(expected_utils));
+    EXPECT_CALL(mock_person, AccumulateTotalUtility(expected_utils,
                                                     expected_discounted_utils))
         .Times(1);
-    EXPECT_CALL(*testPerson, AddDiscountedLifeSpan(expected_discounted_life))
+    EXPECT_CALL(mock_person, AddDiscountedLifeSpan(expected_discounted_life))
         .Times(1);
 
     // Running Test

@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -17,14 +17,16 @@
 
 #include <gmock/gmock.h>
 
+using namespace hepce::model;
+
 namespace hepce {
-namespace model {
+namespace testing {
 class MockSampler : public virtual Sampler {
 public:
     MOCK_METHOD(const int, GetDecision, (const std::vector<double> &probs),
                 (override));
 };
-} // namespace model
+} // namespace testing
 } // namespace hepce
 
 #endif

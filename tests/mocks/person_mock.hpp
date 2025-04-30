@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-29                                                  //
+// Last Modified: 2025-04-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -20,8 +20,10 @@
 
 #include <gmock/gmock.h>
 
+using namespace hepce::model;
+
 namespace hepce {
-namespace model {
+namespace testing {
 class MockPerson : public virtual Person {
 public:
     // Functionality
@@ -143,7 +145,7 @@ public:
                 (const, override));
     MOCK_METHOD(void, Miscarry, (), (override));
     MOCK_METHOD(void, Stillbirth, (), (override));
-    MOCK_METHOD(void, AddChild, (data::HCV hcv, bool test), (override));
+    MOCK_METHOD(void, Birth, (const data::Child &child), (override));
     MOCK_METHOD(void, EndPostpartum, (), (override));
     MOCK_METHOD(void, Impregnate, (), (override));
     MOCK_METHOD(void, AddInfantExposure, (), (override));
@@ -159,7 +161,7 @@ public:
     MOCK_METHOD(std::string, GetPersonDataString, (), (const, override));
     MOCK_METHOD(std::string, MakePopulationRow, (), (const, override));
 };
-} // namespace model
+} // namespace testing
 } // namespace hepce
 
 #endif
