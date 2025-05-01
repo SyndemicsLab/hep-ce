@@ -1,4 +1,4 @@
-name: CMake
+name: Ubuntu Unit Tests
 
 on:
   push:
@@ -12,16 +12,9 @@ env:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
     name: Build Debug
-    runs-on: ${{ matrix.os }}
+    runs-on: "ubuntu-latest"
     steps:
-      - uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - uses: actions/checkout@v4
       - name: Install Boost
         uses: MarkusJx/install-boost@v2.4.5
@@ -31,6 +24,6 @@ jobs:
           platform_version: 22.04
       - name: Build and Test
         working-directory: ${{ github.workspace }}
-        run: scripts/build.sh -p
+        run: cmake --workflow --presets gcc-debug
         env:
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}

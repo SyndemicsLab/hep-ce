@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-01                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,20 +51,20 @@ protected:
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
+    std::unique_ptr<datamanagement::ModelData> model_data;
+    double discounted_cost;
+    double discounted_life;
+    data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
     void SetUp() override {
-        data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
-
-        EXPECT_CALL(mock_person, IsAlive()).WillOnce(Return(true));
-        EXPECT_CALL(mock_person, GetAge()).WillOnce(Return(300));
-        EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(Sex::kMale));
-        EXPECT_CALL(mock_person, GetBehaviorDetails())
-            .WillOnce(Return(behaviors));
-
         ExecuteQueries(test_db, {"DROP TABLE IF EXISTS background_impacts;",
                                  CreateBackgroundImpacts(),
                                  "INSERT INTO background_impacts "
                                  "VALUES (25, 0, 4, 0.821, 370.75);"});
         BuildSimConf(test_conf);
+        discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
+        discounted_life = utils::Discount(1, 0.0025, 1, false);
+        model_data = std::make_unique<datamanagement::ModelData>(test_conf);
+        model_data->AddSource(test_db);
     }
     void TearDown() override {
         std::filesystem::remove(test_db);
@@ -72,16 +72,14 @@ protected:
     }
 };
 
-std::string SQLQuery = "SELECT age_years, gender, drug_behavior, cost, utility "
-                       "FROM background_impacts;";
-
 TEST_F(AgingTest, Execute) {
-    double discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
-    double discounted_life = utils::Discount(1, 0.0025, 1, false);
-    auto model_data = datamanagement::ModelData(test_conf);
-    model_data.AddSource(test_db);
+    // Setup
+    EXPECT_CALL(mock_person, GetAge()).WillOnce(Return(300));
+    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(Sex::kMale));
+    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
 
     // Expectations
+    EXPECT_CALL(mock_person, IsAlive()).WillOnce(Return(true));
     EXPECT_CALL(mock_person, Grow()).Times(1);
     EXPECT_CALL(mock_person, GetCurrentTimestep()).WillRepeatedly(Return(1));
     EXPECT_CALL(mock_person,
@@ -93,7 +91,27 @@ TEST_F(AgingTest, Execute) {
     EXPECT_CALL(mock_person, AddDiscountedLifeSpan(discounted_life)).Times(1);
 
     // Running Test
-    auto aging = hepce::event::base::Aging::Create(model_data);
+    auto aging = hepce::event::base::Aging::Create(*model_data);
+    aging->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(AgingTest, ExecuteDead) {
+    // Setup
+    EXPECT_CALL(mock_person, GetAge()).Times(0);
+    EXPECT_CALL(mock_person, GetSex()).Times(0);
+    EXPECT_CALL(mock_person, GetBehaviorDetails()).Times(0);
+
+    // Expectations
+    EXPECT_CALL(mock_person, IsAlive()).WillOnce(Return(false));
+    EXPECT_CALL(mock_person, Grow()).Times(0);
+    EXPECT_CALL(mock_person, GetCurrentTimestep()).Times(0);
+    EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
+    EXPECT_CALL(mock_person, SetUtility(_, _)).Times(0);
+    EXPECT_CALL(mock_person, AccumulateTotalUtility(_)).Times(0);
+    EXPECT_CALL(mock_person, AddDiscountedLifeSpan(_)).Times(0);
+
+    // Running Test
+    auto aging = hepce::event::base::Aging::Create(*model_data);
     aging->Execute(mock_person, mock_sampler);
 }
 
