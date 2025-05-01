@@ -1,3 +1,0 @@
-[14:28:19 -04:00] [console] [---W---] [thread 968929] Age Data is Empty...
-[14:35:26 -04:00] [console] [---E---] [thread 969474] Error executing query: SELECT age_years, gender, drug_behavior, cost, utility FROM background_impacts;
-bad any_cast

@@ -26,7 +26,6 @@ int ExecuteQueries(const std::string &db_name,
         SQLite::Database db(db_name,
                             SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
         SQLite::Transaction transaction(db);
-        db.exec("VACUUM;");
         for (const std::string &query : queries) {
             db.exec(query);
         }

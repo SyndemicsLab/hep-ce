@@ -43,6 +43,9 @@ AgingImpl::AgingImpl(datamanagement::ModelData &model_data,
 
 // Execution
 void AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
+    if (!person.IsAlive()) {
+        return;
+    }
     person.Grow();
     AddBackgroundCostAndUtility(person);
     person.AddDiscountedLifeSpan(
