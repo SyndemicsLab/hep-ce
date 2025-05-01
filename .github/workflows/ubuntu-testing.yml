@@ -24,6 +24,6 @@ jobs:
           platform_version: 22.04
       - name: Build and Test
         working-directory: ${{ github.workspace }}
-        run: cmake --workflow --presets gcc-debug
+        run: cmake --workflow --preset gcc-debug
         env:
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
