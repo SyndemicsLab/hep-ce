@@ -22,6 +22,8 @@ jobs:
         with:
           boost_version: 1.86.0
           platform_version: 22.04
+      - name: Install SQLiteCpp
+        run: sudo apt-get install libsqlitecpp-dev
       - name: Build and Test
         working-directory: ${{ github.workspace }}
         run: cmake --workflow --preset gcc-debug
