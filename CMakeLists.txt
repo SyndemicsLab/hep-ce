@@ -106,6 +106,7 @@ set(HEPCE_MODEL
     src/model/person.cpp
     src/model/simulation.cpp
     src/model/utility.cpp
+    src/model/sampler.cpp
 )
 
 set(HEPCE_UTILS

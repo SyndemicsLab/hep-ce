@@ -37,7 +37,6 @@ Aging::Create(datamanagement::ModelData &model_data,
 AgingImpl::AgingImpl(datamanagement::ModelData &model_data,
                      const std::string &log_name)
     : EventBase(model_data, log_name) {
-    _age_data.clear();
     LoadData(model_data);
 }
 
@@ -55,6 +54,9 @@ void AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
 // Private Methods
 void AgingImpl::LoadData(datamanagement::ModelData &model_data) {
+    SetEventCostCategory(model::CostCategory::kBackground);
+    SetEventUtilityCategory(model::UtilityCategory::kBackground);
+    _age_data.clear();
     std::any storage = agemap_t{};
     try {
         model_data.GetDBSource("inputs").Select(
