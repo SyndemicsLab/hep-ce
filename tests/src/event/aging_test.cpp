@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-01                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -63,7 +63,7 @@ protected:
         BuildSimConf(test_conf);
         discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
         discounted_life = utils::Discount(1, 0.0025, 1, false);
-        model_data = std::make_unique<datamanagement::ModelData>(test_conf);
+        model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
     }
     void TearDown() override {

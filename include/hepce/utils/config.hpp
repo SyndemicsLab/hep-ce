@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -29,8 +29,7 @@ namespace utils {
 /// @return
 inline bool GetBoolFromConfig(std::string config_key,
                               datamanagement::ModelData &model_data) {
-    std::string config_data;
-    model_data.GetConfig().GetFromConfig(config_key, config_data);
+    std::string config_data = model_data.GetFromConfig(config_key);
     if (config_data.empty()) {
         spdlog::get("main")->warn("No `{}' Found! Returning `false`...",
                                   config_key);
@@ -46,8 +45,7 @@ inline bool GetBoolFromConfig(std::string config_key,
 /// @return
 inline int GetIntFromConfig(std::string config_key,
                             datamanagement::ModelData &model_data) {
-    std::string config_data;
-    model_data.GetConfig().GetFromConfig(config_key, config_data);
+    std::string config_data = model_data.GetFromConfig(config_key);
     if (config_data.empty()) {
         spdlog::get("main")->warn("No `{}' Found!", config_key);
         config_data = "0";
@@ -61,8 +59,7 @@ inline int GetIntFromConfig(std::string config_key,
 inline double GetDoubleFromConfig(std::string config_key,
                                   datamanagement::ModelData &model_data,
                                   bool positive = true) {
-    std::string config_data;
-    model_data.GetConfig().GetFromConfig(config_key, config_data);
+    std::string config_data = model_data.GetFromConfig(config_key);
     if (config_data.empty()) {
         spdlog::get("main")->warn("No `{}' Found!", config_key);
         config_data = "0.0";
@@ -78,8 +75,7 @@ inline double GetDoubleFromConfig(std::string config_key,
 /// @return
 inline std::string GetStringFromConfig(std::string config_key,
                                        datamanagement::ModelData &model_data) {
-    std::string config_data;
-    model_data.GetConfig().GetFromConfig(config_key, config_data);
+    std::string config_data = model_data.GetFromConfig(config_key);
     if (config_data.empty()) {
         spdlog::get("main")->warn("No `{}' Found!", config_key);
     }
