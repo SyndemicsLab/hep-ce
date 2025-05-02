@@ -86,7 +86,7 @@ private:
 
     bool FatalOverdose(model::Person &person, model::Sampler &decider);
 
-    void GetFibrosisMortalityProb(model::Person &person, double &prob);
+    double GetFibrosisMortalityProbability(model::Person &person);
 
     void GetSMRandBackgroundProb(model::Person &person,
                                  double &backgroundMortProb, double &smr);

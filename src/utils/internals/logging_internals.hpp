@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -23,6 +23,7 @@
 
 namespace hepce {
 namespace utils {
+void DropLogger(const std::string &logger_name) { spdlog::drop(logger_name); }
 CreationStatus CheckIfExists(const std::string &logger_name) {
     return (spdlog::get(logger_name) != nullptr) ? CreationStatus::kExists
                                                  : CreationStatus::kNotCreated;
@@ -39,18 +40,23 @@ void log(const std::string &logger_name, const std::string &message,
     if (logger) {
         switch (type) {
         case LogType::kInfo:
+            logger->set_level(spdlog::level::info);
             logger->info(message);
             break;
         case LogType::kWarn:
+            logger->set_level(spdlog::level::warn);
             logger->warn(message);
             break;
         case LogType::kError:
+            logger->set_level(spdlog::level::err);
             logger->error(message);
             break;
         case LogType::kDebug:
+            logger->set_level(spdlog::level::debug);
             logger->debug(message);
             break;
         default:
+            logger->set_level(spdlog::level::info);
             logger->info(message);
             break;
         }

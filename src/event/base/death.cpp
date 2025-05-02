@@ -53,25 +53,28 @@ void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 
     // Calculate background mortality rate based on age, gender, and IDU
-    double fibrosisDeathProb = 0.0;
-    GetFibrosisMortalityProb(person, fibrosisDeathProb);
+    double fib_death_probability = GetFibrosisMortalityProbability(person);
 
     // 2. Get fatal OD probability.
-    double backgroundMortProb = 0.0;
+    double bg_death_probability = 0.0;
     double smr = 0.0;
-    GetSMRandBackgroundProb(person, backgroundMortProb, smr);
+    GetSMRandBackgroundProb(person, bg_death_probability, smr);
 
     // 3. Decide whether the person dies. If not, unset their overdose
     // property.
-    double totalProb = (backgroundMortProb * smr) + fibrosisDeathProb;
+    double total_death_probability =
+        utils::RateToProbability(
+            utils::ProbabilityToRate(bg_death_probability) * smr) +
+        fib_death_probability;
 
-    std::vector<double> probVec = {(backgroundMortProb * smr),
-                                   fibrosisDeathProb, 1 - totalProb};
+    std::vector<double> probabilities = {(bg_death_probability * smr),
+                                         fib_death_probability,
+                                         1 - total_death_probability};
 
-    int retIdx = sampler.GetDecision(probVec);
-    if (retIdx == 0) {
+    int decision = sampler.GetDecision(probabilities);
+    if (decision == 0) {
         Die(person, data::DeathReason::kBackground);
-    } else if (retIdx == 1) {
+    } else if (decision == 1) {
         Die(person, data::DeathReason::kLiver);
     }
 }
@@ -91,17 +94,25 @@ void DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
     std::string query = BackgroundMortalitySQL();
     std::any storage = _background_data;
 
-    model_data.GetDBSource("inputs").Select(
-        query,
-        [](std::any &storage, const SQLite::Statement &stmt) {
-            utils::tuple_3i tup = std::make_tuple(stmt.getColumn(0).getInt(),
-                                                  stmt.getColumn(1).getInt(),
-                                                  stmt.getColumn(2).getInt());
-            struct BackgroundSmr temp = {stmt.getColumn(3).getDouble(),
-                                         stmt.getColumn(4).getDouble()};
-            std::any_cast<backgroundmap_t>(storage)[tup] = temp;
-        },
-        storage);
+    try {
+        model_data.GetDBSource("inputs").Select(
+            query,
+            [](std::any &storage, const SQLite::Statement &stmt) {
+                backgroundmap_t *temp =
+                    std::any_cast<backgroundmap_t>(&storage);
+                utils::tuple_3i tup = std::make_tuple(
+                    stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt(),
+                    stmt.getColumn(2).getInt());
+                struct BackgroundSmr bgsmr = {stmt.getColumn(3).getDouble(),
+                                              stmt.getColumn(4).getDouble()};
+                (*temp)[tup] = bgsmr;
+            },
+            storage);
+    } catch (std::exception &e) {
+        std::string msg = "SQL Exception getting Background mortality: " +
+                          std::string(e.what());
+        hepce::utils::LogError(GetLogName(), msg);
+    }
 
     _background_data = std::any_cast<backgroundmap_t>(storage);
 
@@ -135,7 +146,7 @@ void DeathImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
     }
 }
 
-bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &decider) {
+bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
     if (!person.GetCurrentlyOverdosing()) {
         return false;
     }
@@ -151,7 +162,7 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &decider) {
     utils::tuple_2i tup = std::make_tuple(moud, drug_behavior);
     double probability = _overdose_data[tup];
 
-    if (decider.GetDecision({probability, 1 - probability}) != 0) {
+    if (sampler.GetDecision({probability, 1 - probability}) != 0) {
         person.ToggleOverdose();
         return false;
     }
@@ -159,37 +170,34 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &decider) {
     return true;
 }
 
-void DeathImpl::GetFibrosisMortalityProb(model::Person &person, double &prob) {
+double DeathImpl::GetFibrosisMortalityProbability(model::Person &person) {
 
     if (person.GetHCVDetails().fibrosis_state == data::FibrosisState::kF4) {
         if (person.GetHCVDetails().hcv == data::HCV::kNone) {
-            prob = _f4_uninfected_probability;
+            return _f4_uninfected_probability;
         } else {
-            prob = _f4_infected_probability;
+            return _f4_infected_probability;
         }
 
     } else if (person.GetHCVDetails().fibrosis_state ==
                data::FibrosisState::kDecomp) {
         if (person.GetHCVDetails().hcv == data::HCV::kNone) {
-            prob = _decomp_uninfected_probability;
+            return _decomp_uninfected_probability;
         } else {
-            prob = _decomp_infected_probability;
+            return _decomp_infected_probability;
         }
-    } else {
-        prob = 0;
     }
+    return 0;
 }
 
 void DeathImpl::GetSMRandBackgroundProb(model::Person &person,
-                                        double &backgroundMortProb,
+                                        double &bg_death_probability,
                                         double &smr) {
 
     if (_background_data.empty()) {
-        spdlog::get("main")->warn(
-            "Setting background death probability to zero. No Data "
-            "Found for background_mortality and "
-            "SMR");
-        backgroundMortProb = 0;
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Invalid Background Death Data Found...");
+        bg_death_probability = 0;
         smr = 0;
         return;
     }
@@ -198,7 +206,7 @@ void DeathImpl::GetSMRandBackgroundProb(model::Person &person,
     int gender = static_cast<int>(person.GetSex());
     int drug_behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_3i tup = std::make_tuple(age_years, gender, drug_behavior);
-    backgroundMortProb = _background_data[tup].back_mort;
+    bg_death_probability = _background_data[tup].back_mort;
     smr = _background_data[tup].smr;
 }
 

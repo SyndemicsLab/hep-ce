@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -27,6 +27,7 @@ enum class CreationStatus : int {
 
 CreationStatus CreateFileLogger(const std::string &logger_name,
                                 const std::string &filepath);
+void DropLogger(const std::string &logger_name);
 void LogInfo(const std::string &logger_name, const std::string &message);
 void LogWarning(const std::string &logger_name, const std::string &message);
 void LogError(const std::string &logger_name, const std::string &message);

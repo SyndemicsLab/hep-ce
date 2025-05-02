@@ -4,14 +4,13 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-28                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "BehaviorChanges.hpp"
-#include "EventTest.cpp"
+#include <hepce/event/behavior/behavior_changes.hpp>
 
 using ::testing::_;
 using ::testing::DoAll;

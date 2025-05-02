@@ -11,7 +11,9 @@ enable_testing()
 
 add_executable(${PROJECT_NAME}
     src/event/aging_test.cpp
+    src/event/death_test.cpp
     src/data/writer_test.cpp
+    src/utils/logging_test.cpp
 
 #   src/model/person_test.cpp
 #   src/model/simulation_test.cpp
@@ -44,7 +46,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC
+    PRIVATE
         "mocks/"
         "constants/"
 )

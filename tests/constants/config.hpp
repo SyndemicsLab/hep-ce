@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -18,7 +18,7 @@
 
 namespace hepce {
 namespace testing {
-void BuildSimConf(const std::string &name) {
+inline void BuildSimConf(const std::string &name) {
     std::stringstream s;
     s << "[simulation]" << std::endl
       << "seed =" << std::endl

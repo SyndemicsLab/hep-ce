@@ -27,10 +27,10 @@
 #include <hepce/utils/pair_hashing.hpp>
 
 // Local Includes
-#include "config.hpp"
-#include "inputs_db.hpp"
-#include "person_mock.hpp"
-#include "sampler_mock.hpp"
+#include "../../constants/config.hpp"
+#include "../../constants/inputs_db.hpp"
+#include "../../mocks/person_mock.hpp"
+#include "../../mocks/sampler_mock.hpp"
 
 using ::testing::_;
 using ::testing::DoAll;
