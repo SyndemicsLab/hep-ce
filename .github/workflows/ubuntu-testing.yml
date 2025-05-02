@@ -22,15 +22,6 @@ jobs:
         with:
           boost_version: 1.86.0
           platform_version: 22.04
-      - name: Install Eigen3
-        uses: kupns-aka-kupa/setup-eigen3@master
-        id: install-eigen3
-        with:
-          version: 3.4.0
-        env:
-          CMAKE_GENERATOR: Ninja
-      - name: Install SQLiteCpp
-        run: sudo apt-get install libsqlite3-dev
       - name: Build and Test
         working-directory: ${{ github.workspace }}
         run: cmake --workflow --preset gcc-debug
