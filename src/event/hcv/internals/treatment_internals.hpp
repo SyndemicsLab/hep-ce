@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -41,6 +41,8 @@ public:
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     inline data::InfectionType GetInfectionType() const override {
         return data::InfectionType::kHcv;
@@ -76,13 +78,6 @@ private:
         return std::make_tuple(retreatment, geno3, cirr);
     }
 
-    void ChargeCostOfCourse(model::Person &person) {
-        ChargeCost(person,
-                   _treatment_sql_data[GetTreatmentThruple(person)].cost);
-        SetEventUtility(treatment_utility);
-        AddEventUtility(person);
-    }
-
     inline void ResetUtility(model::Person &person) const override {
         person.SetUtility(1.0, GetEventUtilityCategory());
     }
@@ -106,41 +101,21 @@ private:
             return;
         }
         person.AddToxicReaction(GetInfectionType());
-        ChargeCost(person, GetTreatmentCosts().toxicity);
-        SetEventUtility(GetTreatmentUtilities().toxicity);
-        AddEventUtility(person);
+        AddEventCost(person, GetTreatmentCosts().toxicity);
+        AddEventUtility(person, GetTreatmentUtilities().toxicity);
     }
 
-    bool InitiateTreatment(model::Person &person, model::Sampler &sampler) {
-        // person initiates treatment -- set treatment initiation values
-        if (IsEligible(person) &&
-            (sampler.GetDecision(
-                 {GetTreatmentProbabilities().initialization}) == 0)) {
-            person.InitiateTreatment(GetInfectionType());
-            return true;
-        }
-        return false;
-    }
+    bool InitiateTreatment(model::Person &person,
+                           model::Sampler &sampler) const;
 
-    int DecideIfPersonAchievesSVR(const model::Person &person,
-                                  model::Sampler &sampler) {
+    inline int DecideIfPersonAchievesSVR(const model::Person &person,
+                                         model::Sampler &sampler) {
         return sampler.GetDecision(
             {_treatment_sql_data[GetTreatmentThruple(person)].svr_probability});
     }
 
     inline int GetTreatmentDuration(const model::Person &person) {
         return _treatment_sql_data[GetTreatmentThruple(person)].duration;
-    }
-
-    int LoadTreatmentSQLData(datamanagement::ModelData &model_data) {
-        std::any storage = _treatment_sql_data;
-        model_data.GetDBSource("inputs").Select(TreatmentSQL(), Callback,
-                                                storage);
-        _treatment_sql_data = std::any_cast<hcvtreatmentmap_t>(storage);
-        if (_treatment_sql_data.empty()) {
-            // Warn Empty
-        }
-        return 0;
     }
 };
 } // namespace hcv

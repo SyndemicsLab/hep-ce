@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -134,12 +134,6 @@ protected:
     }
     /// @brief
     /// @param
-    void ChargeCost(model::Person &person, const double &cost) {
-        SetEventCost(cost);
-        AddEventCost(person);
-    }
-    /// @brief
-    /// @param
     /// @return
     std::vector<std::string>
     LoadEligibilityVectors(const std::string &config_key,
@@ -171,9 +165,10 @@ protected:
                     person.GetPregnancyDetails().pregnancy_state) &&
                 (person.GetBehaviorDetails().time_last_active >
                  _eligibilities.time_since_last_use) &&
-                ((person.GetCurrentTimestep() -
-                  person.GetLinkageDetails(GetInfectionType())
-                      .time_link_change) > _eligibilities.time_since_linked))
+                (GetTimeSince(person,
+                              person.GetLinkageDetails(GetInfectionType())
+                                  .time_link_change) >
+                 _eligibilities.time_since_linked))
                    ? true
                    : false;
     }

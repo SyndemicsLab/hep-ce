@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,6 +37,8 @@ public:
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     incidencemap_t _infection_data;
     double _gt3_prob = 0;
@@ -56,8 +58,6 @@ private:
     }
 
     std::vector<double> GetInfectionProbability(const model::Person &person);
-
-    int LoadIncidenceData(datamanagement::ModelData &model_data);
 };
 } // namespace hcv
 } // namespace event

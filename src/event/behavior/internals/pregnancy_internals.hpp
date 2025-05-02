@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,6 +37,8 @@ public:
     ~PregnancyImpl() = default;
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     pregnancymap_t _pregnancy_data;
     double _multiple_delivery_probability;
@@ -56,30 +58,8 @@ private:
         return !sampler.GetDecision(probs);
     }
 
-    int LoadPregnancyData(datamanagement::ModelData &model_data) {
-        std::any storage = _pregnancy_data;
-
-        model_data.GetDBSource("inputs").Select(
-            PregnancySQL(),
-            [](std::any &storage, const SQLite::Statement &stmt) {
-                struct pregnancy_probabilities d = {
-                    stmt.getColumn(1).getDouble(),
-                    stmt.getColumn(2).getDouble()};
-                std::any_cast<pregnancymap_t>(
-                    storage)[stmt.getColumn(0).getInt()] = d;
-            },
-            storage);
-
-        _pregnancy_data = std::any_cast<pregnancymap_t>(storage);
-
-        if (_pregnancy_data.empty()) {
-            // Warn Empty
-        }
-        return 0;
-    }
-
-    int const GetNumberOfBirths(const model::Person &person,
-                                model::Sampler &sampler) const {
+    inline int const GetNumberOfBirths(const model::Person &person,
+                                       model::Sampler &sampler) const {
 
         std::vector<double> result = {_multiple_delivery_probability,
                                       1 - _multiple_delivery_probability};
@@ -87,14 +67,14 @@ private:
         return (sampler.GetDecision(result) == 0) ? 2 : 1;
     }
 
-    bool DoChildrenGetTested(model::Sampler &sampler) {
+    inline bool DoChildrenGetTested(model::Sampler &sampler) {
 
         std::vector<double> result = {_infant_hcv_tested_probability,
                                       1 - _infant_hcv_tested_probability};
         return (sampler.GetDecision(result) == 0) ? true : false;
     }
 
-    bool DrawChildInfection(model::Sampler &sampler) {
+    inline bool DrawChildInfection(model::Sampler &sampler) {
         std::vector<double> result = {_vertical_hcv_transition_probability,
                                       1 - _vertical_hcv_transition_probability};
         return (sampler.GetDecision(result) == 0) ? true : false;
@@ -104,7 +84,8 @@ private:
 
     data::Child MakeChild(data::HCV hcv, bool test);
 
-    void AttemptHealthyMonth(model::Person &person, model::Sampler &sampler) {
+    inline void AttemptHealthyMonth(model::Person &person,
+                                    model::Sampler &sampler) {
         if (CheckMiscarriage(person, sampler)) {
             person.Miscarry();
         }

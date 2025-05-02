@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -63,9 +63,9 @@ public:
         double prob = GetLinkProbability(person);
         // check if the person was recently screened, for multiplier
         bool recently_screened =
-            ((person.GetCurrentTimestep() -
-              person.GetScreeningDetails(GetInfectionType())
-                  .time_of_last_screening) <= _recent_screen_cutoff);
+            (GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
+                                      .time_of_last_screening) <=
+             _recent_screen_cutoff);
         // apply the multiplier to recently screened persons
         if (recently_screened && (prob < 1)) {
             prob = ApplyMultiplier(prob, _recent_screen_multiplier);
@@ -77,8 +77,7 @@ public:
                 person.GetLinkageDetails(GetInfectionType()).link_type;
             person.Link(lt, GetInfectionType());
             if (lt == data::LinkageType::kIntervention) {
-                SetEventCost(GetInterventionCost());
-                AddEventCost(person);
+                AddEventCost(person, GetInterventionCost());
             }
         }
     }

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -555,8 +555,8 @@ std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet) {
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet) {
     os << "Time of Last Screening: " << sdet.time_of_last_screening
        << std::endl;
-    os << "AB Test Counts: " << sdet.number_ab_tests << std::endl;
-    os << "RNA Testing Counts: " << sdet.number_rna_tests << std::endl;
+    os << "AB Test Counts: " << sdet.num_ab_tests << std::endl;
+    os << "RNA Testing Counts: " << sdet.num_rna_tests << std::endl;
     os << "Antibody Positive: " << std::boolalpha << sdet.ab_positive
        << std::endl;
     os << "Is Identified: " << std::boolalpha << sdet.identified << std::endl;

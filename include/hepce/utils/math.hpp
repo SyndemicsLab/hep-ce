@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -19,21 +19,21 @@ namespace utils {
 /// @brief Convert Probability to Rate
 /// @param prob Probability to Convert
 /// @return Converted Rate
-inline double ProbabilityToRate(double probability) {
+inline double ProbabilityToRate(double probability, int time = 1) {
     if (probability < 0 || probability >= 1) {
         throw std::domain_error("Out of probability value range");
     }
-    return -log(1 - probability);
+    return -log(1 - probability) / time;
 }
 
 /// @brief Convert Rate to Probability
 /// @param rate Rate to Convert
 /// @return Converted Probability
-inline double RateToProbability(double rate) {
+inline double RateToProbability(double rate, int time = 1) {
     if (rate < 0) {
         throw std::domain_error("Out of rate value range");
     }
-    return 1 - exp(-rate);
+    return 1 - exp(-rate * time);
 }
 
 /// @brief Calculate Discount to Provide

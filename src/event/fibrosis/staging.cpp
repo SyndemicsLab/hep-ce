@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -14,6 +14,7 @@
 
 #include "internals/staging_internals.hpp"
 #include <hepce/utils/config.hpp>
+#include <hepce/utils/logging.hpp>
 
 namespace hepce {
 namespace event {
@@ -35,21 +36,7 @@ StagingImpl::StagingImpl(datamanagement::ModelData &model_data,
           utils::GetStringFromConfig("fibrosis_staging.test_two", model_data)),
       EventBase(model_data, log_name) {
 
-    SetEventCostCategory(model::CostCategory::kStaging);
-    LoadStagingData(model_data);
-
-    _staging_period =
-        utils::GetIntFromConfig("fibrosis_staging.period", model_data);
-    _test_one_cost = utils::GetDoubleFromConfig(
-        "fibrosis_staging.test_one_cost", model_data);
-    _test_two_cost = utils::GetDoubleFromConfig(
-        "fibrosis_staging.test_two_cost", model_data);
-    _testtwo_eligible_fibs = utils::SplitToVecT<data::FibrosisState>(
-        utils::GetStringFromConfig("fibrosis_staging.test_two_eligible_stages",
-                                   model_data),
-        ',');
-    _multitest_result_method = utils::GetStringFromConfig(
-        "fibrosis_staging.multitest_result_method", model_data);
+    LoadData(model_data);
 }
 
 // Execute
@@ -64,7 +51,7 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 1. Check the time since the person's last fibrosis staging test.
     // If the person's last test is more recent than the limit, exit
     // event. If they've never been staged they have a -1
-    if ((person.GetCurrentTimestep() - time) < _staging_period && time != -1) {
+    if (GetTimeSince(person, time) < _staging_period && time != -1) {
         return;
     }
 
@@ -118,12 +105,34 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     } else if (_multitest_result_method == "maximum") {
         measured = std::max<data::MeasuredFibrosisState>(stateOne, stateTwo);
     } else {
-        // log an error
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Invalid multitest result provided: " +
+                                     _multitest_result_method);
         return;
     }
     // 8. Assign this state to the person.
     person.DiagnoseFibrosis(measured);
     AddStagingCost(person, _test_two_cost);
+}
+
+void StagingImpl::LoadData(datamanagement::ModelData &model_data) {
+    SetEventCostCategory(model::CostCategory::kStaging);
+
+    _staging_period =
+        utils::GetIntFromConfig("fibrosis_staging.period", model_data);
+    _test_one_cost = utils::GetDoubleFromConfig(
+        "fibrosis_staging.test_one_cost", model_data);
+    _test_two_cost = utils::GetDoubleFromConfig(
+        "fibrosis_staging.test_two_cost", model_data);
+    _testtwo_eligible_fibs = utils::SplitToVecT<data::FibrosisState>(
+        utils::GetStringFromConfig("fibrosis_staging.test_two_eligible_stages",
+                                   model_data),
+        ',');
+    _multitest_result_method = utils::GetStringFromConfig(
+        "fibrosis_staging.multitest_result_method", model_data);
+
+    LoadTestOneStagingData(model_data);
+    LoadTestTwoStagingData(model_data);
 }
 
 // Private Methods
@@ -164,12 +173,6 @@ void StagingImpl::LoadTestTwoStagingData(
     model_data.GetDBSource("inputs").Select(StagingSQL(_test_two), Callback,
                                             storage);
     _test2_data = std::any_cast<testmap_t>(storage);
-}
-
-int StagingImpl::LoadStagingData(datamanagement::ModelData &model_data) {
-    LoadTestOneStagingData(model_data);
-    LoadTestTwoStagingData(model_data);
-    return 0;
 }
 
 } // namespace fibrosis

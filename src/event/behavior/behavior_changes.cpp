@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -15,6 +15,7 @@
 
 // Library Includes
 #include <hepce/utils/config.hpp>
+#include <hepce/utils/logging.hpp>
 
 // Local Includes
 #include "internals/behavior_changes_internals.hpp"
@@ -47,19 +48,14 @@ void BehaviorChangesImpl::Execute(model::Person &person,
     // Typical Behavior Change
     // 1. Generate the transition probabilities based on the starting
     // state
-    int age_years = static_cast<int>(person.GetAge() / 12.0);
-    int gender = static_cast<int>(person.GetSex());
-    int moud = static_cast<int>(person.GetMoudDetails().moud_state);
-    int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
-    utils::tuple_4i tup = std::make_tuple(age_years, gender, moud, behavior);
-    std::vector<double> probs = {
-        _behavior_data[tup].never, _behavior_data[tup].fni,
-        _behavior_data[tup].fi, _behavior_data[tup].ni, _behavior_data[tup].in};
+    auto probs = GetBehaviorTransitionProbabilities(person);
 
     // 2. Draw a behavior state to be transitioned to
     int res = sampler.GetDecision(probs);
     if (res >= static_cast<int>(data::Behavior::kCount)) {
-        // Log Error
+        hepce::utils::LogError(
+            GetLogName(),
+            "Invalid Decision returned during the Behavior Change Event!");
         return;
     }
 
@@ -71,8 +67,27 @@ void BehaviorChangesImpl::Execute(model::Person &person,
     CalculateCostAndUtility(person);
 }
 
+void BehaviorChangesImpl::LoadData(datamanagement::ModelData &model_data) {
+    LoadCostData(model_data);
+    LoadBehaviorData(model_data);
+}
+
 // Private Methods
-int BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
+std::vector<double> BehaviorChangesImpl::GetBehaviorTransitionProbabilities(
+    const model::Person &person) const {
+    int age_years = static_cast<int>(person.GetAge() / 12.0);
+    int gender = static_cast<int>(person.GetSex());
+    int moud = static_cast<int>(person.GetMoudDetails().moud_state);
+    int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
+    utils::tuple_4i tup = std::make_tuple(age_years, gender, moud, behavior);
+    std::vector<double> probs = {
+        _behavior_data.at(tup).never, _behavior_data.at(tup).fni,
+        _behavior_data.at(tup).fi, _behavior_data.at(tup).ni,
+        _behavior_data.at(tup).in};
+    return probs;
+}
+
+void BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
     std::any storage = _cost_data;
 
     model_data.GetDBSource("inputs").Select(
@@ -87,12 +102,12 @@ int BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
         storage);
     _cost_data = std::any_cast<costmap_t>(storage);
     if (_cost_data.empty()) {
-        // Warn Empty
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Behavior Changes Cost Data is Empty...");
     }
-    return 0;
 }
 
-int BehaviorChangesImpl::LoadBehaviorData(
+void BehaviorChangesImpl::LoadBehaviorData(
     datamanagement::ModelData &model_data) {
     std::any storage = _behavior_data;
 
@@ -111,9 +126,9 @@ int BehaviorChangesImpl::LoadBehaviorData(
         storage);
 
     if (_behavior_data.empty()) {
-        // Warn Empty
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Behavior Data Transitions Data is Empty...");
     }
-    return 0;
 }
 
 void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {
@@ -121,11 +136,8 @@ void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {
     int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_2i tup = std::make_tuple(gender, behavior);
 
-    SetEventCost(_cost_data[tup].cost);
-    AddEventCost(person);
-
-    SetEventUtility(_cost_data[tup].util);
-    AddEventUtility(person);
+    AddEventCost(person, _cost_data[tup].cost);
+    AddEventUtility(person, _cost_data[tup].util);
 }
 } // namespace behavior
 } // namespace event

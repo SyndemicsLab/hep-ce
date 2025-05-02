@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -45,31 +45,11 @@ public:
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     behaviormap_t _behavior_data;
     costmap_t _cost_data;
-
-    static int CallbackTransitions(void *storage, int count, char **data,
-                                   char **columns) {
-        utils::tuple_4i tup =
-            std::make_tuple(std::stoi(data[0]), std::stoi(data[1]),
-                            std::stoi(data[2]), std::stoi(data[3]));
-        struct behavior_transitions behavior = {
-            utils::SToDPositive(data[4]), utils::SToDPositive(data[5]),
-            utils::SToDPositive(data[6]), utils::SToDPositive(data[7]),
-            utils::SToDPositive(data[8])};
-        (*((behaviormap_t *)storage))[tup] = behavior;
-        return 0;
-    }
-    static int CallbackCosts(void *storage, int count, char **data,
-                             char **columns) {
-        utils::tuple_2i tup =
-            std::make_tuple(std::stoi(data[0]), std::stoi(data[1]));
-        data::CostUtil cu = {utils::SToDPositive(data[2]),
-                             utils::SToDPositive(data[3])};
-        (*((costmap_t *)storage))[tup] = cu;
-        return 0;
-    }
 
     inline const std::string TransitionSQL() const {
         return "SELECT age_years, gender, moud, drug_behavior, never, "
@@ -82,9 +62,12 @@ private:
                "behavior_impacts;";
     }
 
-    int LoadCostData(datamanagement::ModelData &model_data);
+    std::vector<double>
+    GetBehaviorTransitionProbabilities(const model::Person &person) const;
 
-    int LoadBehaviorData(datamanagement::ModelData &model_data);
+    void LoadCostData(datamanagement::ModelData &model_data);
+
+    void LoadBehaviorData(datamanagement::ModelData &model_data);
 
     void CalculateCostAndUtility(model::Person &person);
 };

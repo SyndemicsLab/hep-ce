@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -46,6 +46,7 @@ void AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (!person.IsAlive()) {
         return;
     }
+    person.AccumulateTotalUtility(GetEventDiscount());
     person.Grow();
     AddBackgroundCostAndUtility(person);
     person.AddDiscountedLifeSpan(
@@ -53,7 +54,7 @@ void AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
 }
 
 // Private Methods
-int AgingImpl::LoadData(datamanagement::ModelData &model_data) {
+void AgingImpl::LoadData(datamanagement::ModelData &model_data) {
     std::any storage = agemap_t{};
     try {
         model_data.GetDBSource("inputs").Select(
@@ -70,13 +71,12 @@ int AgingImpl::LoadData(datamanagement::ModelData &model_data) {
             storage);
     } catch (std::exception &e) {
         hepce::utils::LogError(GetLogName(), e.what());
-        return -1;
+        return;
     }
     _age_data = std::any_cast<agemap_t>(storage);
     if (_age_data.empty()) {
         hepce::utils::LogWarning(GetLogName(), "Age Data is Empty...");
     }
-    return 0;
 }
 
 void AgingImpl::AddBackgroundCostAndUtility(model::Person &person) {
@@ -85,11 +85,8 @@ void AgingImpl::AddBackgroundCostAndUtility(model::Person &person) {
     int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_3i tup = std::make_tuple(age_years, gender, behavior);
 
-    SetEventCost(_age_data[tup].cost);
-    AddEventCost(person);
-
-    SetEventUtility(_age_data[tup].util);
-    AddEventUtility(person);
+    AddEventCost(person, _age_data[tup].cost);
+    AddEventUtility(person, _age_data[tup].util);
 }
 } // namespace base
 } // namespace event

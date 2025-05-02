@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -45,6 +45,8 @@ public:
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     bool _add_cost_data = false;
     progression_probabilities _probabilities;
@@ -68,31 +70,11 @@ private:
     }
 
     inline void AddProgressionCost(model::Person &person) {
-        SetEventCost(_cost_data[TupleBuilder(person)].cost);
-        AddEventCost(person);
+        AddEventCost(person, _cost_data[TupleBuilder(person)].cost);
     }
 
     inline void AddProgressionUtility(model::Person &person) {
-        SetEventUtility(_cost_data[TupleBuilder(person)].util);
-        AddEventUtility(person);
-    }
-
-    void GetProgressionData(datamanagement::ModelData &model_data) {
-        std::any storage = _cost_data;
-        model_data.GetDBSource("inputs").Select(
-            ProgressionSQL(),
-            [](std::any &storage, const SQLite::Statement &stmt) {
-                utils::tuple_2i tup = std::make_tuple(
-                    stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt());
-                std::any_cast<costutilmap_t>(storage)[tup] = {
-                    stmt.getColumn(2).getDouble(),
-                    stmt.getColumn(3).getDouble()};
-            },
-            storage);
-        _cost_data = std::any_cast<costutilmap_t>(storage);
-        if (_cost_data.empty()) {
-            // Warn No Data
-        }
+        AddEventUtility(person, _cost_data[TupleBuilder(person)].util);
     }
 };
 } // namespace fibrosis

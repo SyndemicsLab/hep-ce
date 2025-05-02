@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -31,6 +31,8 @@ public:
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     double _relink_probability = 0.0;
     int _voluntary_relink_duration = 0.0;
@@ -41,8 +43,7 @@ private:
     /// @param person person who is being relinked
     inline void AddRNATest(model::Person &person) {
         person.AddRnaScreen(data::InfectionType::kHcv);
-        SetEventCost(_cost);
-        AddEventCost(person);
+        AddEventCost(person, _cost);
     }
 };
 

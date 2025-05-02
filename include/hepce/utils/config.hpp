@@ -31,13 +31,9 @@ inline bool GetBoolFromConfig(std::string config_key,
                               datamanagement::ModelData &model_data) {
     std::string config_data = model_data.GetFromConfig(config_key);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No `{}' Found! Returning `false`...",
-                                  config_key);
         return false;
     }
-    bool to_return;
-    std::istringstream(config_data) >> std::boolalpha >> to_return;
-    return to_return;
+    return SToBool(config_data);
 }
 
 /// @brief
@@ -47,8 +43,7 @@ inline int GetIntFromConfig(std::string config_key,
                             datamanagement::ModelData &model_data) {
     std::string config_data = model_data.GetFromConfig(config_key);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No `{}' Found!", config_key);
-        config_data = "0";
+        return 0;
     }
     return std::stoi(config_data);
 }
@@ -61,8 +56,7 @@ inline double GetDoubleFromConfig(std::string config_key,
                                   bool positive = true) {
     std::string config_data = model_data.GetFromConfig(config_key);
     if (config_data.empty()) {
-        spdlog::get("main")->warn("No `{}' Found!", config_key);
-        config_data = "0.0";
+        return 0.0;
     }
     if (positive) {
         return SToDPositive(config_data);
@@ -75,11 +69,7 @@ inline double GetDoubleFromConfig(std::string config_key,
 /// @return
 inline std::string GetStringFromConfig(std::string config_key,
                                        datamanagement::ModelData &model_data) {
-    std::string config_data = model_data.GetFromConfig(config_key);
-    if (config_data.empty()) {
-        spdlog::get("main")->warn("No `{}' Found!", config_key);
-    }
-    return config_data;
+    return model_data.GetFromConfig(config_key);
 }
 } // namespace utils
 } // namespace hepce

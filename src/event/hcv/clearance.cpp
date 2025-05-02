@@ -4,17 +4,22 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
+// File Header
 #include <hepce/event/hcv/clearance.hpp>
 
-#include "internals/clearance_internals.hpp"
+// Library Includes
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
+#include <hepce/utils/logging.hpp>
+
+// Local Includes
+#include "internals/clearance_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -31,12 +36,7 @@ Clearance::Create(datamanagement::ModelData &model_data,
 ClearanceImpl::ClearanceImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
     : EventBase(model_data, log_name) {
-    _probability =
-        utils::GetDoubleFromConfig("infection.clearance_prob", model_data);
-
-    if (_probability == 0) {
-        _probability = utils::RateToProbability(0.25) / 6.0;
-    }
+    LoadData(model_data);
 }
 
 // Execute
@@ -52,6 +52,18 @@ void ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
         person.ClearHCV(true);
     }
     return;
+}
+
+void ClearanceImpl::LoadData(datamanagement::ModelData &model_data) {
+    _probability =
+        utils::GetDoubleFromConfig("infection.clearance_prob", model_data);
+
+    if (_probability == 0) {
+        hepce::utils::LogInfo(GetLogName(),
+                              "Infection Clearance Probability is not found or "
+                              "0, setting to default value of 0.036866536");
+        _probability = utils::RateToProbability(0.25) / 6.0;
+    }
 }
 } // namespace hcv
 } // namespace event

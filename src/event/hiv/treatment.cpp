@@ -4,7 +4,7 @@
 // Created Date: 2025-04-21                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -33,29 +33,21 @@ Treatment::Create(datamanagement::ModelData &model_data,
 TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
     : TreatmentBase(model_data, log_name) {
-
-    // load treatment course data - course defined in sim.conf
-    _course_name =
-        utils::GetStringFromConfig("hiv_treatment.course", model_data);
-    LoadCourseData(model_data);
-    LoadUtilityData(model_data);
+    LoadData(model_data);
 }
 
 // Execute
 void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
-    // Ensure that Person is linked to care
     if (person.GetLinkageDetails(GetInfectionType()).link_state !=
         data::LinkageState::kLinked) {
         return;
     }
 
-    // Determine if Person is lost to follow up before beginning treatment
     if (LostToFollowUp(person, sampler)) {
         return;
     }
 
-    // Charge the cost of the visit
-    ChargeCost(person, GetTreatmentCosts().treatment);
+    AddEventCost(person, GetTreatmentCosts().treatment);
 
     // Determine if Person initiates treatment
     if (!person.GetTreatmentDetails(GetInfectionType()).initiated_treatment &&
@@ -63,22 +55,18 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
         return;
     }
 
-    // Charge the cost of the treatment
-    ChargeCostOfCourse(person);
+    AddEventCost(person, _treatment_sql_data[_course_name].course_cost);
+    SetTreatmentUtility(person);
 
-    // Check if treatment causes toxicity
     CheckIfExperienceToxicity(person, sampler);
 
-    // Determine if Person withdraws from care
     if (Withdraws(person, sampler)) {
-        // if achieving suppression through treatment, it instantaneously
-        // ends
-        this->LoseSuppression(person);
+        LoseSuppression(person);
     }
 
-    int time_since_init = person.GetCurrentTimestep() -
-                          person.GetTreatmentDetails(GetInfectionType())
-                              .time_of_treatment_initiation;
+    int time_since_init =
+        GetTimeSince(person, person.GetTreatmentDetails(GetInfectionType())
+                                 .time_of_treatment_initiation);
     // apply suppression if the person has been in treatment long enough
     // must equal suppression months so that this is only triggered at the
     // time of having been in treatment long enough
@@ -94,6 +82,21 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
             _treatment_sql_data[_course_name].restore_high_cd4_months) {
         RestoreHighCD4(person);
     }
+}
+
+void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
+    _course_name =
+        utils::GetStringFromConfig("hiv_treatment.course", model_data);
+
+    std::any storage = hivtreatmentmap_t{};
+    model_data.GetDBSource("inputs").Select(HIVTreatmentSQL(),
+                                            CallbackTreatment, storage);
+    _treatment_sql_data = std::any_cast<hivtreatmentmap_t>(storage);
+
+    storage = hivutilitymap_t{};
+    model_data.GetDBSource("inputs").Select(HIVUtilitySQL(), CallbackUtility,
+                                            storage);
+    _utility_data = std::any_cast<hivutilitymap_t>(storage);
 }
 
 // Private Methods
@@ -152,9 +155,8 @@ void TreatmentImpl::CheckIfExperienceToxicity(model::Person &person,
         return;
     }
     person.AddToxicReaction(GetInfectionType());
-    ChargeCost(person, GetTreatmentCosts().toxicity);
-    SetEventUtility(GetTreatmentUtilities().toxicity);
-    AddEventUtility(person);
+    AddEventCost(person, GetTreatmentCosts().toxicity);
+    AddEventUtility(person, GetTreatmentUtilities().toxicity);
 }
 
 /// @brief Used to set person's HIV utility after engaging with treatment
@@ -165,14 +167,12 @@ void TreatmentImpl::SetTreatmentUtility(model::Person &person) {
     case data::HIV::kHiSu:
     case data::HIV::kHiUn:
         key = std::make_tuple(1, 1);
-        SetEventUtility(_utility_data[key]);
-        AddEventUtility(person);
+        AddEventUtility(person, _utility_data[key]);
         break;
     case data::HIV::kLoSu:
     case data::HIV::kLoUn:
         key = std::make_tuple(1, 0);
-        SetEventUtility(_utility_data[key]);
-        AddEventUtility(person);
+        AddEventUtility(person, _utility_data[key]);
         break;
     default:
         break;
@@ -187,14 +187,12 @@ void TreatmentImpl::ResetUtility(model::Person &person) {
     case data::HIV::kHiSu:
     case data::HIV::kHiUn:
         key = std::make_tuple(0, 1);
-        SetEventUtility(_utility_data[key]);
-        AddEventUtility(person);
+        AddEventUtility(person, _utility_data[key]);
         break;
     case data::HIV::kLoSu:
     case data::HIV::kLoUn:
         key = std::make_tuple(0, 0);
-        SetEventUtility(_utility_data[key]);
-        AddEventUtility(person);
+        AddEventUtility(person, _utility_data[key]);
         break;
     default:
         break;

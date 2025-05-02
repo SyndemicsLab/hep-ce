@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -28,12 +28,13 @@ public:
 
     ~LinkingImpl() = default;
 
-protected:
+    void LoadData(datamanagement::ModelData &model_data) override;
+
+private:
     inline data::InfectionType GetInfectionType() const override {
         return data::InfectionType::kHiv;
     }
 
-private:
     inline bool FalsePositive(model::Person &person) override {
         if (person.GetHIVDetails().hiv != data::HIV::kNone) {
             return false;

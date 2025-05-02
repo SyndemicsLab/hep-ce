@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -36,6 +36,8 @@ public:
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     agemap_t _age_data;
 
@@ -43,8 +45,6 @@ private:
         return "SELECT age_years, gender, drug_behavior, cost, utility "
                "FROM background_impacts;";
     }
-
-    int LoadData(datamanagement::ModelData &model_data);
 
     /// @brief Adds person's background cost
     /// @param person The person to whom cost will be added

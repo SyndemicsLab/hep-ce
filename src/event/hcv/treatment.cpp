@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -15,6 +15,7 @@
 
 // Library Includes
 #include <hepce/utils/config.hpp>
+#include <hepce/utils/logging.hpp>
 
 // Local Includes
 #include "internals/treatment_internals.hpp"
@@ -33,7 +34,9 @@ Treatment::Create(datamanagement::ModelData &model_data,
 // Constructor
 TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
-    : TreatmentBase(model_data, log_name) {}
+    : TreatmentBase(model_data, log_name) {
+    LoadData(model_data);
+}
 
 // Execute
 void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
@@ -54,7 +57,7 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
         person.GetTreatmentDetails(GetInfectionType()).num_completed;
     double visit_cost = (num_treatments > 0) ? GetTreatmentCosts().retreatment
                                              : GetTreatmentCosts().treatment;
-    ChargeCost(person, visit_cost);
+    AddEventCost(person, visit_cost);
 
     // 3. Attempt to start primary treatment, if already on treatment
     // nothing happens
@@ -64,7 +67,8 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 
     // 4. Charge the person for the Course they are on
-    ChargeCostOfCourse(person);
+    AddEventCost(person, _treatment_sql_data[GetTreatmentThruple(person)].cost);
+    AddEventUtility(person, treatment_utility);
 
     // 5. Check if the person experiences toxicity
     CheckIfExperienceToxicity(person, sampler);
@@ -77,9 +81,8 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 7. Determine if the person has been treated long enough and, if so,
     // if they achieve SVR
     int duration = GetTreatmentDuration(person);
-    if ((person.GetCurrentTimestep() -
-         person.GetTreatmentDetails(GetInfectionType())
-             .time_of_treatment_initiation) == duration) {
+    if (GetTimeSince(person, person.GetTreatmentDetails(GetInfectionType())
+                                 .time_of_treatment_initiation) == duration) {
         person.AddCompletedTreatment(GetInfectionType());
         int decision = DecideIfPersonAchievesSVR(person, sampler);
         if (decision == 0) {
@@ -96,6 +99,26 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
             QuitEngagement(person);
         }
     }
+}
+
+void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
+    std::any storage = _treatment_sql_data;
+    model_data.GetDBSource("inputs").Select(TreatmentSQL(), Callback, storage);
+    _treatment_sql_data = std::any_cast<hcvtreatmentmap_t>(storage);
+    if (_treatment_sql_data.empty()) {
+        hepce::utils::LogWarning(GetLogName(), "Treatment Table is Empty...");
+    }
+}
+
+bool TreatmentImpl::InitiateTreatment(model::Person &person,
+                                      model::Sampler &sampler) const {
+    if (IsEligible(person) &&
+        (sampler.GetDecision({GetTreatmentProbabilities().initialization}) ==
+         0)) {
+        person.InitiateTreatment(GetInfectionType());
+        return true;
+    }
+    return false;
 }
 
 } // namespace hcv

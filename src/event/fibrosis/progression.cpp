@@ -4,15 +4,21 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
+
+// File Header
 #include <hepce/event/fibrosis/progression.hpp>
 
-#include "internals/progression_internals.hpp"
+// Library Includes
 #include <hepce/utils/config.hpp>
+#include <hepce/utils/logging.hpp>
+
+// Local Includes
+#include "internals/progression_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -29,19 +35,7 @@ Progression::Create(datamanagement::ModelData &model_data,
 ProgressionImpl::ProgressionImpl(datamanagement::ModelData &model_data,
                                  const std::string &log_name)
     : EventBase(model_data, log_name) {
-    SetEventUtilityCategory(model::UtilityCategory::kLiver);
-    SetEventCostCategory(model::CostCategory::kLiver);
-
-    _probabilities = {utils::GetDoubleFromConfig("fibrosis.f01", model_data),
-                      utils::GetDoubleFromConfig("fibrosis.f12", model_data),
-                      utils::GetDoubleFromConfig("fibrosis.f23", model_data),
-                      utils::GetDoubleFromConfig("fibrosis.f34", model_data),
-                      utils::GetDoubleFromConfig("fibrosis.f4d", model_data)};
-
-    _add_cost_data = utils::GetBoolFromConfig(
-        "fibrosis.add_cost_only_if_identified", model_data);
-
-    GetProgressionData(model_data);
+    LoadData(model_data);
 }
 
 // Execute
@@ -70,6 +64,36 @@ void ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
         AddProgressionCost(person);
     }
     AddProgressionUtility(person);
+}
+
+void ProgressionImpl::LoadData(datamanagement::ModelData &model_data) {
+    SetEventUtilityCategory(model::UtilityCategory::kLiver);
+    SetEventCostCategory(model::CostCategory::kLiver);
+
+    _probabilities = {utils::GetDoubleFromConfig("fibrosis.f01", model_data),
+                      utils::GetDoubleFromConfig("fibrosis.f12", model_data),
+                      utils::GetDoubleFromConfig("fibrosis.f23", model_data),
+                      utils::GetDoubleFromConfig("fibrosis.f34", model_data),
+                      utils::GetDoubleFromConfig("fibrosis.f4d", model_data)};
+
+    _add_cost_data = utils::GetBoolFromConfig(
+        "fibrosis.add_cost_only_if_identified", model_data);
+
+    std::any storage = _cost_data;
+    model_data.GetDBSource("inputs").Select(
+        ProgressionSQL(),
+        [](std::any &storage, const SQLite::Statement &stmt) {
+            utils::tuple_2i tup = std::make_tuple(stmt.getColumn(0).getInt(),
+                                                  stmt.getColumn(1).getInt());
+            std::any_cast<costutilmap_t>(storage)[tup] = {
+                stmt.getColumn(2).getDouble(), stmt.getColumn(3).getDouble()};
+        },
+        storage);
+    _cost_data = std::any_cast<costutilmap_t>(storage);
+    if (_cost_data.empty()) {
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Fibrosis Progression Cost Data is Empty...");
+    }
 }
 
 // Private Methods

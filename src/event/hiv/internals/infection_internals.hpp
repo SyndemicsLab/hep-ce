@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -17,6 +17,7 @@
 
 // Library Includes
 #include <hepce/utils/formatting.hpp>
+#include <hepce/utils/logging.hpp>
 #include <hepce/utils/pair_hashing.hpp>
 
 // Local Includes
@@ -37,6 +38,8 @@ public:
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     hivincidencemap_t _infection_data;
     static void Callback(std::any &storage, const SQLite::Statement &stmt) {
@@ -54,7 +57,9 @@ private:
 
     std::vector<double> GetInfectionProbability(const model::Person &person) {
         if (_infection_data.empty()) {
-            // Warn Empty
+            hepce::utils::LogWarning(
+                GetLogName(),
+                "HIV Infection Probability is Empty. Returning 0.0...");
             return {0.0};
         }
 

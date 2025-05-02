@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -66,9 +66,9 @@ public:
 
         bool do_periodic_screen =
             (GetInterventionType() == "periodic") &&
-            ((person.GetCurrentTimestep() -
-              person.GetScreeningDetails(GetInfectionType())
-                  .time_of_last_screening) >= GetScreeningPeriod());
+            (GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
+                                      .time_of_last_screening) >=
+             GetScreeningPeriod());
 
         // If it is time to do a one-time intervention screen or periodic
         // screen, run an intervention screen
@@ -276,16 +276,14 @@ protected:
     /// @param type The screening type, used to discern the cost to add
     void InsertScreeningCost(model::Person &person, const std::string &key) {
         if (key == "screening_background_rna") {
-            SetEventCost(_background_rna_data.cost);
+            AddEventCost(person, _background_rna_data.cost);
         } else if (key == "screening_background_ab") {
-            SetEventCost(_background_ab_data.cost);
+            AddEventCost(person, _background_ab_data.cost);
         } else if (key == "screening_intervention_rna") {
-            SetEventCost(_intervention_rna_data.cost);
+            AddEventCost(person, _intervention_rna_data.cost);
         } else if (key == "screening_intervention_ab") {
-            SetEventCost(_intervention_ab_data.cost);
+            AddEventCost(person, _intervention_ab_data.cost);
         }
-
-        AddEventCost(person);
     }
 
 private:

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -118,11 +118,11 @@ public:
     }
     inline void AddAbScreen(data::InfectionType it) override {
         MarkScreened(it);
-        _screening_details[it].number_ab_tests++;
+        _screening_details[it].num_ab_tests++;
     }
     inline void AddRnaScreen(data::InfectionType it) override {
         MarkScreened(it);
-        _screening_details[it].number_rna_tests++;
+        _screening_details[it].num_rna_tests++;
     }
     inline bool HadSecondScreeningTest() const override {
         return _staging_details.had_second_test;

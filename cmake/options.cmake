@@ -6,7 +6,7 @@ option(HEPCE_BUILD_PIC "Build position independent code (-fPIC)" OFF)
 option(HEPCE_BUILD_EXECUTABLE "Build Executable for HEPCE" ON)
 
 # testing options
-option(HEPCE_BUILD_TESTS "Build tests" ON)
+option(HEPCE_BUILD_TESTS "Build tests" OFF)
 
 # coverage options (only valid if HEPCE_BUILD_TESTS is ON)
 option(HEPCE_CALCULATE_COVERAGE "Calculate Code Coverage" OFF)

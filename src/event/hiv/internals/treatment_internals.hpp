@@ -4,7 +4,7 @@
 // Created Date: 2025-04-21                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -44,6 +44,8 @@ public:
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     hivutilitymap_t _utility_data;
     hivtreatmentmap_t _treatment_sql_data;
@@ -82,20 +84,6 @@ private:
             stmt.getColumn(2).getDouble();
     }
 
-    inline void LoadUtilityData(datamanagement::ModelData &model_data) {
-        std::any storage = _utility_data;
-        model_data.GetDBSource("inputs").Select(HIVUtilitySQL(),
-                                                CallbackUtility, storage);
-        _utility_data = std::any_cast<hivutilitymap_t>(storage);
-    }
-
-    inline void LoadCourseData(datamanagement::ModelData &model_data) {
-        std::any storage = _treatment_sql_data;
-        model_data.GetDBSource("inputs").Select(HIVTreatmentSQL(),
-                                                CallbackTreatment, storage);
-        _treatment_sql_data = std::any_cast<hivtreatmentmap_t>(storage);
-    }
-
     inline bool IsLowCD4(model::Person &person) {
         if ((person.GetHIVDetails().hiv == data::HIV::kLoUn) ||
             (person.GetHIVDetails().hiv == data::HIV::kLoSu)) {
@@ -110,11 +98,6 @@ private:
         } else if (person.GetHIVDetails().hiv == data::HIV::kLoSu) {
             person.SetHIV(data::HIV::kHiSu);
         }
-    }
-
-    inline void ChargeCostOfCourse(model::Person &person) {
-        ChargeCost(person, _treatment_sql_data[_course_name].course_cost);
-        SetTreatmentUtility(person);
     }
 
     void ResetUtility(model::Person &person) const override;

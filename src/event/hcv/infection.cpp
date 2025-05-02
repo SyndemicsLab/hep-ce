@@ -4,16 +4,21 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
+// File Header
 #include <hepce/event/hcv/infection.hpp>
 
-#include "internals/infection_internals.hpp"
+// Library Includes
 #include <hepce/utils/config.hpp>
+#include <hepce/utils/logging.hpp>
+
+// Local Includes
+#include "internals/infection_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -30,7 +35,7 @@ Infection::Create(datamanagement::ModelData &model_data,
 InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
     : EventBase(model_data, log_name) {
-    int rc = LoadIncidenceData(model_data);
+    LoadData(model_data);
     _gt3_prob =
         utils::GetDoubleFromConfig("infection.genotype_three_prob", model_data);
 }
@@ -40,8 +45,7 @@ void InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Acute cases progress to chronic after 6 consecutive months of
     // infection
     if (person.GetHCVDetails().hcv == data::HCV::kAcute &&
-        (person.GetCurrentTimestep() - person.GetHCVDetails().time_changed) ==
-            6) {
+        GetTimeSince(person, person.GetHCVDetails().time_changed) == 6) {
         person.SetHCV(data::HCV::kChronic);
     }
 
@@ -62,11 +66,24 @@ void InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
+void InfectionImpl::LoadData(datamanagement::ModelData &model_data) {
+    std::string error;
+    std::any storage = _infection_data;
+    model_data.GetDBSource("inputs").Select(IncidenceSQL(), CallbackInfection,
+                                            storage);
+    _infection_data = std::any_cast<incidencemap_t>(storage);
+    if (_infection_data.empty()) {
+        hepce::utils::LogWarning(GetLogName(), "Incidence Table is Empty...");
+    }
+}
+
 // Private Methods
 std::vector<double>
 InfectionImpl::GetInfectionProbability(const model::Person &person) {
     if (_infection_data.empty()) {
-        // Warn Empty
+        hepce::utils::LogWarning(
+            GetLogName(),
+            "Infection Data is Empty. Returning Probability of 0.0...");
         return {0.0};
     }
 
@@ -77,18 +94,6 @@ InfectionImpl::GetInfectionProbability(const model::Person &person) {
     double incidence = _infection_data[tup];
 
     return {incidence};
-}
-
-int InfectionImpl::LoadIncidenceData(datamanagement::ModelData &model_data) {
-    std::string error;
-    std::any storage = _infection_data;
-    model_data.GetDBSource("inputs").Select(IncidenceSQL(), CallbackInfection,
-                                            storage);
-    _infection_data = std::any_cast<incidencemap_t>(storage);
-    if (_infection_data.empty()) {
-        // Warn Empty
-    }
-    return 0;
 }
 
 } // namespace hcv

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -31,46 +31,42 @@ public:
         : _log_name(log_name) {
         SetEventDiscount(
             utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
-        SetEventCostCategory(model::CostCategory::kBackground);
+        SetEventCostCategory(model::CostCategory::kMisc);
         SetEventUtilityCategory(model::UtilityCategory::kBackground);
     }
     ~EventBase() = default;
     void SetEventDiscount(const double &d) { _discount = d; }
-
-    void SetEventCost(const double &cost) { _cu.cost = cost; }
     void SetEventCostCategory(const model::CostCategory &cc) {
         _event_cost_category = cc;
     }
-
-    void SetEventUtility(const double &util) { _cu.util = util; }
     void SetEventUtilityCategory(const model::UtilityCategory &uc) {
         _event_utility_category = uc;
     }
 
     double GetEventDiscount() const { return _discount; }
-
-    double GetEventCost() const { return _cu.cost; }
     model::CostCategory GetEventCostCategory() const {
         return _event_cost_category;
     }
-
-    double GetEventUtility() const { return _cu.util; }
     model::UtilityCategory GetEventUtilityCategory() const {
         return _event_utility_category;
     }
 
     std::string GetLogName() const { return _log_name; }
 
-    void AddEventCost(model::Person &person, bool annual = false) const {
+    void AddEventCost(model::Person &person, double event_cost,
+                      bool annual = false) const {
         double discounted_cost =
-            utils::Discount(GetEventCost(), GetEventDiscount(),
+            utils::Discount(event_cost, GetEventDiscount(),
                             person.GetCurrentTimestep(), annual);
-        person.AddCost(GetEventCost(), discounted_cost, GetEventCostCategory());
+        person.AddCost(event_cost, discounted_cost, GetEventCostCategory());
     }
 
-    void AddEventUtility(model::Person &person) const {
-        person.SetUtility(GetEventUtility(), GetEventUtilityCategory());
-        person.AccumulateTotalUtility(GetEventDiscount());
+    void AddEventUtility(model::Person &person, double event_utility) const {
+        person.SetUtility(event_utility, GetEventUtilityCategory());
+    }
+
+    inline int GetTimeSince(const model::Person &person, int time) const {
+        return person.GetCurrentTimestep() - time;
     }
 
 private:
@@ -79,7 +75,6 @@ private:
     model::UtilityCategory _event_utility_category =
         model::UtilityCategory::kBackground;
     model::CostCategory _event_cost_category = model::CostCategory::kBackground;
-    data::CostUtil _cu;
 };
 } // namespace event
 } // namespace hepce

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-21                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -115,9 +115,8 @@ std::string PersonImpl::GetPersonDataString() const {
         << GetFibrosisStagingDetails().measured_fibrosis_state << ","
         << GetFibrosisStagingDetails().time_of_last_staging << ","
         << GetScreeningDetails(data::InfectionType::kHcv).time_of_last_screening
-        << "," << GetScreeningDetails(data::InfectionType::kHcv).number_ab_tests
-        << ","
-        << GetScreeningDetails(data::InfectionType::kHcv).number_rna_tests
+        << "," << GetScreeningDetails(data::InfectionType::kHcv).num_ab_tests
+        << "," << GetScreeningDetails(data::InfectionType::kHcv).num_rna_tests
         << "," << GetHCVDetails().times_infected << ","
         << GetHCVDetails().times_acute_cleared << "," << std::boolalpha
         << GetTreatmentDetails(data::InfectionType::kHcv).initiated_treatment
@@ -248,15 +247,15 @@ std::string PersonImpl::MakePopulationRow() const {
         // ScreeningDetails
         const auto &hcvsd = _screening_details.at(data::InfectionType::kHcv);
         population_row << hcvsd.time_of_last_screening << ","
-                       << hcvsd.number_ab_tests << ","
-                       << hcvsd.number_rna_tests << ","
+                       << hcvsd.num_ab_tests << ","
+                       << hcvsd.num_rna_tests << ","
                        << std::boolalpha << hcvsd.ab_positive << ","
                        << std::boolalpha << hcvsd.identified << ","
                        << hcvsd.time_identified << ",";
         const auto &hivsd = _screening_details.at(data::InfectionType::kHiv);
         population_row << hivsd.time_of_last_screening << ","
-                       << hivsd.number_ab_tests << ","
-                       << hivsd.number_rna_tests << ","
+                       << hivsd.num_ab_tests << ","
+                       << hivsd.num_rna_tests << ","
                        << std::boolalpha << hivsd.ab_positive << ","
                        << std::boolalpha << hivsd.identified << ","
                        << hivsd.time_identified << ",";

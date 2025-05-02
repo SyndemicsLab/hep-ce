@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -35,7 +35,7 @@ WriterImpl::WritePopulation(const std::vector<model::Person> &population,
     if (!csvStream) {
         return "";
     }
-    csvStream << "id," << POPULATION_HEADERS << ",cost,discount_cost"
+    csvStream << "id," << POPULATION_HEADERS() << ",cost,discount_cost"
               << std::endl;
     for (const auto &person : population) {
         std::pair<double, double> costTotals = person.GetCostTotals();

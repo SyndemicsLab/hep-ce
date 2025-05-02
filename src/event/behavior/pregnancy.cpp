@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -16,6 +16,7 @@
 // Library Includes
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
+#include <hepce/utils/logging.hpp>
 
 // Local Includes
 #include "internals/pregnancy_internals.hpp"
@@ -35,19 +36,7 @@ Pregnancy::Create(datamanagement::ModelData &model_data,
 PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
     : EventBase(model_data, log_name) {
-    std::string storage;
-    _multiple_delivery_probability = utils::GetDoubleFromConfig(
-        "pregnancy.multiple_delivery_probability", model_data);
-
-    storage.clear();
-    _infant_hcv_tested_probability = utils::GetDoubleFromConfig(
-        "pregnancy.infant_hcv_tested_probability", model_data);
-
-    storage.clear();
-    _vertical_hcv_transition_probability = utils::GetDoubleFromConfig(
-        "pregnancy.vertical_hcv_transition_probability", model_data);
-
-    LoadPregnancyData(model_data);
+    LoadData(model_data);
 }
 
 // Execute
@@ -56,8 +45,9 @@ void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
         person.GetAge() > 540 ||
         (person.GetPregnancyDetails().pregnancy_state ==
              data::PregnancyState::kPostpartum &&
-         (person.GetCurrentTimestep() -
-          person.GetPregnancyDetails().time_of_pregnancy_change) < 3)) {
+         GetTimeSince(person,
+                      person.GetPregnancyDetails().time_of_pregnancy_change) <
+             3)) {
         return;
     }
 
@@ -68,8 +58,9 @@ void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     if (person.GetPregnancyDetails().pregnancy_state ==
         data::PregnancyState::kPregnant) {
-        if ((person.GetCurrentTimestep() -
-             person.GetPregnancyDetails().time_of_pregnancy_change) >= 9) {
+        if (GetTimeSince(
+                person,
+                person.GetPregnancyDetails().time_of_pregnancy_change) >= 9) {
             AttemptHaveChild(person, sampler);
         } else {
             AttemptHealthyMonth(person, sampler);
@@ -82,6 +73,35 @@ void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
         }
     }
     return;
+}
+
+void PregnancyImpl::LoadData(datamanagement::ModelData &model_data) {
+    _multiple_delivery_probability = utils::GetDoubleFromConfig(
+        "pregnancy.multiple_delivery_probability", model_data);
+
+    _infant_hcv_tested_probability = utils::GetDoubleFromConfig(
+        "pregnancy.infant_hcv_tested_probability", model_data);
+
+    _vertical_hcv_transition_probability = utils::GetDoubleFromConfig(
+        "pregnancy.vertical_hcv_transition_probability", model_data);
+
+    std::any storage = _pregnancy_data;
+
+    model_data.GetDBSource("inputs").Select(
+        PregnancySQL(),
+        [](std::any &storage, const SQLite::Statement &stmt) {
+            struct pregnancy_probabilities d = {stmt.getColumn(1).getDouble(),
+                                                stmt.getColumn(2).getDouble()};
+            std::any_cast<pregnancymap_t>(storage)[stmt.getColumn(0).getInt()] =
+                d;
+        },
+        storage);
+
+    _pregnancy_data = std::any_cast<pregnancymap_t>(storage);
+
+    if (_pregnancy_data.empty()) {
+        hepce::utils::LogWarning(GetLogName(), "Pregnancy Data is Empty...");
+    }
 }
 
 // Private Methods

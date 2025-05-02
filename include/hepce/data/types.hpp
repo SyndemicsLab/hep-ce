@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -13,24 +13,95 @@
 #define HEPCE_DATA_TYPES_HPP_
 
 #include <ostream>
+#include <sstream>
 #include <vector>
 
 namespace hepce {
 namespace data {
-inline static const std::string POPULATION_HEADERS =
-    "sex,age,isAlive,deathReason,identifiedHCV,timeInfectionIdentified,HCV,"
-    "fibrosis_state,is_genotype_three,seropositive,timeHCVChanged,"
-    "time_fibrosis_state_changed,drugBehavior,timeLastActiveDrugUse,"
-    "linkageState,"
-    "time_link_change,linkageType,link_count,measured_fibrosis_state,"
-    "time_of_last_staging,time_of_last_screening,number_ab_tests,number_rna_"
-    "tests,"
-    "times_infected,times_acute_cleared,initiated_treatment,"
-    "time_treatment_initiation,minUtility,multUtility,discountMinUtility,"
-    "discountMultUtility,treatmentWithdrawals,treatmentToxicReactions,"
-    "completedTreatments,svrs,behaviorUtility,liverUtility,treatmentUtility,"
-    "backgroundUtility,hivUtility,lifeSpan,discountedLifeSpan,"
-    "number_treatment_starts,numberOfRetreatments";
+inline static const std::string
+POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
+                   bool overdose = false, bool hiv = false, bool moud = false) {
+    std::stringstream headers;
+    // basic characteristics
+    headers << "sex,age,is_alive,boomer_classification,death_reason,";
+    // BehaviorDetails
+    headers << "drug_behavior,time_last_active_drug_use,";
+    // HCVDetails
+    headers << "hcv,fibrosis_state,is_genotype_three,seropositive,time_hcv_"
+               "changed,time_fibrosis_state_changed,times_hcv_infected,times_"
+               "acute_cleared,svrs,";
+    // HIVDetails
+    std::string hiv_details =
+        hiv ? "hiv,time_hiv_changed,low_cd4_months_count," : "none,-1,0,";
+    headers << hiv_details;
+    // HCCDetails
+    std::string hcc_details = hcc ? "hcc_state,hcc_diagnosed," : "none,false,";
+    headers << hcc_details;
+    // overdose characteristics
+    std::string overdoses =
+        overdose ? "currently_overdosing,num_overdoses," : "false,0,";
+    headers << overdoses;
+    // MOUDDetails
+    std::string moud_details =
+        moud ? "moud_state,time_started_moud,current_moud_state_concurrent_"
+               "months,total_moud_months,"
+             : "none,-1,0,0,";
+    headers << moud_details;
+    // PregnancyDetails
+    std::string pregnancy_details =
+        pregnancy ? "pregnancy_state,time_of_pregnancy_change,pregnancy_count,"
+                    "num_infants,num_miscarriages,num_infant_hcv_exposures,num_"
+                    "infant_hcv_infections,num_infant_hcv_tests,"
+                  : "na,-1,0,0,0,0,0,0,";
+    headers << pregnancy_details;
+    // StagingDetails
+    headers << "measured_fibrosis_state,had_second_test,time_of_last_staging,";
+    // LinkageDetails
+    headers << "hcv_link_state,time_of_hcv_link_change,hcv_link_type,hcv_link_"
+               "count,";
+    if (hiv) {
+        headers << "hiv_link_state,time_of_hiv_link_change,hiv_link_type,hiv_"
+                   "link_count,";
+    } else {
+        headers << "never,-1,na,0,";
+    }
+    // ScreeningDetails
+    headers << "time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,"
+               "hcv_antibody_positive,hcv_identified,time_hcv_identified,";
+    if (hiv) {
+        headers
+            << "time_of_last_hiv_screening,num_hiv_ab_tests,num_hiv_rna_tests,"
+               "hiv_antibody_positive,hiv_identified,time_hiv_identified,";
+    } else {
+        headers << "-1,0,0,false,false,-1,";
+    }
+    // TreatmentDetails
+    headers << "initiated_hcv_treatment,time_of_hcv_treatment_initiation,num_"
+               "hcv_treatment_starts,num_hcv_treatment_withdrawals,num_hcv_"
+               "treatment_toxic_reactions,num_completed_hcv_treatments,num_hcv_"
+               "retreatments,in_hcv_retreatment,";
+    if (hiv) {
+        headers << "initiated_hiv_treatment,time_of_hiv_treatment_initiation,"
+                   "num_hiv_treatment_starts,num_hiv_treatment_withdrawals,num_"
+                   "hiv_treatment_toxic_reactions,";
+    } else {
+        headers << "false,-1,0,0,0,";
+    }
+    // Utility - NOTE: While LifetimeUtility values are listed here, they cannot
+    // be assigned when creating a new Person. They are effectively read-only.
+    headers << "behavior_utility,liver_utility,treatment_utility,background_"
+               "utility,";
+    if (hiv) {
+        headers << "hiv_utility,";
+    } else {
+        headers << "1.0,";
+    }
+    headers << "min_utility,mult_utility,discounted_min_utility,discounted_"
+               "mult_utility,";
+    // Lifespan
+    headers << "life_span,discounted_life_span";
+    return headers.str();
+}
 
 /// @brief Infection types tracked for all Persons
 enum class InfectionType : int {
@@ -321,8 +392,8 @@ std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet);
 struct ScreeningDetails {
     // -1 if never screened, otherwise [0, currentTimestep-1)
     int time_of_last_screening = -1;
-    int number_ab_tests = 0;
-    int number_rna_tests = 0;
+    int num_ab_tests = 0;
+    int num_rna_tests = 0;
     bool ab_positive = false;
     bool identified = false;
     int time_identified = -1;

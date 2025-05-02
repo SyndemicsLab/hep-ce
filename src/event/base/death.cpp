@@ -4,12 +4,14 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 #include <hepce/event/base/death.hpp>
+
+#include <hepce/utils/logging.hpp>
 
 #include "internals/death_internals.hpp"
 
@@ -74,6 +76,8 @@ void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
+void DeathImpl::LoadData(datamanagement::ModelData &model_data) {}
+
 // Private Methods
 bool DeathImpl::ReachedMaxAge(model::Person &person) {
     if (person.GetAge() >= 1200) {
@@ -83,7 +87,7 @@ bool DeathImpl::ReachedMaxAge(model::Person &person) {
     return false;
 }
 
-int DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
+void DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
     std::string query = BackgroundMortalitySQL();
     std::any storage = _background_data;
 
@@ -102,54 +106,33 @@ int DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
     _background_data = std::any_cast<backgroundmap_t>(storage);
 
     if (_background_data.empty()) {
-        // Warn Empty
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Background Mortality Data is Empty...");
     }
-    return 0;
 }
 
-int DeathImpl::CheckOverdoseTable(datamanagement::ModelData &model_data) {
-    std::unordered_map<int, datamanagement::source::BindingVariant> bindings;
-    bindings[1] = "table";
-    bindings[2] = "overdoses";
-    std::vector<std::string> names;
-    std::any storage = names;
-    model_data.GetDBSource("inputs").Select(
-        OverdoseTableSQL(),
-        [](std::any &storage, const SQLite::Statement &stmt) {
-            std::any_cast<std::vector<std::string>>(storage).emplace_back(
-                stmt.getColumn(0).getString());
-        },
-        storage);
-
-    names = std::any_cast<std::vector<std::string>>(storage);
-    if (names.empty()) {
-        // Warn Empty
-        return -1;
-    }
-    return 0;
-}
-
-int DeathImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
-    int rc = CheckOverdoseTable(model_data);
-    if (rc != 0) {
-        return rc;
-    }
+void DeathImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
     std::any storage = _overdose_data;
-    model_data.GetDBSource("inputs").Select(
-        OverdoseSQL(),
-        [](std::any &storage, const SQLite::Statement &stmt) {
-            utils::tuple_2i tup = std::make_tuple(stmt.getColumn(0).getInt(),
-                                                  stmt.getColumn(1).getInt());
-            std::any_cast<overdosemap_t>(storage)[tup] =
-                stmt.getColumn(2).getDouble();
-        },
-        storage);
+    try {
+        model_data.GetDBSource("inputs").Select(
+            OverdoseSQL(),
+            [](std::any &storage, const SQLite::Statement &stmt) {
+                utils::tuple_2i tup = std::make_tuple(
+                    stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt());
+                std::any_cast<overdosemap_t>(storage)[tup] =
+                    stmt.getColumn(2).getDouble();
+            },
+            storage);
+    } catch (std::exception &e) {
+        hepce::utils::LogInfo(
+            GetLogName(), "No Overdose Table Found in the inputs database...");
+        return;
+    }
 
     _overdose_data = std::any_cast<overdosemap_t>(storage);
     if (_overdose_data.empty()) {
-        // Warn Empty
+        hepce::utils::LogWarning(GetLogName(), "Overdose Table is Empty...");
     }
-    return 0;
 }
 
 bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &decider) {

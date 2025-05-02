@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -33,6 +33,8 @@ public:
                   const std::string &log_name = "console");
 
     ~ScreeningImpl() = default;
+
+    void LoadData(datamanagement::ModelData &model_data) override;
 
 private:
     data::InfectionType GetInfectionType() const override {

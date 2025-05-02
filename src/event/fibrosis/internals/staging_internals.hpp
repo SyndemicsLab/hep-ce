@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,6 +37,8 @@ public:
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 
+    void LoadData(datamanagement::ModelData &model_data) override;
+
 private:
     const std::string _test_one;
     const std::string _test_two;
@@ -63,11 +65,9 @@ private:
                                                  const testmap_t &test) const;
 
     inline void AddStagingCost(model::Person &person, const double &cost) {
-        SetEventCost(cost);
-        AddEventCost(person);
+        AddEventCost(person, cost);
     }
 
-    int LoadStagingData(datamanagement::ModelData &model_data);
     void LoadTestOneStagingData(datamanagement::ModelData &model_data);
     void LoadTestTwoStagingData(datamanagement::ModelData &model_data);
 };
