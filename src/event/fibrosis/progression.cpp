@@ -79,16 +79,24 @@ void ProgressionImpl::LoadData(datamanagement::ModelData &model_data) {
     _add_cost_data = utils::GetBoolFromConfig(
         "fibrosis.add_cost_only_if_identified", model_data);
 
-    std::any storage = _cost_data;
-    model_data.GetDBSource("inputs").Select(
-        ProgressionSQL(),
-        [](std::any &storage, const SQLite::Statement &stmt) {
-            utils::tuple_2i tup = std::make_tuple(stmt.getColumn(0).getInt(),
-                                                  stmt.getColumn(1).getInt());
-            std::any_cast<costutilmap_t>(storage)[tup] = {
-                stmt.getColumn(2).getDouble(), stmt.getColumn(3).getDouble()};
-        },
-        storage);
+    std::any storage = costutilmap_t{};
+    try {
+        model_data.GetDBSource("inputs").Select(
+            ProgressionSQL(),
+            [](std::any &storage, const SQLite::Statement &stmt) {
+                costutilmap_t *temp = std::any_cast<costutilmap_t>(&storage);
+                utils::tuple_2i tup = std::make_tuple(
+                    stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt());
+                (*temp)[tup] = {stmt.getColumn(2).getDouble(),
+                                stmt.getColumn(3).getDouble()};
+            },
+            storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting Fibrosis Progression Data: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
     _cost_data = std::any_cast<costutilmap_t>(storage);
     if (_cost_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),

@@ -70,10 +70,6 @@ private:
         return sql.str();
     }
 
-    inline const std::string OverdoseTableSQL() const {
-        return "SELECT name FROM sqlite_master WHERE type = ? AND name = ?;";
-    }
-
     inline void Die(model::Person &person, const data::DeathReason &reason) {
         person.Die(reason);
     }

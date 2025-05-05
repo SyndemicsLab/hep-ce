@@ -94,6 +94,14 @@ inline const std::string CreatePregnancy() {
     return s.str();
 }
 
+inline const std::string CreateHCVImpacts() {
+    std::stringstream s;
+    s << "CREATE TABLE hcv_impacts (hcv_status	INTEGER NOT NULL DEFAULT "
+         "0,fibrosis_state	INTEGER NOT NULL,cost	REAL NOT NULL DEFAULT "
+         "0.0,utility	REAL NOT NULL,PRIMARY KEY(hcv_status,fibrosis_state));";
+    return s.str();
+}
+
 } // namespace testing
 } // namespace hepce
 

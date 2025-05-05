@@ -60,12 +60,12 @@ void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     // 3. Decide whether the person dies. If not, unset their overdose
     // property.
+    double bg_mortality_probability = utils::RateToProbability(
+        utils::ProbabilityToRate(bg_death_probability) * smr);
     double total_death_probability =
-        utils::RateToProbability(
-            utils::ProbabilityToRate(bg_death_probability) * smr) +
-        fib_death_probability;
+        bg_mortality_probability + fib_death_probability;
 
-    std::vector<double> probabilities = {(bg_death_probability * smr),
+    std::vector<double> probabilities = {bg_mortality_probability,
                                          fib_death_probability,
                                          1 - total_death_probability};
 
