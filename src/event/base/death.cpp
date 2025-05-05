@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-05                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -29,18 +29,16 @@ Death::Create(datamanagement::ModelData &model_data,
 // Constructor
 DeathImpl::DeathImpl(datamanagement::ModelData &model_data,
                      const std::string &log_name)
-    : EventBase(model_data, log_name) {
-    _f4_infected_probability =
-        utils::GetDoubleFromConfig("mortality.f4_infected", model_data);
-    _f4_uninfected_probability =
-        utils::GetDoubleFromConfig("mortality.f4_uninfected", model_data);
-    _decomp_infected_probability =
-        utils::GetDoubleFromConfig("mortality.decomp_infected", model_data);
-    _decomp_uninfected_probability =
-        utils::GetDoubleFromConfig("mortality.decomp_uninfected", model_data);
-
-    LoadOverdoseData(model_data);
-    LoadBackgroundMortality(model_data);
+    : EventBase(model_data, log_name),
+      _f4_infected_probability(
+          utils::GetDoubleFromConfig("mortality.f4_infected", model_data)),
+      _f4_uninfected_probability(
+          utils::GetDoubleFromConfig("mortality.f4_uninfected", model_data)),
+      _decomp_infected_probability(
+          utils::GetDoubleFromConfig("mortality.decomp_infected", model_data)),
+      _decomp_uninfected_probability(utils::GetDoubleFromConfig(
+          "mortality.decomp_uninfected", model_data)) {
+    LoadData(model_data);
 }
 
 // Execute
@@ -79,7 +77,10 @@ void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
-void DeathImpl::LoadData(datamanagement::ModelData &model_data) {}
+void DeathImpl::LoadData(datamanagement::ModelData &model_data) {
+    LoadOverdoseData(model_data);
+    LoadBackgroundMortality(model_data);
+}
 
 // Private Methods
 bool DeathImpl::ReachedMaxAge(model::Person &person) {

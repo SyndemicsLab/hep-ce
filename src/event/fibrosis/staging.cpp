@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-05                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -30,12 +30,11 @@ Staging::Create(datamanagement::ModelData &model_data,
 // Constructor
 StagingImpl::StagingImpl(datamanagement::ModelData &model_data,
                          const std::string &log_name)
-    : _test_one(
+    : EventBase(model_data, log_name),
+      _test_one(
           utils::GetStringFromConfig("fibrosis_staging.test_one", model_data)),
       _test_two(
-          utils::GetStringFromConfig("fibrosis_staging.test_two", model_data)),
-      EventBase(model_data, log_name) {
-
+          utils::GetStringFromConfig("fibrosis_staging.test_two", model_data)) {
     LoadData(model_data);
 }
 

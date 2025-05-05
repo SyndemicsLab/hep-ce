@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-05                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -52,7 +52,7 @@ private:
     costmap_t _cost_data;
 
     inline const std::string TransitionSQL() const {
-        return "SELECT age_years, gender, moud, drug_behavior, never, "
+        return "SELECT age_years, gender, drug_behavior, moud, never, "
                "former_noninjection, former_injection, "
                "noninjection, injection FROM behavior_transitions;";
     }

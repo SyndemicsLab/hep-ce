@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-05                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,10 +34,10 @@ Infection::Create(datamanagement::ModelData &model_data,
 // Constructor
 InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
-    : EventBase(model_data, log_name) {
+    : EventBase(model_data, log_name),
+      _gt3_prob(utils::GetDoubleFromConfig("infection.genotype_three_prob",
+                                           model_data)) {
     LoadData(model_data);
-    _gt3_prob =
-        utils::GetDoubleFromConfig("infection.genotype_three_prob", model_data);
 }
 
 // Execute

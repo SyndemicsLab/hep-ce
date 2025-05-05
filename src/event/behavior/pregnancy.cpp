@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-05                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -35,14 +35,22 @@ Pregnancy::Create(datamanagement::ModelData &model_data,
 // Constructor
 PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
                              const std::string &log_name)
-    : EventBase(model_data, log_name) {
+    : EventBase(model_data, log_name),
+      _multiple_delivery_probability(utils::GetDoubleFromConfig(
+          "pregnancy.multiple_delivery_probability", model_data)),
+      _infant_hcv_tested_probability(utils::GetDoubleFromConfig(
+          "pregnancy.infant_hcv_tested_probability", model_data)),
+      _vertical_hcv_transition_probability(utils::GetDoubleFromConfig(
+          "pregnancy.vertical_hcv_transition_probability", model_data)) {
     LoadData(model_data);
 }
 
 // Execute
 void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (person.GetSex() == data::Sex::kMale || person.GetAge() < 180 ||
-        person.GetAge() > 540 ||
+        (person.GetAge() > 540 &&
+         person.GetPregnancyDetails().pregnancy_state !=
+             data::PregnancyState::kPregnant) ||
         (person.GetPregnancyDetails().pregnancy_state ==
              data::PregnancyState::kPostpartum &&
          GetTimeSince(person,
@@ -76,15 +84,6 @@ void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
 }
 
 void PregnancyImpl::LoadData(datamanagement::ModelData &model_data) {
-    _multiple_delivery_probability = utils::GetDoubleFromConfig(
-        "pregnancy.multiple_delivery_probability", model_data);
-
-    _infant_hcv_tested_probability = utils::GetDoubleFromConfig(
-        "pregnancy.infant_hcv_tested_probability", model_data);
-
-    _vertical_hcv_transition_probability = utils::GetDoubleFromConfig(
-        "pregnancy.vertical_hcv_transition_probability", model_data);
-
     std::any storage = _pregnancy_data;
 
     model_data.GetDBSource("inputs").Select(

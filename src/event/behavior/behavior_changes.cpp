@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-05                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,8 +37,7 @@ BehaviorChangesImpl::BehaviorChangesImpl(datamanagement::ModelData &model_data,
     : EventBase(model_data, log_name) {
     SetEventCostCategory(model::CostCategory::kBehavior);
     SetEventUtilityCategory(model::UtilityCategory::kBehavior);
-    LoadCostData(model_data);
-    LoadBehaviorData(model_data);
+    LoadData(model_data);
 }
 
 // Execute
@@ -77,29 +76,48 @@ std::vector<double> BehaviorChangesImpl::GetBehaviorTransitionProbabilities(
     const model::Person &person) const {
     int age_years = static_cast<int>(person.GetAge() / 12.0);
     int gender = static_cast<int>(person.GetSex());
-    int moud = static_cast<int>(person.GetMoudDetails().moud_state);
     int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
-    utils::tuple_4i tup = std::make_tuple(age_years, gender, moud, behavior);
-    std::vector<double> probs = {
-        _behavior_data.at(tup).never, _behavior_data.at(tup).fni,
-        _behavior_data.at(tup).fi, _behavior_data.at(tup).ni,
-        _behavior_data.at(tup).in};
+    int moud = static_cast<int>(person.GetMoudDetails().moud_state);
+    utils::tuple_4i tup = std::make_tuple(age_years, gender, behavior, moud);
+    std::vector<double> probs;
+    try {
+        probs = {_behavior_data.at(tup).never, _behavior_data.at(tup).fni,
+                 _behavior_data.at(tup).fi, _behavior_data.at(tup).ni,
+                 _behavior_data.at(tup).in};
+    } catch (std::out_of_range &e) {
+        std::stringstream msg;
+        msg << "Behavior Transition Probabilities are not found for the person "
+               "details (age, Sex, Behavior, MOUD): "
+            << age_years << " " << person.GetSex() << " "
+            << person.GetBehaviorDetails().behavior
+            << "! Returning guaranteed injection use.";
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return {0.0, 0.0, 0.0, 0.0, 1.0};
+    }
     return probs;
 }
 
 void BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
-    std::any storage = _cost_data;
+    std::any storage = costmap_t{};
 
-    model_data.GetDBSource("inputs").Select(
-        CostSQL(),
-        [](std::any &storage, const SQLite::Statement &stmt) {
-            utils::tuple_2i tup = std::make_tuple(stmt.getColumn(0).getInt(),
-                                                  stmt.getColumn(1).getInt());
-            data::CostUtil cu = {stmt.getColumn(2).getDouble(),
-                                 stmt.getColumn(3).getDouble()};
-            std::any_cast<costmap_t>(storage)[tup] = cu;
-        },
-        storage);
+    try {
+        model_data.GetDBSource("inputs").Select(
+            CostSQL(),
+            [](std::any &storage, const SQLite::Statement &stmt) {
+                costmap_t *temp = std::any_cast<costmap_t>(&storage);
+                utils::tuple_2i tup = std::make_tuple(
+                    stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt());
+                data::CostUtil cu = {stmt.getColumn(2).getDouble(),
+                                     stmt.getColumn(3).getDouble()};
+                (*temp)[tup] = cu;
+            },
+            storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting cost data in behavior changes: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
     _cost_data = std::any_cast<costmap_t>(storage);
     if (_cost_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
@@ -110,21 +128,31 @@ void BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
 void BehaviorChangesImpl::LoadBehaviorData(
     datamanagement::ModelData &model_data) {
     std::any storage = _behavior_data;
+    try {
+        model_data.GetDBSource("inputs").Select(
+            TransitionSQL(),
+            [](std::any &storage, const SQLite::Statement &stmt) {
+                behaviormap_t *temp = std::any_cast<behaviormap_t>(&storage);
+                utils::tuple_4i tup = std::make_tuple(
+                    stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt(),
+                    stmt.getColumn(2).getInt(), stmt.getColumn(3).getInt());
+                struct behavior_transitions behavior = {
+                    stmt.getColumn(4).getDouble(),
+                    stmt.getColumn(5).getDouble(),
+                    stmt.getColumn(6).getDouble(),
+                    stmt.getColumn(7).getDouble(),
+                    stmt.getColumn(8).getDouble()};
 
-    model_data.GetDBSource("inputs").Select(
-        TransitionSQL(),
-        [](std::any &storage, const SQLite::Statement &stmt) {
-            utils::tuple_4i tup = std::make_tuple(
-                stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt(),
-                stmt.getColumn(2).getInt(), stmt.getColumn(3).getInt());
-            struct behavior_transitions behavior = {
-                stmt.getColumn(4).getDouble(), stmt.getColumn(5).getDouble(),
-                stmt.getColumn(6).getDouble(), stmt.getColumn(7).getDouble(),
-                stmt.getColumn(8).getDouble()};
-            std::any_cast<behaviormap_t>(storage)[tup] = behavior;
-        },
-        storage);
-
+                (*temp)[tup] = behavior;
+            },
+            storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting Behavior Transition Data: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
+    _behavior_data = std::any_cast<behaviormap_t>(storage);
     if (_behavior_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Behavior Data Transitions Data is Empty...");

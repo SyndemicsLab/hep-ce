@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-05                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -65,6 +65,27 @@ inline const std::string CreateSmrs() {
           "KEY(gender,drug_behavior));");
     return s.str();
 }
+
+inline const std::string CreateBehaviorImpacts() {
+    std::stringstream s;
+    s << "CREATE TABLE behavior_impacts (gender INTEGER NOT NULL, "
+         "drug_behavior	INTEGER NOT NULL, cost REAL NOT NULL DEFAULT 0.0, "
+         "utility INTEGER NOT NULL, PRIMARY KEY(gender,drug_behavior));";
+    return s.str();
+}
+
+inline const std::string CreateBehaviorTransitions() {
+    std::stringstream s;
+    s << "CREATE TABLE behavior_transitions (age_years	INTEGER NOT "
+         "NULL,gender	INTEGER NOT NULL,drug_behavior	INTEGER NOT "
+         "NULL,moud	INTEGER NOT NULL,never	REAL NOT NULL DEFAULT "
+         "0.0,former_noninjection	REAL NOT NULL DEFAULT "
+         "0.0,former_injection	REAL NOT NULL DEFAULT 0.0,noninjection	REAL "
+         "NOT NULL DEFAULT 0.0,injection	REAL NOT NULL DEFAULT "
+         "0.0,PRIMARY KEY(age_years,gender,drug_behavior,moud));";
+    return s.str();
+}
+
 } // namespace testing
 } // namespace hepce
 

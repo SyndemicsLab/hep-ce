@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-05                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -41,9 +41,9 @@ public:
 
 private:
     pregnancymap_t _pregnancy_data;
-    double _multiple_delivery_probability;
-    double _infant_hcv_tested_probability;
-    double _vertical_hcv_transition_probability;
+    const double _multiple_delivery_probability;
+    const double _infant_hcv_tested_probability;
+    const double _vertical_hcv_transition_probability;
 
     inline const std::string PregnancySQL() const {
         return "SELECT age_years, miscarriage, pregnancy_probability FROM "
