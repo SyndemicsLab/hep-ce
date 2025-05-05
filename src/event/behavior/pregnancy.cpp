@@ -48,14 +48,7 @@ PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
 // Execute
 void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (person.GetSex() == data::Sex::kMale || person.GetAge() < 180 ||
-        (person.GetAge() > 540 &&
-         person.GetPregnancyDetails().pregnancy_state !=
-             data::PregnancyState::kPregnant) ||
-        (person.GetPregnancyDetails().pregnancy_state ==
-             data::PregnancyState::kPostpartum &&
-         GetTimeSince(person,
-                      person.GetPregnancyDetails().time_of_pregnancy_change) <
-             3)) {
+        CheckOldAge(person) || CheckPostpartumTime(person)) {
         return;
     }
 
@@ -84,17 +77,25 @@ void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
 }
 
 void PregnancyImpl::LoadData(datamanagement::ModelData &model_data) {
-    std::any storage = _pregnancy_data;
+    std::any storage = pregnancymap_t{};
 
-    model_data.GetDBSource("inputs").Select(
-        PregnancySQL(),
-        [](std::any &storage, const SQLite::Statement &stmt) {
-            struct pregnancy_probabilities d = {stmt.getColumn(1).getDouble(),
-                                                stmt.getColumn(2).getDouble()};
-            std::any_cast<pregnancymap_t>(storage)[stmt.getColumn(0).getInt()] =
-                d;
-        },
-        storage);
+    try {
+        model_data.GetDBSource("inputs").Select(
+            PregnancySQL(),
+            [](std::any &storage, const SQLite::Statement &stmt) {
+                pregnancymap_t *temp = std::any_cast<pregnancymap_t>(&storage);
+                struct pregnancy_probabilities d = {
+                    stmt.getColumn(1).getDouble(),
+                    stmt.getColumn(2).getDouble()};
+                (*temp)[stmt.getColumn(0).getInt()] = d;
+            },
+            storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting Pregnancy Data: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
 
     _pregnancy_data = std::any_cast<pregnancymap_t>(storage);
 

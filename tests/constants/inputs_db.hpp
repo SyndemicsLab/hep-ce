@@ -86,6 +86,14 @@ inline const std::string CreateBehaviorTransitions() {
     return s.str();
 }
 
+inline const std::string CreatePregnancy() {
+    std::stringstream s;
+    s << "CREATE TABLE pregnancy (age_years	INTEGER NOT NULL "
+         "UNIQUE,pregnancy_probability	REAL NOT NULL,miscarriage	"
+         "REAL,PRIMARY KEY(age_years));";
+    return s.str();
+}
+
 } // namespace testing
 } // namespace hepce
 

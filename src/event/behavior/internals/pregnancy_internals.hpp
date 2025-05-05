@@ -45,6 +45,25 @@ private:
     const double _infant_hcv_tested_probability;
     const double _vertical_hcv_transition_probability;
 
+    inline bool CheckOldAge(const model::Person &person) {
+        bool too_old = person.GetAge() > 540;
+        bool pregnant = (person.GetPregnancyDetails().pregnancy_state ==
+                         data::PregnancyState::kPregnant);
+        bool postpartum = (person.GetPregnancyDetails().pregnancy_state ==
+                           data::PregnancyState::kPostpartum);
+        return (too_old && (!pregnant && !postpartum));
+    }
+
+    inline bool CheckPostpartumTime(const model::Person &person) {
+        bool postpartum = person.GetPregnancyDetails().pregnancy_state ==
+                          data::PregnancyState::kPostpartum;
+        bool valid_time =
+            GetTimeSince(
+                person, person.GetPregnancyDetails().time_of_pregnancy_change) <
+            3;
+        return (postpartum && valid_time);
+    }
+
     inline const std::string PregnancySQL() const {
         return "SELECT age_years, miscarriage, pregnancy_probability FROM "
                "pregnancy;";

@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME}
     src/event/aging_test.cpp
     src/event/death_test.cpp
     src/event/behavior_changes_test.cpp
+    src/event/pregnancy_test.cpp
     src/data/writer_test.cpp
     src/utils/logging_test.cpp
 
