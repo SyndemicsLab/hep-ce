@@ -45,7 +45,8 @@ void ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // Also skip if person is already on treatment since we want this to
     // count as SVR
     if (person.GetHCVDetails().hcv != data::HCV::kAcute &&
-        !person.GetScreeningDetails(data::InfectionType::kHcv).identified) {
+        !person.GetTreatmentDetails(data::InfectionType::kHcv)
+             .initiated_treatment) {
         return;
     }
     if (sampler.GetDecision({_probability, 1 - _probability}) == 0) {

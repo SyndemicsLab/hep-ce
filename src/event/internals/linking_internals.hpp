@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -24,8 +24,6 @@ namespace hepce {
 namespace event {
 class LinkingBase : public EventBase {
 public:
-    // typing
-    // First is background, second is intervention
     using linkmap_t =
         std::unordered_map<utils::tuple_4i, std::pair<double, double>,
                            utils::key_hash_4i, utils::key_equal_4i>;
@@ -36,7 +34,6 @@ public:
 
     virtual ~LinkingBase() = default;
 
-    data::LinkageType GetLinkageType() const { return _linkage_type; }
     bool GetLinkingStratifiedByPregnancy() const {
         return _stratify_by_pregnancy;
     }
@@ -46,7 +43,6 @@ public:
     virtual data::InfectionType GetInfectionType() const = 0;
 
     void Execute(model::Person &person, model::Sampler &sampler) override {
-        SetLinkageType(person.GetLinkageDetails(GetInfectionType()).link_type);
         bool is_linked =
             (person.GetLinkageDetails(GetInfectionType()).link_state ==
              data::LinkageState::kLinked);
@@ -93,15 +89,14 @@ protected:
 
     void LoadLinkingData(datamanagement::ModelData &model_data) {
         std::any storage = GetLinkData();
-        model_data.GetDBSource("inputs").Select(
-            LinkSQL("screening_and_linkage"), CallbackLink, storage);
+        model_data.GetDBSource("inputs").Select(LinkSQL(), CallbackLink,
+                                                storage);
         SetLinkData(std::any_cast<linkmap_t>(storage));
         if (GetLinkData().empty()) {
             // Warn Empty
         }
     }
 
-    void SetLinkageType(const data::LinkageType &type) { _linkage_type = type; }
     void SetLinkingStratifiedByPregnancy(bool stratify) {
         _stratify_by_pregnancy = stratify;
     }
@@ -119,13 +114,14 @@ protected:
 
     virtual bool FalsePositive(model::Person &person) = 0;
 
-    // FYI This is just a straight up SQL Injection Vulnerability Waiting to Happen
-    inline const std::string LinkSQL(const std::string &table) const {
+    virtual const std::string TableName() const = 0;
+
+    inline const std::string LinkSQL() const {
         std::stringstream ss;
         ss << "SELECT age_years, gender, drug_behavior, "
            << ((GetLinkingStratifiedByPregnancy()) ? "pregnancy, " : "-1, ")
            << "background_link_probability, intervention_link_probability "
-           << "FROM " << table << ";";
+           << "FROM " << TableName() << ";";
         return ss.str();
     }
 
@@ -138,9 +134,10 @@ protected:
             static_cast<int>(person.GetPregnancyDetails().pregnancy_state);
         utils::tuple_4i tup =
             std::make_tuple(age_years, gender, drug_behavior, pregnancy);
-        if (GetLinkageType() == data::LinkageType::kBackground) {
+        auto t = person.GetLinkageDetails(GetInfectionType()).link_type;
+        if (t == data::LinkageType::kBackground) {
             return _link_data[tup].first;
-        } else if (GetLinkageType() == data::LinkageType::kIntervention) {
+        } else if (t == data::LinkageType::kIntervention) {
             return _link_data[tup].second;
         }
         return 0.0;
@@ -165,7 +162,6 @@ protected:
 
 private:
     // properties
-    data::LinkageType _linkage_type = data::LinkageType::kBackground;
     linkmap_t _link_data;
     int _recent_screen_cutoff = -1;
     double _recent_screen_multiplier = 1.0;

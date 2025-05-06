@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -27,7 +27,7 @@
 namespace hepce {
 namespace event {
 namespace hiv {
-class ScreeningImpl : public virtual hiv::Screening, public ScreeningBase {
+class ScreeningImpl : public virtual Screening, public ScreeningBase {
 public:
     ScreeningImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");

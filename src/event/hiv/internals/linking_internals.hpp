@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -21,7 +21,7 @@
 namespace hepce {
 namespace event {
 namespace hiv {
-class LinkingImpl : public virtual hiv::Linking, public event::LinkingBase {
+class LinkingImpl : public virtual Linking, public LinkingBase {
 public:
     LinkingImpl(datamanagement::ModelData &model_data,
                 const std::string &log_name = "console");
@@ -35,11 +35,15 @@ private:
         return data::InfectionType::kHiv;
     }
 
+    inline const std::string TableName() const override {
+        return "screening_and_linkage";
+    }
+
     inline bool FalsePositive(model::Person &person) override {
         if (person.GetHIVDetails().hiv != data::HIV::kNone) {
             return false;
         }
-        person.ClearDiagnosis(data::InfectionType::kHcv);
+        person.ClearDiagnosis(GetInfectionType());
         AddFalsePositiveCost(person, GetEventCostCategory());
         return true;
     }

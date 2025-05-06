@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -26,7 +26,7 @@
 namespace hepce {
 namespace event {
 namespace hiv {
-class InfectionImpl : public virtual hiv::Infection, public EventBase {
+class InfectionImpl : public virtual Infection, public EventBase {
 public:
     using hivincidencemap_t =
         std::unordered_map<utils::tuple_3i, double, utils::key_hash_3i,
