@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,9 +51,10 @@ private:
     testmap_t _test2_data;
 
     static void Callback(std::any &storage, const SQLite::Statement &stmt) {
+        testmap_t *temp = std::any_cast<testmap_t>(&storage);
         utils::tuple_2i tup = std::make_tuple(stmt.getColumn(0).getInt(),
                                               stmt.getColumn(1).getInt());
-        std::any_cast<testmap_t>(storage)[tup] = stmt.getColumn(2).getDouble();
+        (*temp)[tup] = stmt.getColumn(2).getDouble();
     }
 
     inline const std::string StagingSQL(const std::string &column) const {

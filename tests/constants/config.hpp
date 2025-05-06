@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -169,7 +169,7 @@ inline void BuildAlternateSimConf(const std::string &name) {
       << "test_one_cost = 0" << std::endl
       << "test_two = fibroscan" << std::endl
       << "test_two_cost = 140" << std::endl
-      << "multitest_result_method = latest" << std::endl
+      << "multitest_result_method = maximum" << std::endl
       << "test_two_eligible_stages = f1,f2,f3" << std::endl
       << "[screening]" << std::endl
       << "intervention_type = one-time" << std::endl

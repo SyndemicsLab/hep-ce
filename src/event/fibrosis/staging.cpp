@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -80,15 +80,17 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // If No Second Test Specified or not an eligible fibrosis state,
     // End
     if (_test_two.empty() ||
-        std::find(_testtwo_eligible_fibs.begin(), _testtwo_eligible_fibs.end(),
-                  person.GetHCVDetails().fibrosis_state) ==
-            _testtwo_eligible_fibs.end()) {
+        !utils::FindInVector<data::FibrosisState>(
+            _testtwo_eligible_fibs, {person.GetHCVDetails().fibrosis_state})) {
         return;
     }
     probs = ProbabilityBuilder(person, _test2_data);
 
     // 7. Decide which stage is assigned to the person.
     if (probs.empty()) {
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Unable to get fibrosis staging test two "
+                                 "probabilities. Returning...");
         return;
     }
 
@@ -161,16 +163,30 @@ StagingImpl::ProbabilityBuilder(const model::Person &person,
 }
 void StagingImpl::LoadTestOneStagingData(
     datamanagement::ModelData &model_data) {
-    std::any storage = _test1_data;
-    model_data.GetDBSource("inputs").Select(StagingSQL(_test_one), Callback,
-                                            storage);
+    std::any storage = testmap_t{};
+    try {
+        model_data.GetDBSource("inputs").Select(StagingSQL(_test_one), Callback,
+                                                storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting Test One Fibrosis Staging Data: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
     _test1_data = std::any_cast<testmap_t>(storage);
 }
 void StagingImpl::LoadTestTwoStagingData(
     datamanagement::ModelData &model_data) {
-    std::any storage = _test2_data;
-    model_data.GetDBSource("inputs").Select(StagingSQL(_test_two), Callback,
-                                            storage);
+    std::any storage = testmap_t{};
+    try {
+        model_data.GetDBSource("inputs").Select(StagingSQL(_test_two), Callback,
+                                                storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting Test Two Fibrosis Staging Data: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
     _test2_data = std::any_cast<testmap_t>(storage);
 }
 

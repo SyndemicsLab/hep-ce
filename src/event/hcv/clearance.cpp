@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,7 +51,6 @@ void ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (sampler.GetDecision({_probability, 1 - _probability}) == 0) {
         person.ClearHCV(true);
     }
-    return;
 }
 
 void ClearanceImpl::LoadData(datamanagement::ModelData &model_data) {
