@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -53,7 +53,10 @@ void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 
     if (person.GetPregnancyDetails().pregnancy_state ==
-        data::PregnancyState::kPostpartum) {
+            data::PregnancyState::kYearTwoPostpartum &&
+        GetTimeSince(person,
+                     person.GetPregnancyDetails().time_of_pregnancy_change) >=
+            24) {
         person.EndPostpartum();
     }
 

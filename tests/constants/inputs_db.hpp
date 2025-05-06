@@ -112,6 +112,16 @@ inline const std::string CreateFibrosis() {
     return s.str();
 }
 
+inline const std::string CreateIncidence() {
+    std::stringstream s;
+    s << "CREATE TABLE incidence (age_years	INTEGER NOT NULL,gender	"
+         "INTEGER NOT NULL,drug_behavior	INTEGER NOT "
+         "NULL,incidence	REAL NOT NULL,PRIMARY "
+         "KEY(age_years,gender,drug_behavior),FOREIGN KEY(drug_behavior) "
+         "REFERENCES drug_behaviors(id));";
+    return s.str();
+}
+
 } // namespace testing
 } // namespace hepce
 

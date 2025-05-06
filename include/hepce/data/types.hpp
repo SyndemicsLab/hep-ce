@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -297,8 +297,10 @@ enum class PregnancyState {
     /// Actively pregnant
     kPregnant = 1,
     /// Post-pregnancy
-    kPostpartum = 2,
-    kCount = 3
+    kRestrictedPostpartum = 2,
+    kYearOnePostpartum = 3,
+    kYearTwoPostpartum = 4,
+    kCount = 5
 };
 std::ostream &operator<<(std::ostream &os, const PregnancyState &inst);
 PregnancyState &operator<<(PregnancyState &inst, const std::string &str);

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -68,9 +68,16 @@ void InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
 void InfectionImpl::LoadData(datamanagement::ModelData &model_data) {
     std::string error;
-    std::any storage = _infection_data;
-    model_data.GetDBSource("inputs").Select(IncidenceSQL(), CallbackInfection,
-                                            storage);
+    std::any storage = incidencemap_t{};
+    try {
+        model_data.GetDBSource("inputs").Select(IncidenceSQL(),
+                                                CallbackInfection, storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting HCV Infection Incidence Data: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
     _infection_data = std::any_cast<incidencemap_t>(storage);
     if (_infection_data.empty()) {
         hepce::utils::LogWarning(GetLogName(), "Incidence Table is Empty...");
@@ -81,9 +88,9 @@ void InfectionImpl::LoadData(datamanagement::ModelData &model_data) {
 std::vector<double>
 InfectionImpl::GetInfectionProbability(const model::Person &person) {
     if (_infection_data.empty()) {
-        hepce::utils::LogWarning(
-            GetLogName(),
-            "Infection Data is Empty. Returning Probability of 0.0...");
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Infection Incidence Data is Empty. Returning "
+                                 "Probability of 0.0...");
         return {0.0};
     }
 

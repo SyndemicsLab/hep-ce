@@ -18,6 +18,7 @@
 
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
+#include <hepce/utils/logging.hpp>
 #include <hepce/utils/pair_hashing.hpp>
 
 namespace hepce {
@@ -33,12 +34,6 @@ public:
         : EventBase(model_data, log_name) {}
 
     virtual ~LinkingBase() = default;
-
-    bool GetLinkingStratifiedByPregnancy() const {
-        return _stratify_by_pregnancy;
-    }
-    double GetInterventionCost() const { return _intervention_cost; }
-    double GetFalsePositiveCost() const { return _false_positive_cost; }
 
     virtual data::InfectionType GetInfectionType() const = 0;
 
@@ -79,21 +74,38 @@ public:
     }
 
 protected:
+    bool GetLinkingStratifiedByPregnancy() const {
+        return _stratify_by_pregnancy;
+    }
+    double GetInterventionCost() const { return _intervention_cost; }
+    double GetFalsePositiveCost() const { return _false_positive_cost; }
+
     static void CallbackLink(std::any &storage, const SQLite::Statement &stmt) {
+        linkmap_t *temp = std::any_cast<linkmap_t>(&storage);
         utils::tuple_4i tup = std::make_tuple(
             stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt(),
             stmt.getColumn(2).getInt(), stmt.getColumn(3).getInt());
-        std::any_cast<linkmap_t>(storage)[tup] = {
-            stmt.getColumn(4).getDouble(), stmt.getColumn(5).getDouble()};
+        (*temp)[tup] = {stmt.getColumn(4).getDouble(),
+                        stmt.getColumn(5).getDouble()};
     }
 
     void LoadLinkingData(datamanagement::ModelData &model_data) {
         std::any storage = GetLinkData();
-        model_data.GetDBSource("inputs").Select(LinkSQL(), CallbackLink,
-                                                storage);
+        try {
+            model_data.GetDBSource("inputs").Select(LinkSQL(), CallbackLink,
+                                                    storage);
+        } catch (std::exception &e) {
+            std::stringstream msg;
+            msg << "Error getting " << GetInfectionType()
+                << " Linking Data: " << e.what();
+            hepce::utils::LogError(GetLogName(), msg.str());
+            return;
+        }
         SetLinkData(std::any_cast<linkmap_t>(storage));
         if (GetLinkData().empty()) {
-            // Warn Empty
+            std::stringstream s;
+            s << GetInfectionType() << " Linking Data is Empty...";
+            hepce::utils::LogWarning(GetLogName(), s.str());
         }
     }
 

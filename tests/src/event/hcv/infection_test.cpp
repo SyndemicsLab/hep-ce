@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -46,8 +46,6 @@ protected:
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
     std::unique_ptr<datamanagement::ModelData> model_data;
-    double discounted_cost;
-    double discounted_life;
     data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
     data::HCVDetails hcv = {data::HCV::kNone,
                             data::FibrosisState::kF0,
@@ -61,17 +59,11 @@ protected:
     data::ScreeningDetails screen = {-1, 0, 0, false, false, -1};
 
     void SetUp() override {
-        ExecuteQueries(
-            test_db, {{"DROP TABLE IF EXISTS hcv_impacts;", CreateHCVImpacts(),
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (0, 0, 230.65, 0.915);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 0, 430.00, 0.8);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 1, 500.00, 0.7);"}});
+        ExecuteQueries(test_db,
+                       {{"DROP TABLE IF EXISTS incidence;", CreateIncidence(),
+                         "INSERT INTO incidence "
+                         "VALUES (25, 0, 4, 0.0102);"}});
         BuildSimConf(test_conf);
-        discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
-        discounted_life = utils::Discount(1, 0.0025, 1, false);
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
     }
@@ -81,5 +73,150 @@ protected:
         std::filesystem::remove(test_conf);
     }
 };
+
+TEST_F(HCVInfectionTest, AcuteProgression) {
+    const std::string LOG_NAME = "AcuteProgression";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    hcv.hcv = data::HCV::kAcute;
+    hcv.time_changed = 0;
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(3)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(1)
+        .WillRepeatedly(Return(6));
+    EXPECT_CALL(mock_person, SetHCV(data::HCV::kChronic)).Times(1);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+
+    auto event = event::hcv::Infection::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVInfectionTest, AcuteNeedMoreTime) {
+    const std::string LOG_NAME = "AcuteNeedMoreTime";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    hcv.hcv = data::HCV::kAcute;
+    hcv.time_changed = 3;
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(3)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(1)
+        .WillRepeatedly(Return(6));
+    EXPECT_CALL(mock_person, SetHCV(data::HCV::kChronic)).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+
+    auto event = event::hcv::Infection::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVInfectionTest, AlreadyInfected) {
+    const std::string LOG_NAME = "AlreadyInfected";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    hcv.hcv = data::HCV::kChronic;
+    hcv.time_changed = 6;
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(2)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, SetHCV(data::HCV::kChronic)).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+
+    auto event = event::hcv::Infection::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVInfectionTest, NoInfect) {
+    const std::string LOG_NAME = "NoInfect";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    hcv.hcv = data::HCV::kNone;
+    hcv.time_changed = 0;
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(2)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, SetHCV(data::HCV::kChronic)).Times(0);
+
+    EXPECT_CALL(mock_person, GetAge()).WillOnce(Return(300));
+    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
+    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+    EXPECT_CALL(mock_person, InfectHCV()).Times(0);
+
+    auto event = event::hcv::Infection::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVInfectionTest, Infect_NoGeno3) {
+    const std::string LOG_NAME = "Infect_NoGeno3";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    hcv.hcv = data::HCV::kNone;
+    hcv.time_changed = 0;
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(2)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, SetHCV(data::HCV::kChronic)).Times(0);
+
+    EXPECT_CALL(mock_person, GetAge()).WillOnce(Return(300));
+    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
+    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+
+    EXPECT_CALL(mock_sampler, GetDecision(_))
+        .WillOnce(Return(0))
+        .WillOnce(Return(1));
+    EXPECT_CALL(mock_person, InfectHCV()).Times(1);
+    EXPECT_CALL(mock_person, SetGenotypeThree(true)).Times(0);
+
+    auto event = event::hcv::Infection::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVInfectionTest, Infect_Geno3) {
+    const std::string LOG_NAME = "Infect_Geno3";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    hcv.hcv = data::HCV::kNone;
+    hcv.time_changed = 0;
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(2)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, SetHCV(data::HCV::kChronic)).Times(0);
+
+    EXPECT_CALL(mock_person, GetAge()).WillOnce(Return(300));
+    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
+    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+
+    EXPECT_CALL(mock_sampler, GetDecision(_))
+        .WillOnce(Return(0))
+        .WillOnce(Return(0));
+    EXPECT_CALL(mock_person, InfectHCV()).Times(1);
+    EXPECT_CALL(mock_person, SetGenotypeThree(true)).Times(1);
+
+    auto event = event::hcv::Infection::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
 } // namespace testing
 } // namespace hepce

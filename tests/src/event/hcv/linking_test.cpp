@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -58,7 +58,8 @@ protected:
                             0,
                             0,
                             0};
-    data::ScreeningDetails screen = {-1, 0, 0, false, false, -1};
+    data::LinkageDetails linkage = {data::LinkageState::kNever, -1,
+                                    data::LinkageType::kNa, 0};
 
     void SetUp() override {
         ExecuteQueries(
@@ -81,5 +82,15 @@ protected:
         std::filesystem::remove(test_conf);
     }
 };
+
+TEST_F(HCVLinkingTest, Linked) {
+    const std::string LOG_NAME = "Linked";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
 } // namespace testing
 } // namespace hepce

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -47,16 +47,19 @@ private:
 
     inline bool CheckOldAge(const model::Person &person) {
         bool too_old = person.GetAge() > 540;
-        bool pregnant = (person.GetPregnancyDetails().pregnancy_state ==
-                         data::PregnancyState::kPregnant);
-        bool postpartum = (person.GetPregnancyDetails().pregnancy_state ==
-                           data::PregnancyState::kPostpartum);
-        return (too_old && (!pregnant && !postpartum));
+        auto ps = person.GetPregnancyDetails().pregnancy_state;
+        bool pregnant = (ps == data::PregnancyState::kPregnant);
+        bool rpostpartum =
+            (ps == data::PregnancyState::kRestrictedPostpartum) ||
+            (ps == data::PregnancyState::kYearOnePostpartum) ||
+            (ps == data::PregnancyState::kYearTwoPostpartum);
+        ;
+        return (too_old && (!pregnant && !rpostpartum));
     }
 
     inline bool CheckPostpartumTime(const model::Person &person) {
         bool postpartum = person.GetPregnancyDetails().pregnancy_state ==
-                          data::PregnancyState::kPostpartum;
+                          data::PregnancyState::kRestrictedPostpartum;
         bool valid_time =
             GetTimeSince(
                 person, person.GetPregnancyDetails().time_of_pregnancy_change) <

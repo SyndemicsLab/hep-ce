@@ -45,11 +45,11 @@ private:
 
     static void CallbackInfection(std::any &storage,
                                   const SQLite::Statement &stmt) {
+        incidencemap_t *temp = std::any_cast<incidencemap_t>(&storage);
         utils::tuple_3i tup = std::make_tuple(stmt.getColumn(0).getInt(),
                                               stmt.getColumn(1).getInt(),
                                               stmt.getColumn(2).getInt());
-        std::any_cast<incidencemap_t>(storage)[tup] =
-            stmt.getColumn(3).getDouble();
+        (*temp)[tup] = stmt.getColumn(3).getDouble();
     }
 
     inline const std::string IncidenceSQL() const {

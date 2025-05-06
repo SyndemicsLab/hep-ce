@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -121,7 +121,7 @@ TEST_F(PregnancyTest, TooOldPregnant) {
 }
 
 TEST_F(PregnancyTest, TooOldPostpartum) {
-    pregnancy.pregnancy_state = data::PregnancyState::kPostpartum;
+    pregnancy.pregnancy_state = data::PregnancyState::kRestrictedPostpartum;
     pregnancy.time_of_pregnancy_change = 0;
     EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kFemale));
     EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(541));
@@ -137,7 +137,7 @@ TEST_F(PregnancyTest, TooOldPostpartum) {
 }
 
 TEST_F(PregnancyTest, TooShortPostpartum) {
-    pregnancy.pregnancy_state = data::PregnancyState::kPostpartum;
+    pregnancy.pregnancy_state = data::PregnancyState::kRestrictedPostpartum;
     pregnancy.time_of_pregnancy_change = 0;
     EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kFemale));
     EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
@@ -154,10 +154,10 @@ TEST_F(PregnancyTest, TooShortPostpartum) {
 }
 
 TEST_F(PregnancyTest, EndPostpartum) {
-    pregnancy.pregnancy_state = data::PregnancyState::kPostpartum;
+    pregnancy.pregnancy_state = data::PregnancyState::kYearTwoPostpartum;
     pregnancy.time_of_pregnancy_change = 0;
     EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kFemale));
-    EXPECT_CALL(mock_person, GetAge()).Times(3).WillRepeatedly(Return(300));
+    EXPECT_CALL(mock_person, GetAge()).Times(24).WillRepeatedly(Return(300));
     EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(3));
     EXPECT_CALL(mock_person, GetPregnancyDetails())
         .Times(6)

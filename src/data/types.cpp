@@ -4,7 +4,7 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -448,8 +448,14 @@ Sex &operator<<(Sex &inst, const std::string &str) {
 
 std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
     switch (inst) {
-    case PregnancyState::kPostpartum:
-        os << "postpartum";
+    case PregnancyState::kRestrictedPostpartum:
+        os << "restricted-postpartum";
+        break;
+    case PregnancyState::kYearOnePostpartum:
+        os << "year-one-postpartum";
+        break;
+    case PregnancyState::kYearTwoPostpartum:
+        os << "year-two-postpartum";
         break;
     case PregnancyState::kPregnant:
         os << "pregnant";
@@ -464,8 +470,12 @@ std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
     return os;
 }
 PregnancyState &operator<<(PregnancyState &inst, const std::string &str) {
-    if (str == "postpartum") {
-        inst = PregnancyState::kPostpartum;
+    if (str == "restricted-postpartum") {
+        inst = PregnancyState::kRestrictedPostpartum;
+    } else if (str == "year-one-postpartum") {
+        inst = PregnancyState::kYearOnePostpartum;
+    } else if (str == "year-two-postpartum") {
+        inst = PregnancyState::kYearTwoPostpartum;
     } else if (str == "pregnant") {
         inst = PregnancyState::kPregnant;
     } else if (str == "none") {
