@@ -29,12 +29,9 @@ add_executable(${PROJECT_NAME}
     src/event/hiv/screening_test.cpp
     src/data/writer_test.cpp
     src/utils/logging_test.cpp
-    src/model/person_test.cpp
-#   src/model/simulation_test.cpp
-#   src/model/cost_test.cpp
+    src/model/simulation_test.cpp
 )
 
-# BE VERY CAREFUL WITH GTEST AS ITS A PAIN IN THE BUTT
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
         hepce

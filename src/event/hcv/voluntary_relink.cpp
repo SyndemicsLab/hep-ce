@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,13 +37,9 @@ VoluntaryRelinkImpl::VoluntaryRelinkImpl(datamanagement::ModelData &model_data,
 void VoluntaryRelinkImpl::Execute(model::Person &person,
                                   model::Sampler &sampler) {
     // if linked or never linked OR too long since last linked
-    if ((person.GetLinkageDetails(data::InfectionType::kHcv).link_state ==
-         data::LinkageState::kUnlinked) &&
-        (GetTimeSince(person,
-                      person.GetLinkageDetails(data::InfectionType::kHcv)
-                          .time_link_change) < _voluntary_relink_duration) &&
-        (sampler.GetDecision({_relink_probability}) == 0) &&
-        (person.GetHCVDetails().hcv != data::HCV::kNone)) {
+    if (Unlinked(person) && RelinkInTime(person) &&
+        (person.GetHCVDetails().hcv != data::HCV::kNone) &&
+        (sampler.GetDecision({_relink_probability}) == 0)) {
         AddRNATest(person);
         person.Link(data::LinkageType::kBackground, data::InfectionType::kHcv);
     }

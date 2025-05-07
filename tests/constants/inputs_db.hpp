@@ -143,6 +143,15 @@ inline const std::string CreateAntibodyTesting() {
     return s.str();
 }
 
+inline const std::string CreateTreatments() {
+    std::stringstream s;
+    s << "CREATE TABLE treatments(retreatment INT,genotype_three INT,cirrhotic "
+         "INT,course TEXT,duration INT,cost REAL,svr_prob_if_completed "
+         "REAL,toxicity_prob_if_withdrawal REAL,withdrawal REAL,toxicity_prob "
+         "REAL);";
+    return s.str();
+}
+
 } // namespace testing
 } // namespace hepce
 

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -125,8 +125,8 @@ protected:
         // If the person is already on treatment, they can't be lost to
         // follow up
         if (!person.GetTreatmentDetails(GetInfectionType())
-                 .initiated_treatment ||
-            (sampler.GetDecision({_probabilities.loss_to_follow_up}) != 0)) {
+                 .initiated_treatment &&
+            (sampler.GetDecision({_probabilities.loss_to_follow_up}) == 0)) {
             QuitEngagement(person);
             return true;
         }
@@ -156,19 +156,13 @@ protected:
     /// @param
     /// @return
     bool IsEligible(const model::Person &person) const {
-        return ((_retreatment || !person.GetTreatmentDetails(GetInfectionType())
-                                      .initiated_treatment) &&
-                IsEligibleFibrosisStage(
-                    person.GetHCVDetails().fibrosis_state) &&
-                IsEligibleBehavior(person.GetBehaviorDetails().behavior) &&
-                IsEligiblePregnancy(
-                    person.GetPregnancyDetails().pregnancy_state) &&
-                (person.GetBehaviorDetails().time_last_active >
-                 _eligibilities.time_since_last_use) &&
-                (GetTimeSince(person,
-                              person.GetLinkageDetails(GetInfectionType())
-                                  .time_link_change) >
-                 _eligibilities.time_since_linked))
+        auto treatment_ready =
+            (_retreatment || !person.GetTreatmentDetails(GetInfectionType())
+                                  .initiated_treatment);
+        return (treatment_ready && IsEligibleFibrosisStage(person) &&
+                IsEligibleBehavior(person) && IsEligiblePregnancy(person) &&
+                IsEligibleTimeLastActive(person) &&
+                IsEligibleTimeSinceLinked(person))
                    ? true
                    : false;
     }
@@ -183,8 +177,8 @@ private:
     /// @brief
     /// @param
     /// @return
-    bool
-    IsEligibleFibrosisStage(const data::FibrosisState &fibrosis_state) const {
+    bool IsEligibleFibrosisStage(const model::Person &person) const {
+        auto fibrosis_state = person.GetHCVDetails().fibrosis_state;
         for (std::string state : _eligibilities.fibrosis_states) {
             data::FibrosisState temp;
             temp << state;
@@ -195,12 +189,29 @@ private:
         return true;
     }
 
+    bool IsEligibleTimeLastActive(const model::Person &person) const {
+        auto time = person.GetBehaviorDetails().time_last_active;
+        if (time == -1 || time > _eligibilities.time_since_last_use) {
+            return true;
+        }
+        return false;
+    }
+
+    bool IsEligibleTimeSinceLinked(const model::Person &person) const {
+        return (
+            GetTimeSince(
+                person,
+                person.GetLinkageDetails(GetInfectionType()).time_link_change) >
+            _eligibilities.time_since_linked);
+    }
+
     /// These Eligibility Checks Smell like a Template Function Use Case?
 
     /// @brief
     /// @param
     /// @return
-    bool IsEligibleBehavior(const data::Behavior &behavior) const {
+    bool IsEligibleBehavior(const model::Person &person) const {
+        auto behavior = person.GetBehaviorDetails().behavior;
         for (std::string state : _eligibilities.behavior_states) {
             data::Behavior temp;
             temp << state;
@@ -213,8 +224,8 @@ private:
     /// @brief
     /// @param
     /// @return
-    bool
-    IsEligiblePregnancy(const data::PregnancyState &pregnancy_state) const {
+    bool IsEligiblePregnancy(const model::Person &person) const {
+        auto pregnancy_state = person.GetPregnancyDetails().pregnancy_state;
         if (pregnancy_state == data::PregnancyState::kNa) {
             return true; // short circuit for not running pregnancy event
         }

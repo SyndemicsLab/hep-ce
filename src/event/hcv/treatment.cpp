@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -68,7 +68,7 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     // 4. Charge the person for the Course they are on
     AddEventCost(person, _treatment_sql_data[GetTreatmentThruple(person)].cost);
-    AddEventUtility(person, treatment_utility);
+    AddEventUtility(person, GetTreatmentUtilities().treatment);
 
     // 5. Check if the person experiences toxicity
     CheckIfExperienceToxicity(person, sampler);
@@ -81,13 +81,15 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // 7. Determine if the person has been treated long enough and, if so,
     // if they achieve SVR
     int duration = GetTreatmentDuration(person);
-    if (GetTimeSince(person, person.GetTreatmentDetails(GetInfectionType())
-                                 .time_of_treatment_initiation) == duration) {
+    int time_since_starting_treatment =
+        GetTimeSince(person, person.GetTreatmentDetails(GetInfectionType())
+                                 .time_of_treatment_initiation);
+    if (time_since_starting_treatment == duration) {
         person.AddCompletedTreatment(GetInfectionType());
         int decision = DecideIfPersonAchievesSVR(person, sampler);
         if (decision == 0) {
             person.AddSVR();
-            person.ClearHCV();
+            person.ClearHCV(false);
             person.ClearDiagnosis(GetInfectionType());
             QuitEngagement(person);
         } else if (!person.GetTreatmentDetails(GetInfectionType())
@@ -102,8 +104,16 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
 }
 
 void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
-    std::any storage = _treatment_sql_data;
-    model_data.GetDBSource("inputs").Select(TreatmentSQL(), Callback, storage);
+    std::any storage = hcvtreatmentmap_t{};
+    try {
+        model_data.GetDBSource("inputs").Select(TreatmentSQL(), Callback,
+                                                storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting HCV Treatment Data: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
     _treatment_sql_data = std::any_cast<hcvtreatmentmap_t>(storage);
     if (_treatment_sql_data.empty()) {
         hepce::utils::LogWarning(GetLogName(), "Treatment Table is Empty...");

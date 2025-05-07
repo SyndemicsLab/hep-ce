@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,9 +51,6 @@ public:
     /// @param timestep The timestep during which this cost is added
     virtual void AddCost(double base_cost, double discount_cost,
                          CostCategory category) = 0;
-
-    static double DiscountEventCost(double cost, double discount_rate,
-                                    int timestep, bool annual = false);
 
     static std::unique_ptr<Costs>
     Create(const std::string &log_name = "console");

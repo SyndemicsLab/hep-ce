@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -44,6 +44,19 @@ private:
     inline void AddRNATest(model::Person &person) {
         person.AddRnaScreen(data::InfectionType::kHcv);
         AddEventCost(person, _cost);
+    }
+
+    inline bool RelinkInTime(const model::Person &person) const {
+        return (GetTimeSince(person,
+                             person.GetLinkageDetails(data::InfectionType::kHcv)
+                                 .time_link_change) <
+                _voluntary_relink_duration);
+    }
+
+    inline bool Unlinked(const model::Person &person) const {
+        return (
+            person.GetLinkageDetails(data::InfectionType::kHcv).link_state ==
+            data::LinkageState::kUnlinked);
     }
 };
 

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -43,21 +43,18 @@ public:
     void LoadData(datamanagement::ModelData &model_data) override;
 
 private:
+    hcvtreatmentmap_t _treatment_sql_data;
+
     inline data::InfectionType GetInfectionType() const override {
         return data::InfectionType::kHcv;
     }
 
-    hcvtreatmentmap_t _treatment_sql_data;
-
-    // user-provided values
-    double retreatment_cost;
-    double treatment_utility;
-
     static void Callback(std::any &storage, const SQLite::Statement &stmt) {
+        hcvtreatmentmap_t *temp = std::any_cast<hcvtreatmentmap_t>(&storage);
         utils::tuple_3i key = std::make_tuple(stmt.getColumn(0).getInt(),
                                               stmt.getColumn(1).getInt(),
                                               stmt.getColumn(2).getInt());
-        std::any_cast<hcvtreatmentmap_t>(storage)[key] = {
+        (*temp)[key] = {
             stmt.getColumn(3).getInt(), stmt.getColumn(4).getDouble(),
             stmt.getColumn(5).getDouble(), stmt.getColumn(6).getDouble(),
             stmt.getColumn(7).getDouble()};

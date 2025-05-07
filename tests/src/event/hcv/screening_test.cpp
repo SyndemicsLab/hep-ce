@@ -59,7 +59,7 @@ protected:
                             0,
                             0,
                             0};
-    data::LinkageDetails linkage = {data::LinkageState::kNever, -1,
+    data::LinkageDetails linkage = {data::LinkageState::kUnlinked, -1,
                                     data::LinkageType::kNa, 0};
     data::ScreeningDetails screen = {-1, 0, 0, false, false, -1};
 
@@ -87,6 +87,8 @@ protected:
             .WillByDefault(Return(behaviors));
         ON_CALL(mock_person, IsBoomer()).WillByDefault(Return(false));
         ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
+        ON_CALL(mock_person, GetLinkageDetails(_))
+            .WillByDefault(Return(linkage));
     }
 
     void TearDown() override {
@@ -101,8 +103,8 @@ TEST_F(HCVScreeningTest, Linked) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     linkage.link_state = data::LinkageState::kLinked;
-
     EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
+
     EXPECT_CALL(mock_person, GetCurrentTimestep()).Times(0);
     EXPECT_CALL(mock_person, MarkScreened(_)).Times(0);
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
@@ -117,9 +119,6 @@ TEST_F(HCVScreeningTest, OneTime_NotFirstTimestep) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    linkage.link_state = data::LinkageState::kUnlinked;
-
-    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
     EXPECT_CALL(mock_person, GetCurrentTimestep())
         .Times(1)
         .WillRepeatedly(Return(6));
@@ -136,9 +135,6 @@ TEST_F(HCVScreeningTest, OneTime_FirstTimestep) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    linkage.link_state = data::LinkageState::kUnlinked;
-
-    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
     EXPECT_CALL(mock_person, MarkScreened(_)).Times(0);
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
 
@@ -152,10 +148,8 @@ TEST_F(HCVScreeningTest, InterventionScreen_NegativeRNA) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    linkage.link_state = data::LinkageState::kUnlinked;
     screen.identified = true;
 
-    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(Return(0))
         .WillOnce(Return(1));
@@ -183,10 +177,8 @@ TEST_F(HCVScreeningTest, InterventionScreen_PositiveRNA) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    linkage.link_state = data::LinkageState::kUnlinked;
     screen.identified = true;
 
-    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(Return(0))
         .WillOnce(Return(0));
