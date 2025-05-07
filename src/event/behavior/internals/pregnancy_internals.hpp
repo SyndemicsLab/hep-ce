@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -44,6 +44,8 @@ private:
     const double _multiple_delivery_probability;
     const double _infant_hcv_tested_probability;
     const double _vertical_hcv_transition_probability;
+
+    void ProgressPostpartum(model::Person &person) const;
 
     inline bool CheckOldAge(const model::Person &person) {
         bool too_old = person.GetAge() > 540;

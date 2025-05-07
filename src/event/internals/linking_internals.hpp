@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -74,11 +74,11 @@ public:
     }
 
 protected:
-    bool GetLinkingStratifiedByPregnancy() const {
+    inline bool GetLinkingStratifiedByPregnancy() const {
         return _stratify_by_pregnancy;
     }
-    double GetInterventionCost() const { return _intervention_cost; }
-    double GetFalsePositiveCost() const { return _false_positive_cost; }
+    inline double GetInterventionCost() const { return _intervention_cost; }
+    inline double GetFalsePositiveCost() const { return _false_positive_cost; }
 
     static void CallbackLink(std::any &storage, const SQLite::Statement &stmt) {
         linkmap_t *temp = std::any_cast<linkmap_t>(&storage);
@@ -89,8 +89,8 @@ protected:
                         stmt.getColumn(5).getDouble()};
     }
 
-    void LoadLinkingData(datamanagement::ModelData &model_data) {
-        std::any storage = GetLinkData();
+    inline void LoadLinkingData(datamanagement::ModelData &model_data) {
+        std::any storage = linkmap_t{};
         try {
             model_data.GetDBSource("inputs").Select(LinkSQL(), CallbackLink,
                                                     storage);
@@ -109,20 +109,26 @@ protected:
         }
     }
 
-    void SetLinkingStratifiedByPregnancy(bool stratify) {
+    inline void SetLinkingStratifiedByPregnancy(bool stratify) {
         _stratify_by_pregnancy = stratify;
     }
-    void SetInterventionCost(double cost) { _intervention_cost = cost; }
-    void SetFalsePositiveCost(double cost) { _false_positive_cost = cost; }
+    inline void SetInterventionCost(double cost) { _intervention_cost = cost; }
+    inline void SetFalsePositiveCost(double cost) {
+        _false_positive_cost = cost;
+    }
 
-    void SetRecentScreenCutoff(int cutoff) { _recent_screen_cutoff = cutoff; }
-    void SetRecentScreenMultiplier(double mult) {
+    inline void SetRecentScreenCutoff(int cutoff) {
+        _recent_screen_cutoff = cutoff;
+    }
+    inline void SetRecentScreenMultiplier(double mult) {
         _recent_screen_multiplier = mult;
     }
 
-    void SetLinkData(const linkmap_t &link_data) { _link_data = link_data; }
+    inline void SetLinkData(const linkmap_t &link_data) {
+        _link_data = link_data;
+    }
 
-    linkmap_t &GetLinkData() { return _link_data; }
+    inline linkmap_t GetLinkData() { return _link_data; }
 
     virtual bool FalsePositive(model::Person &person) = 0;
 
@@ -137,7 +143,7 @@ protected:
         return ss.str();
     }
 
-    double GetLinkProbability(model::Person &person) {
+    inline double GetLinkProbability(model::Person &person) {
         int age_years = static_cast<int>((person.GetAge() / 12.0));
         int gender = static_cast<int>(person.GetSex());
         int drug_behavior =
@@ -154,17 +160,17 @@ protected:
         }
         return 0.0;
     }
-    void AddFalsePositiveCost(model::Person &person,
-                              const model::CostCategory &category) {
+    inline void AddFalsePositiveCost(model::Person &person,
+                                     const model::CostCategory &category) {
         double discounted_cost =
             utils::Discount(GetFalsePositiveCost(), GetEventDiscount(),
                             person.GetCurrentTimestep(), false);
         person.AddCost(GetFalsePositiveCost(), discounted_cost, category);
     }
-    double ApplyMultiplier(double prob, double mult) {
+    inline double ApplyMultiplier(double prob, double mult) {
         return utils::RateToProbability(utils::ProbabilityToRate(prob) * mult);
     }
-    bool CheckForPregnancyEvent(datamanagement::ModelData &model_data) {
+    inline bool CheckForPregnancyEvent(datamanagement::ModelData &model_data) {
         std::vector<std::string> event_list = utils::SplitToVecT<std::string>(
             utils::GetStringFromConfig("simulation.events", model_data), ',');
 

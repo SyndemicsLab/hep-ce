@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -136,9 +136,9 @@ inline void BuildAlternateSimConf(const std::string &name) {
     s << "[simulation]" << std::endl
       << "seed =" << std::endl
       << "population_size = 100" << std::endl
-      << "events = Aging, BehaviorChanges, Clearance, FibrosisProgression, "
-         "HCVInfections, HCVScreening, HCVLinking, HCVTreatment, "
-         "HIVInfections, HIVScreening, HIVLinking, Death"
+      << "events = Aging, BehaviorChanges, Clearance, Pregnancy, "
+         "FibrosisProgression, HCVInfections, HCVScreening, HCVLinking, "
+         "HCVTreatment, HIVInfections, HIVScreening, HIVLinking, Death"
       << std::endl
       << "duration = 60" << std::endl
       << "start_time = 0" << std::endl
@@ -200,7 +200,7 @@ inline void BuildAlternateSimConf(const std::string &name) {
       << "voluntary_relink_duration = 3" << std::endl
       << "false_positive_test_cost = 442.39" << std::endl
       << "recent_screen_multiplier = 1.0" << std::endl
-      << "recent_screen_cutoff = 0" << std::endl
+      << "recent_screen_cutoff = 6" << std::endl
       << "[treatment]" << std::endl
       << "allow_retreatment = true" << std::endl
       << "ltfu_probability = 0" << std::endl

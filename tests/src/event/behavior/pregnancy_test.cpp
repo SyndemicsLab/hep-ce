@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -95,7 +95,7 @@ TEST_F(PregnancyTest, TooOld) {
     EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kFemale));
     EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(600));
     EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(2)
+        .Times(1)
         .WillRepeatedly(Return(pregnancy));
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
@@ -127,7 +127,7 @@ TEST_F(PregnancyTest, TooOldPostpartum) {
     EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(541));
     EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(1));
     EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(4)
+        .Times(3)
         .WillRepeatedly(Return(pregnancy));
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
     EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
@@ -143,7 +143,7 @@ TEST_F(PregnancyTest, TooShortPostpartum) {
     EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
     EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(1));
     EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(4)
+        .Times(3)
         .WillRepeatedly(Return(pregnancy));
     EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
     EXPECT_CALL(mock_person, Impregnate()).Times(0);
@@ -153,12 +153,56 @@ TEST_F(PregnancyTest, TooShortPostpartum) {
     event->Execute(mock_person, mock_sampler);
 }
 
+TEST_F(PregnancyTest, ProgressYearOnePostpartum) {
+    pregnancy.pregnancy_state = data::PregnancyState::kRestrictedPostpartum;
+    pregnancy.time_of_pregnancy_change = 0;
+    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kFemale));
+    EXPECT_CALL(mock_person, GetAge()).Times(3).WillRepeatedly(Return(300));
+    EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(3));
+    EXPECT_CALL(mock_person, GetPregnancyDetails())
+        .Times(6)
+        .WillRepeatedly(Return(pregnancy));
+    EXPECT_CALL(mock_person,
+                SetPregnancyState(data::PregnancyState::kYearOnePostpartum))
+        .Times(1);
+    EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, Impregnate()).Times(0);
+
+    auto event = event::behavior::Pregnancy::Create(*model_data);
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(PregnancyTest, ProgressYearTwoPostpartum) {
+    pregnancy.pregnancy_state = data::PregnancyState::kYearOnePostpartum;
+    pregnancy.time_of_pregnancy_change = 0;
+    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kFemale));
+    EXPECT_CALL(mock_person, GetAge()).Times(3).WillRepeatedly(Return(300));
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(2)
+        .WillRepeatedly(Return(12));
+    EXPECT_CALL(mock_person, GetPregnancyDetails())
+        .Times(6)
+        .WillRepeatedly(Return(pregnancy));
+    EXPECT_CALL(mock_person,
+                SetPregnancyState(data::PregnancyState::kYearTwoPostpartum))
+        .Times(1);
+    EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, Impregnate()).Times(0);
+
+    auto event = event::behavior::Pregnancy::Create(*model_data);
+    event->Execute(mock_person, mock_sampler);
+}
+
 TEST_F(PregnancyTest, EndPostpartum) {
     pregnancy.pregnancy_state = data::PregnancyState::kYearTwoPostpartum;
     pregnancy.time_of_pregnancy_change = 0;
     EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kFemale));
-    EXPECT_CALL(mock_person, GetAge()).Times(24).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(3));
+    EXPECT_CALL(mock_person, GetAge()).Times(3).WillRepeatedly(Return(300));
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(2)
+        .WillRepeatedly(Return(24));
     EXPECT_CALL(mock_person, GetPregnancyDetails())
         .Times(6)
         .WillRepeatedly(Return(pregnancy));

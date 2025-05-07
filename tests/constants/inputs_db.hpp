@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -119,6 +119,19 @@ inline const std::string CreateIncidence() {
          "NULL,incidence	REAL NOT NULL,PRIMARY "
          "KEY(age_years,gender,drug_behavior),FOREIGN KEY(drug_behavior) "
          "REFERENCES drug_behaviors(id));";
+    return s.str();
+}
+
+inline const std::string CreateScreeningAndLinkage() {
+    std::stringstream s;
+    s << "CREATE TABLE screening_and_linkage (age_years INTEGER NOT "
+         "NULL,gender INTEGER NOT NULL,drug_behavior INTEGER NOT "
+         "NULL,pregnancy INTEGER NOT NULL DEFAULT "
+         "-1,background_screen_probability REAL NOT "
+         "NULL,background_link_probability REAL NOT "
+         "NULL,intervention_screen_probability REAL NOT "
+         "NULL,intervention_link_probability REAL NOT NULL,PRIMARY "
+         "KEY(age_years, gender, drug_behavior, pregnancy));";
     return s.str();
 }
 

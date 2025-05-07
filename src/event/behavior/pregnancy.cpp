@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -52,13 +52,7 @@ void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
         return;
     }
 
-    if (person.GetPregnancyDetails().pregnancy_state ==
-            data::PregnancyState::kYearTwoPostpartum &&
-        GetTimeSince(person,
-                     person.GetPregnancyDetails().time_of_pregnancy_change) >=
-            24) {
-        person.EndPostpartum();
-    }
+    ProgressPostpartum(person);
 
     if (person.GetPregnancyDetails().pregnancy_state ==
         data::PregnancyState::kPregnant) {
@@ -108,6 +102,28 @@ void PregnancyImpl::LoadData(datamanagement::ModelData &model_data) {
 }
 
 // Private Methods
+void PregnancyImpl::ProgressPostpartum(model::Person &person) const {
+    auto state = person.GetPregnancyDetails().pregnancy_state;
+    auto time = person.GetPregnancyDetails().time_of_pregnancy_change;
+    switch (state) {
+    case data::PregnancyState::kRestrictedPostpartum:
+        person.SetPregnancyState(data::PregnancyState::kYearOnePostpartum);
+        break;
+    case data::PregnancyState::kYearOnePostpartum:
+        if (GetTimeSince(person, time) >= 12) {
+            person.SetPregnancyState(data::PregnancyState::kYearTwoPostpartum);
+        }
+        break;
+    case data::PregnancyState::kYearTwoPostpartum:
+        if (GetTimeSince(person, time) >= 24) {
+            person.EndPostpartum();
+        }
+        break;
+    default:
+        break;
+    }
+}
+
 void PregnancyImpl::AttemptHaveChild(model::Person &person,
                                      model::Sampler &sampler) {
     if (CheckMiscarriage(person, sampler)) {

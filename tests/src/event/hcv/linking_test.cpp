@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -46,8 +46,6 @@ protected:
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
     std::unique_ptr<datamanagement::ModelData> model_data;
-    double discounted_cost;
-    double discounted_life;
     data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
     data::HCVDetails hcv = {data::HCV::kNone,
                             data::FibrosisState::kF0,
@@ -60,19 +58,18 @@ protected:
                             0};
     data::LinkageDetails linkage = {data::LinkageState::kNever, -1,
                                     data::LinkageType::kNa, 0};
+    data::ScreeningDetails screen = {-1, 0, 0, false, false, -1};
+    data::PregnancyDetails pregnancy = {
+        data::PregnancyState::kNa, -1, 0, 0, 0, 0, 0, 0, {}};
 
     void SetUp() override {
-        ExecuteQueries(
-            test_db, {{"DROP TABLE IF EXISTS hcv_impacts;", CreateHCVImpacts(),
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (0, 0, 230.65, 0.915);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 0, 430.00, 0.8);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 1, 500.00, 0.7);"}});
+        ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS screening_and_linkage;",
+                                  CreateScreeningAndLinkage(),
+                                  "INSERT INTO screening_and_linkage "
+                                  "VALUES (25, 1, 4, -1, 0, 0.02, 1, 0.3);",
+                                  "INSERT INTO screening_and_linkage "
+                                  "VALUES (25, 1, 4, 1, 0, 0.03, 1, 0.4);"}});
         BuildSimConf(test_conf);
-        discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
-        discounted_life = utils::Discount(1, 0.0025, 1, false);
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
     }
@@ -87,6 +84,205 @@ TEST_F(HCVLinkingTest, Linked) {
     const std::string LOG_NAME = "Linked";
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kLinked;
+    screen.identified = true;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
+    EXPECT_CALL(mock_person, GetScreeningDetails(_)).WillOnce(Return(screen));
+
+    EXPECT_CALL(mock_person, GetHCVDetails()).Times(0);
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+
+    auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVLinkingTest, NotIdentified) {
+    const std::string LOG_NAME = "NotIdentified";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kUnlinked;
+    linkage.link_type = data::LinkageType::kBackground;
+    screen.identified = false;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_))
+        .Times(1)
+        .WillRepeatedly(Return(linkage));
+    EXPECT_CALL(mock_person, GetScreeningDetails(_)).WillOnce(Return(screen));
+
+    EXPECT_CALL(mock_person, GetHCVDetails()).Times(0);
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+
+    auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVLinkingTest, FalsePositive) {
+    const std::string LOG_NAME = "FalsePositive";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kUnlinked;
+    screen.identified = true;
+    hcv.hcv = data::HCV::kNone;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
+    EXPECT_CALL(mock_person, GetScreeningDetails(_)).WillOnce(Return(screen));
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(1)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(1);
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(1)
+        .WillRepeatedly(Return(1));
+    EXPECT_CALL(mock_person, AddCost(442.39, _, model::CostCategory::kLinking))
+        .Times(1);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+
+    auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVLinkingTest, RecentScreen) {
+    const std::string LOG_NAME = "RecentScreen";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kUnlinked;
+    screen.identified = true;
+    screen.time_of_last_screening = 1;
+    hcv.hcv = data::HCV::kAcute;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_))
+        .Times(2)
+        .WillRepeatedly(Return(linkage));
+    EXPECT_CALL(mock_person, GetScreeningDetails(_))
+        .Times(2)
+        .WillRepeatedly(Return(screen));
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(1)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
+
+    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
+    EXPECT_CALL(mock_person, GetSex())
+        .Times(1)
+        .WillRepeatedly(Return(data::Sex::kFemale));
+    EXPECT_CALL(mock_person, GetBehaviorDetails())
+        .Times(1)
+        .WillRepeatedly(Return(behaviors));
+    EXPECT_CALL(mock_person, GetPregnancyDetails())
+        .Times(1)
+        .WillRepeatedly(Return(pregnancy));
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(1)
+        .WillRepeatedly(Return(1));
+    // EXPECT_CALL(mock_person, AddCost(442.39, _, model::CostCategory::kLinking))
+    //     .Times(1);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+
+    auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVLinkingTest, BackgroundLink) {
+    const std::string LOG_NAME = "BackgroundLink";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kUnlinked;
+    linkage.link_type = data::LinkageType::kBackground;
+    screen.identified = true;
+    screen.time_of_last_screening = 1;
+    hcv.hcv = data::HCV::kAcute;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_))
+        .Times(3)
+        .WillRepeatedly(Return(linkage));
+    EXPECT_CALL(mock_person, GetScreeningDetails(_))
+        .Times(2)
+        .WillRepeatedly(Return(screen));
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(1)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
+
+    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
+    EXPECT_CALL(mock_person, GetSex())
+        .Times(1)
+        .WillRepeatedly(Return(data::Sex::kFemale));
+    EXPECT_CALL(mock_person, GetBehaviorDetails())
+        .Times(1)
+        .WillRepeatedly(Return(behaviors));
+    EXPECT_CALL(mock_person, GetPregnancyDetails())
+        .Times(1)
+        .WillRepeatedly(Return(pregnancy));
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(1)
+        .WillRepeatedly(Return(7));
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+
+    EXPECT_CALL(mock_person, Link(data::LinkageType::kBackground, _)).Times(1);
+    EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
+
+    auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVLinkingTest, InterventionLink) {
+    const std::string LOG_NAME = "InterventionLink";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kUnlinked;
+    linkage.link_type = data::LinkageType::kIntervention;
+    screen.identified = true;
+    screen.time_of_last_screening = 1;
+    hcv.hcv = data::HCV::kAcute;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_))
+        .Times(3)
+        .WillRepeatedly(Return(linkage));
+    EXPECT_CALL(mock_person, GetScreeningDetails(_))
+        .Times(2)
+        .WillRepeatedly(Return(screen));
+
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(1)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
+
+    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
+    EXPECT_CALL(mock_person, GetSex())
+        .Times(1)
+        .WillRepeatedly(Return(data::Sex::kFemale));
+    EXPECT_CALL(mock_person, GetBehaviorDetails())
+        .Times(1)
+        .WillRepeatedly(Return(behaviors));
+    EXPECT_CALL(mock_person, GetPregnancyDetails())
+        .Times(1)
+        .WillRepeatedly(Return(pregnancy));
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(2)
+        .WillRepeatedly(Return(7));
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+
+    EXPECT_CALL(mock_person, Link(data::LinkageType::kIntervention, _))
+        .Times(1);
+    EXPECT_CALL(mock_person, AddCost(0, _, model::CostCategory::kLinking))
+        .Times(1);
 
     auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
