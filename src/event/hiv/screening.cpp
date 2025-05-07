@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -35,6 +35,7 @@ void ScreeningImpl::LoadData(datamanagement::ModelData &model_data) {
         "hiv_screening.intervention_type", model_data));
     SetScreeningPeriod(
         utils::GetIntFromConfig("hiv_screening.period", model_data));
+    LoadScreeningData(model_data);
 }
 } // namespace hiv
 } // namespace event

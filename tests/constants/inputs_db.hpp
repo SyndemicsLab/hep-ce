@@ -135,6 +135,14 @@ inline const std::string CreateScreeningAndLinkage() {
     return s.str();
 }
 
+inline const std::string CreateAntibodyTesting() {
+    std::stringstream s;
+    s << "CREATE TABLE antibody_testing (age_years	INTEGER NOT "
+         "NULL,drug_behavior	INTEGER NOT NULL,accept_probability	REAL "
+         "NOT NULL,PRIMARY KEY(age_years,drug_behavior));";
+    return s.str();
+}
+
 } // namespace testing
 } // namespace hepce
 

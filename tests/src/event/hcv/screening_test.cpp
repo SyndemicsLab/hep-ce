@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-07                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,6 +34,7 @@
 #include <sampler_mock.hpp>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace hepce {
@@ -41,7 +42,7 @@ namespace testing {
 
 class HCVScreeningTest : public ::testing::Test {
 protected:
-    MockPerson mock_person;
+    NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
@@ -58,22 +59,34 @@ protected:
                             0,
                             0,
                             0};
+    data::LinkageDetails linkage = {data::LinkageState::kNever, -1,
+                                    data::LinkageType::kNa, 0};
     data::ScreeningDetails screen = {-1, 0, 0, false, false, -1};
 
     void SetUp() override {
-        ExecuteQueries(
-            test_db, {{"DROP TABLE IF EXISTS hcv_impacts;", CreateHCVImpacts(),
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (0, 0, 230.65, 0.915);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 0, 430.00, 0.8);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 1, 500.00, 0.7);"}});
+        ExecuteQueries(test_db,
+                       {{"DROP TABLE IF EXISTS antibody_testing;",
+                         "DROP TABLE IF EXISTS screening_and_linkage;",
+                         CreateScreeningAndLinkage(), CreateAntibodyTesting(),
+                         "INSERT INTO screening_and_linkage "
+                         "VALUES (25, 1, 4, -1, 0, 0.02, 1, 0.3);",
+                         "INSERT INTO screening_and_linkage "
+                         "VALUES (25, 1, 4, 1, 0, 0.03, 1, 0.4);",
+                         "INSERT INTO antibody_testing "
+                         "VALUES (25, 4, 1.0);"}});
         BuildSimConf(test_conf);
         discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
         discounted_life = utils::Discount(1, 0.0025, 1, false);
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
+
+        ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+        ON_CALL(mock_person, GetSex())
+            .WillByDefault(Return(data::Sex::kFemale));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behaviors));
+        ON_CALL(mock_person, IsBoomer()).WillByDefault(Return(false));
+        ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
     }
 
     void TearDown() override {
@@ -81,5 +94,122 @@ protected:
         std::filesystem::remove(test_conf);
     }
 };
+
+TEST_F(HCVScreeningTest, Linked) {
+    const std::string LOG_NAME = "Linked";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kLinked;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
+    EXPECT_CALL(mock_person, GetCurrentTimestep()).Times(0);
+    EXPECT_CALL(mock_person, MarkScreened(_)).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+
+    auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVScreeningTest, OneTime_NotFirstTimestep) {
+    const std::string LOG_NAME = "OneTime_NotFirstTimestep";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kUnlinked;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(1)
+        .WillRepeatedly(Return(6));
+    EXPECT_CALL(mock_person, MarkScreened(_)).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+
+    auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVScreeningTest, OneTime_FirstTimestep) {
+    const std::string LOG_NAME = "OneTime_FirstTimestep";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kUnlinked;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
+    EXPECT_CALL(mock_person, MarkScreened(_)).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+
+    auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVScreeningTest, InterventionScreen_NegativeRNA) {
+    const std::string LOG_NAME = "InterventionScreen";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kUnlinked;
+    screen.identified = true;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
+    EXPECT_CALL(mock_sampler, GetDecision(_))
+        .WillOnce(Return(0))
+        .WillOnce(Return(1));
+
+    EXPECT_CALL(mock_person, MarkScreened(_)).Times(1);
+    EXPECT_CALL(mock_person, GetScreeningDetails(_))
+        .Times(1)
+        .WillRepeatedly(Return(screen));
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(1)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, AddRnaScreen(_)).Times(1);
+    EXPECT_CALL(mock_person, AddCost(31.22, _, model::CostCategory::kScreening))
+        .Times(1);
+    EXPECT_CALL(mock_person, SetLinkageType(_, _)).Times(0);
+    EXPECT_CALL(mock_person, Diagnose(_)).Times(0);
+
+    auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVScreeningTest, InterventionScreen_PositiveRNA) {
+    const std::string LOG_NAME = "InterventionScreen";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    linkage.link_state = data::LinkageState::kUnlinked;
+    screen.identified = true;
+
+    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
+    EXPECT_CALL(mock_sampler, GetDecision(_))
+        .WillOnce(Return(0))
+        .WillOnce(Return(0));
+
+    EXPECT_CALL(mock_person, MarkScreened(_)).Times(1);
+    EXPECT_CALL(mock_person, GetScreeningDetails(_))
+        .Times(1)
+        .WillRepeatedly(Return(screen));
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(1)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_person, AddRnaScreen(_)).Times(1);
+    EXPECT_CALL(mock_person, AddCost(31.22, _, model::CostCategory::kScreening))
+        .Times(1);
+    EXPECT_CALL(mock_person,
+                SetLinkageType(data::LinkageType::kIntervention, _))
+        .Times(1);
+    EXPECT_CALL(mock_person, Diagnose(_)).Times(1);
+
+    auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
 } // namespace testing
 } // namespace hepce

@@ -34,6 +34,7 @@
 #include <sampler_mock.hpp>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace hepce {
@@ -41,7 +42,7 @@ namespace testing {
 
 class HCVLinkingTest : public ::testing::Test {
 protected:
-    MockPerson mock_person;
+    NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
@@ -66,12 +67,18 @@ protected:
         ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS screening_and_linkage;",
                                   CreateScreeningAndLinkage(),
                                   "INSERT INTO screening_and_linkage "
-                                  "VALUES (25, 1, 4, -1, 0, 0.02, 1, 0.3);",
-                                  "INSERT INTO screening_and_linkage "
                                   "VALUES (25, 1, 4, 1, 0, 0.03, 1, 0.4);"}});
         BuildSimConf(test_conf);
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
+
+        ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+        ON_CALL(mock_person, GetSex())
+            .WillByDefault(Return(data::Sex::kFemale));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behaviors));
+        ON_CALL(mock_person, GetPregnancyDetails())
+            .WillByDefault(Return(pregnancy));
     }
 
     void TearDown() override {
@@ -157,6 +164,7 @@ TEST_F(HCVLinkingTest, RecentScreen) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     linkage.link_state = data::LinkageState::kUnlinked;
+    linkage.link_type = data::LinkageType::kIntervention;
     screen.identified = true;
     screen.time_of_last_screening = 1;
     hcv.hcv = data::HCV::kAcute;
@@ -173,22 +181,12 @@ TEST_F(HCVLinkingTest, RecentScreen) {
         .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
 
-    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetSex())
-        .Times(1)
-        .WillRepeatedly(Return(data::Sex::kFemale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails())
-        .Times(1)
-        .WillRepeatedly(Return(behaviors));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(1)
-        .WillRepeatedly(Return(pregnancy));
     EXPECT_CALL(mock_person, GetCurrentTimestep())
         .Times(1)
         .WillRepeatedly(Return(1));
-    // EXPECT_CALL(mock_person, AddCost(442.39, _, model::CostCategory::kLinking))
-    //     .Times(1);
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+    double v = utils::RateToProbability(utils::ProbabilityToRate(0.4) * 1.1);
+    std::vector<double> p = {v};
+    EXPECT_CALL(mock_sampler, GetDecision(p)).WillOnce(Return(1));
 
     auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
@@ -218,16 +216,6 @@ TEST_F(HCVLinkingTest, BackgroundLink) {
         .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
 
-    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetSex())
-        .Times(1)
-        .WillRepeatedly(Return(data::Sex::kFemale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails())
-        .Times(1)
-        .WillRepeatedly(Return(behaviors));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(1)
-        .WillRepeatedly(Return(pregnancy));
     EXPECT_CALL(mock_person, GetCurrentTimestep())
         .Times(1)
         .WillRepeatedly(Return(7));
@@ -264,16 +252,6 @@ TEST_F(HCVLinkingTest, InterventionLink) {
         .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
 
-    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetSex())
-        .Times(1)
-        .WillRepeatedly(Return(data::Sex::kFemale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails())
-        .Times(1)
-        .WillRepeatedly(Return(behaviors));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(1)
-        .WillRepeatedly(Return(pregnancy));
     EXPECT_CALL(mock_person, GetCurrentTimestep())
         .Times(2)
         .WillRepeatedly(Return(7));

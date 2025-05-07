@@ -35,7 +35,8 @@ WriterImpl::WritePopulation(const std::vector<model::Person> &population,
     if (!csvStream) {
         return "";
     }
-    csvStream << "id," << POPULATION_HEADERS() << std::endl;
+    csvStream << "id," << POPULATION_HEADERS(true, true, true, true, true)
+              << ",cost,discount_cost" << std::endl;
     for (const auto &person : population) {
         csvStream << person.MakePopulationRow() << std::endl;
     }
