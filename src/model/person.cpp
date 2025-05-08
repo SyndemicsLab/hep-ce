@@ -24,7 +24,17 @@ std::unique_ptr<Person> Person::Create(const std::string &log_name) {
 }
 
 // Constructor
-PersonImpl::PersonImpl(const std::string &log_name) {}
+PersonImpl::PersonImpl(const std::string &log_name) : _log_name(log_name) {
+    _costs = Costs::Create(log_name);
+    SetInfectionDefaults(data::InfectionType::kHcv);
+    SetInfectionDefaults(data::InfectionType::kHiv);
+
+    SetUtility(1, UtilityCategory::kBehavior);
+    SetUtility(1, UtilityCategory::kLiver);
+    SetUtility(1, UtilityCategory::kTreatment);
+    SetUtility(1, UtilityCategory::kBackground);
+    SetUtility(1, UtilityCategory::kHiv);
+}
 
 void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     // basic characteristics
@@ -425,7 +435,7 @@ std::string PersonImpl::MakePopulationRow() const {
         // Cost Totals
         const auto &ct = GetCostTotals();
         population_row << ct.first << ","
-                       << ct.second << std::endl;
+                       << ct.second;
     // clang-format on
     return population_row.str();
 }

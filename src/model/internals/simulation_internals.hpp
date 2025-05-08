@@ -21,23 +21,32 @@ namespace hepce {
 namespace model {
 class HepceImpl : public virtual Hepce {
 public:
-    HepceImpl(const std::string &log_name);
+    HepceImpl(datamanagement::ModelData &model_data,
+              const std::string &log_name);
     ~HepceImpl() = default;
     void Run(std::vector<std::unique_ptr<model::Person>> &people,
-             const std::vector<std::unique_ptr<event::Event>> &discrete_events,
-             const int duration, const int seed = 1234) override;
+             const std::vector<std::unique_ptr<event::Event>> &discrete_events)
+        override;
     std::vector<std::unique_ptr<event::Event>>
     CreateEvents(datamanagement::ModelData &model_data) const override;
-    std::unique_ptr<model::Person>
-    ReadPerson(const int id,
-               datamanagement::ModelData &model_data) const override;
+    std::vector<std::unique_ptr<model::Person>>
+    CreatePopulation(datamanagement::ModelData &model_data) const override;
+
     int LoadICValues(model::Person &person,
                      const std::vector<std::string> &icValues) override;
 
+    int GetDuration() const override { return _duration; }
+    int GetSeed() const override { return _sim_seed; }
+
 private:
     const std::string _log_name;
+    int _duration;
+    int _sim_seed;
 
     const std::string GetLogName() const { return _log_name; }
+
+    std::unique_ptr<model::Person>
+    ReadPerson(const int id, datamanagement::ModelData &model_data) const;
 
     std::unique_ptr<event::Event>
     CreateEvent(std::string event_name,

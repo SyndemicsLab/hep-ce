@@ -23,19 +23,24 @@ namespace hepce {
 namespace model {
 
 //Factory
-std::unique_ptr<Hepce> Hepce::Create(const std::string &log_name) {
-    return std::make_unique<HepceImpl>(log_name);
+std::unique_ptr<Hepce> Hepce::Create(datamanagement::ModelData &model_data,
+                                     const std::string &log_name) {
+    return std::make_unique<HepceImpl>(model_data, log_name);
 }
 
 // Constructor
-HepceImpl::HepceImpl(const std::string &log_name) : _log_name(log_name) {}
+HepceImpl::HepceImpl(datamanagement::ModelData &model_data,
+                     const std::string &log_name)
+    : _log_name(log_name) {
+    _duration = utils::GetIntFromConfig("simulation.duration", model_data);
+    _sim_seed = utils::GetIntFromConfig("simulation.seed", model_data);
+}
 
 void HepceImpl::Run(
     std::vector<std::unique_ptr<model::Person>> &people,
-    const std::vector<std::unique_ptr<event::Event>> &discrete_events,
-    const int duration, const int seed) {
-    auto sampler = hepce::model::Sampler::Create(seed, GetLogName());
-    for (int i = 0; i < duration; ++i) {
+    const std::vector<std::unique_ptr<event::Event>> &discrete_events) {
+    auto sampler = hepce::model::Sampler::Create(GetSeed(), GetLogName());
+    for (int i = 0; i < GetDuration(); ++i) {
         for (auto &&event : discrete_events) {
             for (auto &&person : people) {
                 event->Execute(*person, *sampler);
@@ -53,6 +58,17 @@ HepceImpl::CreateEvents(datamanagement::ModelData &model_data) const {
         events.push_back(CreateEvent(e, model_data));
     }
     return events;
+}
+
+std::vector<std::unique_ptr<model::Person>>
+HepceImpl::CreatePopulation(datamanagement::ModelData &model_data) const {
+    std::vector<std::unique_ptr<model::Person>> population;
+    int population_size =
+        utils::GetIntFromConfig("simulation.population_size", model_data);
+    for (int i = 0; i < population_size; ++i) {
+        population.push_back(ReadPerson(i, model_data));
+    }
+    return population;
 }
 
 std::unique_ptr<model::Person>
@@ -86,9 +102,10 @@ HepceImpl::ReadPerson(const int id,
                                                 storage);
     } catch (std::exception &e) {
         std::stringstream msg;
-        msg << "Error getting Person ID " << id << " with error: " << e.what();
-        hepce::utils::LogError(GetLogName(), msg.str());
-        return;
+        msg << "Error getting Person ID " << id
+            << ". Using Default Person Values...";
+        hepce::utils::LogWarning(GetLogName(), msg.str());
+        return model::Person::Create(GetLogName());
     }
 
     auto person = model::Person::Create(GetLogName());

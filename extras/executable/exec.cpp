@@ -15,19 +15,21 @@
 #include <string>
 #include <vector>
 
+#include <hepce/data/writer.hpp>
 #include <hepce/event/event.hpp>
 #include <hepce/model/person.hpp>
 #include <hepce/model/simulation.hpp>
+#include <hepce/utils/logging.hpp>
 
 /// @brief
 /// @param argc
 /// @param argv
-/// @param rootInputDir
-/// @param taskStart
-/// @param taskEnd
+/// @param root_dir
+/// @param task_start
+/// @param task_end
 /// @return
-bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
-               int &taskEnd) {
+bool argChecks(int argc, char **argv, std::string &root_dir, int &task_start,
+               int &task_end) {
     if (argc > 1 && argc != 4) {
         std::cerr << "Usage: " << argv[0]
                   << "[INPUT FOLDER] [RUN START] [RUN END]\n\n"
@@ -38,17 +40,17 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 
     if (argc == 1) {
         std::cout << "Please provide the input folder path: ";
-        std::cin >> rootInputDir;
+        std::cin >> root_dir;
         std::cout << std::endl
                   << "Please provide the first input folder number: ";
-        std::cin >> taskStart;
+        std::cin >> task_start;
         std::cout << std::endl
                   << "Please provide the last input folder number: ";
-        std::cin >> taskEnd;
+        std::cin >> task_end;
     } else {
-        taskStart = std::stoi(argv[2]);
-        taskEnd = std::stoi(argv[3]);
-        rootInputDir = argv[1];
+        task_start = std::stoi(argv[2]);
+        task_end = std::stoi(argv[3]);
+        root_dir = argv[1];
     }
     return true;
 }
@@ -58,31 +60,41 @@ bool argChecks(int argc, char **argv, std::string &rootInputDir, int &taskStart,
 /// @param argv
 /// @return
 int main(int argc, char *argv[]) {
-    int taskStart;
-    int taskEnd;
-    std::string rootInputDir;
-    if (!argChecks(argc, argv, rootInputDir, taskStart, taskEnd)) {
+    int task_start;
+    int task_end;
+    std::string root_dir;
+    if (!argChecks(argc, argv, root_dir, task_start, task_end)) {
         return 0;
     }
 
-    for (int i = taskStart; i < (taskEnd + 1); ++i) {
-        std::filesystem::path inputSet = ((std::filesystem::path)rootInputDir) /
-                                         ("input" + std::to_string(i));
+    for (int i = task_start; i < (task_end + 1); ++i) {
+        std::filesystem::path input_dir =
+            ((std::filesystem::path)root_dir) / ("input" + std::to_string(i));
         // define output path
-        std::filesystem::path outputSet =
-            ((std::filesystem::path)rootInputDir) /
-            ("output" + std::to_string(i));
-        std::filesystem::path dbfile = inputSet / "inputs.db";
-        std::filesystem::path cffile = inputSet / "sim.conf";
-        std::filesystem::path logfile = outputSet / "log.txt";
-        auto sim = hepce::model::Hepce::Create(logfile.string());
-        // sim->LoadData(dbfile.string(), cffile.string(),
-        //               simulation::DataType::SQL);
-        // std::vector<hepce::model::Person> people = {};
-        // std::vector<hepce::event::Event> discrete_events = {};
-        // int duration = 0;
-        // sim->Run(people, discrete_events, 0);
-        // sim.WriteResults(outputSet.string());
+        std::filesystem::path output_dir =
+            ((std::filesystem::path)root_dir) / ("output" + std::to_string(i));
+        std::filesystem::path dbfile = input_dir / "inputs.db";
+        std::filesystem::path config = input_dir / "sim.conf";
+        std::filesystem::path popfile = output_dir / "population.csv";
+
+        std::filesystem::path log_file = output_dir / "hepce.log";
+        std::string log_name = "hepce-task-" + std::to_string(i);
+        hepce::utils::CreateFileLogger(log_name, log_file);
+
+        auto model_data = datamanagement::ModelData::Create(config, log_name);
+        model_data->AddSource(dbfile);
+
+        auto sim = hepce::model::Hepce::Create(*model_data, log_name);
+        auto population = sim->CreatePopulation(*model_data);
+        auto events = sim->CreateEvents(*model_data);
+        sim->Run(population, events);
+
+        auto writer =
+            hepce::data::Writer::Create(output_dir.string(), log_name);
+        writer->WritePopulation(population, popfile.string(),
+                                hepce::data::OutputType::kFile);
+
+        // sim.WriteResults(output_dir.string());
     }
 
     return 0;

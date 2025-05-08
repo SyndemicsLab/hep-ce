@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -24,10 +24,10 @@ enum class OutputType : int { kString = 0, kFile = 1, kCount = 2 };
 class Writer {
 public:
     virtual ~Writer() = default;
-    virtual std::string
-    WritePopulation(const std::vector<model::Person> &population,
-                    const std::string &filename,
-                    const OutputType output_type) = 0;
+    virtual std::string WritePopulation(
+        const std::vector<std::unique_ptr<model::Person>> &population,
+        const std::string &filename, const OutputType output_type,
+        std::vector<int> ids = {}) = 0;
 
     static std::unique_ptr<Writer>
     Create(const std::string &directory = "",

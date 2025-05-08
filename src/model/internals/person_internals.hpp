@@ -323,6 +323,8 @@ public:
     }
 
 private:
+    const std::string _log_name;
+
     size_t _id;
     size_t _current_time = 0;
 
@@ -356,6 +358,12 @@ private:
     std::unique_ptr<model::Costs> _costs;
 
     void UpdateTimers();
+
+    inline void SetInfectionDefaults(const data::InfectionType &infection) {
+        _linkage_details[infection] = data::LinkageDetails{};
+        _screening_details[infection] = data::ScreeningDetails{};
+        _treatment_details[infection] = data::TreatmentDetails{};
+    }
 };
 } // namespace model
 } // namespace hepce
