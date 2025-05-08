@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-07                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -145,7 +145,7 @@ inline const std::string CreateAntibodyTesting() {
 
 inline const std::string CreateTreatments() {
     std::stringstream s;
-    s << "CREATE TABLE treatments(retreatment INT,genotype_three INT,cirrhotic "
+    s << "CREATE TABLE treatments(salvage INT,genotype_three INT,cirrhotic "
          "INT,course TEXT,duration INT,cost REAL,svr_prob_if_completed "
          "REAL,toxicity_prob_if_withdrawal REAL,withdrawal REAL,toxicity_prob "
          "REAL);";

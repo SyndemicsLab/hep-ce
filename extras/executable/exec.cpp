@@ -93,8 +93,6 @@ int main(int argc, char *argv[]) {
             hepce::data::Writer::Create(output_dir.string(), log_name);
         writer->WritePopulation(population, popfile.string(),
                                 hepce::data::OutputType::kFile);
-
-        // sim.WriteResults(output_dir.string());
     }
 
     return 0;

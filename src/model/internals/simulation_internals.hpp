@@ -119,8 +119,8 @@ private:
         temp->num_hcv_treatment_withdrawals = stmt.getColumn(61).getInt();
         temp->num_hcv_treatment_toxic_reactions = stmt.getColumn(62).getInt();
         temp->num_completed_hcv_treatments = stmt.getColumn(63).getInt();
-        temp->num_hcv_retreatments = stmt.getColumn(64).getInt();
-        temp->in_hcv_retreatment = stmt.getColumn(65).getInt();
+        temp->num_hcv_salvages = stmt.getColumn(64).getInt();
+        temp->in_hcv_salvage = stmt.getColumn(65).getInt();
         temp->initiated_hiv_treatment = stmt.getColumn(66).getInt();
         temp->time_of_hiv_treatment_initiation = stmt.getColumn(67).getInt();
         temp->num_hiv_treatment_starts = stmt.getColumn(68).getInt();

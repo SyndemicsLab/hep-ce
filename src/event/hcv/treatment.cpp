@@ -51,12 +51,11 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
         return;
     }
 
-    // 2. Charge the Cost of the Visit (varies if this is retreatment)
-    int num_treatments =
-        person.GetTreatmentDetails(GetInfectionType()).num_withdrawals +
-        person.GetTreatmentDetails(GetInfectionType()).num_completed;
-    double visit_cost = (num_treatments > 0) ? GetTreatmentCosts().retreatment
-                                             : GetTreatmentCosts().treatment;
+    // 2. Charge the Cost of the Visit (varies if this is salvage)
+    double visit_cost =
+        (person.GetTreatmentDetails(GetInfectionType()).in_salvage_treatment)
+            ? GetTreatmentCosts().salvage
+            : GetTreatmentCosts().treatment;
     AddEventCost(person, visit_cost);
 
     // 3. Attempt to start primary treatment, if already on treatment
@@ -93,11 +92,11 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
             person.ClearDiagnosis(GetInfectionType());
             QuitEngagement(person);
         } else if (!person.GetTreatmentDetails(GetInfectionType())
-                        .retreatment) {
-            // initiate retreatment
+                        .in_salvage_treatment) {
+            // initiate Salvage
             person.InitiateTreatment(GetInfectionType());
         } else {
-            // if retreatment fails, it is a failure and treatment ceases
+            // if salvage fails, it is a failure and treatment ceases
             QuitEngagement(person);
         }
     }

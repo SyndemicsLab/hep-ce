@@ -125,8 +125,8 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     _treatment_details[it].num_toxic_reactions =
         storage.num_hcv_treatment_toxic_reactions;
     _treatment_details[it].num_completed = storage.num_completed_hcv_treatments;
-    _treatment_details[it].num_retreatments = storage.num_hcv_retreatments;
-    _treatment_details[it].retreatment = storage.in_hcv_retreatment;
+    _treatment_details[it].num_salvages = storage.num_hcv_salvages;
+    _treatment_details[it].in_salvage_treatment = storage.in_hcv_salvage;
 
     // HIV
     it = data::InfectionType::kHiv;
@@ -199,12 +199,12 @@ void PersonImpl::UpdateTimers() {
 
 void PersonImpl::InitiateTreatment(data::InfectionType it) {
     data::TreatmentDetails &td = _treatment_details[it];
-    // cannot continue being treated if already in retreatment
-    if (td.initiated_treatment && td.retreatment) {
+    // cannot continue being treated if already in salvage
+    if (td.initiated_treatment && td.in_salvage_treatment) {
         return;
     } else if (td.initiated_treatment) {
-        td.retreatment = true;
-        td.num_retreatments++;
+        td.in_salvage_treatment = true;
+        td.num_salvages++;
     } else {
         td.initiated_treatment = true;
     }
@@ -406,8 +406,8 @@ std::string PersonImpl::MakePopulationRow() const {
                        << hcvtd.num_withdrawals << ","
                        << hcvtd.num_toxic_reactions << ","
                        << hcvtd.num_completed << ","
-                       << hcvtd.num_retreatments << ","
-                       << std::boolalpha << hcvtd.retreatment << ",";
+                       << hcvtd.num_salvages << ","
+                       << std::boolalpha << hcvtd.in_salvage_treatment << ",";
         const auto &hivtd = _treatment_details.at(data::InfectionType::kHiv);
         population_row << std::boolalpha << hivtd.initiated_treatment << ","
                        << hivtd.time_of_treatment_initiation << ","

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-07                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -61,7 +61,7 @@ private:
     }
 
     inline const std::string TreatmentSQL() const {
-        return "SELECT retreatment, genotype_three, cirrhotic, duration, cost, "
+        return "SELECT salvage, genotype_three, cirrhotic, duration, cost, "
                "svr_prob_if_completed, toxicity_prob_if_withdrawal, withdrawal "
                "FROM treatments;";
     }
@@ -69,9 +69,10 @@ private:
     utils::tuple_3i GetTreatmentThruple(const model::Person &person) const {
         int geno3 = (person.GetHCVDetails().is_genotype_three) ? 1 : 0;
         int cirr = (person.IsCirrhotic()) ? 1 : 0;
-        int retreatment = static_cast<int>(
-            person.GetTreatmentDetails(GetInfectionType()).retreatment);
-        return std::make_tuple(retreatment, geno3, cirr);
+        int salvage =
+            static_cast<int>(person.GetTreatmentDetails(GetInfectionType())
+                                 .in_salvage_treatment);
+        return std::make_tuple(salvage, geno3, cirr);
     }
 
     inline void ResetUtility(model::Person &person) const override {

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -587,9 +587,9 @@ std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet) {
        << std::endl;
     os << "Number of Treatment Completions: " << tdet.num_completed
        << std::endl;
-    os << "Number of Retreatments: " << tdet.num_withdrawals << std::endl;
-    os << "Person is in Retreatment: " << std::boolalpha << tdet.retreatment
-       << std::endl;
+    os << "Number of Salvages: " << tdet.num_salvages << std::endl;
+    os << "Person is in Salvage Treatment: " << std::boolalpha
+       << tdet.in_salvage_treatment << std::endl;
     return os;
 }
 

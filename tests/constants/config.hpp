@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-07                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -89,10 +89,10 @@ inline void BuildSimConf(const std::string &name) {
       << "recent_screen_multiplier = 1.1" << std::endl
       << "recent_screen_cutoff = 0" << std::endl
       << "[treatment]" << std::endl
-      << "allow_retreatment = true" << std::endl
+      << "treatment_limit = 5" << std::endl
       << "ltfu_probability = 0" << std::endl
       << "treatment_cost = 12603.02" << std::endl
-      << "retreatment_cost = 19332.50" << std::endl
+      << "salvage_cost = 19332.50" << std::endl
       << "treatment_utility = 0.99" << std::endl
       << "treatment_initiation = 0.92" << std::endl
       << "tox_cost = 201.28" << std::endl
@@ -202,10 +202,10 @@ inline void BuildAlternateSimConf(const std::string &name) {
       << "recent_screen_multiplier = 1.0" << std::endl
       << "recent_screen_cutoff = 6" << std::endl
       << "[treatment]" << std::endl
-      << "allow_retreatment = true" << std::endl
+      << "treatment_limit = 5" << std::endl
       << "ltfu_probability = 0" << std::endl
       << "treatment_cost = 12603.02" << std::endl
-      << "retreatment_cost = 19332.50" << std::endl
+      << "salvage_cost = 19332.50" << std::endl
       << "treatment_utility = 0.99" << std::endl
       << "treatment_initiation = 0.92" << std::endl
       << "tox_cost = 201.28" << std::endl

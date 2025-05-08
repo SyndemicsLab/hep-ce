@@ -152,15 +152,15 @@ TEST_F(HCVTreatmentTest, FirstTreatment) {
     std::filesystem::remove(LOG_FILE);
 }
 
-TEST_F(HCVTreatmentTest, Retreatment) {
-    const std::string LOG_NAME = "Retreatment";
+TEST_F(HCVTreatmentTest, Salvage) {
+    const std::string LOG_NAME = "Salvage";
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     treatment.num_completed = 1;
-    treatment.retreatment = true;
+    treatment.in_salvage_treatment = true;
     EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(9)
+        .Times(10)
         .WillRepeatedly(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
@@ -192,7 +192,7 @@ TEST_F(HCVTreatmentTest, SVR) {
     treatment.initiated_treatment = true;
     treatment.time_of_treatment_initiation = -1;
     EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(10)
+        .Times(9)
         .WillRepeatedly(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
@@ -222,16 +222,16 @@ TEST_F(HCVTreatmentTest, SVR) {
     std::filesystem::remove(LOG_FILE);
 }
 
-TEST_F(HCVTreatmentTest, StartRetreatment) {
-    const std::string LOG_NAME = "StartRetreatment";
+TEST_F(HCVTreatmentTest, StartSalvage) {
+    const std::string LOG_NAME = "StartSalvage";
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     treatment.initiated_treatment = true;
     treatment.time_of_treatment_initiation = -1;
-    treatment.retreatment = false;
+    treatment.in_salvage_treatment = false;
     EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(11)
+        .Times(10)
         .WillRepeatedly(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
@@ -257,17 +257,17 @@ TEST_F(HCVTreatmentTest, StartRetreatment) {
     std::filesystem::remove(LOG_FILE);
 }
 
-TEST_F(HCVTreatmentTest, FailRetreatment) {
-    const std::string LOG_NAME = "FailRetreatment";
+TEST_F(HCVTreatmentTest, FailSalvage) {
+    const std::string LOG_NAME = "FailSalvage";
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     treatment.initiated_treatment = true;
     // Not possible, but GetCurrentTimestep returns 1 so set the diff to 3
     treatment.time_of_treatment_initiation = -2;
-    treatment.retreatment = true;
+    treatment.in_salvage_treatment = true;
     EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(11)
+        .Times(10)
         .WillRepeatedly(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
@@ -276,7 +276,7 @@ TEST_F(HCVTreatmentTest, FailRetreatment) {
         .WillOnce(Return(1));
 
     EXPECT_CALL(mock_person,
-                AddCost(12603.02, _, model::CostCategory::kTreatment))
+                AddCost(19332.50, _, model::CostCategory::kTreatment))
         .Times(1);
     EXPECT_CALL(mock_person, AddCost(20, _, model::CostCategory::kTreatment))
         .Times(1);
@@ -304,7 +304,7 @@ TEST_F(HCVTreatmentTest, Withdraw) {
     treatment.initiated_treatment = true;
     treatment.time_of_treatment_initiation = -1;
     EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(7)
+        .Times(6)
         .WillRepeatedly(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))

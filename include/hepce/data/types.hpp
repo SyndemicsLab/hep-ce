@@ -79,7 +79,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
     headers << "initiated_hcv_treatment,time_of_hcv_treatment_initiation,num_"
                "hcv_treatment_starts,num_hcv_treatment_withdrawals,num_hcv_"
                "treatment_toxic_reactions,num_completed_hcv_treatments,num_hcv_"
-               "retreatments,in_hcv_retreatment,";
+               "salvages,in_hcv_salvage_treatment,";
     if (hiv) {
         headers << "initiated_hiv_treatment,time_of_hiv_treatment_initiation,"
                    "num_hiv_treatment_starts,num_hiv_treatment_withdrawals,num_"
@@ -410,8 +410,8 @@ struct TreatmentDetails {
     int num_withdrawals = 0;
     int num_toxic_reactions = 0;
     int num_completed = 0;
-    int num_retreatments = 0;
-    bool retreatment = false;
+    int num_salvages = 0;
+    bool in_salvage_treatment = false;
 };
 std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 
@@ -518,9 +518,9 @@ struct PersonSelect {
     int num_hcv_treatment_withdrawals = 0;
     int num_hcv_treatment_toxic_reactions = 0;
     int num_completed_hcv_treatments = 0;
-    int num_hcv_retreatments = 0;
-    bool in_hcv_retreatment = false;
-    // HIV - NOTE: No retreatment analogue for HIV, so values stay default.
+    int num_hcv_salvages = 0;
+    bool in_hcv_salvage = false;
+    // HIV - NOTE: No salvage analogue for HIV, so values stay default.
     // Also, there is no "completing" HIV treatment since it cannot be cured.
     bool initiated_hiv_treatment = false;
     int time_of_hiv_treatment_initiation = -1;

@@ -169,7 +169,7 @@ public:
     inline void AddSVR() override { _hcv_details.svrs++; }
     inline void EndTreatment(data::InfectionType it) override {
         _treatment_details[it].initiated_treatment = false;
-        _treatment_details[it].retreatment = false;
+        _treatment_details[it].in_salvage_treatment = false;
     }
 
     inline data::BehaviorDetails GetBehaviorDetails() const override {

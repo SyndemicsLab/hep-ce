@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-07                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -35,7 +35,7 @@ public:
     };
     struct TreatmentCosts {
         double treatment = 0.0;
-        double retreatment = 0.0;
+        double salvage = 0.0;
         double toxicity = 0.0;
     };
     struct TreatmentUtilities {
@@ -53,8 +53,8 @@ public:
         SetEventCostCategory(model::CostCategory::kTreatment);
         SetEventUtilityCategory(model::UtilityCategory::kTreatment);
         LoadEligibilityData(model_data);
-        SetRetreatment(utils::GetBoolFromConfig("treatment.allow_retreatment",
-                                                model_data));
+        SetTreatmentLimit(
+            utils::GetIntFromConfig("treatment.treatment_limit", model_data));
 
         _probabilities.loss_to_follow_up = utils::GetDoubleFromConfig(
             "treatment.ltfu_probability", model_data);
@@ -62,8 +62,8 @@ public:
             utils::GetDoubleFromConfig("treatment.treatment_cost", model_data);
         _utilities.treatment = utils::GetDoubleFromConfig(
             "treatment.treatment_utility", model_data);
-        _costs.retreatment = utils::GetDoubleFromConfig(
-            "treatment.retreatment_cost", model_data);
+        _costs.salvage =
+            utils::GetDoubleFromConfig("treatment.salvage_cost", model_data);
         _probabilities.initialization = utils::GetDoubleFromConfig(
             "treatment.treatment_initiation", model_data);
         _costs.toxicity =
@@ -73,7 +73,7 @@ public:
     }
 
 protected:
-    inline void SetRetreatment(const bool &r) { _retreatment = r; }
+    inline void SetTreatmentLimit(const int &r) { _treatment_limit = r; }
     inline void SetTreatmentUtilities(const TreatmentUtilities &u) {
         _utilities = u;
     }
@@ -83,7 +83,7 @@ protected:
     }
     inline void SetEligibilities(const Eligibilities &e) { _eligibilities = e; }
 
-    inline bool GetRetreatment() const { return _retreatment; }
+    inline bool GetTreatmentLimit() const { return _treatment_limit; }
     inline TreatmentUtilities GetTreatmentUtilities() const {
         return _utilities;
     }
@@ -147,7 +147,7 @@ protected:
     }
     /// @brief
     /// This checks eligibility based on a set of conditions:
-    /// 1. If they can start retreatment or haven't started treatment before
+    /// 1. If they can start salvage or haven't started treatment before
     /// 2. If they have an eligible fibrosis state
     /// 3. If they have an eligible behavior
     /// 4. If they have an eligible pregnancy state
@@ -157,8 +157,11 @@ protected:
     /// @return
     bool IsEligible(const model::Person &person) const {
         auto treatment_ready =
-            (_retreatment || !person.GetTreatmentDetails(GetInfectionType())
-                                  .initiated_treatment);
+            ((_treatment_limit >
+              person.GetTreatmentDetails(GetInfectionType()).num_starts) ||
+             _treatment_limit < 0) &&
+            (!person.GetTreatmentDetails(GetInfectionType())
+                  .initiated_treatment);
         return (treatment_ready && IsEligibleFibrosisStage(person) &&
                 IsEligibleBehavior(person) && IsEligiblePregnancy(person) &&
                 IsEligibleTimeLastActive(person) &&
@@ -168,7 +171,7 @@ protected:
     }
 
 private:
-    bool _retreatment = true;
+    int _treatment_limit = 0;
     TreatmentUtilities _utilities;
     TreatmentCosts _costs;
     TreatmentProbabilities _probabilities;
