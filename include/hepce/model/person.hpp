@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -30,6 +30,8 @@ public:
     virtual void Grow() = 0;
     virtual void
     Die(data::DeathReason deathReason = data::DeathReason::kBackground) = 0;
+
+    virtual void SetPersonDetails(const data::PersonSelect &select) = 0;
 
     // HCV
     virtual data::HCVDetails GetHCVDetails() const = 0;

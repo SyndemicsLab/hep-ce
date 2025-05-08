@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: moud.hpp                                                             //
+// File: moud.cpp                                                             //
 // Project: HEPCESimulationv2                                                 //
-// Created Date: 2025-04-17                                                  //
+// Created Date: 2025-05-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-05-08                                                  //
@@ -9,27 +9,30 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef HEPCE_EVENT_BEHAVIOR_MOUD_HPP_
-#define HEPCE_EVENT_BEHAVIOR_MOUD_HPP_
 
-#include <memory>
-#include <string>
+// File Header
+#include <hepce/event/behavior/moud.hpp>
 
-#include <hepce/event/event.hpp>
+#include "internals/moud_internals.hpp"
 
 namespace hepce {
 namespace event {
 namespace behavior {
-class Moud : public virtual Event {
-public:
-    virtual ~Moud() = default;
+// Factory
+std::unique_ptr<Event> Moud::Create(datamanagement::ModelData &model_data,
+                                    const std::string &log_name) {
+    return std::make_unique<MoudImpl>(model_data, log_name);
+}
 
-    static std::unique_ptr<Event>
-    Create(datamanagement::ModelData &model_data,
-           const std::string &log_name = "console");
-};
+MoudImpl::MoudImpl(datamanagement::ModelData &model_data,
+                   const std::string &log_name)
+    : EventBase(model_data, log_name) {
+    LoadData(model_data);
+}
+
+void MoudImpl::Execute(model::Person &person, model::Sampler &sampler) {}
+
+void MoudImpl::LoadData(datamanagement::ModelData &model_data) {}
 } // namespace behavior
 } // namespace event
 } // namespace hepce
-
-#endif // HEPCE_EVENT_BEHAVIOR_MOUD_HPP_

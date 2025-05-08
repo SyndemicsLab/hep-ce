@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: person.cpp                                                           //
 // Project: HEPCESimulationv2                                                 //
-// Created Date: 2025-04-21                                                  //
+// Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -25,6 +25,135 @@ std::unique_ptr<Person> Person::Create(const std::string &log_name) {
 
 // Constructor
 PersonImpl::PersonImpl(const std::string &log_name) {}
+
+void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
+    // basic characteristics
+    // storage.sex;
+    SetAge(storage.age);
+    // storage.is_alive;
+    SetBoomer(storage.boomer_classification);
+    SetDeathReason(storage.death_reason);
+
+    // BehaviorDetails
+    SetBehavior(storage.drug_behavior);
+    _behavior_details.time_last_active = storage.time_last_active_drug_use;
+
+    // HCVDetails
+    _hcv_details.hcv = storage.hcv;
+    _hcv_details.fibrosis_state = storage.fibrosis_state;
+    _hcv_details.is_genotype_three = storage.is_genotype_three;
+    _hcv_details.seropositive = storage.seropositive;
+    _hcv_details.time_changed = storage.time_hcv_changed;
+    _hcv_details.time_fibrosis_state_changed =
+        storage.time_fibrosis_state_changed;
+    _hcv_details.times_infected = storage.times_hcv_infected;
+    _hcv_details.times_acute_cleared = storage.times_acute_cleared;
+    _hcv_details.svrs = storage.svrs;
+
+    // HIVDetails
+    _hiv_details.hiv = storage.hiv;
+    _hiv_details.time_changed = storage.time_hiv_changed;
+    _hiv_details.low_cd4_months_count = storage.low_cd4_months_count;
+
+    // HCCDetails
+    _hcc_details.hcc_state = storage.hcc_state;
+    _hcc_details.hcc_diagnosed = storage.hcc_diagnosed;
+
+    // Overdoses
+    _num_overdoses = storage.num_overdoses;
+    _currently_overdosing = storage.currently_overdosing;
+
+    // MOUDDetails
+    _moud_details.moud_state = storage.moud_state;
+    _moud_details.time_started_moud = storage.time_started_moud;
+    _moud_details.current_state_concurrent_months =
+        storage.current_moud_concurrent_months;
+    _moud_details.total_moud_months = storage.total_moud_months;
+
+    // PregnancyDetails
+    _pregnancy_details.pregnancy_state = storage.pregnancy_state;
+    _pregnancy_details.time_of_pregnancy_change =
+        storage.time_of_pregnancy_change;
+    _pregnancy_details.count = storage.pregnancy_count;
+    _pregnancy_details.num_infants = storage.num_infants;
+    _pregnancy_details.num_miscarriages = storage.num_miscarriages;
+    _pregnancy_details.num_hcv_exposures = storage.num_infant_hcv_exposures;
+    _pregnancy_details.num_hcv_infections = storage.num_infant_hcv_infections;
+    _pregnancy_details.num_hcv_tests = storage.num_infant_hcv_tests;
+
+    // StagingDetails
+    _staging_details.measured_fibrosis_state = storage.measured_fibrosis_state;
+    _staging_details.had_second_test = storage.had_second_test;
+    _staging_details.time_of_last_staging = storage.time_of_last_staging;
+
+    // HCV
+    data::InfectionType it = data::InfectionType::kHcv;
+
+    // LinkageDetails
+    _linkage_details[it].link_state = storage.hcv_link_state;
+    _linkage_details[it].time_link_change = storage.time_of_hcv_link_change;
+    _linkage_details[it].link_type = storage.hcv_link_type;
+    _linkage_details[it].link_count = storage.hcv_link_count;
+
+    // ScreeningDetails
+    _screening_details[it].time_of_last_screening =
+        storage.time_of_last_hcv_screening;
+    _screening_details[it].num_ab_tests = storage.num_hcv_ab_tests;
+    _screening_details[it].num_rna_tests = storage.num_hcv_rna_tests;
+    _screening_details[it].ab_positive = storage.hcv_antibody_positive;
+    _screening_details[it].identified = storage.hcv_identified;
+    _screening_details[it].time_identified = storage.time_hcv_identified;
+
+    // TreatmentDetails
+    _treatment_details[it].initiated_treatment =
+        storage.initiated_hcv_treatment;
+    _treatment_details[it].time_of_treatment_initiation =
+        storage.time_of_hcv_treatment_initiation;
+    _treatment_details[it].num_starts = storage.num_hcv_treatment_starts;
+    _treatment_details[it].num_withdrawals =
+        storage.num_hcv_treatment_withdrawals;
+    _treatment_details[it].num_toxic_reactions =
+        storage.num_hcv_treatment_toxic_reactions;
+    _treatment_details[it].num_completed = storage.num_completed_hcv_treatments;
+    _treatment_details[it].num_retreatments = storage.num_hcv_retreatments;
+    _treatment_details[it].retreatment = storage.in_hcv_retreatment;
+
+    // HIV
+    it = data::InfectionType::kHiv;
+
+    // LinkageDetails
+    _linkage_details[it].link_state = storage.hiv_link_state;
+    _linkage_details[it].time_link_change = storage.time_of_hiv_link_change;
+    _linkage_details[it].link_type = storage.hiv_link_type;
+    _linkage_details[it].link_count = storage.hiv_link_count;
+
+    // ScreeningDetails
+    _screening_details[it].time_of_last_screening =
+        storage.time_of_last_hiv_screening;
+    _screening_details[it].num_ab_tests = storage.num_hiv_ab_tests;
+    _screening_details[it].num_rna_tests = storage.num_hiv_rna_tests;
+    _screening_details[it].ab_positive = storage.hiv_antibody_positive;
+    _screening_details[it].identified = storage.hiv_identified;
+    _screening_details[it].time_identified = storage.time_hiv_identified;
+
+    // TreatmentDetails
+    _treatment_details[it].initiated_treatment =
+        storage.initiated_hiv_treatment;
+    _treatment_details[it].time_of_treatment_initiation =
+        storage.time_of_hiv_treatment_initiation;
+    _treatment_details[it].num_starts = storage.num_hiv_treatment_starts;
+    _treatment_details[it].num_withdrawals =
+        storage.num_hiv_treatment_withdrawals;
+    _treatment_details[it].num_toxic_reactions =
+        storage.num_hiv_treatment_toxic_reactions;
+
+    // UtilityTracker
+    SetUtility(storage.behavior_utility, UtilityCategory::kBehavior);
+    SetUtility(storage.liver_utility, UtilityCategory::kLiver);
+    SetUtility(storage.treatment_utility, UtilityCategory::kTreatment);
+    SetUtility(storage.background_utility, UtilityCategory::kBackground);
+    SetUtility(storage.hiv_utility, UtilityCategory::kHiv);
+}
 
 void PersonImpl::InfectHCV() {
     // cannot be multiply infected

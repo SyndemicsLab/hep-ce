@@ -70,6 +70,8 @@ set(HEPCE_EVENT_BASE
 set(HEPCE_EVENT_BEHAVIOR
     src/event/behavior/behavior_changes.cpp
     src/event/behavior/pregnancy.cpp
+    src/event/behavior/moud.cpp
+    src/event/behavior/overdose.cpp
 )
 
 set(HEPCE_EVENT_FIBROSIS

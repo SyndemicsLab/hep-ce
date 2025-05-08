@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-07                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -31,14 +31,14 @@ std::unique_ptr<Hepce> Hepce::Create(const std::string &log_name) {
 HepceImpl::HepceImpl(const std::string &log_name) : _log_name(log_name) {}
 
 void HepceImpl::Run(
-    std::vector<model::Person> &people,
+    std::vector<std::unique_ptr<model::Person>> &people,
     const std::vector<std::unique_ptr<event::Event>> &discrete_events,
     const int duration, const int seed) {
     auto sampler = hepce::model::Sampler::Create(seed, GetLogName());
     for (int i = 0; i < duration; ++i) {
         for (auto &&event : discrete_events) {
-            for (auto person : people) {
-                event->Execute(person, *sampler);
+            for (auto &&person : people) {
+                event->Execute(*person, *sampler);
             }
         }
     }
@@ -55,9 +55,45 @@ HepceImpl::CreateEvents(datamanagement::ModelData &model_data) const {
     return events;
 }
 
-int HepceImpl::CreatePersonFromTable(
-    model::Person &person, datamanagement::ModelData &model_data) const {
-    return 0;
+std::unique_ptr<model::Person>
+HepceImpl::ReadPerson(const int id,
+                      datamanagement::ModelData &model_data) const {
+    std::stringstream query;
+    std::vector<std::string> events = utils::SplitToVecT<std::string>(
+        utils::GetStringFromConfig("simulation.events", model_data), ',');
+
+    // this is a stopgap with plans to make Event-scoped CheckFor<X>Event
+    // functions that are static / usable throughout the model.
+    bool pregnancy = utils::FindInVector<std::string>(events, {"pregnancy"});
+    bool hcc = utils::FindInVector<std::string>(events, {"HCCScreening"});
+    bool overdose =
+        utils::FindInVector<std::string>(events, {"BehaviorChanges"});
+    bool hiv = utils::FindInVector<std::string>(
+        events,
+        {"HIVInfections", "HIVLinking", "HIVScreening", "HIVTreatment"});
+    bool moud = utils::FindInVector<std::string>(events, {"MOUD"});
+
+    // TODO: Add string santization (i.e. verify no extra special characters/numbers/phrases/etc.)
+    query << "SELECT "
+          << data::POPULATION_HEADERS(pregnancy, hcc, overdose, hiv, moud);
+    query << "FROM population ";
+    query << "WHERE id = " << std::to_string(id) << ";";
+
+    std::any storage = data::PersonSelect{};
+
+    try {
+        model_data.GetDBSource("inputs").Select(query.str(), PersonCallback,
+                                                storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting Person ID " << id << " with error: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
+
+    auto person = model::Person::Create(GetLogName());
+    person->SetPersonDetails(std::any_cast<data::PersonSelect>(storage));
+    return person;
 }
 int HepceImpl::LoadICValues(model::Person &person,
                             const std::vector<std::string> &icValues) {

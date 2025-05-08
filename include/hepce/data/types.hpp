@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -433,6 +433,112 @@ struct CostUtil {
 };
 std::ostream &operator<<(std::ostream &os, CostUtil const &lu);
 bool operator==(CostUtil const &lhs, CostUtil const &rhs);
+
+struct PersonSelect {
+    // basic characteristics
+    Sex sex = Sex::kMale;
+    int age = 0;
+    bool is_alive = true;
+    bool boomer_classification = false;
+    DeathReason death_reason = DeathReason::kNa;
+    // BehaviorDetails
+    Behavior drug_behavior = Behavior::kNever;
+    int time_last_active_drug_use = -1;
+    // HCVDetails
+    HCV hcv = HCV::kNone;
+    FibrosisState fibrosis_state = FibrosisState::kNone;
+    bool is_genotype_three = false;
+    bool seropositive = false;
+    int time_hcv_changed = -1;
+    int time_fibrosis_state_changed = -1;
+    int times_hcv_infected = 0;
+    int times_acute_cleared = 0;
+    int svrs = 0;
+    // HIVDetails
+    HIV hiv = HIV::kNone;
+    int time_hiv_changed = -1;
+    int low_cd4_months_count = 0;
+    // HCCDetails
+    HCCState hcc_state = HCCState::kNone;
+    bool hcc_diagnosed = false;
+    // Overdoses
+    int num_overdoses = 0;
+    bool currently_overdosing = false;
+    // MOUDDetails
+    MOUD moud_state = MOUD::kNone;
+    int time_started_moud = -1;
+    int current_moud_concurrent_months = 0;
+    int total_moud_months = 0;
+    // PregnancyDetails - NOTE: No instantiation of the children born prior to
+    // this simulation run in the `children' vector.
+    PregnancyState pregnancy_state = PregnancyState::kNa;
+    int time_of_pregnancy_change = -1;
+    int pregnancy_count = 0;
+    int num_infants = 0;
+    int num_miscarriages = 0;
+    int num_infant_hcv_exposures = 0;
+    int num_infant_hcv_infections = 0;
+    int num_infant_hcv_tests = 0;
+    // StagingDetails
+    MeasuredFibrosisState measured_fibrosis_state =
+        MeasuredFibrosisState::kNone;
+    bool had_second_test = false;
+    int time_of_last_staging = -1;
+    // LinkageDetails
+    // HCV
+    LinkageState hcv_link_state = LinkageState::kNever;
+    int time_of_hcv_link_change = -1;
+    LinkageType hcv_link_type = LinkageType::kNa;
+    int hcv_link_count = 0;
+    // HIV
+    LinkageState hiv_link_state = LinkageState::kNever;
+    int time_of_hiv_link_change = -1;
+    LinkageType hiv_link_type = LinkageType::kNa;
+    int hiv_link_count = 0;
+    // ScreeningDetails
+    // HCV
+    int time_of_last_hcv_screening = -1;
+    int num_hcv_ab_tests = 0;
+    int num_hcv_rna_tests = 0;
+    bool hcv_antibody_positive = false;
+    int hcv_identified = false;
+    int time_hcv_identified = -1;
+    // HIV
+    int time_of_last_hiv_screening = -1;
+    int num_hiv_ab_tests = 0;
+    int num_hiv_rna_tests = 0;
+    bool hiv_antibody_positive = false;
+    int hiv_identified = false;
+    int time_hiv_identified = -1;
+    // TreatmentDetails
+    // HCV
+    bool initiated_hcv_treatment = false;
+    int time_of_hcv_treatment_initiation = -1;
+    int num_hcv_treatment_starts = 0;
+    int num_hcv_treatment_withdrawals = 0;
+    int num_hcv_treatment_toxic_reactions = 0;
+    int num_completed_hcv_treatments = 0;
+    int num_hcv_retreatments = 0;
+    bool in_hcv_retreatment = false;
+    // HIV - NOTE: No retreatment analogue for HIV, so values stay default.
+    // Also, there is no "completing" HIV treatment since it cannot be cured.
+    bool initiated_hiv_treatment = false;
+    int time_of_hiv_treatment_initiation = -1;
+    int num_hiv_treatment_starts = 0;
+    int num_hiv_treatment_withdrawals = 0;
+    int num_hiv_treatment_toxic_reactions = 0;
+    // NOTE: No CostTracker. Costs are only those accrued during the time
+    // horizon of the simulation
+    // UtilityTracker
+    double behavior_utility = 1.0;
+    double liver_utility = 1.0;
+    double treatment_utility = 1.0;
+    double background_utility = 1.0;
+    double hiv_utility = 1.0;
+    // NOTE: Like cost, LifetimeUtility, life_span, and discounted_life_span are
+    // used to track only the accumulation over the course of the simulated time
+    // horizon, so they are not used when creating a new person.
+};
 } // namespace data
 } // namespace hepce
 

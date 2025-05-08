@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: overdose_internals.hpp                                               //
+// File: overdose.cpp                                                         //
 // Project: HEPCESimulationv2                                                 //
-// Created Date: 2025-04-18                                                  //
+// Created Date: 2025-05-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-05-08                                                  //
@@ -9,28 +9,31 @@
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef HEPCE_EVENT_BEHAVIOR_OVERDOSE_INTERNALS_HPP_
-#define HEPCE_EVENT_BEHAVIOR_OVERDOSE_INTERNALS_HPP_
 
+// File Header
 #include <hepce/event/behavior/overdose.hpp>
 
-#include "../../internals/event_internals.hpp"
+#include "internals/overdose_internals.hpp"
 
 namespace hepce {
 namespace event {
 namespace behavior {
-class OverdoseImpl : public virtual Overdose, public EventBase {
-public:
-    OverdoseImpl(datamanagement::ModelData &model_data,
-                 const std::string &log_name = "console");
-    ~OverdoseImpl() = default;
+// Factory
+std::unique_ptr<hepce::event::Event>
+Overdose::Create(datamanagement::ModelData &model_data,
+                 const std::string &log_name) {
+    return std::make_unique<OverdoseImpl>(model_data, log_name);
+}
 
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+OverdoseImpl::OverdoseImpl(datamanagement::ModelData &model_data,
+                           const std::string &log_name)
+    : EventBase(model_data, log_name) {
+    LoadData(model_data);
+}
 
-    void LoadData(datamanagement::ModelData &model_data) override;
-};
+void OverdoseImpl::Execute(model::Person &person, model::Sampler &sampler) {}
+
+void OverdoseImpl::LoadData(datamanagement::ModelData &model_data) {}
 } // namespace behavior
 } // namespace event
 } // namespace hepce
-
-#endif // HEPCE_EVENT_BEHAVIOR_OVERDOSE_INTERNALS_HPP_

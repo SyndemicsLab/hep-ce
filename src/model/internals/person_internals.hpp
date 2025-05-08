@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -43,6 +43,8 @@ public:
     void DevelopHCC(data::HCCState state) override;
     std::string MakePopulationRow() const override;
     void SetMoudState(data::MOUD moud) override;
+
+    void SetPersonDetails(const data::PersonSelect &select) override;
 
     // Section Getters
     inline data::HCVDetails GetHCVDetails() const override {

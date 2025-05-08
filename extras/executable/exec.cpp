@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -78,10 +78,10 @@ int main(int argc, char *argv[]) {
         auto sim = hepce::model::Hepce::Create(logfile.string());
         // sim->LoadData(dbfile.string(), cffile.string(),
         //               simulation::DataType::SQL);
-        std::vector<hepce::model::Person> people = {};
-        std::vector<hepce::event::Event> discrete_events = {};
-        int duration = 0;
-        sim->Run(people, discrete_events, 0);
+        // std::vector<hepce::model::Person> people = {};
+        // std::vector<hepce::event::Event> discrete_events = {};
+        // int duration = 0;
+        // sim->Run(people, discrete_events, 0);
         // sim.WriteResults(outputSet.string());
     }
 
