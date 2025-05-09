@@ -30,10 +30,8 @@ public:
     std::vector<std::unique_ptr<event::Event>>
     CreateEvents(datamanagement::ModelData &model_data) const override;
     std::vector<std::unique_ptr<model::Person>>
-    CreatePopulation(datamanagement::ModelData &model_data) const override;
-
-    int LoadICValues(model::Person &person,
-                     const std::vector<std::string> &icValues) override;
+    CreatePopulation(datamanagement::ModelData &model_data,
+                     bool read_init_cohort = false) const override;
 
     int GetDuration() const override { return _duration; }
     int GetSeed() const override { return _sim_seed; }
@@ -46,7 +44,10 @@ private:
     const std::string GetLogName() const { return _log_name; }
 
     std::unique_ptr<model::Person>
-    ReadPerson(const int id, datamanagement::ModelData &model_data) const;
+    ReadPopPerson(const int id, datamanagement::ModelData &model_data) const;
+
+    std::unique_ptr<model::Person>
+    ReadICPerson(const int id, datamanagement::ModelData &model_data) const;
 
     std::unique_ptr<event::Event>
     CreateEvent(std::string event_name,
@@ -56,15 +57,15 @@ private:
                                       const SQLite::Statement &stmt) {
         data::PersonSelect *temp = std::any_cast<data::PersonSelect>(&storage);
         temp->sex << stmt.getColumn(0);
-        temp->age = std::stoi(stmt.getColumn(1));
-        temp->is_alive = std::stoi(stmt.getColumn(2));
-        temp->boomer_classification = std::stoi(stmt.getColumn(3));
+        temp->age = stmt.getColumn(1).getInt();
+        temp->is_alive = stmt.getColumn(2).getInt();
+        temp->boomer_classification = stmt.getColumn(3).getInt();
         temp->death_reason << stmt.getColumn(4);
         temp->drug_behavior << stmt.getColumn(5);
-        temp->time_last_active_drug_use = std::stoi(stmt.getColumn(6));
+        temp->time_last_active_drug_use = stmt.getColumn(6).getInt();
         temp->hcv << stmt.getColumn(7);
         temp->fibrosis_state << stmt.getColumn(8);
-        temp->is_genotype_three = std::stoi(stmt.getColumn(9));
+        temp->is_genotype_three = stmt.getColumn(9).getInt();
         temp->seropositive = stmt.getColumn(10).getInt();
         temp->time_hcv_changed = stmt.getColumn(11).getInt();
         temp->time_fibrosis_state_changed = stmt.getColumn(12).getInt();
@@ -131,6 +132,21 @@ private:
         temp->treatment_utility = stmt.getColumn(73).getDouble();
         temp->background_utility = stmt.getColumn(74).getDouble();
         temp->hiv_utility = stmt.getColumn(75).getDouble();
+    }
+
+    static inline void InitCohortCallback(std::any &storage,
+                                          const SQLite::Statement &stmt) {
+        data::PersonSelect *temp = std::any_cast<data::PersonSelect>(&storage);
+        temp->age = stmt.getColumn(0).getInt();
+        temp->sex << stmt.getColumn(1);
+        temp->drug_behavior << stmt.getColumn(2);
+        temp->time_last_active_drug_use = stmt.getColumn(3).getInt();
+        temp->seropositive = stmt.getColumn(4).getInt();
+        temp->is_genotype_three = stmt.getColumn(5).getInt();
+        temp->fibrosis_state << stmt.getColumn(6);
+        temp->hcv_identified = stmt.getColumn(7).getInt();
+        temp->hcv_link_state << stmt.getColumn(8);
+        temp->hcv << stmt.getColumn(9);
     }
 };
 } // namespace model

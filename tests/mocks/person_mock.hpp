@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,8 +37,6 @@ public:
     MOCK_METHOD(void, InfectHCV, (), (override));
     MOCK_METHOD(void, ClearHCV, (bool is_acute), (override));
     MOCK_METHOD(void, SetHCV, (data::HCV hcv), (override));
-    MOCK_METHOD(void, AddAcuteHCVClearance, (), (override));
-    MOCK_METHOD(void, SetSeropositivity, (bool seropositive_state), (override));
     MOCK_METHOD(void, Diagnose, (data::InfectionType it), (override));
     MOCK_METHOD(void, ClearDiagnosis, (data::InfectionType it), (override));
     MOCK_METHOD(bool, IsCirrhotic, (), (const, override));
@@ -46,24 +44,17 @@ public:
     // Screening
     MOCK_METHOD(data::ScreeningDetails, GetScreeningDetails,
                 (data::InfectionType it), (const, override));
-    MOCK_METHOD(void, MarkScreened, (data::InfectionType it), (override));
-    MOCK_METHOD(void, AddAbScreen, (data::InfectionType it), (override));
-    MOCK_METHOD(void, AddRnaScreen, (data::InfectionType it), (override));
-    MOCK_METHOD(bool, HadSecondScreeningTest, (), (const, override));
-    MOCK_METHOD(void, SetAntibodyPositive,
-                (bool result, data::InfectionType it), (override));
+    MOCK_METHOD(void, Screen,
+                (data::InfectionType it, data::ScreeningTest test,
+                 data::ScreeningType type),
+                (override));
     MOCK_METHOD(void, GiveSecondScreeningTest, (bool state), (override));
 
     // Linking
     MOCK_METHOD(data::LinkageDetails, GetLinkageDetails,
                 (data::InfectionType it), (const, override));
     MOCK_METHOD(void, Unlink, (data::InfectionType it), (override));
-    MOCK_METHOD(void, Link,
-                (data::LinkageType link_type, data::InfectionType it),
-                (override));
-    MOCK_METHOD(void, SetLinkageType,
-                (data::LinkageType link_type, data::InfectionType it),
-                (override));
+    MOCK_METHOD(void, Link, (data::InfectionType it), (override));
 
     // Treatment
     MOCK_METHOD(data::TreatmentDetails, GetTreatmentDetails,
@@ -94,7 +85,7 @@ public:
     // Fibrosis
     MOCK_METHOD(void, DiagnoseFibrosis, (data::MeasuredFibrosisState),
                 (override));
-    MOCK_METHOD(void, UpdateTrueFibrosis, (data::FibrosisState), (override));
+    MOCK_METHOD(void, SetFibrosis, (data::FibrosisState), (override));
     MOCK_METHOD(data::StagingDetails, GetFibrosisStagingDetails, (),
                 (const, override));
 

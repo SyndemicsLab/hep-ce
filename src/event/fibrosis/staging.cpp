@@ -133,7 +133,9 @@ void StagingImpl::LoadData(datamanagement::ModelData &model_data) {
         "fibrosis_staging.multitest_result_method", model_data);
 
     LoadTestOneStagingData(model_data);
-    LoadTestTwoStagingData(model_data);
+    if (!_test_two.empty()) {
+        LoadTestTwoStagingData(model_data);
+    }
 }
 
 // Private Methods

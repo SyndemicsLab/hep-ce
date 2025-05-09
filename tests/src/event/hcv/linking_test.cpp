@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -57,9 +57,9 @@ protected:
                             0,
                             0,
                             0};
-    data::LinkageDetails linkage = {data::LinkageState::kNever, -1,
-                                    data::LinkageType::kNa, 0};
-    data::ScreeningDetails screen = {-1, 0, 0, false, false, -1};
+    data::LinkageDetails linkage = {data::LinkageState::kNever, -1, 0};
+    data::ScreeningDetails screen = {
+        -1, 0, 0, false, false, -1, data::ScreeningType::kNa};
     data::PregnancyDetails pregnancy = {
         data::PregnancyState::kNa, -1, 0, 0, 0, 0, 0, 0, {}};
 
@@ -95,10 +95,11 @@ TEST_F(HCVLinkingTest, Linked) {
     linkage.link_state = data::LinkageState::kLinked;
     screen.identified = true;
 
-    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
-    EXPECT_CALL(mock_person, GetScreeningDetails(_)).WillOnce(Return(screen));
+    ON_CALL(mock_person, GetLinkageDetails(_)).WillByDefault(Return(linkage));
+    ON_CALL(mock_person, GetScreeningDetails(_)).WillByDefault(Return(screen));
 
-    EXPECT_CALL(mock_person, GetHCVDetails()).Times(0);
+    // Ensure we don't execute anything if we are already linked.
+    EXPECT_CALL(mock_person, Link(_)).Times(0);
     EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
@@ -113,15 +114,14 @@ TEST_F(HCVLinkingTest, NotIdentified) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     linkage.link_state = data::LinkageState::kUnlinked;
-    linkage.link_type = data::LinkageType::kBackground;
+    screen.screen_type = data::ScreeningType::kBackground;
     screen.identified = false;
 
-    EXPECT_CALL(mock_person, GetLinkageDetails(_))
-        .Times(1)
-        .WillRepeatedly(Return(linkage));
-    EXPECT_CALL(mock_person, GetScreeningDetails(_)).WillOnce(Return(screen));
+    ON_CALL(mock_person, GetLinkageDetails(_)).WillByDefault(Return(linkage));
+    ON_CALL(mock_person, GetScreeningDetails(_)).WillByDefault(Return(screen));
 
-    EXPECT_CALL(mock_person, GetHCVDetails()).Times(0);
+    // Ensure we don't progress and try to evaluate details if they're not identified
+    EXPECT_CALL(mock_person, Link(_)).Times(0);
     EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
@@ -139,16 +139,13 @@ TEST_F(HCVLinkingTest, FalsePositive) {
     screen.identified = true;
     hcv.hcv = data::HCV::kNone;
 
-    EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
-    EXPECT_CALL(mock_person, GetScreeningDetails(_)).WillOnce(Return(screen));
+    ON_CALL(mock_person, GetLinkageDetails(_)).WillByDefault(Return(linkage));
+    ON_CALL(mock_person, GetScreeningDetails(_)).WillByDefault(Return(screen));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
 
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(1)
-        .WillRepeatedly(Return(hcv));
+    // Clear and add costs automatically, Not Sample Dependent
     EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(1);
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(1)
-        .WillRepeatedly(Return(1));
     EXPECT_CALL(mock_person, AddCost(442.39, _, model::CostCategory::kLinking))
         .Times(1);
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
@@ -164,29 +161,22 @@ TEST_F(HCVLinkingTest, RecentScreen) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     linkage.link_state = data::LinkageState::kUnlinked;
-    linkage.link_type = data::LinkageType::kIntervention;
+    screen.screen_type = data::ScreeningType::kIntervention;
     screen.identified = true;
     screen.time_of_last_screening = 1;
     hcv.hcv = data::HCV::kAcute;
 
-    EXPECT_CALL(mock_person, GetLinkageDetails(_))
-        .Times(2)
-        .WillRepeatedly(Return(linkage));
-    EXPECT_CALL(mock_person, GetScreeningDetails(_))
-        .Times(2)
-        .WillRepeatedly(Return(screen));
+    ON_CALL(mock_person, GetLinkageDetails(_)).WillByDefault(Return(linkage));
+    ON_CALL(mock_person, GetScreeningDetails(_)).WillByDefault(Return(screen));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
 
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(1)
-        .WillRepeatedly(Return(hcv));
-    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
-
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(1)
-        .WillRepeatedly(Return(1));
     double v = utils::RateToProbability(utils::ProbabilityToRate(0.4) * 1.1);
     std::vector<double> p = {v};
+
+    // Test the Decision But do not clear
     EXPECT_CALL(mock_sampler, GetDecision(p)).WillOnce(Return(1));
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
 
     auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
@@ -199,29 +189,19 @@ TEST_F(HCVLinkingTest, BackgroundLink) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     linkage.link_state = data::LinkageState::kUnlinked;
-    linkage.link_type = data::LinkageType::kBackground;
+    screen.screen_type = data::ScreeningType::kBackground;
     screen.identified = true;
     screen.time_of_last_screening = 1;
     hcv.hcv = data::HCV::kAcute;
 
-    EXPECT_CALL(mock_person, GetLinkageDetails(_))
-        .Times(3)
-        .WillRepeatedly(Return(linkage));
-    EXPECT_CALL(mock_person, GetScreeningDetails(_))
-        .Times(2)
-        .WillRepeatedly(Return(screen));
+    ON_CALL(mock_person, GetLinkageDetails(_)).WillByDefault(Return(linkage));
+    ON_CALL(mock_person, GetScreeningDetails(_)).WillByDefault(Return(screen));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(7));
 
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(1)
-        .WillRepeatedly(Return(hcv));
-    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
-
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(1)
-        .WillRepeatedly(Return(7));
+    // Link and Add the Respective Costs. Should Require 1 Sample
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
-
-    EXPECT_CALL(mock_person, Link(data::LinkageType::kBackground, _)).Times(1);
+    EXPECT_CALL(mock_person, Link(_)).Times(1);
     EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
 
     auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
@@ -235,30 +215,22 @@ TEST_F(HCVLinkingTest, InterventionLink) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     linkage.link_state = data::LinkageState::kUnlinked;
-    linkage.link_type = data::LinkageType::kIntervention;
+    screen.screen_type = data::ScreeningType::kIntervention;
     screen.identified = true;
     screen.time_of_last_screening = 1;
     hcv.hcv = data::HCV::kAcute;
 
-    EXPECT_CALL(mock_person, GetLinkageDetails(_))
-        .Times(3)
-        .WillRepeatedly(Return(linkage));
-    EXPECT_CALL(mock_person, GetScreeningDetails(_))
-        .Times(2)
-        .WillRepeatedly(Return(screen));
-
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(1)
-        .WillRepeatedly(Return(hcv));
-    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
-
+    ON_CALL(mock_person, GetLinkageDetails(_)).WillByDefault(Return(linkage));
+    ON_CALL(mock_person, GetScreeningDetails(_)).WillByDefault(Return(screen));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(7));
     EXPECT_CALL(mock_person, GetCurrentTimestep())
         .Times(2)
         .WillRepeatedly(Return(7));
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
 
-    EXPECT_CALL(mock_person, Link(data::LinkageType::kIntervention, _))
-        .Times(1);
+    // Ensure we link and add the costs. Only requires 1 Sampling
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, Link(_)).Times(1);
     EXPECT_CALL(mock_person, AddCost(0, _, model::CostCategory::kLinking))
         .Times(1);
 

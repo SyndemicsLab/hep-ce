@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -101,7 +101,7 @@ TEST_F(ProgressionTest, NoProgression) {
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .Times(1)
         .WillRepeatedly(Return(1));
-    EXPECT_CALL(mock_person, UpdateTrueFibrosis(_)).Times(0);
+    EXPECT_CALL(mock_person, SetFibrosis(_)).Times(0);
     EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
         .Times(0);
 
@@ -133,7 +133,7 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_NoID) {
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .Times(1)
         .WillRepeatedly(Return(1));
-    EXPECT_CALL(mock_person, UpdateTrueFibrosis(_)).Times(0);
+    EXPECT_CALL(mock_person, SetFibrosis(_)).Times(0);
     EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
         .WillOnce(Return(screen));
 
@@ -168,7 +168,7 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_ID) {
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .Times(1)
         .WillRepeatedly(Return(1));
-    EXPECT_CALL(mock_person, UpdateTrueFibrosis(_)).Times(0);
+    EXPECT_CALL(mock_person, SetFibrosis(_)).Times(0);
     EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
         .WillOnce(Return(screen));
     EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(1));
@@ -209,8 +209,7 @@ TEST_F(ProgressionTest, Progression) {
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .Times(1)
         .WillRepeatedly(Return(0));
-    EXPECT_CALL(mock_person, UpdateTrueFibrosis(data::FibrosisState::kF1))
-        .Times(1);
+    EXPECT_CALL(mock_person, SetFibrosis(data::FibrosisState::kF1)).Times(1);
     EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
         .Times(0);
 

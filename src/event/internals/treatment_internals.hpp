@@ -156,14 +156,16 @@ protected:
     /// @param
     /// @return
     bool IsEligible(const model::Person &person) const {
-        auto treatment_ready =
+        auto not_retreatment_restricted =
             ((_treatment_limit >
               person.GetTreatmentDetails(GetInfectionType()).num_starts) ||
-             _treatment_limit < 0) &&
-            (!person.GetTreatmentDetails(GetInfectionType())
-                  .initiated_treatment);
-        return (treatment_ready && IsEligibleFibrosisStage(person) &&
-                IsEligibleBehavior(person) && IsEligiblePregnancy(person) &&
+             _treatment_limit < 0);
+
+        auto not_on_treatment = (!person.GetTreatmentDetails(GetInfectionType())
+                                      .initiated_treatment);
+        return (not_retreatment_restricted && not_on_treatment &&
+                IsEligibleFibrosisStage(person) && IsEligibleBehavior(person) &&
+                IsEligiblePregnancy(person) &&
                 IsEligibleTimeLastActive(person) &&
                 IsEligibleTimeSinceLinked(person))
                    ? true

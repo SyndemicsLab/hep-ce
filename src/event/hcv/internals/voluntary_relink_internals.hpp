@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-07                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,14 +37,6 @@ private:
     double _relink_probability = 0.0;
     int _voluntary_relink_duration = 0.0;
     double _cost = 0.0;
-
-    /// @brief During a voluntary relink, a new RNA test is run on the
-    /// person. This has no impact outside of costs to the person.
-    /// @param person person who is being relinked
-    inline void AddRNATest(model::Person &person) {
-        person.AddRnaScreen(data::InfectionType::kHcv);
-        AddEventCost(person, _cost);
-    }
 
     inline bool RelinkInTime(const model::Person &person) const {
         return (GetTimeSince(person,

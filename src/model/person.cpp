@@ -4,7 +4,7 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -38,9 +38,9 @@ PersonImpl::PersonImpl(const std::string &log_name) : _log_name(log_name) {
 
 void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     // basic characteristics
-    // storage.sex;
+    _sex = storage.sex;
     SetAge(storage.age);
-    // storage.is_alive;
+    _is_alive = storage.is_alive;
     SetBoomer(storage.boomer_classification);
     SetDeathReason(storage.death_reason);
 
@@ -102,7 +102,6 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     // LinkageDetails
     _linkage_details[it].link_state = storage.hcv_link_state;
     _linkage_details[it].time_link_change = storage.time_of_hcv_link_change;
-    _linkage_details[it].link_type = storage.hcv_link_type;
     _linkage_details[it].link_count = storage.hcv_link_count;
 
     // ScreeningDetails
@@ -113,6 +112,7 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     _screening_details[it].ab_positive = storage.hcv_antibody_positive;
     _screening_details[it].identified = storage.hcv_identified;
     _screening_details[it].time_identified = storage.time_hcv_identified;
+    _screening_details[it].screen_type = storage.hcv_link_type;
 
     // TreatmentDetails
     _treatment_details[it].initiated_treatment =
@@ -134,7 +134,6 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     // LinkageDetails
     _linkage_details[it].link_state = storage.hiv_link_state;
     _linkage_details[it].time_link_change = storage.time_of_hiv_link_change;
-    _linkage_details[it].link_type = storage.hiv_link_type;
     _linkage_details[it].link_count = storage.hiv_link_count;
 
     // ScreeningDetails
@@ -145,6 +144,7 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     _screening_details[it].ab_positive = storage.hiv_antibody_positive;
     _screening_details[it].identified = storage.hiv_identified;
     _screening_details[it].time_identified = storage.time_hiv_identified;
+    _screening_details[it].screen_type = storage.hiv_link_type;
 
     // TreatmentDetails
     _treatment_details[it].initiated_treatment =
@@ -177,7 +177,7 @@ void PersonImpl::InfectHCV() {
 
     // once infected, immediately enter F0
     if (_hcv_details.fibrosis_state == data::FibrosisState::kNone) {
-        UpdateTrueFibrosis(data::FibrosisState::kF0);
+        SetFibrosis(data::FibrosisState::kF0);
     }
 }
 
@@ -249,13 +249,13 @@ std::string PersonImpl::GetPersonDataString() const {
         << GetHCVDetails().time_fibrosis_state_changed << ","
         << GetBehaviorDetails().time_last_active << ","
         << GetLinkageDetails(data::InfectionType::kHcv).time_link_change << ","
-        << GetLinkageDetails(data::InfectionType::kHcv).link_type << ","
         << GetLinkageDetails(data::InfectionType::kHcv).link_count << ","
         << GetFibrosisStagingDetails().measured_fibrosis_state << ","
         << GetFibrosisStagingDetails().time_of_last_staging << ","
         << GetScreeningDetails(data::InfectionType::kHcv).time_of_last_screening
         << "," << GetScreeningDetails(data::InfectionType::kHcv).num_ab_tests
         << "," << GetScreeningDetails(data::InfectionType::kHcv).num_rna_tests
+        << "," << GetScreeningDetails(data::InfectionType::kHcv).screen_type
         << "," << GetHCVDetails().times_infected << ","
         << GetHCVDetails().times_acute_cleared << "," << std::boolalpha
         << GetTreatmentDetails(data::InfectionType::kHcv).initiated_treatment
@@ -377,12 +377,10 @@ std::string PersonImpl::MakePopulationRow() const {
         const auto &hcvld = _linkage_details.at(data::InfectionType::kHcv);
         population_row << hcvld.link_state << ","
                        << hcvld.time_link_change << ","
-                       << hcvld.link_type << ","
                        << hcvld.link_count << ",";
         const auto &hivld = _linkage_details.at(data::InfectionType::kHiv);
         population_row << hivld.link_state << ","
                        << hivld.time_link_change << ","
-                       << hivld.link_type << ","
                        << hivld.link_count << ",";
         // ScreeningDetails
         const auto &hcvsd = _screening_details.at(data::InfectionType::kHcv);
@@ -391,14 +389,16 @@ std::string PersonImpl::MakePopulationRow() const {
                        << hcvsd.num_rna_tests << ","
                        << std::boolalpha << hcvsd.ab_positive << ","
                        << std::boolalpha << hcvsd.identified << ","
-                       << hcvsd.time_identified << ",";
+                       << hcvsd.time_identified << ","
+                       << hcvsd.screen_type << ",";
         const auto &hivsd = _screening_details.at(data::InfectionType::kHiv);
         population_row << hivsd.time_of_last_screening << ","
                        << hivsd.num_ab_tests << ","
                        << hivsd.num_rna_tests << ","
                        << std::boolalpha << hivsd.ab_positive << ","
                        << std::boolalpha << hivsd.identified << ","
-                       << hivsd.time_identified << ",";
+                       << hivsd.time_identified << ","
+                       << hivsd.screen_type << ",";
         const auto &hcvtd = _treatment_details.at(data::InfectionType::kHcv);
         population_row << std::boolalpha << hcvtd.initiated_treatment << ","
                        << hcvtd.time_of_treatment_initiation << ","

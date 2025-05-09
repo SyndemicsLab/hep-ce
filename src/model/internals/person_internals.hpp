@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -96,15 +96,9 @@ public:
             AddAcuteHCVClearance();
         }
     }
-    inline void AddAcuteHCVClearance() override {
-        _hcv_details.times_acute_cleared++;
-    }
     inline void SetHCV(data::HCV hcv) override {
         _hcv_details.hcv = hcv;
         _hcv_details.time_changed = _current_time;
-    }
-    inline void SetSeropositivity(bool seropositive_state) override {
-        _hcv_details.seropositive = seropositive_state;
     }
     inline void Diagnose(data::InfectionType it) override {
         _screening_details[it].identified = true;
@@ -115,24 +109,15 @@ public:
         _screening_details[it].identified = false;
     }
 
-    inline void MarkScreened(data::InfectionType it) override {
+    void Screen(data::InfectionType it, data::ScreeningTest test,
+                data::ScreeningType type) override {
         _screening_details[it].time_of_last_screening = _current_time;
-    }
-    inline void AddAbScreen(data::InfectionType it) override {
-        MarkScreened(it);
-        _screening_details[it].num_ab_tests++;
-    }
-    inline void AddRnaScreen(data::InfectionType it) override {
-        MarkScreened(it);
-        _screening_details[it].num_rna_tests++;
-    }
-    inline bool HadSecondScreeningTest() const override {
-        return _staging_details.had_second_test;
-    }
-
-    inline void SetAntibodyPositive(bool result,
-                                    data::InfectionType it) override {
-        _screening_details[it].ab_positive = result;
+        if (test == data::ScreeningTest::kAb) {
+            _screening_details[it].num_ab_tests++;
+        } else {
+            _screening_details[it].num_rna_tests++;
+        }
+        _screening_details[it].screen_type = type;
     }
     inline void GiveSecondScreeningTest(bool state) override {
         _staging_details.had_second_test = state;
@@ -143,17 +128,10 @@ public:
         _linkage_details[it].link_state = data::LinkageState::kUnlinked;
         _linkage_details[it].time_link_change = _current_time;
     }
-    inline void Link(data::LinkageType link_type,
-                     data::InfectionType it) override {
+    inline void Link(data::InfectionType it) override {
         _linkage_details[it].link_state = data::LinkageState::kLinked;
         _linkage_details[it].time_link_change = _current_time;
-        _linkage_details[it].link_type = link_type;
         _linkage_details[it].link_count++;
-    }
-
-    inline void SetLinkageType(data::LinkageType link_type,
-                               data::InfectionType it) override {
-        _linkage_details[it].link_type = link_type;
     }
 
     // Treatment
@@ -191,7 +169,7 @@ public:
         _staging_details.measured_fibrosis_state = data;
         _staging_details.time_of_last_staging = _current_time;
     }
-    inline void UpdateTrueFibrosis(data::FibrosisState state) override {
+    inline void SetFibrosis(data::FibrosisState state) override {
         _hcv_details.time_fibrosis_state_changed = _current_time;
         _hcv_details.fibrosis_state = state;
     }
@@ -358,6 +336,8 @@ private:
     std::unique_ptr<model::Costs> _costs;
 
     void UpdateTimers();
+
+    inline void AddAcuteHCVClearance() { _hcv_details.times_acute_cleared++; }
 
     inline void SetInfectionDefaults(const data::InfectionType &infection) {
         _linkage_details[infection] = data::LinkageDetails{};

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -40,8 +40,10 @@ void VoluntaryRelinkImpl::Execute(model::Person &person,
     if (Unlinked(person) && RelinkInTime(person) &&
         (person.GetHCVDetails().hcv != data::HCV::kNone) &&
         (sampler.GetDecision({_relink_probability}) == 0)) {
-        AddRNATest(person);
-        person.Link(data::LinkageType::kBackground, data::InfectionType::kHcv);
+        person.Screen(data::InfectionType::kHcv, data::ScreeningTest::kRna,
+                      data::ScreeningType::kBackground);
+        AddEventCost(person, _cost);
+        person.Link(data::InfectionType::kHcv);
     }
 }
 

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-07                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -165,14 +165,19 @@ private:
     /// @param person The person who is accruing cost
     /// @param type The screening type, used to discern the cost to add
     inline void InsertScreeningCost(model::Person &person,
-                                    const std::string &key) {
-        if (key == "screening_background_rna") {
+                                    const data::ScreeningType &type,
+                                    const data::ScreeningTest &test) {
+        if (type == data::ScreeningType::kBackground &&
+            test == data::ScreeningTest::kRna) {
             AddEventCost(person, _background_rna_data.cost);
-        } else if (key == "screening_background_ab") {
+        } else if (type == data::ScreeningType::kBackground &&
+                   test == data::ScreeningTest::kAb) {
             AddEventCost(person, _background_ab_data.cost);
-        } else if (key == "screening_intervention_rna") {
+        } else if (type == data::ScreeningType::kIntervention &&
+                   test == data::ScreeningTest::kRna) {
             AddEventCost(person, _intervention_rna_data.cost);
-        } else if (key == "screening_intervention_ab") {
+        } else if (type == data::ScreeningType::kIntervention &&
+                   test == data::ScreeningTest::kAb) {
             AddEventCost(person, _intervention_ab_data.cost);
         }
     }
@@ -203,7 +208,7 @@ private:
             GetScreeningProbability(person, "intervention_screen_probability");
         int decision = sampler.GetDecision({interventionProbability});
         if (decision == 0) {
-            Screen("screening_intervention", person, sampler);
+            Screen(data::ScreeningType::kIntervention, person, sampler);
         }
         return decision;
     }
@@ -214,7 +219,7 @@ private:
             GetScreeningProbability(person, "background_screen_probability");
         int decision = sampler.GetDecision({backgroundProbability});
         if (decision == 0) {
-            Screen("screening_background", person, sampler);
+            Screen(data::ScreeningType::kBackground, person, sampler);
         }
         return decision;
     }
@@ -227,32 +232,24 @@ private:
                "sl.age_years) AND (at.drug_behavior = sl.drug_behavior));";
     }
 
-    inline bool RunAbTest(model::Person &person, const std::string &prefix,
-                          model::Sampler &sampler) {
-        std::string key = prefix + "_ab";
-        bool test = RunTest(person.GetHCVDetails().hcv, key, sampler,
-                            [this, &person]() -> void {
-                                return person.AddAbScreen(GetInfectionType());
-                            });
-        InsertScreeningCost(person, key);
-        return test;
-    }
+    inline bool RunTest(model::Person &person, const data::ScreeningType &type,
+                        const data::ScreeningTest &test,
+                        model::Sampler &sampler) {
+        double probability = GetScreeningTypeSensitivitySpecificity(
+            person.GetHCVDetails().hcv, test, type);
+        person.Screen(GetInfectionType(), test, type);
+        bool result = (sampler.GetDecision({probability}) == 0) ? true : false;
 
-    inline bool RunRnaTest(model::Person &person, const std::string &prefix,
-                           model::Sampler &sampler) {
-        std::string key = prefix + "_rna";
-        bool test = RunTest(person.GetHCVDetails().hcv, key, sampler,
-                            [this, &person]() -> void {
-                                return person.AddRnaScreen(GetInfectionType());
-                            });
-        InsertScreeningCost(person, key);
-        return test;
+        InsertScreeningCost(person, type, test);
+        return result;
     }
 
     inline double
     GetScreeningTypeSensitivitySpecificity(const data::HCV &hcv_status,
-                                           const std::string &key) {
-        if (key == "screening_background_rna") {
+                                           const data::ScreeningTest &test,
+                                           const data::ScreeningType &type) {
+        if (test == data::ScreeningTest::kRna &&
+            type == data::ScreeningType::kBackground) {
             if (hcv_status == data::HCV::kAcute) {
                 return _background_rna_data.acute_sensitivity;
             } else if (hcv_status == data::HCV::kChronic) {
@@ -260,7 +257,8 @@ private:
             } else {
                 return 1 - _background_rna_data.specificity;
             }
-        } else if (key == "screening_background_ab") {
+        } else if (test == data::ScreeningTest::kAb &&
+                   type == data::ScreeningType::kBackground) {
             if (hcv_status == data::HCV::kAcute) {
                 return _background_ab_data.acute_sensitivity;
             } else if (hcv_status == data::HCV::kChronic) {
@@ -268,7 +266,8 @@ private:
             } else {
                 return 1 - _background_ab_data.specificity;
             }
-        } else if (key == "screening_intervention_rna") {
+        } else if (test == data::ScreeningTest::kRna &&
+                   type == data::ScreeningType::kIntervention) {
             if (hcv_status == data::HCV::kAcute) {
                 return _intervention_rna_data.acute_sensitivity;
             } else if (hcv_status == data::HCV::kChronic) {
@@ -276,7 +275,8 @@ private:
             } else {
                 return 1 - _intervention_rna_data.specificity;
             }
-        } else if (key == "screening_intervention_ab") {
+        } else if (test == data::ScreeningTest::kAb &&
+                   type == data::ScreeningType::kIntervention) {
             if (hcv_status == data::HCV::kAcute) {
                 return _intervention_ab_data.acute_sensitivity;
             } else if (hcv_status == data::HCV::kChronic) {
@@ -289,38 +289,25 @@ private:
         }
     }
 
-    inline bool RunTest(const data::HCV &hcv_status, const std::string &key,
-                        model::Sampler &sampler,
-                        std::function<void(void)> testFunc) {
-        double probability =
-            GetScreeningTypeSensitivitySpecificity(hcv_status, key);
-
-        testFunc();
-        // probability is the chance of false positive or false negative
-        bool rValue = (sampler.GetDecision({probability}) == 0) ? true : false;
-        return rValue;
-    }
-
     /// @brief The Intervention Screening Event Undertaken on a Person
     /// @param person The Person undergoing an Intervention Screening
-    inline void Screen(std::string screenkey, model::Person &person,
+    inline void Screen(data::ScreeningType type, model::Person &person,
                        model::Sampler &sampler) {
-        person.MarkScreened(GetInfectionType());
-        // if person has had a history of HCV Infections
-        if (((screenkey == "screening_intervention" &&
+        // if person is intervention screening and not identified OR background screened
+        bool valid_screen =
+            ((type == data::ScreeningType::kIntervention &&
               !person.GetScreeningDetails(GetInfectionType()).identified) ||
-             screenkey == "screening_background") &&
+             type == data::ScreeningType::kBackground);
+
+        // if valid screen AND no positive history
+        if (valid_screen &&
             (!person.GetScreeningDetails(GetInfectionType()).ab_positive)) {
-            if (!RunAbTest(person, screenkey, sampler)) {
+            if (!RunTest(person, type, data::ScreeningTest::kAb, sampler)) {
                 return;
             }
         }
 
-        if (RunRnaTest(person, screenkey, sampler)) {
-            data::LinkageType type = (screenkey == "screening_background")
-                                         ? data::LinkageType::kBackground
-                                         : data::LinkageType::kIntervention;
-            person.SetLinkageType(type, GetInfectionType());
+        if (RunTest(person, type, data::ScreeningTest::kRna, sampler)) {
             person.Diagnose(GetInfectionType());
         }
     }

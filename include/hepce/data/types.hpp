@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -164,15 +164,10 @@ DeathReason &operator<<(DeathReason &inst, const std::string &str);
 /// @brief Opioid Usage Behavior Classification
 /// @details There are five possible possible usage classifications.
 enum class Behavior {
-    /// No history of opioid use
     kNever = 0,
-    /// Former non-injection opioid use
     kFormerNoninjection = 1,
-    /// Former injection opioid use
     kFormerInjection = 2,
-    /// Non-injection opioid use
     kNoninjection = 3,
-    /// Injection opioid use
     kInjection = 4,
 
     kCount = 5
@@ -181,27 +176,22 @@ std::ostream &operator<<(std::ostream &os, const Behavior &inst);
 Behavior &operator<<(Behavior &inst, const std::string &str);
 
 /// @brief Screening type that led to linkage
-enum class LinkageType {
-    /// Linked through background screening
+enum class ScreeningType {
     kNa = -1,
     kBackground = 0,
-    /// Linked through intervention screening
     kIntervention = 1,
     kCount = 2
 };
-std::ostream &operator<<(std::ostream &os, const LinkageType &inst);
-LinkageType &operator<<(LinkageType &inst, const std::string &str);
+std::ostream &operator<<(std::ostream &os, const ScreeningType &inst);
+ScreeningType &operator<<(ScreeningType &inst, const std::string &str);
+
+/// @brief Screening type that led to linkage
+enum class ScreeningTest : int { kNa = -1, kAb = 0, kRna = 1, kCount = 2 };
+std::ostream &operator<<(std::ostream &os, const ScreeningTest &inst);
+ScreeningTest &operator<<(ScreeningTest &inst, const std::string &str);
 
 /// @brief Status of Linkage
-enum class LinkageState {
-    /// Person has never been linked to care
-    kNever = 0,
-    /// Person is currently linked to care
-    kLinked = 1,
-    /// Person was previously linked to care, but is not currently linked
-    kUnlinked = 2,
-    kCount = 3
-};
+enum class LinkageState { kNever = 0, kLinked = 1, kUnlinked = 2, kCount = 3 };
 std::ostream &operator<<(std::ostream &os, const LinkageState &inst);
 LinkageState &operator<<(LinkageState &inst, const std::string &str);
 
@@ -348,7 +338,6 @@ std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav);
 struct LinkageDetails {
     LinkageState link_state = LinkageState::kNever;
     int time_link_change = -1;
-    LinkageType link_type = LinkageType::kNa;
     int link_count = 0;
 };
 std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet);
@@ -399,6 +388,7 @@ struct ScreeningDetails {
     bool ab_positive = false;
     bool identified = false;
     int time_identified = -1;
+    ScreeningType screen_type = ScreeningType::kNa;
 };
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 
@@ -488,12 +478,12 @@ struct PersonSelect {
     // HCV
     LinkageState hcv_link_state = LinkageState::kNever;
     int time_of_hcv_link_change = -1;
-    LinkageType hcv_link_type = LinkageType::kNa;
+    ScreeningType hcv_link_type = ScreeningType::kNa;
     int hcv_link_count = 0;
     // HIV
     LinkageState hiv_link_state = LinkageState::kNever;
     int time_of_hiv_link_change = -1;
-    LinkageType hiv_link_type = LinkageType::kNa;
+    ScreeningType hiv_link_type = ScreeningType::kNa;
     int hiv_link_count = 0;
     // ScreeningDetails
     // HCV

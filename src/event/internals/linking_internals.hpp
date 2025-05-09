@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-07                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -64,10 +64,10 @@ public:
 
         // draw from link probability
         if (sampler.GetDecision({prob}) == 0) {
-            data::LinkageType lt =
-                person.GetLinkageDetails(GetInfectionType()).link_type;
-            person.Link(lt, GetInfectionType());
-            if (lt == data::LinkageType::kIntervention) {
+            data::ScreeningType lt =
+                person.GetScreeningDetails(GetInfectionType()).screen_type;
+            person.Link(GetInfectionType());
+            if (lt == data::ScreeningType::kIntervention) {
                 AddEventCost(person, GetInterventionCost());
             }
         }
@@ -152,10 +152,10 @@ protected:
             static_cast<int>(person.GetPregnancyDetails().pregnancy_state);
         utils::tuple_4i tup =
             std::make_tuple(age_years, gender, drug_behavior, pregnancy);
-        auto t = person.GetLinkageDetails(GetInfectionType()).link_type;
-        if (t == data::LinkageType::kBackground) {
+        auto t = person.GetScreeningDetails(GetInfectionType()).screen_type;
+        if (t == data::ScreeningType::kBackground) {
             return _link_data[tup].first;
-        } else if (t == data::LinkageType::kIntervention) {
+        } else if (t == data::ScreeningType::kIntervention) {
             return _link_data[tup].second;
         }
         return 0.0;

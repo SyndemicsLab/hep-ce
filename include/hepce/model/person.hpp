@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -38,8 +38,6 @@ public:
     virtual void InfectHCV() = 0;
     virtual void ClearHCV(bool is_acute = false) = 0;
     virtual void SetHCV(data::HCV hcv) = 0;
-    virtual void AddAcuteHCVClearance() = 0;
-    virtual void SetSeropositivity(bool seropositive_state) = 0;
     virtual void Diagnose(data::InfectionType it) = 0;
     virtual void ClearDiagnosis(data::InfectionType it) = 0;
     virtual bool IsCirrhotic() const = 0;
@@ -47,20 +45,15 @@ public:
     // Screening
     virtual data::ScreeningDetails
     GetScreeningDetails(data::InfectionType it) const = 0;
-    virtual void MarkScreened(data::InfectionType it) = 0;
-    virtual void AddAbScreen(data::InfectionType it) = 0;
-    virtual void AddRnaScreen(data::InfectionType it) = 0;
-    virtual bool HadSecondScreeningTest() const = 0;
-    virtual void SetAntibodyPositive(bool result, data::InfectionType it) = 0;
+    virtual void Screen(data::InfectionType it, data::ScreeningTest test,
+                        data::ScreeningType type) = 0;
     virtual void GiveSecondScreeningTest(bool state) = 0;
 
     // Linking
     virtual data::LinkageDetails
     GetLinkageDetails(data::InfectionType it) const = 0;
     virtual void Unlink(data::InfectionType it) = 0;
-    virtual void Link(data::LinkageType link_type, data::InfectionType it) = 0;
-    virtual void SetLinkageType(data::LinkageType link_type,
-                                data::InfectionType it) = 0;
+    virtual void Link(data::InfectionType it) = 0;
 
     // Treatment
     virtual data::TreatmentDetails
@@ -88,7 +81,7 @@ public:
 
     // Fibrosis
     virtual void DiagnoseFibrosis(data::MeasuredFibrosisState) = 0;
-    virtual void UpdateTrueFibrosis(data::FibrosisState) = 0;
+    virtual void SetFibrosis(data::FibrosisState) = 0;
     virtual data::StagingDetails GetFibrosisStagingDetails() const = 0;
 
     // Cost Effectiveness

@@ -61,19 +61,68 @@ HepceImpl::CreateEvents(datamanagement::ModelData &model_data) const {
 }
 
 std::vector<std::unique_ptr<model::Person>>
-HepceImpl::CreatePopulation(datamanagement::ModelData &model_data) const {
+HepceImpl::CreatePopulation(datamanagement::ModelData &model_data,
+                            bool read_init_cohort) const {
     std::vector<std::unique_ptr<model::Person>> population;
     int population_size =
         utils::GetIntFromConfig("simulation.population_size", model_data);
     for (int i = 0; i < population_size; ++i) {
-        population.push_back(ReadPerson(i, model_data));
+        if (read_init_cohort) {
+            population.push_back(ReadICPerson(i, model_data));
+        } else {
+            population.push_back(ReadPopPerson(i, model_data));
+        }
     }
     return population;
 }
 
 std::unique_ptr<model::Person>
-HepceImpl::ReadPerson(const int id,
-                      datamanagement::ModelData &model_data) const {
+HepceImpl::ReadICPerson(const int id,
+                        datamanagement::ModelData &model_data) const {
+    std::stringstream query;
+    std::vector<std::string> events = utils::SplitToVecT<std::string>(
+        utils::GetStringFromConfig("simulation.events", model_data), ',');
+
+    // this is a stopgap with plans to make Event-scoped CheckFor<X>Event
+    // functions that are static / usable throughout the model.
+    bool pregnancy = utils::FindInVector<std::string>(events, {"pregnancy"});
+    bool hcc = utils::FindInVector<std::string>(events, {"HCCScreening"});
+    bool overdose =
+        utils::FindInVector<std::string>(events, {"BehaviorChanges"});
+    bool hiv = utils::FindInVector<std::string>(
+        events,
+        {"HIVInfections", "HIVLinking", "HIVScreening", "HIVTreatment"});
+    bool moud = utils::FindInVector<std::string>(events, {"MOUD"});
+
+    // TODO: Add string santization (i.e. verify no extra special characters/numbers/phrases/etc.)
+    query << "SELECT age_months, gender, drug_behavior, "
+             "time_last_active_drug_use, seropositivity, genotype_three, "
+             "fibrosis_state, identified_as_hcv_positive, link_state, "
+             "hcv_status ";
+    query << "FROM init_cohort ";
+    query << "WHERE id = " << std::to_string(id) << ";";
+
+    std::any storage = data::PersonSelect{};
+
+    try {
+        model_data.GetDBSource("inputs").Select(query.str(), InitCohortCallback,
+                                                storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting Person ID from Initial Cohort " << id
+            << ". Using Default Person Values...";
+        hepce::utils::LogWarning(GetLogName(), msg.str());
+        return model::Person::Create(GetLogName());
+    }
+
+    auto person = model::Person::Create(GetLogName());
+    person->SetPersonDetails(std::any_cast<data::PersonSelect>(storage));
+    return person;
+}
+
+std::unique_ptr<model::Person>
+HepceImpl::ReadPopPerson(const int id,
+                         datamanagement::ModelData &model_data) const {
     std::stringstream query;
     std::vector<std::string> events = utils::SplitToVecT<std::string>(
         utils::GetStringFromConfig("simulation.events", model_data), ',');
@@ -111,10 +160,6 @@ HepceImpl::ReadPerson(const int id,
     auto person = model::Person::Create(GetLogName());
     person->SetPersonDetails(std::any_cast<data::PersonSelect>(storage));
     return person;
-}
-int HepceImpl::LoadICValues(model::Person &person,
-                            const std::vector<std::string> &icValues) {
-    return 0;
 }
 
 std::unique_ptr<event::Event>

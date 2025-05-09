@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -57,8 +57,7 @@ protected:
                             0,
                             0,
                             0};
-    data::LinkageDetails linkage = {data::LinkageState::kLinked, -1,
-                                    data::LinkageType::kIntervention, 0};
+    data::LinkageDetails linkage = {data::LinkageState::kLinked, -1, 0};
 
     void SetUp() override {
         BuildSimConf(test_conf);
@@ -79,7 +78,7 @@ TEST_F(HCVVoluntaryRelinkTest, AlreadyLinked) {
 
     linkage.link_state = data::LinkageState::kLinked;
     EXPECT_CALL(mock_person, GetLinkageDetails(_)).WillOnce(Return(linkage));
-    EXPECT_CALL(mock_person, Link(_, _)).Times(0);
+    EXPECT_CALL(mock_person, Link(_)).Times(0);
 
     auto event = event::hcv::VoluntaryRelink::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
@@ -99,7 +98,7 @@ TEST_F(HCVVoluntaryRelinkTest, OutOfTime) {
     EXPECT_CALL(mock_person, GetCurrentTimestep())
         .Times(1)
         .WillRepeatedly(Return(6));
-    EXPECT_CALL(mock_person, Link(_, _)).Times(0);
+    EXPECT_CALL(mock_person, Link(_)).Times(0);
 
     auto event = event::hcv::VoluntaryRelink::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
@@ -121,7 +120,7 @@ TEST_F(HCVVoluntaryRelinkTest, NoHCV) {
 
     EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
 
-    EXPECT_CALL(mock_person, Link(_, _)).Times(0);
+    EXPECT_CALL(mock_person, Link(_)).Times(0);
 
     auto event = event::hcv::VoluntaryRelink::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
@@ -143,7 +142,7 @@ TEST_F(HCVVoluntaryRelinkTest, SampleNo) {
     EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
 
-    EXPECT_CALL(mock_person, Link(_, _)).Times(0);
+    EXPECT_CALL(mock_person, Link(_)).Times(0);
 
     auto event = event::hcv::VoluntaryRelink::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
@@ -165,8 +164,10 @@ TEST_F(HCVVoluntaryRelinkTest, Relink) {
     EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
 
-    EXPECT_CALL(mock_person, Link(_, _)).Times(1);
-    EXPECT_CALL(mock_person, AddRnaScreen(_)).Times(1);
+    EXPECT_CALL(mock_person, Link(_)).Times(1);
+    EXPECT_CALL(mock_person, Screen(_, data::ScreeningTest::kRna,
+                                    data::ScreeningType::kBackground))
+        .Times(1);
     EXPECT_CALL(mock_person, AddCost(31.22, _, model::CostCategory::kScreening))
         .Times(1);
 

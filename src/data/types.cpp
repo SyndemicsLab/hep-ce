@@ -4,7 +4,7 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -186,12 +186,12 @@ Behavior &operator<<(Behavior &inst, const std::string &str) {
     return inst;
 }
 
-std::ostream &operator<<(std::ostream &os, const LinkageType &inst) {
+std::ostream &operator<<(std::ostream &os, const ScreeningType &inst) {
     switch (inst) {
-    case LinkageType::kBackground:
+    case ScreeningType::kBackground:
         os << "background";
         break;
-    case LinkageType::kIntervention:
+    case ScreeningType::kIntervention:
         os << "intervention";
         break;
     default:
@@ -200,13 +200,38 @@ std::ostream &operator<<(std::ostream &os, const LinkageType &inst) {
     }
     return os;
 }
-LinkageType &operator<<(LinkageType &inst, const std::string &str) {
+ScreeningType &operator<<(ScreeningType &inst, const std::string &str) {
     if (str == "background") {
-        inst = LinkageType::kBackground;
+        inst = ScreeningType::kBackground;
     } else if (str == "intervention") {
-        inst = LinkageType::kIntervention;
+        inst = ScreeningType::kIntervention;
     } else {
-        inst = LinkageType::kNa;
+        inst = ScreeningType::kNa;
+    }
+    return inst;
+}
+
+std::ostream &operator<<(std::ostream &os, const ScreeningTest &inst) {
+    switch (inst) {
+    case ScreeningTest::kAb:
+        os << "antibody";
+        break;
+    case ScreeningTest::kRna:
+        os << "rna";
+        break;
+    default:
+        os << "na";
+        break;
+    }
+    return os;
+}
+ScreeningTest &operator<<(ScreeningTest &inst, const std::string &str) {
+    if (str == "antibody") {
+        inst = ScreeningTest::kAb;
+    } else if (str == "rna") {
+        inst = ScreeningTest::kRna;
+    } else {
+        inst = ScreeningTest::kNa;
     }
     return inst;
 }
@@ -524,7 +549,6 @@ std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet) {
     os << "Linkage State: " << ldet.link_state << std::endl;
     os << "Last Time Linkage State Changed: " << ldet.time_link_change
        << std::endl;
-    os << "Linkage Type: " << ldet.link_type << std::endl;
     os << "Times Linked: " << ldet.link_count << std::endl;
     return os;
 }
@@ -571,6 +595,7 @@ std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet) {
        << std::endl;
     os << "Is Identified: " << std::boolalpha << sdet.identified << std::endl;
     os << "Time Identified: " << sdet.time_identified << std::endl;
+    os << "Screening Type: " << sdet.screen_type << std::endl;
     return os;
 }
 

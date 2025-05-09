@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
         model_data->AddSource(dbfile);
 
         auto sim = hepce::model::Hepce::Create(*model_data, log_name);
-        auto population = sim->CreatePopulation(*model_data);
+        auto population = sim->CreatePopulation(*model_data, true);
         auto events = sim->CreateEvents(*model_data);
         sim->Run(population, events);
 
