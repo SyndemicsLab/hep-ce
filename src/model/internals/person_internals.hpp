@@ -37,7 +37,6 @@ public:
     void InitiateTreatment(data::InfectionType it) override;
     void SetBehavior(data::Behavior) override;
     bool IsCirrhotic() const override;
-    std::string GetPersonDataString() const override;
     void Birth(const data::Child &child) override;
     void TransitionMOUD() override;
     void DevelopHCC(data::HCCState state) override;
@@ -81,7 +80,7 @@ public:
     // Inline Functions
     inline void Grow() override {
         UpdateTimers();
-        SetAge(GetAge() + 1);
+        _age++;
         _life_span++;
     }
     inline void Die(data::DeathReason death_reason =
@@ -119,8 +118,8 @@ public:
         }
         _screening_details[it].screen_type = type;
     }
-    inline void GiveSecondScreeningTest(bool state) override {
-        _staging_details.had_second_test = state;
+    inline void GiveSecondStagingTest() override {
+        _staging_details.had_second_test = true;
     }
 
     // Linking
@@ -192,22 +191,6 @@ public:
         _life_utilites.discount_mult_util += utils::Discount(
             GetMultipliedUtility(), discount, GetCurrentTimestep());
     }
-    inline double GetMinimizedUtility() const {
-        auto minimized = [](double min,
-                            std::pair<UtilityCategory, double> val) {
-            return std::min(min, val.second);
-        };
-        return std::reduce(std::execution::par, _utilities.begin(),
-                           _utilities.end(), 1, minimized);
-    }
-    inline double GetMultipliedUtility() const {
-        auto multiplied = [](double mult,
-                             std::pair<UtilityCategory, double> val) {
-            return (mult * val.second);
-        };
-        return std::reduce(std::execution::par, _utilities.begin(),
-                           _utilities.end(), 1, multiplied);
-    }
     inline std::unordered_map<model::UtilityCategory, double>
     GetUtilities() const override {
         return _utilities;
@@ -230,9 +213,6 @@ public:
         _hcv_details.is_genotype_three = genotype;
     }
     inline bool IsBoomer() const override { return _boomer_classification; }
-    inline void SetBoomer(bool status) override {
-        _boomer_classification = status;
-    }
     inline void SetDeathReason(data::DeathReason death_reason) override {
         _death_reason = death_reason;
     }
@@ -240,7 +220,6 @@ public:
         return _death_reason;
     }
     inline int GetAge() const override { return _age; }
-    inline void SetAge(int age) override { _age = age; }
 
     inline int GetCurrentTimestep() const override { return _current_time; }
     inline data::Sex GetSex() const override { return _sex; }
@@ -269,22 +248,15 @@ public:
         _pregnancy_details.pregnancy_state = data::PregnancyState::kNone;
     }
     inline void Stillbirth() override {
-        if (_sex == data::Sex::kMale) {
-            return;
-        }
-        _pregnancy_details.time_of_pregnancy_change = _current_time;
+        Miscarry();
         _pregnancy_details.pregnancy_state =
             data::PregnancyState::kRestrictedPostpartum;
-        _pregnancy_details.num_miscarriages++;
     }
     inline void EndPostpartum() override {
         _pregnancy_details.time_of_pregnancy_change = _current_time;
         _pregnancy_details.pregnancy_state = data::PregnancyState::kNone;
     }
     inline void Impregnate() override {
-        if (_sex == data::Sex::kMale) {
-            return;
-        }
         _pregnancy_details.count++;
         _pregnancy_details.time_of_pregnancy_change = _current_time;
         _pregnancy_details.pregnancy_state = data::PregnancyState::kPregnant;
@@ -295,9 +267,6 @@ public:
     inline void SetPregnancyState(data::PregnancyState state) override {
         _pregnancy_details.time_of_pregnancy_change = _current_time;
         _pregnancy_details.pregnancy_state = state;
-    }
-    inline void SetNumMiscarriages(int miscarriages) override {
-        _pregnancy_details.num_miscarriages += miscarriages;
     }
 
 private:
@@ -343,6 +312,24 @@ private:
         _linkage_details[infection] = data::LinkageDetails{};
         _screening_details[infection] = data::ScreeningDetails{};
         _treatment_details[infection] = data::TreatmentDetails{};
+    }
+
+    inline double GetMinimizedUtility() const {
+        double min = 1;
+        for (const auto &kv : _utilities) {
+            if (kv.second < min) {
+                min = kv.second;
+            }
+        }
+        return min;
+    }
+
+    inline double GetMultipliedUtility() const {
+        double mult = 1;
+        for (const auto &kv : _utilities) {
+            mult *= kv.second;
+        }
+        return mult;
     }
 };
 } // namespace model

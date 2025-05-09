@@ -48,7 +48,7 @@ public:
                 (data::InfectionType it, data::ScreeningTest test,
                  data::ScreeningType type),
                 (override));
-    MOCK_METHOD(void, GiveSecondScreeningTest, (bool state), (override));
+    MOCK_METHOD(void, GiveSecondStagingTest, (), (override));
 
     // Linking
     MOCK_METHOD(data::LinkageDetails, GetLinkageDetails,
@@ -100,8 +100,6 @@ public:
     MOCK_METHOD(void, AccumulateTotalUtility, (double discount), (override));
     MOCK_METHOD((std::unordered_map<model::UtilityCategory, double>),
                 GetUtilities, (), (const, override));
-    MOCK_METHOD(double, GetMinimizedUtility, (), (const, override));
-    MOCK_METHOD(double, GetMultipliedUtility, (), (const, override));
     MOCK_METHOD(void, SetUtility,
                 (double util, model::UtilityCategory category), (override));
     MOCK_METHOD(int, GetLifeSpan, (), (const, override));
@@ -113,12 +111,10 @@ public:
     MOCK_METHOD(bool, IsAlive, (), (const, override));
     MOCK_METHOD(void, SetGenotypeThree, (bool genotype), (override));
     MOCK_METHOD(bool, IsBoomer, (), (const, override));
-    MOCK_METHOD(void, SetBoomer, (bool status), (override));
     MOCK_METHOD(void, SetDeathReason, (data::DeathReason deathReason),
                 (override));
     MOCK_METHOD(data::DeathReason, GetDeathReason, (), (const, override));
     MOCK_METHOD(int, GetAge, (), (const, override));
-    MOCK_METHOD(void, SetAge, (int age), (override));
     MOCK_METHOD(int, GetCurrentTimestep, (), (const, override));
     MOCK_METHOD(data::Sex, GetSex, (), (const, override));
     MOCK_METHOD(
@@ -144,14 +140,12 @@ public:
     MOCK_METHOD(void, AddInfantExposure, (), (override));
     MOCK_METHOD(void, SetPregnancyState, (data::PregnancyState state),
                 (override));
-    MOCK_METHOD(void, SetNumMiscarriages, (int miscarriages), (override));
 
     // HCC
     MOCK_METHOD(void, DevelopHCC, (data::HCCState state), (override));
     MOCK_METHOD(void, DiagnoseHCC, (), (override));
 
     // Person Output
-    MOCK_METHOD(std::string, GetPersonDataString, (), (const, override));
     MOCK_METHOD(std::string, MakePopulationRow, (), (const, override));
 };
 } // namespace testing

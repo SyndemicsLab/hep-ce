@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -179,7 +179,7 @@ TEST_F(StagingTest, NeverStaged_TestTwo_latest) {
     EXPECT_CALL(mock_person, AddCost(0, _, model::CostCategory::kStaging))
         .Times(1);
 
-    EXPECT_CALL(mock_person, GiveSecondScreeningTest(true)).Times(1);
+    EXPECT_CALL(mock_person, GiveSecondStagingTest()).Times(1);
     EXPECT_CALL(mock_person,
                 DiagnoseFibrosis(data::MeasuredFibrosisState::kF01))
         .Times(1);
@@ -220,7 +220,7 @@ TEST_F(StagingTest, NeverStaged_TestTwo_maximum) {
     EXPECT_CALL(mock_person, AddCost(0, _, model::CostCategory::kStaging))
         .Times(1);
 
-    EXPECT_CALL(mock_person, GiveSecondScreeningTest(true)).Times(1);
+    EXPECT_CALL(mock_person, GiveSecondStagingTest()).Times(1);
     EXPECT_CALL(mock_person, AddCost(140, _, model::CostCategory::kStaging))
         .Times(1);
 

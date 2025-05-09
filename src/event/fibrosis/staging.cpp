@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -94,7 +94,7 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
         return;
     }
 
-    person.GiveSecondScreeningTest(true);
+    person.GiveSecondStagingTest();
 
     data::MeasuredFibrosisState stateTwo =
         static_cast<data::MeasuredFibrosisState>(sampler.GetDecision(probs));

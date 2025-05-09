@@ -39,9 +39,9 @@ PersonImpl::PersonImpl(const std::string &log_name) : _log_name(log_name) {
 void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     // basic characteristics
     _sex = storage.sex;
-    SetAge(storage.age);
+    _age = storage.age;
     _is_alive = storage.is_alive;
-    SetBoomer(storage.boomer_classification);
+    _boomer_classification = storage.boomer_classification;
     SetDeathReason(storage.death_reason);
 
     // BehaviorDetails
@@ -200,28 +200,24 @@ void PersonImpl::UpdateTimers() {
 void PersonImpl::InitiateTreatment(data::InfectionType it) {
     data::TreatmentDetails &td = _treatment_details[it];
     // cannot continue being treated if already in salvage
-    if (td.initiated_treatment && td.in_salvage_treatment) {
+    if (td.in_salvage_treatment) {
         return;
     } else if (td.initiated_treatment) {
         td.in_salvage_treatment = true;
         td.num_salvages++;
     } else {
         td.initiated_treatment = true;
+        td.num_starts++;
+        td.time_of_treatment_initiation = _current_time;
     }
-    // treatment starts counts treatment regimens
-    td.num_starts++;
-    td.time_of_treatment_initiation = _current_time;
 }
 void PersonImpl::SetBehavior(data::Behavior bc) {
     // nothing to do -- cannot go back to kNever
     if (bc == _behavior_details.behavior || bc == data::Behavior::kNever) {
         return;
     }
-    if ((bc == data::Behavior::kNoninjection ||
-         bc == data::Behavior::kInjection) &&
-        (_behavior_details.behavior == data::Behavior::kNever ||
-         _behavior_details.behavior == data::Behavior::kFormerInjection ||
-         _behavior_details.behavior == data::Behavior::kFormerNoninjection)) {
+    if (bc == data::Behavior::kNoninjection ||
+        bc == data::Behavior::kInjection) {
         _behavior_details.time_last_active = _current_time;
     }
     _behavior_details.behavior = bc;
@@ -232,39 +228,6 @@ bool PersonImpl::IsCirrhotic() const {
         return true;
     }
     return false;
-}
-std::string PersonImpl::GetPersonDataString() const {
-    std::stringstream data;
-    data
-        << GetAge() << "," << GetSex() << "," << GetBehaviorDetails().behavior
-        << "," << GetBehaviorDetails().time_last_active << ","
-        << GetHCVDetails().seropositive << ","
-        << GetHCVDetails().is_genotype_three << ","
-        << GetHCVDetails().fibrosis_state << ","
-        << GetScreeningDetails(data::InfectionType::kHcv).identified << ","
-        << GetLinkageDetails(data::InfectionType::kHcv).link_state << ","
-        << IsAlive() << "," << GetDeathReason() << ","
-        << GetScreeningDetails(data::InfectionType::kHcv).time_identified << ","
-        << GetHCVDetails().hcv << "," << GetHCVDetails().time_changed << ","
-        << GetHCVDetails().time_fibrosis_state_changed << ","
-        << GetBehaviorDetails().time_last_active << ","
-        << GetLinkageDetails(data::InfectionType::kHcv).time_link_change << ","
-        << GetLinkageDetails(data::InfectionType::kHcv).link_count << ","
-        << GetFibrosisStagingDetails().measured_fibrosis_state << ","
-        << GetFibrosisStagingDetails().time_of_last_staging << ","
-        << GetScreeningDetails(data::InfectionType::kHcv).time_of_last_screening
-        << "," << GetScreeningDetails(data::InfectionType::kHcv).num_ab_tests
-        << "," << GetScreeningDetails(data::InfectionType::kHcv).num_rna_tests
-        << "," << GetScreeningDetails(data::InfectionType::kHcv).screen_type
-        << "," << GetHCVDetails().times_infected << ","
-        << GetHCVDetails().times_acute_cleared << "," << std::boolalpha
-        << GetTreatmentDetails(data::InfectionType::kHcv).initiated_treatment
-        << ","
-        << GetTreatmentDetails(data::InfectionType::kHcv)
-               .time_of_treatment_initiation
-        << "," << std::to_string(GetTotalUtility().min_util) << ","
-        << std::to_string(GetTotalUtility().mult_util);
-    return data.str();
 }
 
 // NOTE: A person can be in postpartum state before giving birth (i.e. multiple births)
