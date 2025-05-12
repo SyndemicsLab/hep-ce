@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -63,22 +63,18 @@ HepceImpl::CreateEvents(datamanagement::ModelData &model_data) const {
 std::vector<std::unique_ptr<model::Person>>
 HepceImpl::CreatePopulation(datamanagement::ModelData &model_data,
                             bool read_init_cohort) const {
-    std::vector<std::unique_ptr<model::Person>> population;
     int population_size =
         utils::GetIntFromConfig("simulation.population_size", model_data);
-    for (int i = 0; i < population_size; ++i) {
-        if (read_init_cohort) {
-            population.push_back(ReadICPerson(i, model_data));
-        } else {
-            population.push_back(ReadPopPerson(i, model_data));
-        }
+
+    if (read_init_cohort) {
+        return ReadICPopulation(population_size, model_data);
     }
-    return population;
+    return ReadPopPopulation(population_size, model_data);
 }
 
-std::unique_ptr<model::Person>
-HepceImpl::ReadICPerson(const int id,
-                        datamanagement::ModelData &model_data) const {
+std::vector<std::unique_ptr<model::Person>>
+HepceImpl::ReadICPopulation(const int population_size,
+                            datamanagement::ModelData &model_data) const {
     std::stringstream query;
     std::vector<std::string> events = utils::SplitToVecT<std::string>(
         utils::GetStringFromConfig("simulation.events", model_data), ',');
@@ -100,29 +96,35 @@ HepceImpl::ReadICPerson(const int id,
              "fibrosis_state, identified_as_hcv_positive, link_state, "
              "hcv_status ";
     query << "FROM init_cohort ";
-    query << "WHERE id = " << std::to_string(id) << ";";
+    query << "ORDER BY id ";
+    query << "LIMIT " << std::to_string(population_size) << ";";
 
-    std::any storage = data::PersonSelect{};
+    std::any storage = std::vector<data::PersonSelect>{};
 
     try {
-        model_data.GetDBSource("inputs").Select(query.str(), InitCohortCallback,
-                                                storage);
+        model_data.GetDBSource("inputs").Select(query.str(),
+                                                InitCohortVecCallback, storage);
     } catch (std::exception &e) {
         std::stringstream msg;
-        msg << "Error getting Person ID from Initial Cohort " << id
-            << ". Using Default Person Values...";
+        msg << "Error drawing population size " << population_size
+            << " from Initial Cohort. Using Default Person Values...";
         hepce::utils::LogWarning(GetLogName(), msg.str());
-        return model::Person::Create(GetLogName());
+        return {};
     }
-
-    auto person = model::Person::Create(GetLogName());
-    person->SetPersonDetails(std::any_cast<data::PersonSelect>(storage));
-    return person;
+    std::vector<data::PersonSelect> vec =
+        std::any_cast<std::vector<data::PersonSelect>>(storage);
+    std::vector<std::unique_ptr<model::Person>> population = {};
+    for (const auto &ps : vec) {
+        auto person = model::Person::Create(GetLogName());
+        person->SetPersonDetails(ps);
+        population.push_back(std::move(person));
+    }
+    return population;
 }
 
-std::unique_ptr<model::Person>
-HepceImpl::ReadPopPerson(const int id,
-                         datamanagement::ModelData &model_data) const {
+std::vector<std::unique_ptr<model::Person>>
+HepceImpl::ReadPopPopulation(const int population_size,
+                             datamanagement::ModelData &model_data) const {
     std::stringstream query;
     std::vector<std::string> events = utils::SplitToVecT<std::string>(
         utils::GetStringFromConfig("simulation.events", model_data), ',');
@@ -142,24 +144,30 @@ HepceImpl::ReadPopPerson(const int id,
     query << "SELECT "
           << data::POPULATION_HEADERS(pregnancy, hcc, overdose, hiv, moud);
     query << "FROM population ";
-    query << "WHERE id = " << std::to_string(id) << ";";
+    query << "ORDER BY id ";
+    query << "LIMIT " << std::to_string(population_size) << ";";
 
-    std::any storage = data::PersonSelect{};
+    std::any storage = std::vector<data::PersonSelect>{};
 
     try {
-        model_data.GetDBSource("inputs").Select(query.str(), PersonCallback,
+        model_data.GetDBSource("inputs").Select(query.str(), PersonVecCallback,
                                                 storage);
     } catch (std::exception &e) {
         std::stringstream msg;
-        msg << "Error getting Person ID " << id
-            << ". Using Default Person Values...";
+        msg << "Error getting " << population_size
+            << " people from Population File. Using Default Person Values...";
         hepce::utils::LogWarning(GetLogName(), msg.str());
-        return model::Person::Create(GetLogName());
+        return {};
     }
-
-    auto person = model::Person::Create(GetLogName());
-    person->SetPersonDetails(std::any_cast<data::PersonSelect>(storage));
-    return person;
+    std::vector<data::PersonSelect> vec =
+        std::any_cast<std::vector<data::PersonSelect>>(storage);
+    std::vector<std::unique_ptr<model::Person>> population = {};
+    for (const auto &ps : vec) {
+        auto person = model::Person::Create(GetLogName());
+        person->SetPersonDetails(ps);
+        population.push_back(std::move(person));
+    }
+    return population;
 }
 
 std::unique_ptr<event::Event>

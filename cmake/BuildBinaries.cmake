@@ -23,3 +23,7 @@ if(HEPCE_BUILD_BENCH OR HEPCE_BUILD_ALL)
     message(STATUS "Generating benchmarks")
     add_subdirectory(extras/benchmarking)
 endif()
+
+if(HEPCE_RUN_OMP)
+    message(STATUS "Running with OMP")
+endif()

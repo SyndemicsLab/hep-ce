@@ -156,14 +156,34 @@ target_include_directories(hepce ${HEPCE_INCLUDES_LEVEL} PUBLIC "$<BUILD_INTERFA
                                                                   PRIVATE "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>")
 
 include(MakeDependenciesAvailable)
-                                                                  
-target_link_libraries(hepce
-PUBLIC
-    datamanagement::datamanagement
-PRIVATE
-    spdlog::spdlog
-    gcov
-)
+
+if(HEPCE_RUN_OMP)
+    find_package(OpenMP REQUIRED)
+    target_link_libraries(hepce
+    PUBLIC
+        datamanagement::datamanagement
+    PRIVATE
+        spdlog::spdlog
+        OpenMP::OpenMP_CXX
+    )    
+elseif(HEPCE_CALCULATE_COVERAGE)
+    target_link_libraries(hepce
+    PUBLIC
+        datamanagement::datamanagement
+    PRIVATE
+        spdlog::spdlog
+        gcov
+    )
+else()
+    target_link_libraries(hepce
+    PUBLIC
+        datamanagement::datamanagement
+    PRIVATE
+        spdlog::spdlog
+    )
+endif()
+
+
 
 set_target_properties(hepce PROPERTIES VERSION ${HEPCE_VERSION} SOVERSION ${HEPCE_VERSION_MAJOR}.${HEPCE_VERSION_MINOR})
 

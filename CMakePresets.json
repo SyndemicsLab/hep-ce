@@ -72,7 +72,8 @@
                 "HEPCE_BUILD_WARNINGS": "OFF",
                 "HEPCE_SYSTEM_INCLUDES": "OFF",
                 "HEPCE_INSTALL": "ON",
-                "HEPCE_NO_EXCEPTIONS": "OFF"
+                "HEPCE_NO_EXCEPTIONS": "OFF",
+                "HEPCE_RUN_OMP": "ON"
             }
         }
     ],

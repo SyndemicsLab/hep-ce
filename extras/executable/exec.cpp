@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -14,6 +14,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include <omp.h>
 
 #include <hepce/data/writer.hpp>
 #include <hepce/event/event.hpp>
@@ -66,7 +68,7 @@ int main(int argc, char *argv[]) {
     if (!argChecks(argc, argv, root_dir, task_start, task_end)) {
         return 0;
     }
-
+#pragma omp parallel for num_threads(8)
     for (int i = task_start; i < (task_end + 1); ++i) {
         std::filesystem::path input_dir =
             ((std::filesystem::path)root_dir) / ("input" + std::to_string(i));

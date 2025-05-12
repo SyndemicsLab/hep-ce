@@ -23,6 +23,9 @@ option(HEPCE_BUILD_SHARED_LIBS "Enable shared libraries" ${BUILD_SHARED_LIBS})
 # warning options
 option(HEPCE_BUILD_WARNINGS "Enable compiler warnings" OFF)
 
+# run with omp
+option(HEPCE_RUN_OMP "Enable omp runtime" OFF)
+
 # install options
 option(HEPCE_SYSTEM_INCLUDES "Include as system headers (skip for clang-tidy)." OFF)
 option(HEPCE_INSTALL "Generate the install target" ${HEPCE_MASTER_PROJECT})
