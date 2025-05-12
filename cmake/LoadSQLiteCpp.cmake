@@ -6,6 +6,7 @@ FetchContent_Declare(
     GIT_REPOSITORY  https://github.com/SRombauts/SQLiteCpp.git
     GIT_TAG         master
     GIT_PROGRESS    TRUE
+    FIND_PACKAGE_ARGS HINTS lib/sqlitecpp
 )
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "SQLiteCpp Fetched")
