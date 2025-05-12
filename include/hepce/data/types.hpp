@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-05-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -105,11 +105,9 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
 
 /// @brief Infection types tracked for all Persons
 enum class InfectionType : int {
-    /// Hepatitis C Virus
-    kHcv = 0,
-    /// Human Immunodeficiency Virus
-    kHiv = 1,
-    kCount = 2
+    kHcv = 0,  /// Hepatitis C Virus
+    kHiv = 1,  /// Human Immunodeficiency Virus
+    kCount = 2 /// Count of InfectionType Enum
 };
 std::ostream &operator<<(std::ostream &os, const InfectionType &inst);
 InfectionType &operator<<(InfectionType &inst, const std::string &str);
@@ -117,46 +115,36 @@ InfectionType &operator++(InfectionType &inst);
 
 /// @brief HEP-C Infection States
 enum class HCV : int {
-    /// No HCV infection
-    kNone = 0,
-    /// New HCV infection; sub-6 months infected
-    kAcute = 1,
-    /// Long-term HCV infection
-    kChronic = 2,
-
-    kCount = 3
+    kNone = 0,    /// No HCV infection
+    kAcute = 1,   /// New HCV infection; sub-6 months infected
+    kChronic = 2, /// Long-term HCV infection
+    kCount = 3    /// Count of HCV Enum
 };
 std::ostream &operator<<(std::ostream &os, const HCV &inst);
 HCV &operator<<(HCV &inst, const std::string &str);
 
 /// @brief HIV Infection States
 enum class HIV : int {
-    /// No HIV infection
-    kNone = 0,
-    /// High CD4 count, unsuppressed
-    kHiUn = 1,
-    /// High CD4 count, suppressed
-    kHiSu = 2,
-    /// Low CD4 count, unsuppressed
-    kLoUn = 3,
-    /// Low CD4 count, suppressed
-    kLoSu = 4,
-
-    kCount = 5
+    kNone = 0, /// No HIV infection
+    kHiUn = 1, /// High CD4 count, unsuppressed
+    kHiSu = 2, /// High CD4 count, suppressed
+    kLoUn = 3, /// Low CD4 count, unsuppressed
+    kLoSu = 4, /// Low CD4 count, suppressed
+    kCount = 5 /// Count of HIV Enum
 };
 std::ostream &operator<<(std::ostream &os, const HIV &inst);
 HIV &operator<<(HIV &inst, const std::string &str);
 
+/// @brief Reason a Person Dies
 enum class DeathReason : int {
-    /// @brief Not applicable, usually not dead
-    kNa = -1,
-    kBackground = 0,
-    kLiver = 1,
-    kInfection = 2,
-    kAge = 3,
-    kOverdose = 4,
-    kHiv = 5,
-    kCount = 6
+    kNa = -1,        /// Not Dead
+    kBackground = 0, /// Died from Background Mortality Causes
+    kLiver = 1,      /// Died from Liver Related Diseases
+    kInfection = 2,  /// Died from Infection Related Diseases
+    kAge = 3,        /// Died from Age
+    kOverdose = 4,   /// Died of Overdose
+    kHiv = 5,        /// Died of HIV Infection Effects
+    kCount = 6       /// Count of DeathReason Enum
 };
 std::ostream &operator<<(std::ostream &os, const DeathReason &inst);
 DeathReason &operator<<(DeathReason &inst, const std::string &str);
@@ -164,34 +152,43 @@ DeathReason &operator<<(DeathReason &inst, const std::string &str);
 /// @brief Opioid Usage Behavior Classification
 /// @details There are five possible possible usage classifications.
 enum class Behavior {
-    kNever = 0,
-    kFormerNoninjection = 1,
-    kFormerInjection = 2,
-    kNoninjection = 3,
-    kInjection = 4,
-
-    kCount = 5
+    kNever = 0,              /// No history of opioid use
+    kFormerNoninjection = 1, /// Former non-injection opioid use
+    kFormerInjection = 2,    /// Former injection opioid use
+    kNoninjection = 3,       /// Non-injection opioid use
+    kInjection = 4,          /// Injection opioid use
+    kCount = 5               /// Count of Behavior Enum
 };
 std::ostream &operator<<(std::ostream &os, const Behavior &inst);
 Behavior &operator<<(Behavior &inst, const std::string &str);
 
 /// @brief Screening type that led to linkage
 enum class ScreeningType {
-    kNa = -1,
-    kBackground = 0,
-    kIntervention = 1,
-    kCount = 2
+    kNa = -1,          /// No Fibrosis Screening Applicable
+    kBackground = 0,   /// Background Fibrosis Screening
+    kIntervention = 1, /// Intervention Fibrosis Screening
+    kCount = 2         /// Count of ScreeningType Enum
 };
 std::ostream &operator<<(std::ostream &os, const ScreeningType &inst);
 ScreeningType &operator<<(ScreeningType &inst, const std::string &str);
 
 /// @brief Screening type that led to linkage
-enum class ScreeningTest : int { kNa = -1, kAb = 0, kRna = 1, kCount = 2 };
+enum class ScreeningTest : int {
+    kNa = -1,  /// No Screening Test Applicable
+    kAb = 0,   /// Antibody Screening Test
+    kRna = 1,  /// RNA Screening Test
+    kCount = 2 /// Count of ScreeningTest Enum
+};
 std::ostream &operator<<(std::ostream &os, const ScreeningTest &inst);
 ScreeningTest &operator<<(ScreeningTest &inst, const std::string &str);
 
 /// @brief Status of Linkage
-enum class LinkageState { kNever = 0, kLinked = 1, kUnlinked = 2, kCount = 3 };
+enum class LinkageState {
+    kNever = 0,    /// Person has never been linked to care
+    kLinked = 1,   /// Person is currently linked to care
+    kUnlinked = 2, /// Person was previously linked to care, but not currently
+    kCount = 3     /// Count of LinkageState Enum
+};
 std::ostream &operator<<(std::ostream &os, const LinkageState &inst);
 LinkageState &operator<<(LinkageState &inst, const std::string &str);
 
@@ -201,14 +198,15 @@ LinkageState &operator<<(LinkageState &inst, const std::string &str);
 /// These states strictly increase, with the possibility of progressing to
 /// HCC being possible at any time from stage F3 and higher.
 enum class FibrosisState {
-    kF0 = 0,
-    kF1 = 1,
-    kF2 = 2,
-    kF3 = 3,
-    kF4 = 4,
-    kDecomp = 5,
-    kNone = 6,
-    kCount = 7
+    kF0 = 0, /// No Scarring
+    kF1 = 1, /// Mild Liver Scarring
+    kF2 = 2, /// Scarring has occurred and extends outside the liver area
+    kF3 =
+        3, /// Fibrosis spreading and forming bridges with other fibrotic liver areas
+    kF4 = 4,     /// Cirrhosis or advanced scarring
+    kDecomp = 5, /// Symptomatic cirrhosis; over complications
+    kNone = 6,   /// No adverse liver effects
+    kCount = 7   /// Count of FibrosisState Enum
 };
 std::ostream &operator<<(std::ostream &os, const FibrosisState &inst);
 FibrosisState &operator<<(FibrosisState &inst, const std::string &str);
@@ -222,31 +220,22 @@ FibrosisState operator++(FibrosisState &inst, int);
 /// <a
 /// href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5863002/">Reference</a>
 enum class HCCState {
-    /// No hepatocellular carcinoma
-    kNone = 0,
-    /// Early-stage hepatocellular carcinoma
-    kEarly = 1,
-    /// Late-stage hepatocellular carcinoma
-    kLate = 2,
-    kCount = 3
+    kNone = 0,  /// No hepatocellular carcinoma
+    kEarly = 1, /// Early-stage hepatocellular carcinoma
+    kLate = 2,  /// Late-stage hepatocellular carcinoma
+    kCount = 3  /// Count of HCCState Enum
 };
 std::ostream &operator<<(std::ostream &os, const HCCState &inst);
 HCCState &operator<<(HCCState &inst, const std::string &str);
 
 /// @brief Clinically staged liver fibrosis stage
 enum class MeasuredFibrosisState {
-    /// Person is measured to be either F0 or F1
-    kF01 = 0,
-    /// Person is measured to be either F2 or F3
-    kF23 = 1,
-    /// Person is measured to be F4 fibrosis, compensated cirrhosis
-    kF4 = 2,
-    /// Person has decompensated liver cirrhosis
-    kDecomp = 3,
-    /// Person has never been staged before
-    kNone = 4,
-
-    kCount = 5
+    kF01 = 0,    /// Person is measured to be either F0 or F1
+    kF23 = 1,    /// Person is measured to be either F2 or F3
+    kF4 = 2,     /// Person is measured to be F4 fibrosis, compensated cirrhosis
+    kDecomp = 3, /// Person has decompensated liver cirrhosis
+    kNone = 4,   /// Person has never been staged before
+    kCount = 5   /// Count of MeasuredFibrosisState Enum
 };
 std::ostream &operator<<(std::ostream &os, const MeasuredFibrosisState &inst);
 MeasuredFibrosisState &operator<<(MeasuredFibrosisState &inst,
@@ -256,24 +245,19 @@ MeasuredFibrosisState operator++(MeasuredFibrosisState &inst, int);
 
 /// @brief Opioid Use Disorder Treatment States (MOUDs)
 enum class MOUD {
-    /// Never in MOUD
-    kNone = 0,
-    /// Currently in MOUD
-    kCurrent = 1,
-    /// Recently dropped out of MOUD
-    kPost = 2,
-    kCount = 3
+    kNone = 0,    /// Never in MOUD
+    kCurrent = 1, /// Currently in MOUD
+    kPost = 2,    /// Recently dropped out of MOUD
+    kCount = 3    /// Count of MOUD Enum
 };
 std::ostream &operator<<(std::ostream &os, const MOUD &inst);
 MOUD &operator<<(MOUD &inst, const std::string &str);
 
 /// @brief Biological Sex
 enum class Sex {
-    /// Assigned male at birth
-    kMale = 0,
-    /// Assigned female at birth
-    kFemale = 1,
-    kCount = 2
+    kMale = 0,   /// Assigned male at birth
+    kFemale = 1, /// Assigned female at birth
+    kCount = 2   /// Count of Sex Enum
 };
 std::ostream &operator<<(std::ostream &os, const Sex &inst);
 Sex &operator<<(Sex &inst, const std::string &str);
@@ -281,16 +265,13 @@ Sex &operator<<(Sex &inst, const std::string &str);
 /// @brief Pregnancy Classification
 /// @details There are three possible pregnancy states.
 enum class PregnancyState {
-    kNa = -1,
-    /// Never pregnant
-    kNone = 0,
-    /// Actively pregnant
-    kPregnant = 1,
-    /// Post-pregnancy
-    kRestrictedPostpartum = 2,
-    kYearOnePostpartum = 3,
-    kYearTwoPostpartum = 4,
-    kCount = 5
+    kNa = -1,                  /// Pregnancy is not active
+    kNone = 0,                 /// Never pregnant
+    kPregnant = 1,             /// Actively pregnant
+    kRestrictedPostpartum = 2, /// Unable to get Pregnant Period
+    kYearOnePostpartum = 3,    /// Remaining Year 1 Postpartum
+    kYearTwoPostpartum = 4,    /// Year 2 Postpartum
+    kCount = 5                 /// Count of PregnancyState Enum
 };
 std::ostream &operator<<(std::ostream &os, const PregnancyState &inst);
 PregnancyState &operator<<(PregnancyState &inst, const std::string &str);

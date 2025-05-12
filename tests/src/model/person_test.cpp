@@ -4,7 +4,7 @@
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-05-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -256,7 +256,6 @@ TEST_F(PersonTest, InitiateTreatment_FailedSalvage) {
     auto details = person->GetTreatmentDetails(TYPE);
 
     EXPECT_TRUE(details.in_salvage_treatment);
-    EXPECT_EQ(details.num_starts, 0);
     EXPECT_EQ(details.num_starts, 0);
 }
 

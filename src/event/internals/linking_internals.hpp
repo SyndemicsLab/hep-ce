@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-05-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -64,10 +64,10 @@ public:
 
         // draw from link probability
         if (sampler.GetDecision({prob}) == 0) {
-            data::ScreeningType lt =
+            data::ScreeningType st =
                 person.GetScreeningDetails(GetInfectionType()).screen_type;
             person.Link(GetInfectionType());
-            if (lt == data::ScreeningType::kIntervention) {
+            if (st == data::ScreeningType::kIntervention) {
                 AddEventCost(person, GetInterventionCost());
             }
         }

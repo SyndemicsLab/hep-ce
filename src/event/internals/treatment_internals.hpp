@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -183,13 +183,11 @@ private:
     /// @param
     /// @return
     bool IsEligibleFibrosisStage(const model::Person &person) const {
-        auto fibrosis_state = person.GetHCVDetails().fibrosis_state;
-        for (std::string state : _eligibilities.fibrosis_states) {
-            data::FibrosisState temp;
-            temp << state;
-            if (fibrosis_state == temp) {
-                return false;
-            }
+        std::stringstream fibrosis_state;
+        fibrosis_state << person.GetHCVDetails().fibrosis_state;
+        if (utils::FindInVector<std::string>(_eligibilities.fibrosis_states,
+                                             {fibrosis_state.str()})) {
+            return false;
         }
         return true;
     }
@@ -216,13 +214,11 @@ private:
     /// @param
     /// @return
     bool IsEligibleBehavior(const model::Person &person) const {
-        auto behavior = person.GetBehaviorDetails().behavior;
-        for (std::string state : _eligibilities.behavior_states) {
-            data::Behavior temp;
-            temp << state;
-            if (behavior == temp) {
-                return false;
-            }
+        std::stringstream behavior;
+        behavior << person.GetBehaviorDetails().behavior;
+        if (utils::FindInVector<std::string>(_eligibilities.behavior_states,
+                                             {behavior.str()})) {
+            return false;
         }
         return true;
     }
@@ -230,16 +226,14 @@ private:
     /// @param
     /// @return
     bool IsEligiblePregnancy(const model::Person &person) const {
-        auto pregnancy_state = person.GetPregnancyDetails().pregnancy_state;
-        if (pregnancy_state == data::PregnancyState::kNa) {
+        std::stringstream pregnancy_state;
+        pregnancy_state << person.GetPregnancyDetails().pregnancy_state;
+        if (pregnancy_state.str() == "na") {
             return true; // short circuit for not running pregnancy event
         }
-        for (std::string state : _eligibilities.pregnancy_states) {
-            data::PregnancyState temp;
-            temp << state;
-            if (pregnancy_state == temp) {
-                return false;
-            }
+        if (utils::FindInVector<std::string>(_eligibilities.pregnancy_states,
+                                             {pregnancy_state.str()})) {
+            return false;
         }
         return true;
     }

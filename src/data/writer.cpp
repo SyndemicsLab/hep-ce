@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -17,6 +17,7 @@
 #include <numeric>
 
 #include <hepce/model/person.hpp>
+#include <hepce/utils/logging.hpp>
 
 namespace hepce {
 namespace data {
@@ -27,7 +28,8 @@ std::unique_ptr<Writer> Writer::Create(const std::string &directory,
 }
 
 WriterImpl::WriterImpl(const std::string &directory,
-                       const std::string &log_name) {
+                       const std::string &log_name)
+    : _log_name(log_name) {
     if (!std::filesystem::exists(directory)) {
         std::filesystem::create_directory(directory);
     }
@@ -45,6 +47,8 @@ std::string WriterImpl::WritePopulation(
     std::ofstream csvStream;
     csvStream.open(path, std::ofstream::out);
     if (!csvStream) {
+        hepce::utils::LogError(GetLogName(),
+                               "Unable to open CSV Stream to write!");
         return "";
     }
     csvStream << "id," << POPULATION_HEADERS(true, true, true, true, true)
