@@ -20,7 +20,6 @@ lib/dminstall/
 bin
 lib/*.a
 lib/*.so*
-lib/sqlitecpp
 
 *.db
 *.out
