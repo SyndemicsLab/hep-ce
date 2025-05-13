@@ -1,63 +1,50 @@
-cmake_minimum_required(VERSION 3.22)
-set(CMAKE_CXX_STANDARD 17)
-project(hepceTest CXX)
+cmake_minimum_required(VERSION 3.27)
+project(hepce_tests VERSION ${HEPCE_VERSION} LANGUAGES CXX)
 
-find_package(DataManagement 1 REQUIRED
-HINTS "${CMAKE_SOURCE_DIR}/lib/dminstall"
-)
-find_package(spdlog)
+if(PROJECT_IS_TOP_LEVEL OR NOT HEPCE_BUILD_TESTS)
+    message(STATUS "Attempted to Build tests, but HEPCE_BUILD_TESTS is OFF!")
+    return()
+endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../bin)
 
 enable_testing()
 
 add_executable(${PROJECT_NAME}
-  src/PersonTest.cpp
-  src/SimTest.cpp
-  src/CostTest.cpp
-  src/UtilityTest.cpp
-  src/DataWriterTest.cpp
-  src/eventtests/EventTest.cpp
-  src/eventtests/AgingTest.cpp
-  src/eventtests/BehaviorChangesTest.cpp
-  src/eventtests/ClearanceTest.cpp
-  src/eventtests/DeathTest.cpp
-  src/eventtests/FibrosisProgressionTest.cpp
-  src/eventtests/FibrosisStagingTest.cpp
-  src/eventtests/HCVInfectionsTest.cpp
-  src/eventtests/HCVLinkingTest.cpp
-  src/eventtests/HCVScreeningTest.cpp
-  src/eventtests/HCVTreatmentTest.cpp
-  src/eventtests/HIVInfectionsTest.cpp
-  src/eventtests/HIVLinkingTest.cpp
-  src/eventtests/HIVScreeningTest.cpp
-  src/eventtests/VoluntaryRelinkingTest.cpp
-  src/eventtests/PregnancyTest.cpp
-  src/eventtests/OverdoseTest.cpp
-  src/eventtests/MOUDTest.cpp
+    src/event/base/aging_test.cpp
+    src/event/base/death_test.cpp
+    src/event/behavior/behavior_changes_test.cpp
+    src/event/behavior/pregnancy_test.cpp
+    src/event/behavior/overdose_test.cpp
+    src/event/behavior/moud_test.cpp
+    src/event/fibrosis/progression_test.cpp
+    src/event/fibrosis/staging_test.cpp
+    src/event/hcv/clearance_test.cpp
+    src/event/hcv/infection_test.cpp
+    src/event/hcv/linking_test.cpp
+    src/event/hcv/screening_test.cpp
+    src/event/hcv/treatment_test.cpp
+    src/event/hcv/voluntary_relink_test.cpp
+    src/event/hiv/infection_test.cpp
+    src/event/hiv/linking_test.cpp
+    src/event/hiv/screening_test.cpp
+    src/data/writer_test.cpp
+    src/utils/logging_test.cpp
+    src/model/person_test.cpp
+    src/model/simulation_test.cpp
 )
 
-# BE VERY CAREFUL WITH GTEST AS ITS A PAIN IN THE BUTT
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        GTest::gtest_main
+        hepce
         GTest::gmock_main
-        data
-        person
-        simulation
-        event
-        utils
-        cost
-        utility
-        stats
-        DataManagement::DataManagement
+        datamanagement::datamanagement
         spdlog::spdlog
 )
 
 target_include_directories(${PROJECT_NAME}
-    PUBLIC
+    PRIVATE
         "mocks/"
+        "constants/"
 )
 
-include(GoogleTest)
 gtest_discover_tests(${PROJECT_NAME})

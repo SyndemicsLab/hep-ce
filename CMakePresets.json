@@ -1,0 +1,176 @@
+{
+    "version": 7,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 27,
+        "patch": 0
+    },
+    "include": [],
+    "configurePresets": [
+        {
+            "name": "configuration-common",
+            "description": "General Configuration Settings for All Configs",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
+            "installDir": "${sourceDir}/install"
+        },
+        {
+            "name": "configuration-common-linux",
+            "description": "Linux Configuration Settings for GCC and Clang",
+            "hidden": true,
+            "inherits": "configuration-common",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "toolset": {
+                "value": "host=x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "HEPCE_BUILD_PIC": "ON"
+            }
+        },
+        {
+            "name": "gcc-debug",
+            "displayName": "gcc Debug",
+            "description": "Target Linux with the GCC compiler, debug build type",
+            "inherits": "configuration-common-linux",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "HEPCE_BUILD_EXECUTABLE": "ON",
+                "HEPCE_BUILD_TESTS": "ON",
+                "HEPCE_CALCULATE_COVERAGE": "ON",
+                "HEPCE_BUILD_PYBINDINGS": "OFF",
+                "HEPCE_BUILD_BENCH": "OFF",
+                "HEPCE_BUILD_SHARED_LIBS": "OFF",
+                "HEPCE_BUILD_WARNINGS": "ON",
+                "HEPCE_SYSTEM_INCLUDES": "OFF",
+                "HEPCE_INSTALL": "OFF",
+                "HEPCE_NO_EXCEPTIONS": "OFF"
+            }
+        },
+        {
+            "name": "gcc-release",
+            "displayName": "gcc Release",
+            "description": "Target Linux with the GCC compiler, release build type",
+            "inherits": "configuration-common-linux",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "HEPCE_BUILD_EXECUTABLE": "ON",
+                "HEPCE_BUILD_TESTS": "OFF",
+                "HEPCE_CALCULATE_COVERAGE": "OFF",
+                "HEPCE_BUILD_PYBINDINGS": "ON",
+                "HEPCE_BUILD_BENCH": "OFF",
+                "HEPCE_BUILD_SHARED_LIBS": "OFF",
+                "HEPCE_BUILD_WARNINGS": "OFF",
+                "HEPCE_SYSTEM_INCLUDES": "OFF",
+                "HEPCE_INSTALL": "ON",
+                "HEPCE_NO_EXCEPTIONS": "OFF",
+                "HEPCE_RUN_OMP": "ON"
+            }
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "test-common",
+            "description": "Settings for all tests",
+            "hidden": true,
+            "output": {
+                "verbosity": "verbose",
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": true
+            }
+        },
+        {
+            "name": "gcc-debug",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "gcc-debug"
+        },
+        {
+            "name": "gcc-release",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "gcc-release"
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "gcc-release",
+            "configurePreset": "gcc-release",
+            "jobs": 8
+        },
+        {
+            "name": "gcc-install",
+            "configurePreset": "gcc-release",
+            "jobs": 8,
+            "targets": [
+                "install"
+            ]
+        },
+        {
+            "name": "gcc-debug",
+            "configurePreset": "gcc-debug",
+            "jobs": 8
+        }
+    ],
+    "packagePresets": [
+        {
+            "name": "gcc-release",
+            "configurePreset": "gcc-release",
+            "generators": [
+                "TGZ"
+            ]
+        }
+    ],
+    "workflowPresets": [
+        {
+            "description": "Developer Debugging workflow without installation",
+            "name": "gcc-debug",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "gcc-debug"
+                },
+                {
+                    "type": "build",
+                    "name": "gcc-debug"
+                },
+                {
+                    "type": "test",
+                    "name": "gcc-debug"
+                }
+            ]
+        },
+        {
+            "description": "Release workflow without tests",
+            "name": "gcc-release",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "gcc-release"
+                },
+                {
+                    "type": "build",
+                    "name": "gcc-release"
+                },
+                {
+                    "type": "package",
+                    "name": "gcc-release"
+                }
+            ]
+        }
+    ]
+}

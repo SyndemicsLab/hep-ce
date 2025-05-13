@@ -24,3 +24,5 @@ lib/*.so*
 *.db
 *.out
 *.csv
+
+log.txt

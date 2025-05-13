@@ -1,0 +1,31 @@
+name: Ubuntu Unit Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Debug
+
+jobs:
+  build:
+    name: Build Debug
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Boost
+        uses: MarkusJx/install-boost@v2.4.5
+        id: install-boost
+        with:
+          boost_version: 1.86.0
+          platform_version: 22.04
+      - name: Install SQLiteCpp
+        run: sudo apt-get install libsqlitecpp-dev
+      - name: Build and Test
+        working-directory: ${{ github.workspace }}
+        run: cmake --workflow --preset gcc-debug
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}

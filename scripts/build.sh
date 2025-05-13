@@ -4,6 +4,9 @@
 if command -v module &>/dev/null; then
     module load gcc/13.2.0
     module load openmpi/4.1.5
+    module load cmake/3.31.7
+    module load ninja/1.10.2
+    module load boost/1.83.0
 fi
 
 # red output
@@ -29,24 +32,26 @@ showhelp () {
     echo "p              Build and run tests."
 }
 
-dminstall () {
-    if [[ ! -d "DataManagement" ]]; then
-        git clone -b old_dm git@github.com:SyndemicsLab/DataManagement
+sqliteinstall () {
+    if [[ ! -d "SQLiteCpp" ]]; then
+        git clone git@github.com:SRombauts/SQLiteCpp.git
     fi
-    echo "DataManagement clone complete."
+    echo "SQLiteCpp clone complete."
 
     # subshell needed to avoid changing working directory unnecessarily
     (
-        cd "DataManagement" || return 1
-        scripts/build.sh -i "$TOPLEVEL/lib/dminstall"
+        cd "SQLiteCpp" || return 1
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build .
+        cmake --install . --prefix "$TOPLEVEL/lib/sqlitecpp"
     )
-    rm -rf DataManagement
+    rm -rf SQLiteCpp
 }
 
 # set default build type
-BUILDTYPE="Debug"
-BUILD_TESTS=""
-BUILD_SHARED_LIBS="OFF"
+BUILDTYPE="Release"
 
 # process optional command line flags
 while getopts ":hplt:" option; do
@@ -87,45 +92,19 @@ done
 
     # ensure the `build/` directory exists
     ([[ -d "build/" ]] && rm -rf build/*) || mkdir "build/"
-    ([[ -d "bin/" ]] && rm -rf bin/*) || mkdir "bin/"
     ([[ -d "lib/" ]] && rm -rf lib/*.a && rm -rf lib/*.so)
 
-    # detect or install DataManagement
-    if [[ ! -d "lib/dminstall" ]]; then
-        if ! dminstall; then
-            echo "Installing \`DataManagement\` failed."
+    # detect or install SQLiteCpp
+    if [[ ! -d "lib/sqlitecpp" ]]; then
+        if ! sqliteinstall; then
+            echo "Installing \`SQLiteCpp\` failed."
             exit 1
         fi
     fi
 
     (
-        cd "build" || exit
-
-        CMAKE_COMMAND="cmake .. -DCMAKE_BUILD_TYPE=${BUILDTYPE}"
-
-        # build tests, if specified
-        if [[ -n "$BUILD_TESTS" ]]; then
-            CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_TESTS=${BUILD_TESTS}"
-            if [[ -f "$TOPLEVEL/bin/hepceTest" ]]; then
-                rm "$TOPLEVEL/bin/hepceTest"
-            fi
-        fi
-
-        # build static library if BUILD_STATIC_LIBRARY is on, otherwise build
-        # shared library
-        CMAKE_COMMAND="$CMAKE_COMMAND -DBUILD_SHARED_LIBS=$BUILD_SHARED_LIBS"
-
-        err "[EXECUTE] $CMAKE_COMMAND"
-        $CMAKE_COMMAND
-        (
-            # determine the number of processing units available
-            CORES="$(nproc --all)"
-            # if CORES > 1 compile in parallel where possible
-            ([[ (-n "$CORES") && ("$CORES" -gt "4") ]] && cmake --build . -j"$(( CORES * 1 / 4 ))") || cmake --build .
-        )
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$TOPLEVEL/lib/sqlitecpp"
+        cmake --build .
     )
-    # run tests, if they built properly
-    if [[ (-n "$BUILD_TESTS") && (-f "bin/hepceTest") ]]; then
-        bin/hepceTest
-    fi
 )
