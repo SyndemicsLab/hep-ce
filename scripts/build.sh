@@ -6,6 +6,7 @@ if command -v module &>/dev/null; then
     module load openmpi/4.1.5
     module load cmake/3.31.7
     module load ninja/1.10.2
+    module load boost/1.83.0
 fi
 
 # red output
@@ -102,6 +103,8 @@ done
     fi
 
     (
-        cmake --workflow --preset gcc-release
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$TOPLEVEL/lib/sqlitecpp"
+        cmake --build .
     )
 )

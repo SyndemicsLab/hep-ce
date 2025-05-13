@@ -4,7 +4,7 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-05-13                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -12,6 +12,8 @@
 
 // File Header
 #include <hepce/data/types.hpp>
+
+#include <tuple>
 
 namespace hepce {
 namespace data {
