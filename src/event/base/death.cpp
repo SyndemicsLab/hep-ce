@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,16 +37,16 @@ DeathImpl::DeathImpl(datamanagement::ModelData &model_data,
       _decomp_infected_probability(
           utils::GetDoubleFromConfig("mortality.decomp_infected", model_data)),
       _decomp_uninfected_probability(utils::GetDoubleFromConfig(
-          "mortality.decomp_uninfected", model_data)) {
+          "mortality.decomp_uninfected", model_data)),
+      _hiv_mortality_probability(
+          utils::GetDoubleFromConfig("mortality.hiv", model_data)) {
     LoadData(model_data);
 }
 
 // Execute
 void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
-    if (ReachedMaxAge(person)) {
-        return;
-    }
-    if (FatalOverdose(person, sampler)) {
+    if (ReachedMaxAge(person) || FatalOverdose(person, sampler) ||
+        HivDeath(person, sampler)) {
         return;
     }
 
@@ -169,6 +169,17 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
     }
     Die(person, data::DeathReason::kOverdose);
     return true;
+}
+
+bool DeathImpl::HivDeath(model::Person &person, model::Sampler &sampler) {
+    if (person.GetHIVDetails().hiv == data::HIV::kNone) {
+        return false;
+    }
+    if (sampler.GetDecision({_hiv_mortality_probability}) == 0) {
+        Die(person, data::DeathReason::kHiv);
+        return true;
+    }
+    return false;
 }
 
 double DeathImpl::GetFibrosisMortalityProbability(model::Person &person) {

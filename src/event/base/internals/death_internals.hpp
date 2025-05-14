@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-05-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,6 +51,7 @@ private:
     const double _f4_uninfected_probability;
     const double _decomp_infected_probability;
     const double _decomp_uninfected_probability;
+    const double _hiv_mortality_probability;
 
     backgroundmap_t _background_data;
     overdosemap_t _overdose_data;
@@ -80,7 +81,9 @@ private:
 
     bool ReachedMaxAge(model::Person &person);
 
-    bool FatalOverdose(model::Person &person, model::Sampler &decider);
+    bool FatalOverdose(model::Person &person, model::Sampler &sampler);
+
+    bool HivDeath(model::Person &person, model::Sampler &sampler);
 
     double GetFibrosisMortalityProbability(model::Person &person);
 
