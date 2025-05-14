@@ -4,7 +4,7 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-05-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -112,6 +112,7 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     _screening_details[it].ab_positive = storage.hcv_antibody_positive;
     _screening_details[it].identified = storage.hcv_identified;
     _screening_details[it].time_identified = storage.time_hcv_identified;
+    _screening_details[it].times_identified = storage.times_hcv_identified;
     _screening_details[it].screen_type = storage.hcv_link_type;
 
     // TreatmentDetails
@@ -144,6 +145,7 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     _screening_details[it].ab_positive = storage.hiv_antibody_positive;
     _screening_details[it].identified = storage.hiv_identified;
     _screening_details[it].time_identified = storage.time_hiv_identified;
+    _screening_details[it].times_identified = storage.times_hiv_identified;
     _screening_details[it].screen_type = storage.hiv_link_type;
 
     // TreatmentDetails
@@ -353,6 +355,7 @@ std::string PersonImpl::MakePopulationRow() const {
                        << std::boolalpha << hcvsd.ab_positive << ","
                        << std::boolalpha << hcvsd.identified << ","
                        << hcvsd.time_identified << ","
+                       << hcvsd.times_identified << ","
                        << hcvsd.screen_type << ",";
         const auto &hivsd = _screening_details.at(data::InfectionType::kHiv);
         population_row << hivsd.time_of_last_screening << ","
@@ -361,6 +364,7 @@ std::string PersonImpl::MakePopulationRow() const {
                        << std::boolalpha << hivsd.ab_positive << ","
                        << std::boolalpha << hivsd.identified << ","
                        << hivsd.time_identified << ","
+                       << hivsd.times_identified << ","
                        << hivsd.screen_type << ",";
         const auto &hcvtd = _treatment_details.at(data::InfectionType::kHcv);
         population_row << std::boolalpha << hcvtd.initiated_treatment << ","

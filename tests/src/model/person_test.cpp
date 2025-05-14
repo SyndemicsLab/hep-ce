@@ -4,7 +4,7 @@
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-12                                                  //
+// Last Modified: 2025-05-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -426,7 +426,7 @@ TEST_F(PersonTest, Accumulate) {
 // Not sure how to test this, its a dump of the data into a CSV string
 TEST_F(PersonTest, MakePopulationRow) {
     std::string str = person->MakePopulationRow();
-    EXPECT_EQ(utils::SplitToVecT<std::string>(str, ',').size(), 84);
+    EXPECT_EQ(utils::SplitToVecT<std::string>(str, ',').size(), 86);
 }
 
 } // namespace testing

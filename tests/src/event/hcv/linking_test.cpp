@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-05-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -58,8 +58,8 @@ protected:
                             0,
                             0};
     data::LinkageDetails linkage = {data::LinkageState::kNever, -1, 0};
-    data::ScreeningDetails screen = {
-        -1, 0, 0, false, false, -1, data::ScreeningType::kNa};
+    data::ScreeningDetails screen = {-1,    0,  0, false,
+                                     false, -1, 0, data::ScreeningType::kNa};
     data::PregnancyDetails pregnancy = {
         data::PregnancyState::kNa, -1, 0, 0, 0, 0, 0, 0, {}};
 
