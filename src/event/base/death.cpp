@@ -45,10 +45,8 @@ DeathImpl::DeathImpl(datamanagement::ModelData &model_data,
 
 // Execute
 void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
-    if (ReachedMaxAge(person)) {
-        return;
-    }
-    if (FatalOverdose(person, sampler)) {
+    if (ReachedMaxAge(person) || FatalOverdose(person, sampler) ||
+        HivDeath(person, sampler)) {
         return;
     }
 
