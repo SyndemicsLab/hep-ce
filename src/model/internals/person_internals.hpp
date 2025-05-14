@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-05-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -102,6 +102,7 @@ public:
     inline void Diagnose(data::InfectionType it) override {
         _screening_details[it].identified = true;
         _screening_details[it].time_identified = _current_time;
+        _screening_details[it].times_identified++;
         _screening_details[it].ab_positive = true;
     }
     inline void ClearDiagnosis(data::InfectionType it) override {

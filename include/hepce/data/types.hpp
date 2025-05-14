@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-12                                                  //
+// Last Modified: 2025-05-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -14,6 +14,7 @@
 
 #include <ostream>
 #include <sstream>
+#include <string>
 #include <vector>
 
 namespace hepce {
@@ -57,23 +58,23 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
     // StagingDetails
     headers << "measured_fibrosis_state,had_second_test,time_of_last_staging,";
     // LinkageDetails
-    headers << "hcv_link_state,time_of_hcv_link_change,hcv_link_type,hcv_link_"
-               "count,";
+    headers << "hcv_link_state,time_of_hcv_link_change,hcv_link_count,";
     if (hiv) {
-        headers << "hiv_link_state,time_of_hiv_link_change,hiv_link_type,hiv_"
-                   "link_count,";
+        headers << "hiv_link_state,time_of_hiv_link_change,hiv_link_count,";
     } else {
-        headers << "never,-1,na,0,";
+        headers << "never,-1,0,";
     }
     // ScreeningDetails
     headers << "time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,"
-               "hcv_antibody_positive,hcv_identified,time_hcv_identified,";
+               "hcv_antibody_positive,hcv_identified,time_hcv_identified,num_"
+               "hcv_identifications,hcv_screening_type,";
     if (hiv) {
         headers
             << "time_of_last_hiv_screening,num_hiv_ab_tests,num_hiv_rna_tests,"
-               "hiv_antibody_positive,hiv_identified,time_hiv_identified,";
+               "hiv_antibody_positive,hiv_identified,time_hiv_identified,num_"
+               "hiv_identified,hiv_screening_type,";
     } else {
-        headers << "-1,0,0,false,false,-1,";
+        headers << "-1,0,0,false,false,-1,0,na";
     }
     // TreatmentDetails
     headers << "initiated_hcv_treatment,time_of_hcv_treatment_initiation,num_"
@@ -369,6 +370,7 @@ struct ScreeningDetails {
     bool ab_positive = false;
     bool identified = false;
     int time_identified = -1;
+    int times_identified = 0;
     ScreeningType screen_type = ScreeningType::kNa;
 };
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
@@ -474,6 +476,7 @@ struct PersonSelect {
     bool hcv_antibody_positive = false;
     int hcv_identified = false;
     int time_hcv_identified = -1;
+    int times_hcv_identified = 0;
     // HIV
     int time_of_last_hiv_screening = -1;
     int num_hiv_ab_tests = 0;
@@ -481,6 +484,7 @@ struct PersonSelect {
     bool hiv_antibody_positive = false;
     int hiv_identified = false;
     int time_hiv_identified = -1;
+    int times_hiv_identified = 0;
     // TreatmentDetails
     // HCV
     bool initiated_hcv_treatment = false;

@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-05-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -59,7 +59,7 @@ protected:
                             0};
     data::LinkageDetails linkage = {data::LinkageState::kLinked, -1, 0};
     data::ScreeningDetails screen = {
-        -1, 0, 0, false, false, -1, data::ScreeningType::kIntervention};
+        -1, 0, 0, false, false, -1, 0, data::ScreeningType::kIntervention};
     data::TreatmentDetails treatment = {false, 0, 0, 0, 0, 0, 0, false};
 
     void SetUp() override {
