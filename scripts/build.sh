@@ -96,10 +96,10 @@ done
     (
 	case $BUILDTYPE in
 	    "Debug")
-		PRESET="gcc-debug"
+		PRESET="gcc-debug-cluster"
 		;;
 	    "Release")
-		PRESET="gcc-release"
+		PRESET="gcc-release-cluster"
 		;;
 	esac
         cmake --workflow --preset "$PRESET" --fresh
