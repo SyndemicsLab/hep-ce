@@ -193,6 +193,38 @@
                     "name": "gcc-release"
                 }
             ]
+        },
+        {
+            "description": "Developer Debugging workflow without installation for the SCC",
+            "name": "gcc-debug-cluster",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "gcc-debug-cluster"
+                },
+                {
+                    "type": "build",
+                    "name": "gcc-debug"
+                },
+                {
+                    "type": "test",
+                    "name": "gcc-debug"
+                }
+            ]
+        },
+        {
+            "description": "Release workflow without tests for the SCC",
+            "name": "gcc-release-cluster",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "gcc-release-cluster"
+                },
+                {
+                    "type": "build",
+                    "name": "gcc-release"
+                }
+            ]
         }
     ]
 }
