@@ -81,6 +81,7 @@
         },
 	{
 	    "name": "gcc-release-cluster",
+	    "displayName": "gcc scc release",
 	    "inherits": "gcc-release",
 	    "cacheVariables": {
 		"CMAKE_PREFIX_PATH": "lib/sqlitecpp"
@@ -88,6 +89,7 @@
 	},
 	{
 	    "name": "gcc-debug-cluster",
+	    "displayName": "gcc scc debug",
 	    "inherits": "gcc-debug",
 	    "cacheVariables": {
 		"CMAKE_PREFIX_PATH": "lib/sqlitecpp"
