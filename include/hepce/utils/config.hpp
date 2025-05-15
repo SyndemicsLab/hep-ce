@@ -97,7 +97,7 @@ inline std::string GetStringFromConfig(std::string config_key,
 inline bool FindInEventList(std::string event_name,
                             datamanagement::ModelData &model_data) {
     auto event_list = utils::ToLowerVector(utils::SplitToVecT<std::string>(
-        model_data.GetFromConfig("simulation.event"), ','));
+        model_data.GetFromConfig("simulation.events"), ','));
     auto event_name_lower = utils::ToLower(event_name);
     if (std::find(event_list.begin(), event_list.end(), event_name_lower) !=
         event_list.end()) {
