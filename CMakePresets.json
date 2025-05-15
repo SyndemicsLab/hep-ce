@@ -74,8 +74,25 @@
                 "HEPCE_INSTALL": "ON",
                 "HEPCE_NO_EXCEPTIONS": "OFF",
                 "HEPCE_RUN_OMP": "ON"
-            }
-        }
+            },
+	    "warnings": {
+		"dev": false
+	    }
+        },
+	{
+	    "name": "gcc-release-cluster",
+	    "inherits": "gcc-release",
+	    "cacheVariables": {
+		"CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
+	    }
+	},
+	{
+	    "name": "gcc-debug-cluster",
+	    "inherits": "gcc-debug",
+	    "cacheVariables": {
+		"CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
+	    }
+	}
     ],
     "testPresets": [
         {
@@ -104,26 +121,55 @@
             "description": "Enable output and stop on failure",
             "inherits": "test-common",
             "configurePreset": "gcc-release"
+        },
+        {
+            "name": "gcc-debug-cluster",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "gcc-debug-cluster"
+        },
+        {
+            "name": "gcc-release-cluster",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "gcc-release-cluster"
         }
     ],
     "buildPresets": [
+	{
+	    "name": "build-common",
+	    "hidden": true,
+	    "jobs": 8
+	},
         {
             "name": "gcc-release",
-            "configurePreset": "gcc-release",
-            "jobs": 8
+	    "inherits": "build-common",
+            "configurePreset": "gcc-release"
         },
         {
             "name": "gcc-install",
+	    "inherits": "build-common",
             "configurePreset": "gcc-release",
-            "jobs": 8,
             "targets": [
                 "install"
             ]
         },
         {
             "name": "gcc-debug",
-            "configurePreset": "gcc-debug",
-            "jobs": 8
+	    "inherits": "build-common",
+            "configurePreset": "gcc-debug"
+        },
+        {
+            "name": "gcc-release-cluster",
+	    "inherits": "build-common",
+            "configurePreset": "gcc-release-cluster"
+        },
+        {
+            "name": "gcc-debug-cluster",
+	    "inherits": "build-common",
+            "configurePreset": "gcc-debug-cluster"
         }
     ],
     "packagePresets": [
@@ -169,6 +215,38 @@
                 {
                     "type": "package",
                     "name": "gcc-release"
+                }
+            ]
+        },
+        {
+            "description": "Developer Debugging workflow without installation for the SCC",
+            "name": "gcc-debug-cluster",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "gcc-debug-cluster"
+                },
+                {
+                    "type": "build",
+                    "name": "gcc-debug-cluster"
+                },
+                {
+                    "type": "test",
+                    "name": "gcc-debug-cluster"
+                }
+            ]
+        },
+        {
+            "description": "Release workflow without tests for the SCC",
+            "name": "gcc-release-cluster",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "gcc-release-cluster"
+                },
+                {
+                    "type": "build",
+                    "name": "gcc-release-cluster"
                 }
             ]
         }

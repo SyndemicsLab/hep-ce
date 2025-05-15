@@ -27,9 +27,7 @@ showhelp () {
     echo "h              Print this help screen."
     echo "t OPTION       Set the build type to OPTION"
     echo "               Options: [Debug|Release]"
-    echo "               Default: Debug"
-    echo "l              Build Shared Library."
-    echo "p              Build and run tests."
+    echo "               Default: Release"
 }
 
 sqliteinstall () {
@@ -41,11 +39,10 @@ sqliteinstall () {
     # subshell needed to avoid changing working directory unnecessarily
     (
         cd "SQLiteCpp" || return 1
-        mkdir build
-        cd build
-        cmake ..
-        cmake --build .
-        cmake --install . --prefix "$TOPLEVEL/lib/sqlitecpp"
+        mkdir "build"
+        cmake -B build .
+        cmake --build build
+        cmake --install build --prefix "$TOPLEVEL/lib/sqlitecpp"
     )
     rm -rf SQLiteCpp
 }
@@ -54,7 +51,7 @@ sqliteinstall () {
 BUILDTYPE="Release"
 
 # process optional command line flags
-while getopts ":hplt:" option; do
+while getopts ":ht:" option; do
     case $option in
         h)
             showhelp
@@ -70,12 +67,6 @@ while getopts ":hplt:" option; do
                     exit
                     ;;
             esac
-            ;;
-        l)
-            BUILD_SHARED_LIBS="ON"
-            ;;
-        p)
-            BUILD_TESTS="ON"
             ;;
         \?)
             echo "Error: Invalid option flag provided!"
@@ -103,8 +94,14 @@ done
     fi
 
     (
-        cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$TOPLEVEL/lib/sqlitecpp"
-        cmake --build .
+	case $BUILDTYPE in
+	    "Debug")
+		PRESET="gcc-debug-cluster"
+		;;
+	    "Release")
+		PRESET="gcc-release-cluster"
+		;;
+	esac
+        cmake --workflow --preset "$PRESET" --fresh
     )
 )
