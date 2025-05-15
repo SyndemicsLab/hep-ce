@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-05-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -76,6 +76,14 @@ inline bool SToBool(std::string string) {
 
 inline std::string const BoolToString(bool b) {
     return b ? std::string("true") : std::string("false");
+}
+
+inline std::vector<std::string>
+ToLowerVector(const std::vector<std::string> &vec_str) {
+    std::vector<std::string> copy = vec_str;
+    std::transform(copy.begin(), copy.end(), copy.begin(),
+                   [](std::string &str) { return ToLower(str); });
+    return copy;
 }
 
 template <typename T>

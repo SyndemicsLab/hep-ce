@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-14                                                  //
+// Last Modified: 2025-05-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -37,16 +37,19 @@ DeathImpl::DeathImpl(datamanagement::ModelData &model_data,
       _decomp_infected_probability(
           utils::GetDoubleFromConfig("mortality.decomp_infected", model_data)),
       _decomp_uninfected_probability(utils::GetDoubleFromConfig(
-          "mortality.decomp_uninfected", model_data)),
-      _hiv_mortality_probability(
-          utils::GetDoubleFromConfig("mortality.hiv", model_data)) {
+          "mortality.decomp_uninfected", model_data)) {
     LoadData(model_data);
 }
 
 // Execute
 void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
-    if (ReachedMaxAge(person) || FatalOverdose(person, sampler) ||
-        HivDeath(person, sampler)) {
+    if (check_overdose && FatalOverdose(person, sampler)) {
+        return;
+    }
+    if (check_hiv && HivDeath(person, sampler)) {
+        return;
+    }
+    if (ReachedMaxAge(person)) {
         return;
     }
 
@@ -78,7 +81,15 @@ void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
 }
 
 void DeathImpl::LoadData(datamanagement::ModelData &model_data) {
-    LoadOverdoseData(model_data);
+    if (utils::FindInEventList("overdose", model_data)) {
+        check_overdose = true;
+        LoadOverdoseData(model_data);
+    }
+    if (utils::FindInEventList("hivinfection", model_data)) {
+        check_hiv = true;
+        _hiv_mortality_probability =
+            utils::GetDoubleFromConfig("mortality.hiv", model_data);
+    }
     LoadBackgroundMortality(model_data);
 }
 

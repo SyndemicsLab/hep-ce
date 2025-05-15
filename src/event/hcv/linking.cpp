@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -39,7 +39,8 @@ LinkingImpl::LinkingImpl(datamanagement::ModelData &model_data,
 
 void LinkingImpl::LoadData(datamanagement::ModelData &model_data) {
     SetEventCostCategory(model::CostCategory::kLinking);
-    SetLinkingStratifiedByPregnancy(CheckForPregnancyEvent(model_data));
+    SetLinkingStratifiedByPregnancy(
+        utils::FindInEventList("Pregnancy", model_data));
     LoadLinkingData(model_data);
     SetInterventionCost(
         utils::GetDoubleFromConfig("linking.intervention_cost", model_data));

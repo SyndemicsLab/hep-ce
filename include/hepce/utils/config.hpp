@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -93,6 +93,19 @@ inline std::string GetStringFromConfig(std::string config_key,
     }
     return s;
 }
+
+inline bool FindInEventList(std::string event_name,
+                            datamanagement::ModelData &model_data) {
+    auto event_list = utils::ToLowerVector(utils::SplitToVecT<std::string>(
+        model_data.GetFromConfig("simulation.event"), ','));
+    auto event_name_lower = utils::ToLower(event_name);
+    if (std::find(event_list.begin(), event_list.end(), event_name_lower) !=
+        event_list.end()) {
+        return true;
+    }
+    return false;
+}
+
 } // namespace utils
 } // namespace hepce
 #endif // HEPCE_UTILS_CONFIG_HPP_

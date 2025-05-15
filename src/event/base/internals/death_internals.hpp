@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-14                                                  //
+// Last Modified: 2025-05-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,7 +51,10 @@ private:
     const double _f4_uninfected_probability;
     const double _decomp_infected_probability;
     const double _decomp_uninfected_probability;
-    const double _hiv_mortality_probability;
+    double _hiv_mortality_probability = 0.0;
+
+    bool check_overdose = false;
+    bool check_hiv = false;
 
     backgroundmap_t _background_data;
     overdosemap_t _overdose_data;
