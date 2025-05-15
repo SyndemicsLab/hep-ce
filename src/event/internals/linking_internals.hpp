@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-12                                                  //
+// Last Modified: 2025-05-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -169,13 +169,6 @@ protected:
     }
     inline double ApplyMultiplier(double prob, double mult) {
         return utils::RateToProbability(utils::ProbabilityToRate(prob) * mult);
-    }
-    inline bool CheckForPregnancyEvent(datamanagement::ModelData &model_data) {
-        std::vector<std::string> event_list = utils::SplitToVecT<std::string>(
-            utils::GetStringFromConfig("simulation.events", model_data), ',');
-
-        return (std::find(event_list.begin(), event_list.end(), "pregnancy") !=
-                event_list.end());
     }
 
 private:

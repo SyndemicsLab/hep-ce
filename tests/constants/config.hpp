@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -147,6 +147,7 @@ inline void BuildAlternateSimConf(const std::string &name) {
       << "f4_uninfected = 0.0000271037696334409" << std::endl
       << "decomp_infected = 0.01734776" << std::endl
       << "decomp_uninfected = 0.005688756" << std::endl
+      << "hiv = 0.0" << std::endl
       << "[infection]" << std::endl
       << std::endl
       << "clearance_prob = 0.0489" << std::endl

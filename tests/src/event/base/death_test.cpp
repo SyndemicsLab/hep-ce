@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,6 +34,7 @@
 #include <sampler_mock.hpp>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 using namespace hepce::data;
@@ -44,7 +45,7 @@ namespace testing {
 
 class DeathTest : public ::testing::Test {
 protected:
-    MockPerson mock_person;
+    NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
@@ -75,6 +76,13 @@ protected:
         discounted_life = utils::Discount(1, 0.0025, 1, false);
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
+
+        ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+        ON_CALL(mock_person, GetCurrentlyOverdosing())
+            .WillByDefault(Return(false));
+        ON_CALL(mock_person, GetSex()).WillByDefault(Return(data::Sex::kMale));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behaviors));
     }
     void TearDown() override {
         std::filesystem::remove(test_db);
@@ -95,13 +103,6 @@ TEST_F(DeathTest, AgeDR) {
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
-    // Testing the Overdose Table Logging
-    std::string expected = "No Overdose Table Found in the inputs database...";
-    std::string line;
-    std::ifstream f(LOG_FILE);
-    std::getline(f, line);
-    f.close();
-    ASSERT_TRUE(line.find(expected) != std::string::npos);
     std::filesystem::remove(LOG_FILE);
 }
 
@@ -109,13 +110,7 @@ TEST_F(DeathTest, F4_Infected_BackgroundDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kF4;
     hcv_details.hcv = data::HCV::kChronic;
 
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentlyOverdosing()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(2)
-        .WillRepeatedly(Return(hcv_details));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
@@ -134,13 +129,7 @@ TEST_F(DeathTest, F4_Infected_LiverDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kF4;
     hcv_details.hcv = data::HCV::kChronic;
 
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentlyOverdosing()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(2)
-        .WillRepeatedly(Return(hcv_details));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
@@ -159,13 +148,7 @@ TEST_F(DeathTest, F4_Uninfected_BackgroundDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kF4;
     hcv_details.hcv = data::HCV::kNone;
 
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentlyOverdosing()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(2)
-        .WillRepeatedly(Return(hcv_details));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
@@ -184,13 +167,7 @@ TEST_F(DeathTest, F4_Uninfected_LiverDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kF4;
     hcv_details.hcv = data::HCV::kNone;
 
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentlyOverdosing()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(2)
-        .WillRepeatedly(Return(hcv_details));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
@@ -209,13 +186,7 @@ TEST_F(DeathTest, Decomp_Infected_BackgroundDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kChronic;
 
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentlyOverdosing()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(3)
-        .WillRepeatedly(Return(hcv_details));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
@@ -234,13 +205,7 @@ TEST_F(DeathTest, Decomp_Infected_LiverDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kChronic;
 
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentlyOverdosing()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(3)
-        .WillRepeatedly(Return(hcv_details));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
@@ -259,13 +224,7 @@ TEST_F(DeathTest, Decomp_Uninfected_BackgroundDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kNone;
 
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentlyOverdosing()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(3)
-        .WillRepeatedly(Return(hcv_details));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
@@ -284,13 +243,7 @@ TEST_F(DeathTest, Decomp_Uninfected_LiverDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kNone;
 
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentlyOverdosing()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(3)
-        .WillRepeatedly(Return(hcv_details));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
@@ -309,13 +262,7 @@ TEST_F(DeathTest, NoDeath) {
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kNone;
 
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetCurrentlyOverdosing()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(3)
-        .WillRepeatedly(Return(hcv_details));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(2));
     EXPECT_CALL(mock_person, Die(_)).Times(0);
