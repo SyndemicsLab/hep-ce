@@ -81,7 +81,6 @@
         },
 	{
 	    "name": "gcc-release-cluster",
-	    "displayName": "gcc scc release",
 	    "inherits": "gcc-release",
 	    "cacheVariables": {
 		"CMAKE_PREFIX_PATH": "lib/sqlitecpp"
@@ -89,7 +88,6 @@
 	},
 	{
 	    "name": "gcc-debug-cluster",
-	    "displayName": "gcc scc debug",
 	    "inherits": "gcc-debug",
 	    "cacheVariables": {
 		"CMAKE_PREFIX_PATH": "lib/sqlitecpp"
@@ -123,6 +121,20 @@
             "description": "Enable output and stop on failure",
             "inherits": "test-common",
             "configurePreset": "gcc-release"
+        },
+        {
+            "name": "gcc-debug-cluster",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "gcc-debug-cluster"
+        },
+        {
+            "name": "gcc-release-cluster",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "gcc-release-cluster"
         }
     ],
     "buildPresets": [
@@ -148,6 +160,16 @@
             "name": "gcc-debug",
 	    "inherits": "build-common",
             "configurePreset": "gcc-debug"
+        },
+        {
+            "name": "gcc-release-cluster",
+	    "inherits": "build-common",
+            "configurePreset": "gcc-release-cluster"
+        },
+        {
+            "name": "gcc-debug-cluster",
+	    "inherits": "build-common",
+            "configurePreset": "gcc-debug-cluster"
         }
     ],
     "packagePresets": [
@@ -206,11 +228,11 @@
                 },
                 {
                     "type": "build",
-                    "name": "gcc-debug"
+                    "name": "gcc-debug-cluster"
                 },
                 {
                     "type": "test",
-                    "name": "gcc-debug"
+                    "name": "gcc-debug-cluster"
                 }
             ]
         },
@@ -224,7 +246,7 @@
                 },
                 {
                     "type": "build",
-                    "name": "gcc-release"
+                    "name": "gcc-release-cluster"
                 }
             ]
         }
