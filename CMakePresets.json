@@ -74,8 +74,25 @@
                 "HEPCE_INSTALL": "ON",
                 "HEPCE_NO_EXCEPTIONS": "OFF",
                 "HEPCE_RUN_OMP": "ON"
-            }
-        }
+            },
+	    "warnings": {
+		"dev": false
+	    }
+        },
+	{
+	    "name": "gcc-release-cluster",
+	    "inherits": "gcc-release",
+	    "cacheVariables": {
+		"CMAKE_PREFIX_PATH": "lib/sqlitecpp"
+	    }
+	},
+	{
+	    "name": "gcc-debug-cluster",
+	    "inherits": "gcc-debug",
+	    "cacheVariables": {
+		"CMAKE_PREFIX_PATH": "lib/sqlitecpp"
+	    }
+	}
     ],
     "testPresets": [
         {
@@ -107,23 +124,28 @@
         }
     ],
     "buildPresets": [
+	{
+	    "name": "build-common",
+	    "hidden": true,
+	    "jobs": 8
+	},
         {
             "name": "gcc-release",
-            "configurePreset": "gcc-release",
-            "jobs": 8
+	    "inherits": "build-common",
+            "configurePreset": "gcc-release"
         },
         {
             "name": "gcc-install",
+	    "inherits": "build-common",
             "configurePreset": "gcc-release",
-            "jobs": 8,
             "targets": [
                 "install"
             ]
         },
         {
             "name": "gcc-debug",
-            "configurePreset": "gcc-debug",
-            "jobs": 8
+	    "inherits": "build-common",
+            "configurePreset": "gcc-debug"
         }
     ],
     "packagePresets": [
