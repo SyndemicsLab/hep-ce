@@ -59,8 +59,6 @@ public:
         SetTreatmentLimit(
             utils::GetIntFromConfig("treatment.treatment_limit", model_data));
 
-        // _probabilities.loss_to_follow_up = utils::GetDoubleFromConfig(
-        //     "treatment.ltfu_probability", model_data);
         _costs.treatment =
             utils::GetDoubleFromConfig("treatment.treatment_cost", model_data);
         _utilities.treatment = utils::GetDoubleFromConfig(
