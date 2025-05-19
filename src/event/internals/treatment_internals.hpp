@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-12                                                  //
+// Last Modified: 2025-05-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -16,8 +16,10 @@
 #include <string>
 
 // Library Includes
+#include <hepce/data/types.hpp>
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
+#include <hepce/utils/logging.hpp>
 
 // Local Includes
 #include "event_internals.hpp"
@@ -43,9 +45,10 @@ public:
         double toxicity = 1.0;
     };
     struct TreatmentProbabilities {
-        double loss_to_follow_up = 0.0;
         double initialization = 0.0;
     };
+    using ltfu_map_t = std::unordered_map<data::PregnancyState, double>;
+    ltfu_map_t _ltfu_probability;
 
     TreatmentBase(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console")
@@ -56,8 +59,6 @@ public:
         SetTreatmentLimit(
             utils::GetIntFromConfig("treatment.treatment_limit", model_data));
 
-        _probabilities.loss_to_follow_up = utils::GetDoubleFromConfig(
-            "treatment.ltfu_probability", model_data);
         _costs.treatment =
             utils::GetDoubleFromConfig("treatment.treatment_cost", model_data);
         _utilities.treatment = utils::GetDoubleFromConfig(
@@ -78,9 +79,6 @@ protected:
         _utilities = u;
     }
     inline void SetTreatmentCosts(const TreatmentCosts &c) { _costs = c; }
-    inline void SetTreatmentProbabilities(const TreatmentProbabilities &p) {
-        _probabilities = p;
-    }
     inline void SetEligibilities(const Eligibilities &e) { _eligibilities = e; }
 
     inline bool GetTreatmentLimit() const { return _treatment_limit; }
@@ -105,6 +103,26 @@ protected:
             "eligibility.ineligible_time_former_threshold", model_data);
     }
 
+    inline void LoadLostToFollowUpData(datamanagement::ModelData &model_data) {
+        std::any storage = ltfu_map_t{};
+        try {
+            model_data.GetDBSource("inputs").Select(
+                LostToFollowUpSQL(), LostToFollowUpCallback, storage);
+        } catch (std::exception &e) {
+            std::stringstream msg;
+            msg << "Error getting " << GetInfectionType()
+                << " Lost To Follow Up Data: " << e.what();
+            hepce::utils::LogError(GetLogName(), msg.str());
+            return;
+        }
+        _ltfu_probability = std::any_cast<ltfu_map_t>(storage);
+        if (_ltfu_probability.empty()) {
+            std::stringstream s;
+            s << GetInfectionType() << " Linking Data is Empty...";
+            hepce::utils::LogWarning(GetLogName(), s.str());
+        }
+    }
+
     /// @brief
     /// @return
     virtual data::InfectionType GetInfectionType() const = 0;
@@ -126,7 +144,9 @@ protected:
         // follow up
         if (!person.GetTreatmentDetails(GetInfectionType())
                  .initiated_treatment &&
-            (sampler.GetDecision({_probabilities.loss_to_follow_up}) == 0)) {
+            (sampler.GetDecision({_ltfu_probability[person.GetPregnancyDetails()
+                                                        .pregnancy_state]}) ==
+             0)) {
             QuitEngagement(person);
             return true;
         }
@@ -172,12 +192,24 @@ protected:
                    : false;
     }
 
+    static void LostToFollowUpCallback(std::any &storage,
+                                       const SQLite::Statement &stmt) {
+        ltfu_map_t *temp = std::any_cast<ltfu_map_t>(&storage);
+        data::PregnancyState state =
+            static_cast<data::PregnancyState>(stmt.getColumn(0).getInt());
+        (*temp)[state] = stmt.getColumn(1).getDouble();
+    }
+
 private:
     int _treatment_limit = 0;
     TreatmentUtilities _utilities;
     TreatmentCosts _costs;
     TreatmentProbabilities _probabilities;
     Eligibilities _eligibilities;
+
+    inline const std::string LostToFollowUpSQL() const {
+        return "SELECT pregnancy_state, probability FROM lost_to_follow_up;";
+    }
 
     /// @brief
     /// @param
