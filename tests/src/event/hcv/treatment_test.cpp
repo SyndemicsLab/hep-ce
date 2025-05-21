@@ -84,17 +84,17 @@ protected:
         ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS lost_to_follow_up;",
                                   CreateLostToFollowUps(),
                                   "INSERT INTO lost_to_follow_up "
-                                  "VALUES (-1, 1.0);",
+                                  "VALUES (-1, 0.0);",
                                   "INSERT INTO lost_to_follow_up "
-                                  "VALUES (0, 1.0);",
+                                  "VALUES (0, 0.0);",
                                   "INSERT INTO lost_to_follow_up "
-                                  "VALUES (1, 1.0);",
+                                  "VALUES (1, 0.0);",
                                   "INSERT INTO lost_to_follow_up "
-                                  "VALUES (2, 1.0);",
+                                  "VALUES (2, 0.0);",
                                   "INSERT INTO lost_to_follow_up "
-                                  "VALUES (3, 1.0);",
+                                  "VALUES (3, 0.0);",
                                   "INSERT INTO lost_to_follow_up "
-                                  "VALUES (4, 1.0);"}});
+                                  "VALUES (4, 0.0);"}});
         BuildSimConf(test_conf);
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
