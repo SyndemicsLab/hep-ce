@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: all_events.hpp                                                       //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created Date: 2025-05-07                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //

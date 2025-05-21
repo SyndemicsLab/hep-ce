@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: test_logging.cpp                                                     //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //

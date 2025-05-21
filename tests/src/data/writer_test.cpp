@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: DataWriterTest.cpp                                                   //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created: 2025-03-12                                                        //
 // Author: Dimitri Baptiste                                                   //
 // -----                                                                      //

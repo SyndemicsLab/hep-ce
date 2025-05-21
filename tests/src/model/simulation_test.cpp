@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: SimTest.cpp                                                          //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created: 2023-09-13                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //

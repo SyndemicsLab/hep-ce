@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: version.hpp                                                          //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
