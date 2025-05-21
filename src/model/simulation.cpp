@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-12                                                  //
+// Last Modified: 2025-05-21                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -75,35 +75,12 @@ HepceImpl::CreatePopulation(datamanagement::ModelData &model_data,
 std::vector<std::unique_ptr<model::Person>>
 HepceImpl::ReadICPopulation(const int population_size,
                             datamanagement::ModelData &model_data) const {
-    std::stringstream query;
-    std::vector<std::string> events = utils::SplitToVecT<std::string>(
-        utils::GetStringFromConfig("simulation.events", model_data), ',');
-
-    // this is a stopgap with plans to make Event-scoped CheckFor<X>Event
-    // functions that are static / usable throughout the model.
-    bool pregnancy = utils::FindInVector<std::string>(events, {"pregnancy"});
-    bool hcc = utils::FindInVector<std::string>(events, {"HCCScreening"});
-    bool overdose =
-        utils::FindInVector<std::string>(events, {"BehaviorChanges"});
-    bool hiv = utils::FindInVector<std::string>(
-        events,
-        {"HIVInfections", "HIVLinking", "HIVScreening", "HIVTreatment"});
-    bool moud = utils::FindInVector<std::string>(events, {"MOUD"});
-
-    // TODO: Add string santization (i.e. verify no extra special characters/numbers/phrases/etc.)
-    query << "SELECT age_months, gender, drug_behavior, "
-             "time_last_active_drug_use, seropositivity, genotype_three, "
-             "fibrosis_state, identified_as_hcv_positive, link_state, "
-             "hcv_status ";
-    query << "FROM init_cohort ";
-    query << "ORDER BY id ";
-    query << "LIMIT " << std::to_string(population_size) << ";";
 
     std::any storage = std::vector<data::PersonSelect>{};
 
     try {
-        model_data.GetDBSource("inputs").Select(query.str(),
-                                                InitCohortVecCallback, storage);
+        model_data.GetDBSource("inputs").Select(
+            InitialCohortSQL(population_size), InitCohortVecCallback, storage);
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error drawing population size " << population_size
