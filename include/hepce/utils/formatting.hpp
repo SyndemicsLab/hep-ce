@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-15                                                  //
+// Last Modified: 2025-05-21                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -88,7 +88,7 @@ ToLowerVector(const std::vector<std::string> &vec_str) {
 
 template <typename T>
 inline bool FindInVector(std::vector<T> searched, std::vector<T> queries) {
-    for (T &query : queries) {
+    for (const T &query : queries) {
         if (std::find(searched.begin(), searched.end(), query) !=
             searched.end()) {
             return true;
