@@ -61,10 +61,17 @@ These categories are further broken into discrete events:
 - [DataManagement](https://github.com/SyndemicsLab/DataManagement)
 - [GoogleTest/`gtest`](https://github.com/google/googletest) (optional, used
   for unit testing)
+- [Ninja](https://ninja-build.org)
+- [spdlog](https://github.com/gabime/spdlog)
+- [SQLiteCpp](https://github.com/SRombauts/SQLiteCpp)
 
 ### Unix-based Systems
 
+Ensure that you have [Ninja](https://ninja-build.org) available in your
+environment, then run the following commands.
+
 ```sh
 git clone git@github.com:SyndemicsLab/hep-ce
-scripts/build.sh
+cd hep-ce
+cmake --workflow --preset gcc-release
 ```
