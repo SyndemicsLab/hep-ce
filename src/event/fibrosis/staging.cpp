@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: staging.cpp                                                          //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //

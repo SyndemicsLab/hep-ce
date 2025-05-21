@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: overdose.cpp                                                         //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created Date: 2025-05-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //

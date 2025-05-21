@@ -65,6 +65,6 @@ These categories are further broken into discrete events:
 ### Unix-based Systems
 
 ```sh
-git clone git@github.com:SyndemicsLab/HEPCESimulationv2
+git clone git@github.com:SyndemicsLab/hep-ce
 scripts/build.sh
 ```

@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: person_mock.hpp                                                      //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //

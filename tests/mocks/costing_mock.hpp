@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: costing_mock.hpp                                                     //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
