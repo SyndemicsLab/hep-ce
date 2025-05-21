@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: config.hpp                                                           //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-15                                                  //
+// Last Modified: 2025-05-21                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -90,7 +90,6 @@ inline void BuildSimConf(const std::string &name) {
       << "recent_screen_cutoff = 0" << std::endl
       << "[treatment]" << std::endl
       << "treatment_limit = 5" << std::endl
-      << "ltfu_probability = 0" << std::endl
       << "treatment_cost = 12603.02" << std::endl
       << "salvage_cost = 19332.50" << std::endl
       << "treatment_utility = 0.99" << std::endl
@@ -204,7 +203,6 @@ inline void BuildAlternateSimConf(const std::string &name) {
       << "recent_screen_cutoff = 6" << std::endl
       << "[treatment]" << std::endl
       << "treatment_limit = 5" << std::endl
-      << "ltfu_probability = 0" << std::endl
       << "treatment_cost = 12603.02" << std::endl
       << "salvage_cost = 19332.50" << std::endl
       << "treatment_utility = 0.99" << std::endl

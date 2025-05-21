@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: inputs_db.hpp                                                        //
-// Project: HEPCESimulationv2                                                 //
+// Project: hep-ce                                                            //
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-05-21                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -149,6 +149,14 @@ inline const std::string CreateTreatments() {
          "INT,course TEXT,duration INT,cost REAL,svr_prob_if_completed "
          "REAL,toxicity_prob_if_withdrawal REAL,withdrawal REAL,toxicity_prob "
          "REAL);";
+    return s.str();
+}
+
+inline const std::string CreateLostToFollowUps() {
+    std::stringstream s;
+    s << "CREATE TABLE lost_to_follow_up(pregnancy_state INTEGER NOT NULL "
+         "UNIQUE, probability REAL NOT NULL, PRIMARY "
+         "KEY(pregnancy_state));";
     return s.str();
 }
 
