@@ -4,14 +4,15 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-13                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-05-28                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
 // File Header
 #include <hepce/data/types.hpp>
+#include <hepce/utils/formatting.hpp>
 
 #include <tuple>
 
@@ -32,7 +33,8 @@ std::ostream &operator<<(std::ostream &os, const InfectionType &inst) {
     return os;
 }
 InfectionType &operator<<(InfectionType &inst, const std::string &str) {
-    if (str == "kHiv") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "hiv") {
         inst = InfectionType::kHiv;
     } else {
         inst = InfectionType::kHcv;
@@ -68,9 +70,10 @@ std::ostream &operator<<(std::ostream &os, const HCV &inst) {
     return os;
 }
 HCV &operator<<(HCV &inst, const std::string &str) {
-    if (str == "acute") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "acute") {
         inst = HCV::kAcute;
-    } else if (str == "chronic") {
+    } else if (temp_string == "chronic") {
         inst = HCV::kChronic;
     } else {
         inst = HCV::kNone;
@@ -99,13 +102,14 @@ std::ostream &operator<<(std::ostream &os, const HIV &inst) {
     return os;
 }
 HIV &operator<<(HIV &inst, const std::string &str) {
-    if (str == "hi-un") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "hi-un") {
         inst = HIV::kHiUn;
-    } else if (str == "hi-su") {
+    } else if (temp_string == "hi-su") {
         inst = HIV::kHiSu;
-    } else if (str == "lo-un") {
+    } else if (temp_string == "lo-un") {
         inst = HIV::kLoUn;
-    } else if (str == "lo-su") {
+    } else if (temp_string == "lo-su") {
         inst = HIV::kLoSu;
     } else {
         inst = HIV::kNone;
@@ -137,15 +141,16 @@ std::ostream &operator<<(std::ostream &os, const DeathReason &inst) {
     return os;
 }
 DeathReason &operator<<(DeathReason &inst, const std::string &str) {
-    if (str == "background") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "background") {
         inst = DeathReason::kBackground;
-    } else if (str == "liver") {
+    } else if (temp_string == "liver") {
         inst = DeathReason::kLiver;
-    } else if (str == "infection") {
+    } else if (temp_string == "infection") {
         inst = DeathReason::kInfection;
-    } else if (str == "age") {
+    } else if (temp_string == "age") {
         inst = DeathReason::kAge;
-    } else if (str == "overdose") {
+    } else if (temp_string == "overdose") {
         inst = DeathReason::kOverdose;
     } else {
         inst = DeathReason::kNa;
@@ -174,13 +179,14 @@ std::ostream &operator<<(std::ostream &os, const Behavior &inst) {
     return os;
 }
 Behavior &operator<<(Behavior &inst, const std::string &str) {
-    if (str == "former_injection") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "former_injection") {
         inst = Behavior::kFormerInjection;
-    } else if (str == "former_noninjection") {
+    } else if (temp_string == "former_noninjection") {
         inst = Behavior::kFormerNoninjection;
-    } else if (str == "injection") {
+    } else if (temp_string == "injection") {
         inst = Behavior::kInjection;
-    } else if (str == "noninjection") {
+    } else if (temp_string == "noninjection") {
         inst = Behavior::kNoninjection;
     } else {
         inst = Behavior::kNever;
@@ -203,9 +209,10 @@ std::ostream &operator<<(std::ostream &os, const ScreeningType &inst) {
     return os;
 }
 ScreeningType &operator<<(ScreeningType &inst, const std::string &str) {
-    if (str == "background") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "background") {
         inst = ScreeningType::kBackground;
-    } else if (str == "intervention") {
+    } else if (temp_string == "intervention") {
         inst = ScreeningType::kIntervention;
     } else {
         inst = ScreeningType::kNa;
@@ -228,9 +235,10 @@ std::ostream &operator<<(std::ostream &os, const ScreeningTest &inst) {
     return os;
 }
 ScreeningTest &operator<<(ScreeningTest &inst, const std::string &str) {
-    if (str == "antibody") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "antibody") {
         inst = ScreeningTest::kAb;
-    } else if (str == "rna") {
+    } else if (temp_string == "rna") {
         inst = ScreeningTest::kRna;
     } else {
         inst = ScreeningTest::kNa;
@@ -253,9 +261,10 @@ std::ostream &operator<<(std::ostream &os, const LinkageState &inst) {
     return os;
 }
 LinkageState &operator<<(LinkageState &inst, const std::string &str) {
-    if (str == "linked") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "linked") {
         inst = LinkageState::kLinked;
-    } else if (str == "unlinked") {
+    } else if (temp_string == "unlinked") {
         inst = LinkageState::kUnlinked;
     } else {
         inst == LinkageState::kNever;
@@ -290,17 +299,18 @@ std::ostream &operator<<(std::ostream &os, const FibrosisState &inst) {
     return os;
 }
 FibrosisState &operator<<(FibrosisState &inst, const std::string &str) {
-    if (str == "decomp") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "decomp") {
         inst = FibrosisState::kDecomp;
-    } else if (str == "f0") {
+    } else if (temp_string == "f0") {
         inst = FibrosisState::kF0;
-    } else if (str == "f1") {
+    } else if (temp_string == "f1") {
         inst = FibrosisState::kF1;
-    } else if (str == "f2") {
+    } else if (temp_string == "f2") {
         inst = FibrosisState::kF2;
-    } else if (str == "f3") {
+    } else if (temp_string == "f3") {
         inst = FibrosisState::kF3;
-    } else if (str == "f4") {
+    } else if (temp_string == "f4") {
         inst = FibrosisState::kF4;
     } else {
         inst = FibrosisState::kNone;
@@ -354,9 +364,10 @@ std::ostream &operator<<(std::ostream &os, const HCCState &inst) {
     return os;
 }
 HCCState &operator<<(HCCState &inst, const std::string &str) {
-    if (str == "early") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "early") {
         inst = HCCState::kEarly;
-    } else if (str == "late") {
+    } else if (temp_string == "late") {
         inst = HCCState::kLate;
     } else {
         inst = HCCState::kNone;
@@ -386,13 +397,14 @@ std::ostream &operator<<(std::ostream &os, const MeasuredFibrosisState &inst) {
 }
 MeasuredFibrosisState &operator<<(MeasuredFibrosisState &inst,
                                   const std::string &str) {
-    if (str == "decomp") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "decomp") {
         inst = MeasuredFibrosisState::kDecomp;
-    } else if (str == "f01") {
+    } else if (temp_string == "f01") {
         inst = MeasuredFibrosisState::kF01;
-    } else if (str == "f23") {
+    } else if (temp_string == "f23") {
         inst = MeasuredFibrosisState::kF23;
-    } else if (str == "f4") {
+    } else if (temp_string == "f4") {
         inst = MeasuredFibrosisState::kF4;
     } else {
         inst = MeasuredFibrosisState::kNone;
@@ -440,9 +452,10 @@ std::ostream &operator<<(std::ostream &os, const MOUD &inst) {
     return os;
 }
 MOUD &operator<<(MOUD &inst, const std::string &str) {
-    if (str == "current") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "current") {
         inst = MOUD::kCurrent;
-    } else if (str == "post") {
+    } else if (temp_string == "post") {
         inst = MOUD::kPost;
     } else {
         inst = MOUD::kNone;
@@ -465,7 +478,8 @@ std::ostream &operator<<(std::ostream &os, const Sex &inst) {
     return os;
 }
 Sex &operator<<(Sex &inst, const std::string &str) {
-    if (str == "male") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "male") {
         inst = Sex::kMale;
     } else {
         inst = Sex::kFemale;
@@ -497,15 +511,16 @@ std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
     return os;
 }
 PregnancyState &operator<<(PregnancyState &inst, const std::string &str) {
-    if (str == "restricted-postpartum") {
+    const std::string temp_string = utils::ToLower(str);
+    if (temp_string == "restricted-postpartum") {
         inst = PregnancyState::kRestrictedPostpartum;
-    } else if (str == "year-one-postpartum") {
+    } else if (temp_string == "year-one-postpartum") {
         inst = PregnancyState::kYearOnePostpartum;
-    } else if (str == "year-two-postpartum") {
+    } else if (temp_string == "year-two-postpartum") {
         inst = PregnancyState::kYearTwoPostpartum;
-    } else if (str == "pregnant") {
+    } else if (temp_string == "pregnant") {
         inst = PregnancyState::kPregnant;
-    } else if (str == "none") {
+    } else if (temp_string == "none") {
         inst = PregnancyState::kNone;
     } else {
         inst = PregnancyState::kNa;

@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-21                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-05-30                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -111,15 +111,14 @@ protected:
                 LostToFollowUpSQL(), LostToFollowUpCallback, storage);
         } catch (std::exception &e) {
             std::stringstream msg;
-            msg << "Error getting " << GetInfectionType()
-                << " Lost To Follow Up Data: " << e.what();
+            msg << "Error getting Lost To Follow Up Data: " << e.what();
             hepce::utils::LogError(GetLogName(), msg.str());
             return;
         }
         _ltfu_probability = std::any_cast<ltfu_map_t>(storage);
         if (_ltfu_probability.empty()) {
             std::stringstream s;
-            s << GetInfectionType() << " Linking Data is Empty...";
+            s << " Linking Data is Empty...";
             hepce::utils::LogWarning(GetLogName(), s.str());
         }
     }
