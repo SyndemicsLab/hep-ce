@@ -68,7 +68,6 @@ int main(int argc, char *argv[]) {
     if (!argChecks(argc, argv, root_dir, task_start, task_end)) {
         return 0;
     }
-    // #pragma omp parallel for num_threads(8)
     for (int i = task_start; i < (task_end + 1); ++i) {
         std::filesystem::path input_dir =
             ((std::filesystem::path)root_dir) / ("input" + std::to_string(i));
