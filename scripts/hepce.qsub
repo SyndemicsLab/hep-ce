@@ -10,13 +10,13 @@
 #$ -P hep-ce
 
 #  Give this job a name
-#$ -N hepce-validation-input2
+#$ -N hepce-syndemics
 
 #  Join standard output and error to a single file
 #$ -j y
 
 #  Name the file where to redirect standard output and error
-#$ -o hepce_input2.qlog
+#$ -o hepce.qlog
 
 #  Request time needed for job to run (default: 12 hours)
 #$ -l h_rt=48:00:00
@@ -29,7 +29,7 @@
 #$ -M Matthew.Carroll@bmc.org
 
 # use multiple slots
-# -pe omp 36
+# -pe omp 28
 
 # Specify Memory per OMP Core
 #$ -l mem_per_core=14G
