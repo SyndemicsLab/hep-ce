@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-21                                                  //
+// Last Modified: 2025-05-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -42,6 +42,7 @@ void HepceImpl::Run(
     auto sampler = hepce::model::Sampler::Create(GetSeed(), GetLogName());
     for (int i = 0; i < GetDuration(); ++i) {
         for (auto &&event : discrete_events) {
+#pragma omp parallel for num_threads(28)
             for (auto &&person : people) {
                 event->Execute(*person, *sampler);
             }
