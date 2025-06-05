@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-07                                                  //
+// Last Modified: 2025-06-05                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -76,7 +76,7 @@ private:
 
     inline bool CheckMiscarriage(const model::Person &person,
                                  model::Sampler &sampler) {
-        int age = static_cast<int>(person.GetAge());
+        int age = static_cast<int>(person.GetAge() / 12.0);
         std::vector<double> probs = {_pregnancy_data[age].miscarriage,
                                      1 - _pregnancy_data[age].miscarriage};
         return !sampler.GetDecision(probs);
