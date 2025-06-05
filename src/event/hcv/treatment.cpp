@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-04                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -46,23 +46,27 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
         return;
     }
 
-    // 1. Check if the Person is Lost To Follow Up (LTFU)
-    if (LostToFollowUp(person, sampler)) {
-        return;
-    }
-
-    // 2. Charge the Cost of the Visit (varies if this is salvage)
     double visit_cost =
         (person.GetTreatmentDetails(GetInfectionType()).in_salvage_treatment)
             ? GetTreatmentCosts().salvage
             : GetTreatmentCosts().treatment;
-    AddEventCost(person, visit_cost);
 
-    // 3. Attempt to start primary treatment, if already on treatment
-    // nothing happens
-    if (!person.GetTreatmentDetails(GetInfectionType()).initiated_treatment &&
-        !InitiateTreatment(person, sampler)) {
-        return;
+    if (!person.GetTreatmentDetails(GetInfectionType()).initiated_treatment) {
+        // 1. Check if the Person is Lost To Follow Up (LTFU)
+        if (LostToFollowUp(person, sampler)) {
+            return;
+        }
+        // 2. Charge the Cost of the Visit (varies if this is salvage)
+        AddEventCost(person, visit_cost);
+
+        // 3. Attempt to start primary treatment, if already on treatment
+        // nothing happens
+        if (!InitiateTreatment(person, sampler)) {
+            return;
+        }
+    } else {
+        // 2. Charge the Cost of the Visit (varies if this is salvage)
+        AddEventCost(person, visit_cost);
     }
 
     // 4. Charge the person for the Course they are on

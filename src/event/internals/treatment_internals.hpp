@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-30                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-06-04                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,9 +142,7 @@ protected:
     inline bool LostToFollowUp(model::Person &person, model::Sampler &sampler) {
         // If the person is already on treatment, they can't be lost to
         // follow up
-        if (!person.GetTreatmentDetails(GetInfectionType())
-                 .initiated_treatment &&
-            (sampler.GetDecision({_ltfu_probability[person.GetPregnancyDetails()
+        if ((sampler.GetDecision({_ltfu_probability[person.GetPregnancyDetails()
                                                         .pregnancy_state]}) ==
              0)) {
             QuitEngagement(person);
