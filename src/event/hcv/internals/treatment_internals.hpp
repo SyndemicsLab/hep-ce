@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -31,8 +31,8 @@ public:
     };
 
     using hcvtreatmentmap_t =
-        std::unordered_map<utils::tuple_3i, TreatmentSQLData,
-                           utils::key_hash_3i, utils::key_equal_3i>;
+        std::unordered_map<utils::tuple_4i, TreatmentSQLData,
+                           utils::key_hash_4i, utils::key_equal_4i>;
 
     TreatmentImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");
@@ -51,28 +51,31 @@ private:
 
     static void Callback(std::any &storage, const SQLite::Statement &stmt) {
         hcvtreatmentmap_t *temp = std::any_cast<hcvtreatmentmap_t>(&storage);
-        utils::tuple_3i key = std::make_tuple(stmt.getColumn(0).getInt(),
-                                              stmt.getColumn(1).getInt(),
-                                              stmt.getColumn(2).getInt());
+        utils::tuple_4i key = std::make_tuple(
+            stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt(),
+            stmt.getColumn(2).getInt(), stmt.getColumn(3).getInt());
         (*temp)[key] = {
-            stmt.getColumn(3).getInt(), stmt.getColumn(4).getDouble(),
-            stmt.getColumn(5).getDouble(), stmt.getColumn(6).getDouble(),
-            stmt.getColumn(7).getDouble()};
+            stmt.getColumn(4).getInt(), stmt.getColumn(5).getDouble(),
+            stmt.getColumn(6).getDouble(), stmt.getColumn(7).getDouble(),
+            stmt.getColumn(8).getDouble()};
     }
 
     inline const std::string TreatmentSQL() const {
-        return "SELECT salvage, genotype_three, cirrhotic, duration, cost, "
-               "svr_prob_if_completed, toxicity_prob_if_withdrawal, withdrawal "
+        return "SELECT salvage, genotype_three, cirrhotic, pregnancy, "
+               "duration, cost, svr_prob_if_completed, "
+               "toxicity_prob_if_withdrawal, withdrawal "
                "FROM treatments;";
     }
 
-    utils::tuple_3i GetTreatmentThruple(const model::Person &person) const {
+    utils::tuple_4i GetTreatmentQuadple(const model::Person &person) const {
         int geno3 = (person.GetHCVDetails().is_genotype_three) ? 1 : 0;
         int cirr = (person.IsCirrhotic()) ? 1 : 0;
         int salvage =
             static_cast<int>(person.GetTreatmentDetails(GetInfectionType())
                                  .in_salvage_treatment);
-        return std::make_tuple(salvage, geno3, cirr);
+        int pregnancy =
+            static_cast<int>(person.GetPregnancyDetails().pregnancy_state);
+        return std::make_tuple(salvage, geno3, cirr, pregnancy);
     }
 
     inline void ResetUtility(model::Person &person) const override {
@@ -81,7 +84,7 @@ private:
 
     bool Withdraws(model::Person &person, model::Sampler &sampler) {
         if (sampler.GetDecision(
-                {_treatment_sql_data[GetTreatmentThruple(person)]
+                {_treatment_sql_data[GetTreatmentQuadple(person)]
                      .withdrawal_probability}) == 0) {
             person.AddWithdrawal(GetInfectionType());
             QuitEngagement(person);
@@ -93,7 +96,7 @@ private:
     void CheckIfExperienceToxicity(model::Person &person,
                                    model::Sampler &sampler) {
         if (sampler.GetDecision(
-                {_treatment_sql_data[GetTreatmentThruple(person)]
+                {_treatment_sql_data[GetTreatmentQuadple(person)]
                      .toxicity_probability}) == 1) {
             return;
         }
@@ -108,11 +111,11 @@ private:
     inline int DecideIfPersonAchievesSVR(const model::Person &person,
                                          model::Sampler &sampler) {
         return sampler.GetDecision(
-            {_treatment_sql_data[GetTreatmentThruple(person)].svr_probability});
+            {_treatment_sql_data[GetTreatmentQuadple(person)].svr_probability});
     }
 
     inline int GetTreatmentDuration(const model::Person &person) {
-        return _treatment_sql_data[GetTreatmentThruple(person)].duration;
+        return _treatment_sql_data[GetTreatmentQuadple(person)].duration;
     }
 };
 } // namespace hcv
