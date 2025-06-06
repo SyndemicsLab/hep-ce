@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-21                                                  //
+// Last Modified: 2025-06-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -63,24 +63,25 @@ protected:
     data::TreatmentDetails treatment = {false, 0, 0, 0, 0, 0, 0, false};
 
     void SetUp() override {
-        ExecuteQueries(test_db,
-                       {{"DROP TABLE IF EXISTS treatments;", CreateTreatments(),
-                         "INSERT INTO treatments "
-                         "VALUES (0, 0, 0, \"gp\", 2, 10, 1, 0, 0.004, 0);",
-                         "INSERT INTO treatments "
-                         "VALUES (0, 0, 1, \"gp\", 2, 10, 1, 0, 0.004, 0);",
-                         "INSERT INTO treatments "
-                         "VALUES (0, 1, 0, \"gp\", 2, 10, .9, 0, 0.004, 0);",
-                         "INSERT INTO treatments "
-                         "VALUES (0, 1, 1, \"gp\", 2, 10, .8, .5, 0.004, .5);",
-                         "INSERT INTO treatments "
-                         "VALUES (1, 0, 1, \"svv\", 3, 20, 1, 0, 0.004, 0);",
-                         "INSERT INTO treatments "
-                         "VALUES (1, 0, 0, \"svv\", 3, 20, .9, 0, 0.004, 0);",
-                         "INSERT INTO treatments "
-                         "VALUES (1, 1, 1, \"svv\", 3, 20, .8, 0, 0.004, 0);",
-                         "INSERT INTO treatments "
-                         "VALUES (1, 1, 0, \"svv\", 3, 20, 1, 0, 0.004, 0);"}});
+        ExecuteQueries(
+            test_db,
+            {{"DROP TABLE IF EXISTS treatments;", CreateTreatments(),
+              "INSERT INTO treatments "
+              "VALUES (0, 0, 0, -1, \"gp\", 2, 10, 1, 0, 0.004, 0);",
+              "INSERT INTO treatments "
+              "VALUES (0, 0, 1, -1, \"gp\", 2, 10, 1, 0, 0.004, 0);",
+              "INSERT INTO treatments "
+              "VALUES (0, 1, 0, -1, \"gp\", 2, 10, .9, 0, 0.004, 0);",
+              "INSERT INTO treatments "
+              "VALUES (0, 1, 1, -1, \"gp\", 2, 10, .8, .5, 0.004, .5);",
+              "INSERT INTO treatments "
+              "VALUES (1, 0, 1, -1, \"svv\", 3, 20, 1, 0, 0.004, 0);",
+              "INSERT INTO treatments "
+              "VALUES (1, 0, 0, -1, \"svv\", 3, 20, .9, 0, 0.004, 0);",
+              "INSERT INTO treatments "
+              "VALUES (1, 1, 1, -1, \"svv\", 3, 20, .8, 0, 0.004, 0);",
+              "INSERT INTO treatments "
+              "VALUES (1, 1, 0, -1, \"svv\", 3, 20, 1, 0, 0.004, 0);"}});
         ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS lost_to_follow_up;",
                                   CreateLostToFollowUps(),
                                   "INSERT INTO lost_to_follow_up "
@@ -173,9 +174,8 @@ TEST_F(HCVTreatmentTest, Salvage) {
 
     treatment.num_completed = 1;
     treatment.in_salvage_treatment = true;
-    EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(10)
-        .WillRepeatedly(Return(treatment));
+    ON_CALL(mock_person, GetTreatmentDetails(_))
+        .WillByDefault(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(Return(1))
@@ -205,9 +205,8 @@ TEST_F(HCVTreatmentTest, SVR) {
 
     treatment.initiated_treatment = true;
     treatment.time_of_treatment_initiation = -1;
-    EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(9)
-        .WillRepeatedly(Return(treatment));
+    ON_CALL(mock_person, GetTreatmentDetails(_))
+        .WillByDefault(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(Return(1))
@@ -244,9 +243,8 @@ TEST_F(HCVTreatmentTest, StartSalvage) {
     treatment.initiated_treatment = true;
     treatment.time_of_treatment_initiation = -1;
     treatment.in_salvage_treatment = false;
-    EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(10)
-        .WillRepeatedly(Return(treatment));
+    ON_CALL(mock_person, GetTreatmentDetails(_))
+        .WillByDefault(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(Return(1))
@@ -280,9 +278,8 @@ TEST_F(HCVTreatmentTest, FailSalvage) {
     // Not possible, but GetCurrentTimestep returns 1 so set the diff to 3
     treatment.time_of_treatment_initiation = -2;
     treatment.in_salvage_treatment = true;
-    EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(10)
-        .WillRepeatedly(Return(treatment));
+    ON_CALL(mock_person, GetTreatmentDetails(_))
+        .WillByDefault(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(Return(1))
@@ -317,9 +314,8 @@ TEST_F(HCVTreatmentTest, Withdraw) {
 
     treatment.initiated_treatment = true;
     treatment.time_of_treatment_initiation = -1;
-    EXPECT_CALL(mock_person, GetTreatmentDetails(_))
-        .Times(6)
-        .WillRepeatedly(Return(treatment));
+    ON_CALL(mock_person, GetTreatmentDetails(_))
+        .WillByDefault(Return(treatment));
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(Return(1))

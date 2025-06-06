@@ -12,7 +12,9 @@ _deps
 
 CMakeUserPresets.json
 
-docs/
+docs/doxygen/*
+!docs/doxygen/.gitkeep
+
 .vscode/
 build/*
 !build/.gitkeep
