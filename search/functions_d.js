@@ -1,0 +1,18 @@
+var searchData=
+[
+  ['screen_0',['Screen',['../classhepce_1_1model_1_1Person.html#a937a0a31030b9b4eb3ec49c6a842ce1b',1,'hepce::model::Person']]],
+  ['setbehavior_1',['SetBehavior',['../classhepce_1_1model_1_1Person.html#a3f924fdf849d89330c7ebeb25fcbe3d4',1,'hepce::model::Person']]],
+  ['setdeathreason_2',['SetDeathReason',['../classhepce_1_1model_1_1Person.html#a0ac9f96a4e848e4d92a9c1c9d0a7420f',1,'hepce::model::Person']]],
+  ['setfibrosis_3',['SetFibrosis',['../classhepce_1_1model_1_1Person.html#aef5a9675688856cbcda615a73986844b',1,'hepce::model::Person']]],
+  ['setgenotypethree_4',['SetGenotypeThree',['../classhepce_1_1model_1_1Person.html#a6b87e2b5b5bf4bcef49ca983fcb0ca35',1,'hepce::model::Person']]],
+  ['sethcv_5',['SetHCV',['../classhepce_1_1model_1_1Person.html#af36d781b0e401e54ee6bbbc942f72d60',1,'hepce::model::Person']]],
+  ['sethiv_6',['SetHIV',['../classhepce_1_1model_1_1Person.html#a39ede2f1646496e7bb10538f4608b5a3',1,'hepce::model::Person']]],
+  ['setmoudstate_7',['SetMoudState',['../classhepce_1_1model_1_1Person.html#a02738ad98aa6fcbe56a0c0e2283e482d',1,'hepce::model::Person']]],
+  ['setpersondetails_8',['SetPersonDetails',['../classhepce_1_1model_1_1Person.html#a142b6761e38c87a15e1c98f79207d8f1',1,'hepce::model::Person']]],
+  ['setpregnancystate_9',['SetPregnancyState',['../classhepce_1_1model_1_1Person.html#a390cf861fa92ce89da90472c534b5c63',1,'hepce::model::Person']]],
+  ['setutility_10',['SetUtility',['../classhepce_1_1model_1_1Person.html#ad092edeb32db46c148fb7c6ceec735d5',1,'hepce::model::Person']]],
+  ['splittovect_11',['SplitToVecT',['../namespacehepce_1_1utils.html#a899dc70044aed7e794e203e99bb72aa1',1,'hepce::utils']]],
+  ['stillbirth_12',['Stillbirth',['../classhepce_1_1model_1_1Person.html#a7ae80aa885558f319fd3148d0ed48178',1,'hepce::model::Person']]],
+  ['stobool_13',['SToBool',['../namespacehepce_1_1utils.html#aa73f0b8977c616f250eed51bd694c588',1,'hepce::utils']]],
+  ['stodpositive_14',['SToDPositive',['../namespacehepce_1_1utils.html#afc818ec07b1d1b5549e5515cb13cef1f',1,'hepce::utils']]]
+];

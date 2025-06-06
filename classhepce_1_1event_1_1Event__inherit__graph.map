@@ -1,0 +1,22 @@
+<map id="hepce::event::Event" name="hepce::event::Event">
+<area shape="rect" id="node1" title=" " alt="" coords="5,575,156,601"/>
+<area shape="rect" id="node2" href="$classhepce_1_1event_1_1base_1_1Aging.html" title=" " alt="" coords="228,5,373,45"/>
+<area shape="rect" id="node3" href="$classhepce_1_1event_1_1base_1_1Death.html" title=" " alt="" coords="228,69,373,109"/>
+<area shape="rect" id="node4" href="$classhepce_1_1event_1_1behavior_1_1BehaviorChanges.html" title=" " alt="" coords="215,133,386,173"/>
+<area shape="rect" id="node5" href="$classhepce_1_1event_1_1behavior_1_1Moud.html" title=" " alt="" coords="215,197,386,237"/>
+<area shape="rect" id="node6" href="$classhepce_1_1event_1_1behavior_1_1Overdose.html" title=" " alt="" coords="215,261,386,301"/>
+<area shape="rect" id="node7" href="$classhepce_1_1event_1_1behavior_1_1Pregnancy.html" title=" " alt="" coords="215,325,386,365"/>
+<area shape="rect" id="node8" href="$classhepce_1_1event_1_1fibrosis_1_1Hcc.html" title=" " alt="" coords="204,390,397,415"/>
+<area shape="rect" id="node9" href="$classhepce_1_1event_1_1fibrosis_1_1Progression.html" title=" " alt="" coords="220,440,381,480"/>
+<area shape="rect" id="node10" href="$classhepce_1_1event_1_1fibrosis_1_1Staging.html" title=" " alt="" coords="220,504,381,544"/>
+<area shape="rect" id="node11" href="$classhepce_1_1event_1_1hcv_1_1Clearance.html" title=" " alt="" coords="229,568,373,608"/>
+<area shape="rect" id="node12" href="$classhepce_1_1event_1_1hcv_1_1Infection.html" title=" " alt="" coords="229,632,373,672"/>
+<area shape="rect" id="node13" href="$classhepce_1_1event_1_1hcv_1_1Linking.html" title=" " alt="" coords="229,696,373,736"/>
+<area shape="rect" id="node14" href="$classhepce_1_1event_1_1hcv_1_1Screening.html" title=" " alt="" coords="229,760,373,800"/>
+<area shape="rect" id="node15" href="$classhepce_1_1event_1_1hcv_1_1Treatment.html" title=" " alt="" coords="229,824,373,864"/>
+<area shape="rect" id="node16" href="$classhepce_1_1event_1_1hcv_1_1VoluntaryRelink.html" title=" " alt="" coords="229,888,373,928"/>
+<area shape="rect" id="node17" href="$classhepce_1_1event_1_1hiv_1_1Infection.html" title=" " alt="" coords="230,952,371,992"/>
+<area shape="rect" id="node18" href="$classhepce_1_1event_1_1hiv_1_1Linking.html" title=" " alt="" coords="230,1016,371,1056"/>
+<area shape="rect" id="node19" href="$classhepce_1_1event_1_1hiv_1_1Screening.html" title=" " alt="" coords="230,1080,371,1120"/>
+<area shape="rect" id="node20" href="$classhepce_1_1event_1_1hiv_1_1Treatment.html" title=" " alt="" coords="230,1144,371,1184"/>
+</map>
