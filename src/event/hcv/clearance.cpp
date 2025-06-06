@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-06                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -62,7 +62,8 @@ void ClearanceImpl::LoadData(datamanagement::ModelData &model_data) {
         hepce::utils::LogInfo(GetLogName(),
                               "Infection Clearance Probability is not found or "
                               "0, setting to default value of 0.036866536");
-        _probability = utils::RateToProbability(0.25) / 6.0;
+        _probability =
+            utils::RateToProbability(utils::ProbabilityToRate(0.25, 6));
     }
 }
 } // namespace hcv
