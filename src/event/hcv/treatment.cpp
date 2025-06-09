@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-06                                                  //
+// Last Modified: 2025-06-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -70,7 +70,7 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 
     // 4. Charge the person for the Course they are on
-    AddEventCost(person, _treatment_sql_data[GetTreatmentQuadple(person)].cost);
+    AddEventCost(person, _treatment_sql_data[GetTreatmentThruple(person)].cost);
     AddEventUtility(person, GetTreatmentUtilities().treatment);
 
     // 5. Check if the person experiences toxicity
