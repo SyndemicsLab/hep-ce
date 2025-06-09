@@ -125,7 +125,8 @@ void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
     storage = hcvtreatmentinitmap_t{};
     try {
         model_data.GetDBSource("inputs").Select(TreatmentInitializationSQL(),
-                                                Callback, storage);
+                                                CallbackTreatmentInitialization,
+                                                storage);
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting HCV Treatment Initialization Data: " << e.what();
@@ -144,7 +145,7 @@ bool TreatmentImpl::InitiateTreatment(model::Person &person,
     double treatment_initiation = 0.0;
     try {
         treatment_initiation = _treatment_init_sql_data.at(
-            person.GetPregnancyDetails().pregnancy_state);
+            static_cast<int>(person.GetPregnancyDetails().pregnancy_state));
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Warning - Failed Reading Treatment Initialization Data: "

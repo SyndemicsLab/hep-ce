@@ -34,8 +34,7 @@ public:
         std::unordered_map<utils::tuple_3i, TreatmentSQLData,
                            utils::key_hash_3i, utils::key_equal_3i>;
 
-    using hcvtreatmentinitmap_t =
-        std::unordered_map<data::PregnancyState, double>;
+    using hcvtreatmentinitmap_t = std::unordered_map<int, double>;
 
     TreatmentImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");
@@ -73,8 +72,7 @@ private:
                                                 const SQLite::Statement &stmt) {
         hcvtreatmentinitmap_t *temp =
             std::any_cast<hcvtreatmentinitmap_t>(&storage);
-        data::PregnancyState key =
-            static_cast<data::PregnancyState>(stmt.getColumn(0).getInt());
+        int key = stmt.getColumn(0).getInt();
         (*temp)[key] = stmt.getColumn(1).getDouble();
     }
 
