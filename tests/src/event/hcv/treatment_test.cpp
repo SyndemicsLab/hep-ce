@@ -81,6 +81,20 @@ protected:
                        "VALUES (1, 1, 1, \"svv\", 3, 20, .8, 0, 0.004, 0);",
                        "INSERT INTO treatments "
                        "VALUES (1, 1, 0,  \"svv\", 3, 20, 1, 0, 0.004, 0);"}});
+        ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS treatment_initiations;",
+                                  CreateTreatmentInitializations(),
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (-1, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (0, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (1, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (2, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (3, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (4, 0.92);"}});
         ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS lost_to_follow_up;",
                                   CreateLostToFollowUps(),
                                   "INSERT INTO lost_to_follow_up "

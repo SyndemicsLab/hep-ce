@@ -34,6 +34,9 @@ public:
         std::unordered_map<utils::tuple_3i, TreatmentSQLData,
                            utils::key_hash_3i, utils::key_equal_3i>;
 
+    using hcvtreatmentinitmap_t =
+        std::unordered_map<data::PregnancyState, double>;
+
     TreatmentImpl(datamanagement::ModelData &model_data,
                   const std::string &log_name = "console");
     ~TreatmentImpl() = default;
@@ -44,6 +47,7 @@ public:
 
 private:
     hcvtreatmentmap_t _treatment_sql_data;
+    hcvtreatmentinitmap_t _treatment_init_sql_data;
 
     inline data::InfectionType GetInfectionType() const override {
         return data::InfectionType::kHcv;
@@ -58,6 +62,20 @@ private:
             stmt.getColumn(3).getInt(), stmt.getColumn(4).getDouble(),
             stmt.getColumn(5).getDouble(), stmt.getColumn(6).getDouble(),
             stmt.getColumn(7).getDouble()};
+    }
+
+    inline const std::string TreatmentInitializationSQL() const {
+        return "SELECT pregnancy_state, treatment_initiation "
+               "FROM treatment_initiations;";
+    }
+
+    static void CallbackTreatmentInitialization(std::any &storage,
+                                                const SQLite::Statement &stmt) {
+        hcvtreatmentinitmap_t *temp =
+            std::any_cast<hcvtreatmentinitmap_t>(&storage);
+        data::PregnancyState key =
+            static_cast<data::PregnancyState>(stmt.getColumn(0).getInt());
+        (*temp)[key] = stmt.getColumn(1).getDouble();
     }
 
     inline const std::string TreatmentSQL() const {

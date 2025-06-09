@@ -152,6 +152,13 @@ inline const std::string CreateTreatments() {
     return s.str();
 }
 
+inline const std::string CreateTreatmentInitializations() {
+    std::stringstream s;
+    s << "CREATE TABLE treatment_initiations(pregnancy_state INT, "
+         "treatment_initiation REAL);";
+    return s.str();
+}
+
 inline const std::string CreateLostToFollowUps() {
     std::stringstream s;
     s << "CREATE TABLE lost_to_follow_up(pregnancy_state INTEGER NOT NULL "

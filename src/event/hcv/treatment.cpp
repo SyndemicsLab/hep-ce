@@ -121,13 +121,39 @@ void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
     if (_treatment_sql_data.empty()) {
         hepce::utils::LogWarning(GetLogName(), "Treatment Table is Empty...");
     }
+
+    storage = hcvtreatmentinitmap_t{};
+    try {
+        model_data.GetDBSource("inputs").Select(TreatmentInitializationSQL(),
+                                                Callback, storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting HCV Treatment Initialization Data: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
+    _treatment_init_sql_data = std::any_cast<hcvtreatmentinitmap_t>(storage);
+    if (_treatment_init_sql_data.empty()) {
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Treatment Initiation Table is Empty...");
+    }
 }
 
 bool TreatmentImpl::InitiateTreatment(model::Person &person,
                                       model::Sampler &sampler) const {
+    double treatment_initiation = 0.0;
+    try {
+        treatment_initiation = _treatment_init_sql_data.at(
+            person.GetPregnancyDetails().pregnancy_state);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Warning - Failed Reading Treatment Initialization Data: "
+            << e.what() << std::endl;
+        msg << "Setting treatment initiation to 0.0...";
+        hepce::utils::LogWarning(GetLogName(), msg.str());
+    }
     if (IsEligible(person) &&
-        (sampler.GetDecision({GetTreatmentProbabilities().initialization}) ==
-         0)) {
+        (sampler.GetDecision({treatment_initiation}) == 0)) {
         person.InitiateTreatment(GetInfectionType());
         return true;
     }
