@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-09                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -41,6 +41,9 @@ ClearanceImpl::ClearanceImpl(datamanagement::ModelData &model_data,
 
 // Execute
 void ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
+    if (!ValidExecute(person)) {
+        return;
+    }
     // if person isn't infected or is chronic, nothing to do
     // Also skip if person is already on treatment since we want this to
     // count as SVR

@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,6 +34,7 @@
 #include <sampler_mock.hpp>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace hepce {
@@ -41,7 +42,7 @@ namespace testing {
 
 class HCVClearanceTest : public ::testing::Test {
 protected:
-    MockPerson mock_person;
+    NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_conf = "sim.conf";
     std::unique_ptr<datamanagement::ModelData> model_data;
@@ -57,7 +58,10 @@ protected:
                             0};
     data::TreatmentDetails treatment = {false, -1, 0, 0, 0, 0, 0, false};
 
-    void SetUp() override { BuildSimConf(test_conf); }
+    void SetUp() override {
+        BuildSimConf(test_conf);
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
+    }
 
     void TearDown() override { std::filesystem::remove(test_conf); }
 };

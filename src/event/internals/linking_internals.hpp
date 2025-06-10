@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-15                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -38,6 +38,9 @@ public:
     virtual data::InfectionType GetInfectionType() const = 0;
 
     void Execute(model::Person &person, model::Sampler &sampler) override {
+        if (!ValidExecute(person)) {
+            return;
+        }
         bool is_linked =
             (person.GetLinkageDetails(GetInfectionType()).link_state ==
              data::LinkageState::kLinked);

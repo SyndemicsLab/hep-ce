@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -48,6 +48,9 @@ public:
         : EventBase(model_data, log_name) {}
 
     void Execute(model::Person &person, model::Sampler &sampler) override {
+        if (!ValidExecute(person)) {
+            return;
+        }
         // if a person is already linked, skip screening
         if (person.GetLinkageDetails(GetInfectionType()).link_state ==
             data::LinkageState::kLinked) {

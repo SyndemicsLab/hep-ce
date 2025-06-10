@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -62,6 +62,7 @@ protected:
     void SetUp() override {
         BuildSimConf(test_conf);
         model_data = datamanagement::ModelData::Create(test_conf);
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
         ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
     }
 

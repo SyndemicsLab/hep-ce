@@ -4,7 +4,7 @@
 // Created Date: 2025-05-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -31,7 +31,11 @@ OverdoseImpl::OverdoseImpl(datamanagement::ModelData &model_data,
     LoadData(model_data);
 }
 
-void OverdoseImpl::Execute(model::Person &person, model::Sampler &sampler) {}
+void OverdoseImpl::Execute(model::Person &person, model::Sampler &sampler) {
+    if (!ValidExecute(person)) {
+        return;
+    }
+}
 
 void OverdoseImpl::LoadData(datamanagement::ModelData &model_data) {}
 } // namespace behavior

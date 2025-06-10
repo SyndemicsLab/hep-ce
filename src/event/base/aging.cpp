@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -42,9 +42,11 @@ AgingImpl::AgingImpl(datamanagement::ModelData &model_data,
 
 // Execution
 void AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
-    if (!person.IsAlive()) {
+    if (!ValidExecute(person)) {
         return;
     }
+    utils::LogInfo(GetLogName(),
+                   "Timestep: " + std::to_string(person.GetCurrentTimestep()));
     person.AccumulateTotalUtility(GetEventDiscount());
     person.Grow();
     AddBackgroundCostAndUtility(person);

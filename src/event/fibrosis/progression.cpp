@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -40,6 +40,9 @@ ProgressionImpl::ProgressionImpl(datamanagement::ModelData &model_data,
 
 // Execute
 void ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
+    if (!ValidExecute(person)) {
+        return;
+    }
     // can only progress in fibrosis state if actively infected with HCV
     if (person.GetHCVDetails().hcv == data::HCV::kNone) {
         return;

@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-09                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -113,6 +113,7 @@ protected:
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
 
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
         ON_CALL(mock_person, GetLinkageDetails(_))
             .WillByDefault(Return(linkage));
         ON_CALL(mock_person, GetTreatmentDetails(_))
