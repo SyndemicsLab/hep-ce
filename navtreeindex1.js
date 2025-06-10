@@ -1,8 +1,10 @@
 var NAVTREEINDEX1 =
 {
+"classhepce_1_1model_1_1Person.html#af36d781b0e401e54ee6bbbc942f72d60":[2,0,0,2,1,57],
 "classhepce_1_1model_1_1Person.html#afc9fc2b56135bc906144d07f9ecec733":[2,0,0,2,1,47],
-"classhepce_1_1model_1_1Sampler.html":[1,0,0,2,2],
+"classhepce_1_1model_1_1Person.html#afc9fc2b56135bc906144d07f9ecec733":[1,0,0,2,1,47],
 "classhepce_1_1model_1_1Sampler.html":[2,0,0,2,2],
+"classhepce_1_1model_1_1Sampler.html":[1,0,0,2,2],
 "classhepce_1_1model_1_1Sampler.html#abc7923d44d5bdb0957ecf824997a1c42":[1,0,0,2,2,0],
 "classhepce_1_1model_1_1Sampler.html#abc7923d44d5bdb0957ecf824997a1c42":[2,0,0,2,2,0],
 "classhepce_1_1model_1_1Sampler.html#aeee1287f566c21aabd35d5f131c29173":[1,0,0,2,2,1],
@@ -48,8 +50,8 @@ var NAVTREEINDEX1 =
 "formatting_8hpp.html#ae847015d1decdbbddb7d1542ffa72c21":[3,0,1,0,3,1,0],
 "formatting_8hpp.html#afc818ec07b1d1b5549e5515cb13cef1f":[3,0,1,0,3,1,4],
 "formatting_8hpp_source.html":[3,0,1,0,3,1],
-"functions.html":[2,2,0],
 "functions.html":[2,2,0,0],
+"functions.html":[2,2,0],
 "functions_b.html":[2,2,0,1],
 "functions_c.html":[2,2,0,2],
 "functions_d.html":[2,2,0,3],
@@ -68,9 +70,10 @@ var NAVTREEINDEX1 =
 "functions_s.html":[2,2,0,15],
 "functions_t.html":[2,2,0,16],
 "functions_u.html":[2,2,0,17],
+"functions_v.html":[2,2,0,18],
 "functions_vars.html":[2,2,2],
-"functions_w.html":[2,2,0,18],
-"functions_~.html":[2,2,0,19],
+"functions_w.html":[2,2,0,19],
+"functions_~.html":[2,2,0,20],
 "globals.html":[3,1,0],
 "globals_defs.html":[3,1,1],
 "hcc_8hpp.html":[3,0,1,0,1,2,1],
@@ -246,8 +249,5 @@ var NAVTREEINDEX1 =
 "namespacehepce_1_1data.html#ad4cb46c8f1280e6b68537ba5fa917f07a7c58afb43537a264dcd68e698a7b8e3b":[1,0,0,0,28,1],
 "namespacehepce_1_1data.html#ad4cb46c8f1280e6b68537ba5fa917f07a8cd245b43c4ac613739bedd2ec7348c7":[1,0,0,0,28,2],
 "namespacehepce_1_1data.html#ad715b3b798cd1fe3f2e96901bea7dbac":[1,0,0,0,78],
-"namespacehepce_1_1data.html#ad76be03efa1c5c277815884bf7096a0f":[1,0,0,0,42],
-"namespacehepce_1_1data.html#ad9b152a413f155567c2f10c4170c8707":[1,0,0,0,62],
-"namespacehepce_1_1data.html#ade72fa9d0d18f9f559a9cd50310352fe":[1,0,0,0,68],
-"namespacehepce_1_1data.html#ae193626876b4eb3a366c153fea2a09b0":[1,0,0,0,20]
+"namespacehepce_1_1data.html#ad76be03efa1c5c277815884bf7096a0f":[1,0,0,0,42]
 };
