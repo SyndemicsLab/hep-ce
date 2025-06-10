@@ -917,8 +917,14 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = docs/src/index.md \
-                         include
+INPUT                  =    docs/src/index.md \
+                            docs/src/installation.md \
+                            docs/src/data.md \
+                            docs/src/events.md \
+                            docs/src/run.md \
+                            docs/src/limitations.md \
+                            docs/src/faq.md \
+                            include
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
