@@ -45,8 +45,6 @@ void AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
-    utils::LogInfo(GetLogName(),
-                   "Timestep: " + std::to_string(person.GetCurrentTimestep()));
     person.AccumulateTotalUtility(GetEventDiscount());
     person.Grow();
     AddBackgroundCostAndUtility(person);

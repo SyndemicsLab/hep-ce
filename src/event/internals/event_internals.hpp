@@ -35,10 +35,7 @@ public:
         SetEventUtilityCategory(model::UtilityCategory::kBackground);
     }
     bool ValidExecute(model::Person &person) const override {
-        if (!person.IsAlive()) {
-            return false;
-        }
-        return true;
+        return person.IsAlive();
     }
     ~EventBase() = default;
     void SetEventDiscount(const double &d) { _discount = d; }

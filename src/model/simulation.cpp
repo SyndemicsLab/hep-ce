@@ -40,10 +40,10 @@ void HepceImpl::Run(
     std::vector<std::unique_ptr<model::Person>> &people,
     const std::vector<std::unique_ptr<event::Event>> &discrete_events) {
     auto sampler = hepce::model::Sampler::Create(GetSeed(), GetLogName());
-    for (int i = 0; i < GetDuration(); ++i) {
-        for (auto &&event : discrete_events) {
-            // #pragma omp parallel for num_threads(28)
-            for (auto &&person : people) {
+#pragma omp parallel for
+    for (auto &&person : people) {
+        for (int i = 0; i < GetDuration(); ++i) {
+            for (auto &&event : discrete_events) {
                 event->Execute(*person, *sampler);
             }
         }
