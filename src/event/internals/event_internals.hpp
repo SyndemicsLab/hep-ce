@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -33,6 +33,9 @@ public:
             utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
         SetEventCostCategory(model::CostCategory::kMisc);
         SetEventUtilityCategory(model::UtilityCategory::kBackground);
+    }
+    bool ValidExecute(model::Person &person) const override {
+        return person.IsAlive();
     }
     ~EventBase() = default;
     void SetEventDiscount(const double &d) { _discount = d; }

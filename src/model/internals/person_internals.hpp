@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-14                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -274,7 +274,7 @@ private:
     const std::string _log_name;
 
     size_t _id;
-    size_t _current_time = 0;
+    int _current_time = 0;
 
     data::Sex _sex = data::Sex::kMale;
     int _age = 0;

@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,6 +34,7 @@
 #include <sampler_mock.hpp>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace hepce {
@@ -41,7 +42,7 @@ namespace testing {
 
 class BehaviorChangesTest : public ::testing::Test {
 protected:
-    MockPerson mock_person;
+    NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
@@ -67,6 +68,10 @@ protected:
         discounted_life = utils::Discount(1, 0.0025, 1, false);
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
+
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
+        ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+        ON_CALL(mock_person, GetSex()).WillByDefault(Return(data::Sex::kMale));
     }
 
     void TearDown() override {
@@ -78,10 +83,6 @@ protected:
 TEST_F(BehaviorChangesTest, InjectionToFormer) {
     data::BehaviorDetails behaviors_new = {data::Behavior::kFormerInjection, 0};
 
-    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetSex())
-        .Times(2)
-        .WillRepeatedly(Return(data::Sex::kMale));
     EXPECT_CALL(mock_person, GetBehaviorDetails())
         .WillOnce(Return(behaviors))
         .WillOnce(Return(behaviors_new));
@@ -113,7 +114,6 @@ TEST_F(BehaviorChangesTest, InjectionToFormer) {
 }
 
 TEST_F(BehaviorChangesTest, InvalidPersonDetails) {
-    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
     EXPECT_CALL(mock_person, GetSex())
         .Times(3)
         .WillRepeatedly(Return(data::Sex::kFemale));
@@ -158,10 +158,6 @@ TEST_F(BehaviorChangesTest, InvalidPersonDetails) {
 TEST_F(BehaviorChangesTest, InvalidSampling) {
     data::BehaviorDetails behaviors_new = {data::Behavior::kFormerInjection, 0};
 
-    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetSex())
-        .Times(1)
-        .WillRepeatedly(Return(data::Sex::kMale));
     EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
     EXPECT_CALL(mock_person, GetMoudDetails())
         .Times(1)
@@ -201,10 +197,6 @@ TEST_F(BehaviorChangesTest, InvalidModelData) {
     std::unique_ptr<datamanagement::ModelData> empty_model_data =
         datamanagement::ModelData::Create(test_conf, LOG_NAME);
 
-    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(300));
-    EXPECT_CALL(mock_person, GetSex())
-        .Times(3)
-        .WillRepeatedly(Return(data::Sex::kMale));
     EXPECT_CALL(mock_person, GetBehaviorDetails())
         .Times(3)
         .WillRepeatedly(Return(behaviors));

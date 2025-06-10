@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-06                                                  //
+// Last Modified: 2025-06-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -44,9 +44,6 @@ public:
         double treatment = 1.0;
         double toxicity = 1.0;
     };
-    struct TreatmentProbabilities {
-        double initialization = 0.0;
-    };
     using ltfu_map_t = std::unordered_map<data::PregnancyState, double>;
     ltfu_map_t _ltfu_probability;
 
@@ -66,8 +63,6 @@ public:
             "treatment.treatment_utility", model_data);
         _costs.salvage =
             utils::GetDoubleFromConfig("treatment.salvage_cost", model_data);
-        _probabilities.initialization = utils::GetDoubleFromConfig(
-            "treatment.treatment_initiation", model_data);
         _costs.toxicity =
             utils::GetDoubleFromConfig("treatment.tox_cost", model_data);
         _utilities.toxicity =
@@ -87,9 +82,6 @@ protected:
         return _utilities;
     }
     inline TreatmentCosts GetTreatmentCosts() const { return _costs; }
-    inline TreatmentProbabilities GetTreatmentProbabilities() const {
-        return _probabilities;
-    }
 
     void LoadEligibilityData(datamanagement::ModelData &model_data) {
         _eligibilities.behavior_states = LoadEligibilityVectors(
@@ -200,7 +192,6 @@ private:
     int _treatment_limit = 0;
     TreatmentUtilities _utilities;
     TreatmentCosts _costs;
-    TreatmentProbabilities _probabilities;
     Eligibilities _eligibilities;
 
     inline const std::string LostToFollowUpSQL() const {

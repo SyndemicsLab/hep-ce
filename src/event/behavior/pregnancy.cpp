@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -47,6 +47,9 @@ PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
 
 // Execute
 void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
+    if (!ValidExecute(person)) {
+        return;
+    }
     if (person.GetSex() == data::Sex::kMale || person.GetAge() < 180 ||
         CheckOldAge(person) || CheckPostpartumTime(person)) {
         return;

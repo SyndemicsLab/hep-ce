@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-15                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -83,6 +83,7 @@ protected:
         ON_CALL(mock_person, GetSex()).WillByDefault(Return(data::Sex::kMale));
         ON_CALL(mock_person, GetBehaviorDetails())
             .WillByDefault(Return(behaviors));
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
     }
     void TearDown() override {
         std::filesystem::remove(test_db);

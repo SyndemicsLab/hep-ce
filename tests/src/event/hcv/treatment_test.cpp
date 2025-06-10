@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-06                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -64,24 +64,37 @@ protected:
 
     void SetUp() override {
         ExecuteQueries(
-            test_db,
-            {{"DROP TABLE IF EXISTS treatments;", CreateTreatments(),
-              "INSERT INTO treatments "
-              "VALUES (0, 0, 0, -1, \"gp\", 2, 10, 1, 0, 0.004, 0);",
-              "INSERT INTO treatments "
-              "VALUES (0, 0, 1, -1, \"gp\", 2, 10, 1, 0, 0.004, 0);",
-              "INSERT INTO treatments "
-              "VALUES (0, 1, 0, -1, \"gp\", 2, 10, .9, 0, 0.004, 0);",
-              "INSERT INTO treatments "
-              "VALUES (0, 1, 1, -1, \"gp\", 2, 10, .8, .5, 0.004, .5);",
-              "INSERT INTO treatments "
-              "VALUES (1, 0, 1, -1, \"svv\", 3, 20, 1, 0, 0.004, 0);",
-              "INSERT INTO treatments "
-              "VALUES (1, 0, 0, -1, \"svv\", 3, 20, .9, 0, 0.004, 0);",
-              "INSERT INTO treatments "
-              "VALUES (1, 1, 1, -1, \"svv\", 3, 20, .8, 0, 0.004, 0);",
-              "INSERT INTO treatments "
-              "VALUES (1, 1, 0, -1, \"svv\", 3, 20, 1, 0, 0.004, 0);"}});
+            test_db, {{"DROP TABLE IF EXISTS treatments;", CreateTreatments(),
+                       "INSERT INTO treatments "
+                       "VALUES (0, 0, 0, \"gp\", 2, 10, 1, 0, 0.004, 0);",
+                       "INSERT INTO treatments "
+                       "VALUES (0, 0, 1, \"gp\", 2, 10, 1, 0, 0.004, 0);",
+                       "INSERT INTO treatments "
+                       "VALUES (0, 1, 0, \"gp\", 2, 10, .9, 0, 0.004, 0);",
+                       "INSERT INTO treatments "
+                       "VALUES (0, 1, 1, \"gp\", 2, 10, .8, .5, 0.004, .5);",
+                       "INSERT INTO treatments "
+                       "VALUES (1, 0, 1, \"svv\", 3, 20, 1, 0, 0.004, 0);",
+                       "INSERT INTO treatments "
+                       "VALUES (1, 0, 0, \"svv\", 3, 20, .9, 0, 0.004, 0);",
+                       "INSERT INTO treatments "
+                       "VALUES (1, 1, 1, \"svv\", 3, 20, .8, 0, 0.004, 0);",
+                       "INSERT INTO treatments "
+                       "VALUES (1, 1, 0,  \"svv\", 3, 20, 1, 0, 0.004, 0);"}});
+        ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS treatment_initiations;",
+                                  CreateTreatmentInitializations(),
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (-1, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (0, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (1, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (2, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (3, 0.92);",
+                                  "INSERT INTO treatment_initiations "
+                                  "VALUES (4, 0.92);"}});
         ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS lost_to_follow_up;",
                                   CreateLostToFollowUps(),
                                   "INSERT INTO lost_to_follow_up "
@@ -100,6 +113,7 @@ protected:
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
 
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
         ON_CALL(mock_person, GetLinkageDetails(_))
             .WillByDefault(Return(linkage));
         ON_CALL(mock_person, GetTreatmentDetails(_))

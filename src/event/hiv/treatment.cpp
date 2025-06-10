@@ -4,7 +4,7 @@
 // Created Date: 2025-04-21                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -38,6 +38,9 @@ TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
 
 // Execute
 void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
+    if (!ValidExecute(person)) {
+        return;
+    }
     if (person.GetLinkageDetails(GetInfectionType()).link_state !=
         data::LinkageState::kLinked) {
         return;
@@ -106,11 +109,12 @@ bool TreatmentImpl::InitiateTreatment(model::Person &person,
     if (!IsEligible(person)) {
         return false;
     }
-    if (sampler.GetDecision({GetTreatmentProbabilities().initialization}) ==
-        0) {
-        person.InitiateTreatment(GetInfectionType());
-        return true;
-    }
+    // TODO We need to incorporate a treatment initialization probability for HIV
+    // if (sampler.GetDecision({GetTreatmentProbabilities().initialization}) ==
+    //     0) {
+    //     person.InitiateTreatment(GetInfectionType());
+    //     return true;
+    // }
     return false;
 }
 

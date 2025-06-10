@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-06                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -40,6 +40,9 @@ TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
 
 // Execute
 void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
+    if (!ValidExecute(person)) {
+        return;
+    }
     // 0. Verify the person is linked before starting treatment
     if (person.GetLinkageDetails(GetInfectionType()).link_state !=
         data::LinkageState::kLinked) {
@@ -70,7 +73,7 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 
     // 4. Charge the person for the Course they are on
-    AddEventCost(person, _treatment_sql_data[GetTreatmentQuadple(person)].cost);
+    AddEventCost(person, _treatment_sql_data[GetTreatmentThruple(person)].cost);
     AddEventUtility(person, GetTreatmentUtilities().treatment);
 
     // 5. Check if the person experiences toxicity
@@ -121,13 +124,40 @@ void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
     if (_treatment_sql_data.empty()) {
         hepce::utils::LogWarning(GetLogName(), "Treatment Table is Empty...");
     }
+
+    storage = hcvtreatmentinitmap_t{};
+    try {
+        model_data.GetDBSource("inputs").Select(TreatmentInitializationSQL(),
+                                                CallbackTreatmentInitialization,
+                                                storage);
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Error getting HCV Treatment Initialization Data: " << e.what();
+        hepce::utils::LogError(GetLogName(), msg.str());
+        return;
+    }
+    _treatment_init_sql_data = std::any_cast<hcvtreatmentinitmap_t>(storage);
+    if (_treatment_init_sql_data.empty()) {
+        hepce::utils::LogWarning(GetLogName(),
+                                 "Treatment Initiation Table is Empty...");
+    }
 }
 
 bool TreatmentImpl::InitiateTreatment(model::Person &person,
                                       model::Sampler &sampler) const {
+    double treatment_initiation = 0.0;
+    try {
+        treatment_initiation = _treatment_init_sql_data.at(
+            static_cast<int>(person.GetPregnancyDetails().pregnancy_state));
+    } catch (std::exception &e) {
+        std::stringstream msg;
+        msg << "Warning - Failed Reading Treatment Initialization Data: "
+            << e.what() << std::endl;
+        msg << "Setting treatment initiation to 0.0...";
+        hepce::utils::LogWarning(GetLogName(), msg.str());
+    }
     if (IsEligible(person) &&
-        (sampler.GetDecision({GetTreatmentProbabilities().initialization}) ==
-         0)) {
+        (sampler.GetDecision({treatment_initiation}) == 0)) {
         person.InitiateTreatment(GetInfectionType());
         return true;
     }

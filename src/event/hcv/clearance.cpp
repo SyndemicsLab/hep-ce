@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-06                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -41,6 +41,9 @@ ClearanceImpl::ClearanceImpl(datamanagement::ModelData &model_data,
 
 // Execute
 void ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
+    if (!ValidExecute(person)) {
+        return;
+    }
     // if person isn't infected or is chronic, nothing to do
     // Also skip if person is already on treatment since we want this to
     // count as SVR
@@ -59,9 +62,9 @@ void ClearanceImpl::LoadData(datamanagement::ModelData &model_data) {
         utils::GetDoubleFromConfig("infection.clearance_prob", model_data);
 
     if (_probability == 0) {
-        hepce::utils::LogInfo(GetLogName(),
-                              "Infection Clearance Probability is not found or "
-                              "0, setting to default value of 0.036866536");
+        hepce::utils::LogInfo(
+            GetLogName(), "Infection Clearance Probability is not found or "
+                          "0, setting to default value of 25\% over 6 months");
         _probability =
             utils::RateToProbability(utils::ProbabilityToRate(0.25, 6));
     }

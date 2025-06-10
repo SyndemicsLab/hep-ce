@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-14                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,6 +34,7 @@
 #include <sampler_mock.hpp>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace hepce {
@@ -41,7 +42,7 @@ namespace testing {
 
 class StagingTest : public ::testing::Test {
 protected:
-    MockPerson mock_person;
+    NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
@@ -82,6 +83,8 @@ protected:
         BuildSimConf(test_conf);
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
+
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
     }
 
     void TearDown() override {

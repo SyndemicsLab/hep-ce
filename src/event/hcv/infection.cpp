@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -42,10 +42,13 @@ InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
 
 // Execute
 void InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
+    if (!ValidExecute(person)) {
+        return;
+    }
     // Acute cases progress to chronic after 6 consecutive months of
     // infection
     if (person.GetHCVDetails().hcv == data::HCV::kAcute &&
-        GetTimeSince(person, person.GetHCVDetails().time_changed) == 6) {
+        GetTimeSince(person, person.GetHCVDetails().time_changed) >= 6) {
         person.SetHCV(data::HCV::kChronic);
     }
 

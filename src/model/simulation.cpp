@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-30                                                  //
+// Last Modified: 2025-06-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -40,10 +40,10 @@ void HepceImpl::Run(
     std::vector<std::unique_ptr<model::Person>> &people,
     const std::vector<std::unique_ptr<event::Event>> &discrete_events) {
     auto sampler = hepce::model::Sampler::Create(GetSeed(), GetLogName());
-    for (int i = 0; i < GetDuration(); ++i) {
-        for (auto &&event : discrete_events) {
-#pragma omp parallel for num_threads(28)
-            for (auto &&person : people) {
+#pragma omp parallel for
+    for (auto &&person : people) {
+        for (int i = 0; i < GetDuration(); ++i) {
+            for (auto &&event : discrete_events) {
                 event->Execute(*person, *sampler);
             }
         }
