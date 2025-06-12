@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -110,14 +110,13 @@ TEST_F(PregnancyTest, TooOld) {
 TEST_F(PregnancyTest, TooOldPregnant) {
     pregnancy.pregnancy_state = data::PregnancyState::kPregnant;
     pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetAge()).Times(3).WillRepeatedly(Return(541));
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(2)
-        .WillRepeatedly(Return(1));
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(541));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
     EXPECT_CALL(mock_person, GetPregnancyDetails())
         .Times(7)
         .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
     auto event = event::behavior::Pregnancy::Create(*model_data);
     event->Execute(mock_person, mock_sampler);

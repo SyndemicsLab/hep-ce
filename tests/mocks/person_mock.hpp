@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -132,7 +132,6 @@ public:
     // Pregnancy
     MOCK_METHOD(data::PregnancyDetails, GetPregnancyDetails, (),
                 (const, override));
-    MOCK_METHOD(void, Miscarry, (), (override));
     MOCK_METHOD(void, Stillbirth, (), (override));
     MOCK_METHOD(void, Birth, (const data::Child &child), (override));
     MOCK_METHOD(void, EndPostpartum, (), (override));

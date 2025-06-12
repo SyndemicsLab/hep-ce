@@ -4,7 +4,7 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-14                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -86,7 +86,7 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
         storage.time_of_pregnancy_change;
     _pregnancy_details.count = storage.pregnancy_count;
     _pregnancy_details.num_infants = storage.num_infants;
-    _pregnancy_details.num_miscarriages = storage.num_miscarriages;
+    _pregnancy_details.num_stillbirths = storage.num_stillbirths;
     _pregnancy_details.num_hcv_exposures = storage.num_infant_hcv_exposures;
     _pregnancy_details.num_hcv_infections = storage.num_infant_hcv_infections;
     _pregnancy_details.num_hcv_tests = storage.num_infant_hcv_tests;
@@ -329,7 +329,7 @@ std::string PersonImpl::MakePopulationRow() const {
                        << pd.time_of_pregnancy_change << ","
                        << pd.count << ","
                        << pd.num_infants << ","
-                       << pd.num_miscarriages << ","
+                       << pd.num_stillbirths << ","
                        << pd.num_hcv_exposures << ","
                        << pd.num_hcv_infections << ","
                        << pd.num_hcv_tests << ",";

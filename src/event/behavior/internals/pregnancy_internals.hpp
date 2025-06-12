@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-05                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -26,7 +26,7 @@ namespace behavior {
 class PregnancyImpl : public virtual Pregnancy, public EventBase {
 public:
     struct pregnancy_probabilities {
-        double miscarriage = 0.0;
+        double stillbirth = 0.0;
         double pregnant = 0.0;
     };
     using pregnancymap_t =
@@ -70,15 +70,15 @@ private:
     }
 
     inline const std::string PregnancySQL() const {
-        return "SELECT age_years, miscarriage, pregnancy_probability FROM "
+        return "SELECT age_years, stillbirth, pregnancy_probability FROM "
                "pregnancy;";
     }
 
-    inline bool CheckMiscarriage(const model::Person &person,
-                                 model::Sampler &sampler) {
+    inline bool CheckStillbirth(const model::Person &person,
+                                model::Sampler &sampler) {
         int age = static_cast<int>(person.GetAge() / 12.0);
-        std::vector<double> probs = {_pregnancy_data[age].miscarriage,
-                                     1 - _pregnancy_data[age].miscarriage};
+        std::vector<double> probs = {_pregnancy_data[age].stillbirth,
+                                     1 - _pregnancy_data[age].stillbirth};
         return !sampler.GetDecision(probs);
     }
 
@@ -107,13 +107,6 @@ private:
     void AttemptHaveChild(model::Person &person, model::Sampler &sampler);
 
     data::Child MakeChild(data::HCV hcv, bool test);
-
-    inline void AttemptHealthyMonth(model::Person &person,
-                                    model::Sampler &sampler) {
-        if (CheckMiscarriage(person, sampler)) {
-            person.Miscarry();
-        }
-    }
 };
 } // namespace behavior
 } // namespace event

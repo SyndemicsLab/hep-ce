@@ -4,8 +4,8 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-28                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-06-12                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -582,7 +582,7 @@ std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet) {
        << std::endl;
     os << "Number of Pregnancies: " << pdet.count << std::endl;
     os << "Infant Count: " << pdet.num_infants << std::endl;
-    os << "Miscarriage Count: " << pdet.num_miscarriages << std::endl;
+    os << "Stillbirth Count: " << pdet.num_stillbirths << std::endl;
     os << "Infant HCV Exposure Count: " << pdet.num_hcv_exposures << std::endl;
     os << "Infant HCV Infection Count: " << pdet.num_hcv_infections
        << std::endl;

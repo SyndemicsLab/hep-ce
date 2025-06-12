@@ -2,7 +2,7 @@
 
 The HEPCE model is available to users through multiple methods. That being said, HEPCE has been built and tested on machinese running ubuntu 24.04 and CI/CD tested on Windows machines. We recommend a basic installation either through building the source code or utilizing CMake's [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) feature. We do plan to eventually work towards providing a debaian package install as well.
 
-## Depedencies
+## Dependencies
 
 HEPCE has several dependencies that require being satisified before installation. This is primarily a concern if you intend to build from source as FetchContent should generally manage the dependencies if installed that way. Our `FetchContent_Declare` statements all attempt to `find_package` before downloading, so if you choose to make use of specific versions of these dependencies you simply install the dependencies before attempting to install HEPCE.
 

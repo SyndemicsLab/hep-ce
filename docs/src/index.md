@@ -25,7 +25,7 @@ We natively support 4 different build workflows with the `CMakePresets.json` fil
 
 Unless you are explicitly using a linux based computing cluster, we highly recommend choosing one of the first two build processes. In the future, we do intend to expand to additional compilers and operating systems beyond GCC and Linux.
 
-Overall, we make use of 11 custom CMake variables. They are found in the [options.cmake file](cmake/options.cmake) and all are set accordingly in the `CMakePresets.json`.
+Overall, we make use of 11 custom CMake variables. They are found in the [options.cmake file](https://github.com/SyndemicsLab/hep-ce/blob/main/cmake/options.cmake) and all are set accordingly in the `CMakePresets.json`.
 
 ## Dependencies
 
