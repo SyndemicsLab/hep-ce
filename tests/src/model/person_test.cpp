@@ -4,7 +4,7 @@
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-14                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -341,21 +341,11 @@ TEST_F(PersonTest, AddCost) {
     EXPECT_EQ(costs[cc].second, discount);
 }
 
-// Pregnancy Testing
-TEST_F(PersonTest, Miscarry) {
-    person->Miscarry();
-    auto details = person->GetPregnancyDetails();
-
-    EXPECT_EQ(details.num_miscarriages, 1);
-    EXPECT_EQ(details.time_of_pregnancy_change, person->GetCurrentTimestep());
-    EXPECT_EQ(details.pregnancy_state, PregnancyState::kNone);
-}
-
 TEST_F(PersonTest, Stillbirth) {
     person->Stillbirth();
     auto details = person->GetPregnancyDetails();
 
-    EXPECT_EQ(details.num_miscarriages, 1);
+    EXPECT_EQ(details.num_stillbirths, 1);
     EXPECT_EQ(details.time_of_pregnancy_change, person->GetCurrentTimestep());
     EXPECT_EQ(details.pregnancy_state, PregnancyState::kRestrictedPostpartum);
 }

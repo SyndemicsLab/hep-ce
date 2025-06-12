@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-21                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -108,7 +108,7 @@ private:
         temp.time_of_pregnancy_change = stmt.getColumn(28).getInt();
         temp.pregnancy_count = stmt.getColumn(29).getInt();
         temp.num_infants = stmt.getColumn(30).getInt();
-        temp.num_miscarriages = stmt.getColumn(31).getInt();
+        temp.num_stillbirths = stmt.getColumn(31).getInt();
         temp.num_infant_hcv_exposures = stmt.getColumn(32).getInt();
         temp.num_infant_hcv_infections = stmt.getColumn(33).getInt();
         temp.num_infant_hcv_tests = stmt.getColumn(34).getInt();

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-14                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,7 +51,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
     // PregnancyDetails
     std::string pregnancy_details =
         pregnancy ? "pregnancy_state,time_of_pregnancy_change,pregnancy_count,"
-                    "num_infants,num_miscarriages,num_infant_hcv_exposures,num_"
+                    "num_infants,num_stillbirths,num_infant_hcv_exposures,num_"
                     "infant_hcv_infections,num_infant_hcv_tests,"
                   : "na,-1,0,0,0,0,0,0,";
     headers << pregnancy_details;
@@ -344,7 +344,7 @@ struct PregnancyDetails {
     int time_of_pregnancy_change = -1;
     int count = 0;
     int num_infants = 0;
-    int num_miscarriages = 0;
+    int num_stillbirths = 0;
     int num_hcv_exposures = 0;
     int num_hcv_infections = 0;
     int num_hcv_tests = 0;
@@ -448,7 +448,7 @@ struct PersonSelect {
     int time_of_pregnancy_change = -1;
     int pregnancy_count = 0;
     int num_infants = 0;
-    int num_miscarriages = 0;
+    int num_stillbirths = 0;
     int num_infant_hcv_exposures = 0;
     int num_infant_hcv_infections = 0;
     int num_infant_hcv_tests = 0;

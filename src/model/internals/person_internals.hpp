@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -243,13 +243,9 @@ public:
         _hiv_details.time_changed = _current_time;
     }
 
-    inline void Miscarry() override {
-        _pregnancy_details.num_miscarriages++;
-        _pregnancy_details.time_of_pregnancy_change = _current_time;
-        _pregnancy_details.pregnancy_state = data::PregnancyState::kNone;
-    }
     inline void Stillbirth() override {
-        Miscarry();
+        _pregnancy_details.num_stillbirths++;
+        _pregnancy_details.time_of_pregnancy_change = _current_time;
         _pregnancy_details.pregnancy_state =
             data::PregnancyState::kRestrictedPostpartum;
     }

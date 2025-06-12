@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -63,17 +63,15 @@ void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
                 person,
                 person.GetPregnancyDetails().time_of_pregnancy_change) >= 9) {
             AttemptHaveChild(person, sampler);
-        } else {
-            AttemptHealthyMonth(person, sampler);
         }
-    } else {
-        double prob =
-            _pregnancy_data[static_cast<int>(person.GetAge() / 12.0)].pregnant;
-        if (sampler.GetDecision({1 - prob, prob})) {
-            person.Impregnate();
-        }
+        return;
     }
-    return;
+
+    double prob =
+        _pregnancy_data[static_cast<int>(person.GetAge() / 12.0)].pregnant;
+    if (sampler.GetDecision({1 - prob, prob})) {
+        person.Impregnate();
+    }
 }
 
 void PregnancyImpl::LoadData(datamanagement::ModelData &model_data) {
@@ -129,7 +127,7 @@ void PregnancyImpl::ProgressPostpartum(model::Person &person) const {
 
 void PregnancyImpl::AttemptHaveChild(model::Person &person,
                                      model::Sampler &sampler) {
-    if (CheckMiscarriage(person, sampler)) {
+    if (CheckStillbirth(person, sampler)) {
         person.Stillbirth();
         return;
     }

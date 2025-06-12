@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-09                                                  //
+// Last Modified: 2025-06-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -89,7 +89,7 @@ inline const std::string CreateBehaviorTransitions() {
 inline const std::string CreatePregnancy() {
     std::stringstream s;
     s << "CREATE TABLE pregnancy (age_years	INTEGER NOT NULL "
-         "UNIQUE,pregnancy_probability	REAL NOT NULL,miscarriage	"
+         "UNIQUE,pregnancy_probability	REAL NOT NULL,stillbirth	"
          "REAL,PRIMARY KEY(age_years));";
     return s.str();
 }

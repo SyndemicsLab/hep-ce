@@ -1,3 +1,12 @@
+/*
+ * Filename: /home/matt/Repos/hep-ce/extras/examples/inputs.db.sql
+ * Path: /home/matt/Repos/hep-ce/extras/examples
+ * Created Date: Thursday, June 12th 2025, 2:53:18 pm
+ * Author: Matthew Carroll
+ * 
+ * Copyright (c) 2025 Syndemics Lab
+ */
+
 BEGIN TRANSACTION;
 DROP TABLE IF EXISTS "antibody_testing";
 CREATE TABLE "antibody_testing" (
@@ -152,7 +161,7 @@ DROP TABLE IF EXISTS "pregnancy";
 CREATE TABLE "pregnancy" (
 	"age_years"	INTEGER NOT NULL UNIQUE,
 	"pregnancy_probability"	REAL NOT NULL,
-	"miscarriage"	REAL,
+	"stillbirth"	REAL,
 	PRIMARY KEY("age_years")
 );
 DROP TABLE IF EXISTS "pregnancy_states";
