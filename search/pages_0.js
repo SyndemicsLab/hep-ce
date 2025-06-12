@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['hepatitis_2dc_20cost_20effectiveness_0',['Hepatitis-C Cost Effectiveness',['../index.html',1,'']]]
+  ['faqs_0',['FAQs',['../md_docs_src_faq.html',1,'']]]
 ];

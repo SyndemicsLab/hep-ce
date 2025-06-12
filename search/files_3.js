@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['death_2ehpp_0',['death.hpp',['../death_8hpp.html',1,'']]]
+  ['data_2emd_0',['data.md',['../data_8md.html',1,'']]],
+  ['death_2ehpp_1',['death.hpp',['../death_8hpp.html',1,'']]]
 ];

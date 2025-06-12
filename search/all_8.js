@@ -13,9 +13,11 @@ var searchData=
   ['initiated_5fhiv_5ftreatment_10',['initiated_hiv_treatment',['../structhepce_1_1data_1_1PersonSelect.html#ac1e7708547a87b62f7cbecaf6ada8139',1,'hepce::data::PersonSelect']]],
   ['initiated_5ftreatment_11',['initiated_treatment',['../structhepce_1_1data_1_1TreatmentDetails.html#aaabd03c9b16e8349728817429fe69062',1,'hepce::data::TreatmentDetails']]],
   ['initiatetreatment_12',['InitiateTreatment',['../classhepce_1_1model_1_1Person.html#ad1ed6f91902548bd6639ef359db4a3af',1,'hepce::model::Person']]],
-  ['is_5falive_13',['is_alive',['../structhepce_1_1data_1_1PersonSelect.html#a822c132dc96713c108a748549aa493b3',1,'hepce::data::PersonSelect']]],
-  ['is_5fgenotype_5fthree_14',['is_genotype_three',['../structhepce_1_1data_1_1HCVDetails.html#aa26842ea3bd05d0c3b591673b9346cc6',1,'hepce::data::HCVDetails::is_genotype_three()'],['../structhepce_1_1data_1_1PersonSelect.html#a55c09e5ede1cfc4e2cd035727020e6b8',1,'hepce::data::PersonSelect::is_genotype_three()']]],
-  ['isalive_15',['IsAlive',['../classhepce_1_1model_1_1Person.html#af249beed8de4de6fbb2a11bd4d55bbb0',1,'hepce::model::Person']]],
-  ['isboomer_16',['IsBoomer',['../classhepce_1_1model_1_1Person.html#afc9fc2b56135bc906144d07f9ecec733',1,'hepce::model::Person']]],
-  ['iscirrhotic_17',['IsCirrhotic',['../classhepce_1_1model_1_1Person.html#aa854e8dc11333c2fca1e008d1146e860',1,'hepce::model::Person']]]
+  ['installation_13',['Installation',['../md_docs_src_installation.html',1,'']]],
+  ['installation_2emd_14',['installation.md',['../installation_8md.html',1,'']]],
+  ['is_5falive_15',['is_alive',['../structhepce_1_1data_1_1PersonSelect.html#a822c132dc96713c108a748549aa493b3',1,'hepce::data::PersonSelect']]],
+  ['is_5fgenotype_5fthree_16',['is_genotype_three',['../structhepce_1_1data_1_1HCVDetails.html#aa26842ea3bd05d0c3b591673b9346cc6',1,'hepce::data::HCVDetails::is_genotype_three()'],['../structhepce_1_1data_1_1PersonSelect.html#a55c09e5ede1cfc4e2cd035727020e6b8',1,'hepce::data::PersonSelect::is_genotype_three()']]],
+  ['isalive_17',['IsAlive',['../classhepce_1_1model_1_1Person.html#af249beed8de4de6fbb2a11bd4d55bbb0',1,'hepce::model::Person']]],
+  ['isboomer_18',['IsBoomer',['../classhepce_1_1model_1_1Person.html#afc9fc2b56135bc906144d07f9ecec733',1,'hepce::model::Person']]],
+  ['iscirrhotic_19',['IsCirrhotic',['../classhepce_1_1model_1_1Person.html#aa854e8dc11333c2fca1e008d1146e860',1,'hepce::model::Person']]]
 ];
