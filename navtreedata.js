@@ -27,7 +27,7 @@ var NAVTREE =
   [ "HEP-CE", "index.html", [
     [ "Hepatitis-C Cost Effectiveness", "index.html", "index" ],
     [ "Installation", "md_docs_src_installation.html", [
-      [ "Depedencies", "md_docs_src_installation.html#autotoc_md10", null ],
+      [ "Dependencies", "md_docs_src_installation.html#autotoc_md10", null ],
       [ "Installing From Source", "md_docs_src_installation.html#autotoc_md11", null ],
       [ "Installing with CMake", "md_docs_src_installation.html#autotoc_md12", null ]
     ] ],
@@ -129,10 +129,10 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "aging_8hpp.html",
-"classhepce_1_1model_1_1Person.html#af36d781b0e401e54ee6bbbc942f72d60",
-"namespacehepce_1_1data.html#a6851b547514312e9f8c27813e2a2cdae",
-"structhepce_1_1data_1_1MOUDDetails.html#ac9c5d9fceff527f64024a7b36e9972d2",
-"types_8hpp.html#a088c53e37c90368d42dfedc9e5f6ff2e"
+"classhepce_1_1model_1_1Person.html#afc9fc2b56135bc906144d07f9ecec733",
+"namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303fa",
+"structhepce_1_1data_1_1MOUDDetails.html#ad0ce119f09cd8778839d44339e40b592",
+"types_8hpp.html#a14b516b2c0fe01d8105d76cc7e8cef42"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

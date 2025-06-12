@@ -51,7 +51,6 @@ var classhepce_1_1model_1_1Person =
     [ "IsCirrhotic", "classhepce_1_1model_1_1Person.html#aa854e8dc11333c2fca1e008d1146e860", null ],
     [ "Link", "classhepce_1_1model_1_1Person.html#aaa94f37fce9200843116a67bb3a4b6d6", null ],
     [ "MakePopulationRow", "classhepce_1_1model_1_1Person.html#ac7ba7cf1924513542045465870b92d5c", null ],
-    [ "Miscarry", "classhepce_1_1model_1_1Person.html#aa5051e99878478fab0809a8615710e3e", null ],
     [ "Screen", "classhepce_1_1model_1_1Person.html#a937a0a31030b9b4eb3ec49c6a842ce1b", null ],
     [ "SetBehavior", "classhepce_1_1model_1_1Person.html#a3f924fdf849d89330c7ebeb25fcbe3d4", null ],
     [ "SetDeathReason", "classhepce_1_1model_1_1Person.html#a0ac9f96a4e848e4d92a9c1c9d0a7420f", null ],

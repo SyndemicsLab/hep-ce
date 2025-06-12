@@ -21,11 +21,11 @@ var searchData=
   ['num_5finfant_5fhcv_5finfections_18',['num_infant_hcv_infections',['../structhepce_1_1data_1_1PersonSelect.html#a60a2c08e624035cbec985e45246d0385',1,'hepce::data::PersonSelect']]],
   ['num_5finfant_5fhcv_5ftests_19',['num_infant_hcv_tests',['../structhepce_1_1data_1_1PersonSelect.html#a424413baadd90df11e6fda56ffaec45c',1,'hepce::data::PersonSelect']]],
   ['num_5finfants_20',['num_infants',['../structhepce_1_1data_1_1PregnancyDetails.html#adf90826ce0760b7186f1508dc21c8a50',1,'hepce::data::PregnancyDetails::num_infants()'],['../structhepce_1_1data_1_1PersonSelect.html#a511e9071e72846ac8fd39c7436581e8d',1,'hepce::data::PersonSelect::num_infants()']]],
-  ['num_5fmiscarriages_21',['num_miscarriages',['../structhepce_1_1data_1_1PregnancyDetails.html#a63fab88a3842da0822b2b07695dd8f52',1,'hepce::data::PregnancyDetails::num_miscarriages()'],['../structhepce_1_1data_1_1PersonSelect.html#a627cfd5aa9462c951a4056ba8ee1699a',1,'hepce::data::PersonSelect::num_miscarriages()']]],
-  ['num_5foverdoses_22',['num_overdoses',['../structhepce_1_1data_1_1PersonSelect.html#a66951ded6565bb79981a4281c47beb4f',1,'hepce::data::PersonSelect']]],
-  ['num_5frna_5ftests_23',['num_rna_tests',['../structhepce_1_1data_1_1ScreeningDetails.html#aa44a782f4cf7183892a9f69d2f3e61b4',1,'hepce::data::ScreeningDetails']]],
-  ['num_5fsalvages_24',['num_salvages',['../structhepce_1_1data_1_1TreatmentDetails.html#a3bdc03acd523e29bc2bc48da15cca9d2',1,'hepce::data::TreatmentDetails']]],
-  ['num_5fstarts_25',['num_starts',['../structhepce_1_1data_1_1TreatmentDetails.html#a4c374993b73aa0be8dd571c90ad8d95f',1,'hepce::data::TreatmentDetails']]],
+  ['num_5foverdoses_21',['num_overdoses',['../structhepce_1_1data_1_1PersonSelect.html#a66951ded6565bb79981a4281c47beb4f',1,'hepce::data::PersonSelect']]],
+  ['num_5frna_5ftests_22',['num_rna_tests',['../structhepce_1_1data_1_1ScreeningDetails.html#aa44a782f4cf7183892a9f69d2f3e61b4',1,'hepce::data::ScreeningDetails']]],
+  ['num_5fsalvages_23',['num_salvages',['../structhepce_1_1data_1_1TreatmentDetails.html#a3bdc03acd523e29bc2bc48da15cca9d2',1,'hepce::data::TreatmentDetails']]],
+  ['num_5fstarts_24',['num_starts',['../structhepce_1_1data_1_1TreatmentDetails.html#a4c374993b73aa0be8dd571c90ad8d95f',1,'hepce::data::TreatmentDetails']]],
+  ['num_5fstillbirths_25',['num_stillbirths',['../structhepce_1_1data_1_1PregnancyDetails.html#ac710f86299d5f5b5e10665bad0d15b72',1,'hepce::data::PregnancyDetails::num_stillbirths()'],['../structhepce_1_1data_1_1PersonSelect.html#ae6522a83fc544423a01969449dc32bf3',1,'hepce::data::PersonSelect::num_stillbirths()']]],
   ['num_5ftoxic_5freactions_26',['num_toxic_reactions',['../structhepce_1_1data_1_1TreatmentDetails.html#a5229add25edaf37d2f10655b51318753',1,'hepce::data::TreatmentDetails']]],
   ['num_5fwithdrawals_27',['num_withdrawals',['../structhepce_1_1data_1_1TreatmentDetails.html#afe8537f3282c2ce1a13dd82eeb6e253c',1,'hepce::data::TreatmentDetails']]]
 ];
