@@ -92,14 +92,8 @@ protected:
             "eligibility.ineligible_pregnancy_states", model_data);
         _eligibilities.time_since_linked = utils::GetIntFromConfig(
             "eligibility.ineligible_time_since_linked", model_data);
-        if (_eligibilities.time_since_linked == 0) {
-            _eligibilities.time_since_linked = -1;
-        }
         _eligibilities.time_since_last_use = utils::GetIntFromConfig(
             "eligibility.ineligible_time_former_threshold", model_data);
-        if (_eligibilities.time_since_last_use == 0) {
-            _eligibilities.time_since_last_use = -1;
-        }
     }
 
     inline void LoadLostToFollowUpData(datamanagement::ModelData &model_data) {
