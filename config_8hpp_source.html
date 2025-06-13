@@ -132,7 +132,7 @@ $(document).ready(function(){initNavTree('config_8hpp_source.html',''); initResi
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// Created Date: 2025-04-18                                                  //</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Author: Matthew Carroll                                                    //</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// -----                                                                      //</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-05-15                                                  //</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-06-13                                                  //</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// Modified By: Matthew Carroll                                               //</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// -----                                                                      //</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //</span></div>
@@ -150,88 +150,91 @@ $(document).ready(function(){initNavTree('config_8hpp_source.html',''); initResi
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacehepce.html">hepce</a> {</div>
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html">   26</a></span><span class="keyword">namespace </span>utils {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a07896f0b726bdc0dcc4ed4e752c886ae">   30</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a07896f0b726bdc0dcc4ed4e752c886ae">GetBoolFromConfig</a>(std::string config_key,</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                              datamanagement::ModelData &amp;model_data) {</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    std::string config_data;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        config_data = model_data.GetFromConfig(config_key);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    } <span class="keywordflow">catch</span> (std::exception &amp;e) {</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (config_data.empty()) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#aa73f0b8977c616f250eed51bd694c588">SToBool</a>(config_data);</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a3cdc8eaa3459bef210412ec871cd135d">   47</a></span><span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a3cdc8eaa3459bef210412ec871cd135d">GetIntFromConfig</a>(std::string config_key,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                            datamanagement::ModelData &amp;model_data) {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    std::string config_data;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        config_data = model_data.GetFromConfig(config_key);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    } <span class="keywordflow">catch</span> (std::exception &amp;e) {</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (config_data.empty()) {</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">return</span> std::stoi(config_data);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#af833094cdc90404bb0893b5a27c35ee3">   64</a></span><span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#af833094cdc90404bb0893b5a27c35ee3">GetDoubleFromConfig</a>(std::string config_key,</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                                  datamanagement::ModelData &amp;model_data,</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                  <span class="keywordtype">bool</span> positive = <span class="keyword">true</span>) {</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    std::string config_data;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        config_data = model_data.GetFromConfig(config_key);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    } <span class="keywordflow">catch</span> (std::exception &amp;e) {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> 0.0; <span class="comment">// Should we log this or throw an exception back?</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    }</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">if</span> (config_data.empty()) {</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">if</span> (positive) {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#afc818ec07b1d1b5549e5515cb13cef1f">SToDPositive</a>(config_data);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">return</span> std::stod(config_data);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>}</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#ad335ae639ce87075e8b0ef069e37057e">   86</a></span><span class="keyword">inline</span> std::string <a class="code hl_function" href="namespacehepce_1_1utils.html#ad335ae639ce87075e8b0ef069e37057e">GetStringFromConfig</a>(std::string config_key,</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                                       datamanagement::ModelData &amp;model_data) {</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::string s;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        s = model_data.GetFromConfig(config_key);</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    } <span class="keywordflow">catch</span> (std::exception &amp;e) {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">return</span> <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    }</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> s;</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a80358a13181a67c272308be2b28c7e06">   97</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a80358a13181a67c272308be2b28c7e06">FindInEventList</a>(std::string event_name,</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                            datamanagement::ModelData &amp;model_data) {</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">auto</span> event_list = <a class="code hl_function" href="namespacehepce_1_1utils.html#a9841dcd1afb69510ac3cd20a3a6f4d8a">utils::ToLowerVector</a>(utils::SplitToVecT&lt;std::string&gt;(</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        model_data.GetFromConfig(<span class="stringliteral">&quot;simulation.events&quot;</span>), <span class="charliteral">&#39;,&#39;</span>));</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">auto</span> event_name_lower = <a class="code hl_function" href="namespacehepce_1_1utils.html#a85466e955476ea3d4f6159e86768a5b2">utils::ToLower</a>(event_name);</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">if</span> (std::find(event_list.begin(), event_list.end(), event_name_lower) !=</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        event_list.end()) {</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    }</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>}</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>} <span class="comment">// namespace utils</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>} <span class="comment">// namespace hepce</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="preprocessor">#endif </span><span class="comment">// HEPCE_UTILS_CONFIG_HPP_</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#ad4be61c0337bdeddf64823195bec94b6">   30</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#ad4be61c0337bdeddf64823195bec94b6">GetBoolFromConfig</a>(std::string config_key,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                              datamanagement::ModelData &amp;model_data,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                              <span class="keywordtype">bool</span> def_val = <span class="keyword">false</span>) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    std::string config_data;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        config_data = model_data.GetFromConfig(config_key);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    } <span class="keywordflow">catch</span> (std::exception &amp;e) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> def_val;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (config_data.empty()) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">return</span> def_val;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#aa73f0b8977c616f250eed51bd694c588">SToBool</a>(config_data);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a0b2b7f5525f3d20c23f972136a8e9646">   48</a></span><span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a0b2b7f5525f3d20c23f972136a8e9646">GetIntFromConfig</a>(std::string config_key,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                            datamanagement::ModelData &amp;model_data,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                            <span class="keywordtype">int</span> def_val = -1) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    std::string config_data;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        config_data = model_data.GetFromConfig(config_key);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    } <span class="keywordflow">catch</span> (std::exception &amp;e) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keywordflow">return</span> def_val;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">if</span> (config_data.empty()) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">return</span> def_val;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> std::stoi(config_data);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#ada3bd82681aec94f27c2423e30df3437">   66</a></span><span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#ada3bd82681aec94f27c2423e30df3437">GetDoubleFromConfig</a>(std::string config_key,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                  datamanagement::ModelData &amp;model_data,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                  <span class="keywordtype">bool</span> positive = <span class="keyword">true</span>, <span class="keywordtype">double</span> def_val = -1.0) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    std::string config_data;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        config_data = model_data.GetFromConfig(config_key);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    } <span class="keywordflow">catch</span> (std::exception &amp;e) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">return</span> def_val; <span class="comment">// Should we log this or throw an exception back?</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">if</span> (config_data.empty()) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">return</span> def_val;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (positive) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#afc818ec07b1d1b5549e5515cb13cef1f">SToDPositive</a>(config_data);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">return</span> std::stod(config_data);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a364afb8fb44ea191d84b23ce229c128c">   88</a></span><span class="keyword">inline</span> std::string <a class="code hl_function" href="namespacehepce_1_1utils.html#a364afb8fb44ea191d84b23ce229c128c">GetStringFromConfig</a>(std::string config_key,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                       datamanagement::ModelData &amp;model_data,</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                                       std::string def_val = <span class="stringliteral">&quot;&quot;</span>) {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    std::string s;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        s = model_data.GetFromConfig(config_key);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    } <span class="keywordflow">catch</span> (std::exception &amp;e) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">return</span> def_val;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">return</span> s;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a80358a13181a67c272308be2b28c7e06">  100</a></span><span class="keyword">inline</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a80358a13181a67c272308be2b28c7e06">FindInEventList</a>(std::string event_name,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                            datamanagement::ModelData &amp;model_data) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">auto</span> event_list = <a class="code hl_function" href="namespacehepce_1_1utils.html#a9841dcd1afb69510ac3cd20a3a6f4d8a">utils::ToLowerVector</a>(utils::SplitToVecT&lt;std::string&gt;(</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        model_data.GetFromConfig(<span class="stringliteral">&quot;simulation.events&quot;</span>), <span class="charliteral">&#39;,&#39;</span>));</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">auto</span> event_name_lower = <a class="code hl_function" href="namespacehepce_1_1utils.html#a85466e955476ea3d4f6159e86768a5b2">utils::ToLower</a>(event_name);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (std::find(event_list.begin(), event_list.end(), event_name_lower) !=</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        event_list.end()) {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>} <span class="comment">// namespace utils</span></div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>} <span class="comment">// namespace hepce</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">#endif </span><span class="comment">// HEPCE_UTILS_CONFIG_HPP_</span></div>
 <div class="ttc" id="aformatting_8hpp_html"><div class="ttname"><a href="formatting_8hpp.html">formatting.hpp</a></div></div>
-<div class="ttc" id="anamespacehepce_1_1utils_html_a07896f0b726bdc0dcc4ed4e752c886ae"><div class="ttname"><a href="namespacehepce_1_1utils.html#a07896f0b726bdc0dcc4ed4e752c886ae">hepce::utils::GetBoolFromConfig</a></div><div class="ttdeci">bool GetBoolFromConfig(std::string config_key, datamanagement::ModelData &amp;model_data)</div><div class="ttdef"><b>Definition:</b> config.hpp:30</div></div>
-<div class="ttc" id="anamespacehepce_1_1utils_html_a3cdc8eaa3459bef210412ec871cd135d"><div class="ttname"><a href="namespacehepce_1_1utils.html#a3cdc8eaa3459bef210412ec871cd135d">hepce::utils::GetIntFromConfig</a></div><div class="ttdeci">int GetIntFromConfig(std::string config_key, datamanagement::ModelData &amp;model_data)</div><div class="ttdef"><b>Definition:</b> config.hpp:47</div></div>
-<div class="ttc" id="anamespacehepce_1_1utils_html_a80358a13181a67c272308be2b28c7e06"><div class="ttname"><a href="namespacehepce_1_1utils.html#a80358a13181a67c272308be2b28c7e06">hepce::utils::FindInEventList</a></div><div class="ttdeci">bool FindInEventList(std::string event_name, datamanagement::ModelData &amp;model_data)</div><div class="ttdef"><b>Definition:</b> config.hpp:97</div></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_a0b2b7f5525f3d20c23f972136a8e9646"><div class="ttname"><a href="namespacehepce_1_1utils.html#a0b2b7f5525f3d20c23f972136a8e9646">hepce::utils::GetIntFromConfig</a></div><div class="ttdeci">int GetIntFromConfig(std::string config_key, datamanagement::ModelData &amp;model_data, int def_val=-1)</div><div class="ttdef"><b>Definition:</b> config.hpp:48</div></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_a364afb8fb44ea191d84b23ce229c128c"><div class="ttname"><a href="namespacehepce_1_1utils.html#a364afb8fb44ea191d84b23ce229c128c">hepce::utils::GetStringFromConfig</a></div><div class="ttdeci">std::string GetStringFromConfig(std::string config_key, datamanagement::ModelData &amp;model_data, std::string def_val=&quot;&quot;)</div><div class="ttdef"><b>Definition:</b> config.hpp:88</div></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_a80358a13181a67c272308be2b28c7e06"><div class="ttname"><a href="namespacehepce_1_1utils.html#a80358a13181a67c272308be2b28c7e06">hepce::utils::FindInEventList</a></div><div class="ttdeci">bool FindInEventList(std::string event_name, datamanagement::ModelData &amp;model_data)</div><div class="ttdef"><b>Definition:</b> config.hpp:100</div></div>
 <div class="ttc" id="anamespacehepce_1_1utils_html_a85466e955476ea3d4f6159e86768a5b2"><div class="ttname"><a href="namespacehepce_1_1utils.html#a85466e955476ea3d4f6159e86768a5b2">hepce::utils::ToLower</a></div><div class="ttdeci">std::string ToLower(std::string string)</div><div class="ttdef"><b>Definition:</b> formatting.hpp:60</div></div>
 <div class="ttc" id="anamespacehepce_1_1utils_html_a9841dcd1afb69510ac3cd20a3a6f4d8a"><div class="ttname"><a href="namespacehepce_1_1utils.html#a9841dcd1afb69510ac3cd20a3a6f4d8a">hepce::utils::ToLowerVector</a></div><div class="ttdeci">std::vector&lt; std::string &gt; ToLowerVector(const std::vector&lt; std::string &gt; &amp;vec_str)</div><div class="ttdef"><b>Definition:</b> formatting.hpp:82</div></div>
 <div class="ttc" id="anamespacehepce_1_1utils_html_aa73f0b8977c616f250eed51bd694c588"><div class="ttname"><a href="namespacehepce_1_1utils.html#aa73f0b8977c616f250eed51bd694c588">hepce::utils::SToBool</a></div><div class="ttdeci">bool SToBool(std::string string)</div><div class="ttdef"><b>Definition:</b> formatting.hpp:69</div></div>
-<div class="ttc" id="anamespacehepce_1_1utils_html_ad335ae639ce87075e8b0ef069e37057e"><div class="ttname"><a href="namespacehepce_1_1utils.html#ad335ae639ce87075e8b0ef069e37057e">hepce::utils::GetStringFromConfig</a></div><div class="ttdeci">std::string GetStringFromConfig(std::string config_key, datamanagement::ModelData &amp;model_data)</div><div class="ttdef"><b>Definition:</b> config.hpp:86</div></div>
-<div class="ttc" id="anamespacehepce_1_1utils_html_af833094cdc90404bb0893b5a27c35ee3"><div class="ttname"><a href="namespacehepce_1_1utils.html#af833094cdc90404bb0893b5a27c35ee3">hepce::utils::GetDoubleFromConfig</a></div><div class="ttdeci">double GetDoubleFromConfig(std::string config_key, datamanagement::ModelData &amp;model_data, bool positive=true)</div><div class="ttdef"><b>Definition:</b> config.hpp:64</div></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_ad4be61c0337bdeddf64823195bec94b6"><div class="ttname"><a href="namespacehepce_1_1utils.html#ad4be61c0337bdeddf64823195bec94b6">hepce::utils::GetBoolFromConfig</a></div><div class="ttdeci">bool GetBoolFromConfig(std::string config_key, datamanagement::ModelData &amp;model_data, bool def_val=false)</div><div class="ttdef"><b>Definition:</b> config.hpp:30</div></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_ada3bd82681aec94f27c2423e30df3437"><div class="ttname"><a href="namespacehepce_1_1utils.html#ada3bd82681aec94f27c2423e30df3437">hepce::utils::GetDoubleFromConfig</a></div><div class="ttdeci">double GetDoubleFromConfig(std::string config_key, datamanagement::ModelData &amp;model_data, bool positive=true, double def_val=-1.0)</div><div class="ttdef"><b>Definition:</b> config.hpp:66</div></div>
 <div class="ttc" id="anamespacehepce_1_1utils_html_afc818ec07b1d1b5549e5515cb13cef1f"><div class="ttname"><a href="namespacehepce_1_1utils.html#afc818ec07b1d1b5549e5515cb13cef1f">hepce::utils::SToDPositive</a></div><div class="ttdeci">double SToDPositive(const std::string &amp;s)</div><div class="ttdef"><b>Definition:</b> formatting.hpp:49</div></div>
 <div class="ttc" id="anamespacehepce_html"><div class="ttname"><a href="namespacehepce.html">hepce</a></div><div class="ttdoc">Namespace containing Utility Helper Functions.</div><div class="ttdef"><b>Definition:</b> types.hpp:20</div></div>
 </div><!-- fragment --></div><!-- contents -->
@@ -240,7 +243,7 @@ $(document).ready(function(){initNavTree('config_8hpp_source.html',''); initResi
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_05c933d59f351fefb8caab5fd9b918a4.html">hepce</a></li><li class="navelem"><a class="el" href="dir_e28addd3979671bd06dbb695f19b84f3.html">utils</a></li><li class="navelem"><a class="el" href="config_8hpp.html">config.hpp</a></li>
-    <li class="footer">Generated on Fri Jun 13 2025 16:08:01 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Fri Jun 13 2025 16:35:35 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

@@ -181,14 +181,14 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a07896f0b726bdc0dcc4ed4e752c886ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a07896f0b726bdc0dcc4ed4e752c886ae">GetBoolFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data)</td></tr>
-<tr class="separator:a07896f0b726bdc0dcc4ed4e752c886ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cdc8eaa3459bef210412ec871cd135d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a3cdc8eaa3459bef210412ec871cd135d">GetIntFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data)</td></tr>
-<tr class="separator:a3cdc8eaa3459bef210412ec871cd135d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af833094cdc90404bb0893b5a27c35ee3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#af833094cdc90404bb0893b5a27c35ee3">GetDoubleFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data, bool positive=true)</td></tr>
-<tr class="separator:af833094cdc90404bb0893b5a27c35ee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad335ae639ce87075e8b0ef069e37057e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#ad335ae639ce87075e8b0ef069e37057e">GetStringFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data)</td></tr>
-<tr class="separator:ad335ae639ce87075e8b0ef069e37057e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4be61c0337bdeddf64823195bec94b6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#ad4be61c0337bdeddf64823195bec94b6">GetBoolFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data, bool def_val=false)</td></tr>
+<tr class="separator:ad4be61c0337bdeddf64823195bec94b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b2b7f5525f3d20c23f972136a8e9646"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a0b2b7f5525f3d20c23f972136a8e9646">GetIntFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data, int def_val=-1)</td></tr>
+<tr class="separator:a0b2b7f5525f3d20c23f972136a8e9646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada3bd82681aec94f27c2423e30df3437"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#ada3bd82681aec94f27c2423e30df3437">GetDoubleFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data, bool positive=true, double def_val=-1.0)</td></tr>
+<tr class="separator:ada3bd82681aec94f27c2423e30df3437"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a364afb8fb44ea191d84b23ce229c128c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a364afb8fb44ea191d84b23ce229c128c">GetStringFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data, std::string def_val=&quot;&quot;)</td></tr>
+<tr class="separator:a364afb8fb44ea191d84b23ce229c128c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80358a13181a67c272308be2b28c7e06"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a80358a13181a67c272308be2b28c7e06">FindInEventList</a> (std::string event_name, datamanagement::ModelData &amp;model_data)</td></tr>
 <tr class="separator:a80358a13181a67c272308be2b28c7e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01fc4b5915a8327d839e63d084569359"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a01fc4b5915a8327d839e63d084569359">Trim</a> (std::string &amp;str)</td></tr>
@@ -537,8 +537,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a07896f0b726bdc0dcc4ed4e752c886ae" name="a07896f0b726bdc0dcc4ed4e752c886ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07896f0b726bdc0dcc4ed4e752c886ae">&#9670;&#160;</a></span>GetBoolFromConfig()</h2>
+<a id="ad4be61c0337bdeddf64823195bec94b6" name="ad4be61c0337bdeddf64823195bec94b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4be61c0337bdeddf64823195bec94b6">&#9670;&#160;</a></span>GetBoolFromConfig()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -556,7 +556,13 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">datamanagement::ModelData &amp;&#160;</td>
-          <td class="paramname"><em>model_data</em>&#160;</td>
+          <td class="paramname"><em>model_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>def_val</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -580,8 +586,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="af833094cdc90404bb0893b5a27c35ee3" name="af833094cdc90404bb0893b5a27c35ee3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af833094cdc90404bb0893b5a27c35ee3">&#9670;&#160;</a></span>GetDoubleFromConfig()</h2>
+<a id="ada3bd82681aec94f27c2423e30df3437" name="ada3bd82681aec94f27c2423e30df3437"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada3bd82681aec94f27c2423e30df3437">&#9670;&#160;</a></span>GetDoubleFromConfig()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -605,7 +611,13 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>positive</em> = <code>true</code>&#160;</td>
+          <td class="paramname"><em>positive</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>def_val</em> = <code>-1.0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -629,8 +641,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a3cdc8eaa3459bef210412ec871cd135d" name="a3cdc8eaa3459bef210412ec871cd135d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3cdc8eaa3459bef210412ec871cd135d">&#9670;&#160;</a></span>GetIntFromConfig()</h2>
+<a id="a0b2b7f5525f3d20c23f972136a8e9646" name="a0b2b7f5525f3d20c23f972136a8e9646"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b2b7f5525f3d20c23f972136a8e9646">&#9670;&#160;</a></span>GetIntFromConfig()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -648,7 +660,13 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">datamanagement::ModelData &amp;&#160;</td>
-          <td class="paramname"><em>model_data</em>&#160;</td>
+          <td class="paramname"><em>model_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>def_val</em> = <code>-1</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -672,8 +690,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="ad335ae639ce87075e8b0ef069e37057e" name="ad335ae639ce87075e8b0ef069e37057e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad335ae639ce87075e8b0ef069e37057e">&#9670;&#160;</a></span>GetStringFromConfig()</h2>
+<a id="a364afb8fb44ea191d84b23ce229c128c" name="a364afb8fb44ea191d84b23ce229c128c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a364afb8fb44ea191d84b23ce229c128c">&#9670;&#160;</a></span>GetStringFromConfig()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -691,7 +709,13 @@ template&lt;typename T &gt; </div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">datamanagement::ModelData &amp;&#160;</td>
-          <td class="paramname"><em>model_data</em>&#160;</td>
+          <td class="paramname"><em>model_data</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>def_val</em> = <code>&quot;&quot;</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1101,7 +1125,7 @@ template&lt;typename T &gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacehepce.html">hepce</a></li><li class="navelem"><a class="el" href="namespacehepce_1_1utils.html">utils</a></li>
-    <li class="footer">Generated on Fri Jun 13 2025 16:08:01 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Fri Jun 13 2025 16:35:35 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>
