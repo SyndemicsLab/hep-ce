@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-15                                                  //
+// Last Modified: 2025-06-13                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -28,15 +28,16 @@ namespace utils {
 /// @param
 /// @return
 inline bool GetBoolFromConfig(std::string config_key,
-                              datamanagement::ModelData &model_data) {
+                              datamanagement::ModelData &model_data,
+                              bool def_val = false) {
     std::string config_data;
     try {
         config_data = model_data.GetFromConfig(config_key);
     } catch (std::exception &e) {
-        return false;
+        return def_val;
     }
     if (config_data.empty()) {
-        return false;
+        return def_val;
     }
     return SToBool(config_data);
 }
@@ -45,15 +46,16 @@ inline bool GetBoolFromConfig(std::string config_key,
 /// @param
 /// @return
 inline int GetIntFromConfig(std::string config_key,
-                            datamanagement::ModelData &model_data) {
+                            datamanagement::ModelData &model_data,
+                            int def_val = -1) {
     std::string config_data;
     try {
         config_data = model_data.GetFromConfig(config_key);
     } catch (std::exception &e) {
-        return 0;
+        return def_val;
     }
     if (config_data.empty()) {
-        return 0;
+        return def_val;
     }
     return std::stoi(config_data);
 }
@@ -63,16 +65,16 @@ inline int GetIntFromConfig(std::string config_key,
 /// @return
 inline double GetDoubleFromConfig(std::string config_key,
                                   datamanagement::ModelData &model_data,
-                                  bool positive = true) {
+                                  bool positive = true, double def_val = -1.0) {
     std::string config_data;
 
     try {
         config_data = model_data.GetFromConfig(config_key);
     } catch (std::exception &e) {
-        return 0.0; // Should we log this or throw an exception back?
+        return def_val; // Should we log this or throw an exception back?
     }
     if (config_data.empty()) {
-        return 0.0;
+        return def_val;
     }
     if (positive) {
         return SToDPositive(config_data);
@@ -84,12 +86,13 @@ inline double GetDoubleFromConfig(std::string config_key,
 /// @param
 /// @return
 inline std::string GetStringFromConfig(std::string config_key,
-                                       datamanagement::ModelData &model_data) {
+                                       datamanagement::ModelData &model_data,
+                                       std::string def_val = "") {
     std::string s;
     try {
         s = model_data.GetFromConfig(config_key);
     } catch (std::exception &e) {
-        return "";
+        return def_val;
     }
     return s;
 }
