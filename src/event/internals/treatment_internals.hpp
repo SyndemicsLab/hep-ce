@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-09                                                  //
+// Last Modified: 2025-06-13                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -92,8 +92,14 @@ protected:
             "eligibility.ineligible_pregnancy_states", model_data);
         _eligibilities.time_since_linked = utils::GetIntFromConfig(
             "eligibility.ineligible_time_since_linked", model_data);
+        if (_eligibilities.time_since_linked == 0) {
+            _eligibilities.time_since_linked = -1;
+        }
         _eligibilities.time_since_last_use = utils::GetIntFromConfig(
             "eligibility.ineligible_time_former_threshold", model_data);
+        if (_eligibilities.time_since_last_use == 0) {
+            _eligibilities.time_since_last_use = -1;
+        }
     }
 
     inline void LoadLostToFollowUpData(datamanagement::ModelData &model_data) {
@@ -220,11 +226,9 @@ private:
     }
 
     bool IsEligibleTimeSinceLinked(const model::Person &person) const {
-        return (
-            GetTimeSince(
-                person,
-                person.GetLinkageDetails(GetInfectionType()).time_link_change) >
-            _eligibilities.time_since_linked);
+        return GetTimeSince(person, person.GetLinkageDetails(GetInfectionType())
+                                        .time_link_change) >
+               _eligibilities.time_since_linked;
     }
 
     /// These Eligibility Checks Smell like a Template Function Use Case?
