@@ -23,6 +23,9 @@ option(HEPCE_BUILD_SHARED_LIBS "Enable shared libraries" ${BUILD_SHARED_LIBS})
 # warning options
 option(HEPCE_BUILD_WARNINGS "Enable compiler warnings" OFF)
 
+# stop on warnings
+option(HEPCE_STOP_ON_WARNINGS "Stop Execution if a warning is occurred" OFF)
+
 # run with omp
 option(HEPCE_RUN_OMP "Enable omp runtime" OFF)
 

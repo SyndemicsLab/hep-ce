@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -73,11 +73,17 @@ void AgingImpl::LoadData(datamanagement::ModelData &model_data) {
             storage);
     } catch (std::exception &e) {
         hepce::utils::LogError(GetLogName(), e.what());
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
         return;
     }
     _age_data = std::any_cast<agemap_t>(storage);
     if (_age_data.empty()) {
         hepce::utils::LogWarning(GetLogName(), "Age Data is Empty...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
     }
 }
 

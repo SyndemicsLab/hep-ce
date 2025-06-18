@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -125,6 +125,9 @@ void BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
     if (_cost_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Behavior Changes Cost Data is Empty...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
     }
 }
 
@@ -159,6 +162,9 @@ void BehaviorChangesImpl::LoadBehaviorData(
     if (_behavior_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Behavior Data Transitions Data is Empty...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
     }
 }
 
