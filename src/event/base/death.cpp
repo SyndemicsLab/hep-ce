@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
+// Last Modified: 2025-06-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -175,10 +175,10 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
     if (_overdose_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
                                  "No Fatal Overdose Probability Found!");
-        person.ToggleOverdose();
 #ifdef EXIT_ON_WARNING
         std::exit(EXIT_FAILURE);
 #endif
+        person.ToggleOverdose();
         return false;
     }
 
