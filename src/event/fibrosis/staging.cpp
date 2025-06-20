@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -94,6 +94,9 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Unable to get fibrosis staging test two "
                                  "probabilities. Returning...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
         return;
     }
 
@@ -112,6 +115,9 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Invalid multitest result provided: " +
                                      _multitest_result_method);
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
         return;
     }
     // 8. Assign this state to the person.

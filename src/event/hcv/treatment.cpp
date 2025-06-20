@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -123,6 +123,9 @@ void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
     _treatment_sql_data = std::any_cast<hcvtreatmentmap_t>(storage);
     if (_treatment_sql_data.empty()) {
         hepce::utils::LogWarning(GetLogName(), "Treatment Table is Empty...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
     }
 
     storage = hcvtreatmentinitmap_t{};
@@ -140,6 +143,9 @@ void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
     if (_treatment_init_sql_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Treatment Initiation Table is Empty...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
     }
 }
 
@@ -155,6 +161,9 @@ bool TreatmentImpl::InitiateTreatment(model::Person &person,
             << e.what() << std::endl;
         msg << "Setting treatment initiation to 0.0...";
         hepce::utils::LogWarning(GetLogName(), msg.str());
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
     }
     if (IsEligible(person) &&
         (sampler.GetDecision({treatment_initiation}) == 0)) {

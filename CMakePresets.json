@@ -57,6 +57,13 @@
             }
         },
         {
+            "name": "gcc-debug-cluster",
+            "inherits": "gcc-debug",
+            "cacheVariables": {
+                "CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
+            }
+        },
+        {
             "name": "gcc-release",
             "displayName": "gcc Release",
             "description": "Target Linux with the GCC compiler, release build type",
@@ -75,24 +82,26 @@
                 "HEPCE_NO_EXCEPTIONS": "OFF",
                 "HEPCE_RUN_OMP": "ON"
             },
-	    "warnings": {
-		"dev": false
-	    }
+            "warnings": {
+                "dev": false
+            }
         },
-	{
-	    "name": "gcc-release-cluster",
-	    "inherits": "gcc-release",
-	    "cacheVariables": {
-		"CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
-	    }
-	},
-	{
-	    "name": "gcc-debug-cluster",
-	    "inherits": "gcc-debug",
-	    "cacheVariables": {
-		"CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
-	    }
-	}
+        {
+            "name": "gcc-release-strict",
+            "displayName": "gcc Release Strict",
+            "description": "Target Linux with the GCC compiler, release build type with strict exits on warnings",
+            "inherits": "gcc-release",
+            "cacheVariables": {
+                "HEPCE_STOP_ON_WARNINGS": "ON"
+            }
+        },
+        {
+            "name": "gcc-release-cluster",
+            "inherits": "gcc-release-strict",
+            "cacheVariables": {
+                "CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
+            }
+        }
     ],
     "testPresets": [
         {
@@ -138,38 +147,43 @@
         }
     ],
     "buildPresets": [
-	{
-	    "name": "build-common",
-	    "hidden": true,
-	    "jobs": 8
-	},
+        {
+            "name": "build-common",
+            "hidden": true,
+            "jobs": 8
+        },
         {
             "name": "gcc-release",
-	    "inherits": "build-common",
+            "inherits": "build-common",
             "configurePreset": "gcc-release"
         },
         {
+            "name": "gcc-release-strict",
+            "inherits": "build-common",
+            "configurePreset": "gcc-release-strict"
+        },
+        {
+            "name": "gcc-release-cluster",
+            "inherits": "build-common",
+            "configurePreset": "gcc-release-cluster"
+        },
+        {
+            "name": "gcc-debug",
+            "inherits": "build-common",
+            "configurePreset": "gcc-debug"
+        },
+        {
+            "name": "gcc-debug-cluster",
+            "inherits": "build-common",
+            "configurePreset": "gcc-debug-cluster"
+        },
+        {
             "name": "gcc-install",
-	    "inherits": "build-common",
+            "inherits": "build-common",
             "configurePreset": "gcc-release",
             "targets": [
                 "install"
             ]
-        },
-        {
-            "name": "gcc-debug",
-	    "inherits": "build-common",
-            "configurePreset": "gcc-debug"
-        },
-        {
-            "name": "gcc-release-cluster",
-	    "inherits": "build-common",
-            "configurePreset": "gcc-release-cluster"
-        },
-        {
-            "name": "gcc-debug-cluster",
-	    "inherits": "build-common",
-            "configurePreset": "gcc-debug-cluster"
         }
     ],
     "packagePresets": [
@@ -233,6 +247,20 @@
                 {
                     "type": "test",
                     "name": "gcc-debug-cluster"
+                }
+            ]
+        },
+        {
+            "description": "Release workflow without tests and stopping on warnings",
+            "name": "gcc-release-strict",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "gcc-release-strict"
+                },
+                {
+                    "type": "build",
+                    "name": "gcc-release-strict"
                 }
             ]
         },

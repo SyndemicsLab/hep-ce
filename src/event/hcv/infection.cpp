@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -84,6 +84,9 @@ void InfectionImpl::LoadData(datamanagement::ModelData &model_data) {
     _infection_data = std::any_cast<incidencemap_t>(storage);
     if (_infection_data.empty()) {
         hepce::utils::LogWarning(GetLogName(), "Incidence Table is Empty...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
     }
 }
 
@@ -94,6 +97,9 @@ InfectionImpl::GetInfectionProbability(const model::Person &person) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Infection Incidence Data is Empty. Returning "
                                  "Probability of 0.0...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
         return {0.0};
     }
 

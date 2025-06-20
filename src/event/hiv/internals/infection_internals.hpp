@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2025-06-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -60,6 +60,9 @@ private:
             hepce::utils::LogWarning(
                 GetLogName(),
                 "HIV Infection Probability is Empty. Returning 0.0...");
+#ifdef EXIT_ON_WARNING
+            std::exit(EXIT_FAILURE);
+#endif
             return {0.0};
         }
 

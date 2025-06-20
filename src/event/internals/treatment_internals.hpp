@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-13                                                  //
+// Last Modified: 2025-06-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -112,6 +112,9 @@ protected:
             std::stringstream s;
             s << " Linking Data is Empty...";
             hepce::utils::LogWarning(GetLogName(), s.str());
+#ifdef EXIT_ON_WARNING
+            std::exit(EXIT_FAILURE);
+#endif
         }
     }
 
@@ -143,12 +146,17 @@ protected:
     /// @brief
     /// @param
     /// @return
-    std::vector<std::string>
+    inline std::vector<std::string>
     LoadEligibilityVectors(const std::string &config_key,
                            datamanagement::ModelData &model_data) {
         std::string data = utils::GetStringFromConfig(config_key, model_data);
         if (data.empty()) {
-            // Warn empty
+            hepce::utils::LogWarning(GetLogName(),
+                                     "Eligibility Data is Empty for key: " +
+                                         config_key);
+#ifdef EXIT_ON_WARNING
+            std::exit(EXIT_FAILURE);
+#endif
             return {};
         }
         return utils::SplitToVecT<std::string>(data, ',');

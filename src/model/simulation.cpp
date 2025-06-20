@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-18                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -87,6 +87,9 @@ HepceImpl::ReadICPopulation(const int population_size,
         msg << "Error drawing population size " << population_size
             << " from Initial Cohort. Using Default Person Values...";
         hepce::utils::LogWarning(GetLogName(), msg.str());
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
         return {};
     }
     std::vector<data::PersonSelect> vec =
@@ -135,6 +138,9 @@ HepceImpl::ReadPopPopulation(const int population_size,
         msg << "Error getting " << population_size
             << " people from Population File. Using Default Person Values...";
         hepce::utils::LogWarning(GetLogName(), msg.str());
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
         return {};
     }
     std::vector<data::PersonSelect> vec =

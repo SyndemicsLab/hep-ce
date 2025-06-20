@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2025-06-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -134,6 +134,9 @@ void DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
     if (_background_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Background Mortality Data is Empty...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
     }
 }
 
@@ -158,6 +161,9 @@ void DeathImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
     _overdose_data = std::any_cast<overdosemap_t>(storage);
     if (_overdose_data.empty()) {
         hepce::utils::LogWarning(GetLogName(), "Overdose Table is Empty...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
     }
 }
 
@@ -167,7 +173,11 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
     }
 
     if (_overdose_data.empty()) {
-        spdlog::get("main")->warn("No Fatal Overdose Probability Found!");
+        hepce::utils::LogWarning(GetLogName(),
+                                 "No Fatal Overdose Probability Found!");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
         person.ToggleOverdose();
         return false;
     }
@@ -223,6 +233,9 @@ void DeathImpl::GetSMRandBackgroundProb(model::Person &person,
     if (_background_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Invalid Background Death Data Found...");
+#ifdef EXIT_ON_WARNING
+        std::exit(EXIT_FAILURE);
+#endif
         bg_death_probability = 0;
         smr = 0;
         return;
