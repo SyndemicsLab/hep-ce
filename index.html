@@ -139,12 +139,13 @@ HEPCEv1</h1>
 <h1><a class="anchor" id="autotoc_md2"></a>
 CMake</h1>
 <p>HEPCE makes full use of the CMake build system. It is a common tool used throughout the C++ user-base and we utilize it for dependency management, linking, and testing. As C++ has poor package management, we intentionally decided to move our focus away from tools such as conan and vcpkg and stay with pure CMake. Not to say we would never publish with such package managers, but it is not a core focus of the refactor/engineering team.</p>
-<p>We natively support 4 different build workflows with the <code>CMakePresets.json</code> file. They are:</p>
+<p>We natively support 5 different build workflows with the <code>CMakePresets.json</code> file. They are:</p>
 <ol type="1">
 <li><code>gcc-release</code></li>
 <li><code>gcc-debug</code></li>
 <li><code>gcc-release-cluster</code></li>
 <li><code>gcc-debug-cluster</code></li>
+<li><code>gcc-release-strict</code></li>
 </ol>
 <p>Unless you are explicitly using a linux based computing cluster, we highly recommend choosing one of the first two build processes. In the future, we do intend to expand to additional compilers and operating systems beyond GCC and Linux.</p>
 <p>Overall, we make use of 11 custom CMake variables. They are found in the <a href="https://github.com/SyndemicsLab/hep-ce/blob/main/cmake/options.cmake">options.cmake file</a> and all are set accordingly in the <code>CMakePresets.json</code>.</p>
@@ -197,7 +198,7 @@ Running the HEPCE Executable</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jun 13 2025 17:02:29 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Fri Jun 20 2025 15:53:25 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>
