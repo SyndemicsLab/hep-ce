@@ -97,6 +97,13 @@
         },
         {
             "name": "gcc-release-cluster",
+            "inherits": "gcc-release",
+            "cacheVariables": {
+                "CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
+            }
+        },
+        {
+            "name": "gcc-release-strict-cluster",
             "inherits": "gcc-release-strict",
             "cacheVariables": {
                 "CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
@@ -166,6 +173,11 @@
             "name": "gcc-release-cluster",
             "inherits": "build-common",
             "configurePreset": "gcc-release-cluster"
+        },
+        {
+            "name": "gcc-release-strict-cluster",
+            "inherits": "build-common",
+            "configurePreset": "gcc-release-strict-cluster"
         },
         {
             "name": "gcc-debug",
@@ -275,6 +287,20 @@
                 {
                     "type": "build",
                     "name": "gcc-release-cluster"
+                }
+            ]
+        },
+        {
+            "description": "Release workflow without tests for the SCC - stops on warnings",
+            "name": "gcc-release-strict-cluster",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "gcc-release-strict-cluster"
+                },
+                {
+                    "type": "build",
+                    "name": "gcc-release-strict-cluster"
                 }
             ]
         }
