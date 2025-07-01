@@ -241,7 +241,6 @@ inline void BuildAlternateSimConf(const std::string &name) {
     f.close();
 }
 
-//added to facilitate FatalOverdose test
 inline void BuildOverdoseSimConf(const std::string &name) {
     std::stringstream s;
     s << "[simulation]" << std::endl

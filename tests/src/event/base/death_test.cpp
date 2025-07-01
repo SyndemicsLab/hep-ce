@@ -107,34 +107,26 @@ TEST_F(DeathTest, AgeDR) {
     std::filesystem::remove(LOG_FILE);
 }
 
-//my test
 TEST_F(DeathTest, FatalOverdoseDR) {
-    BuildOverdoseSimConf("sim2.conf");
+    BuildOverdoseSimConf(test_conf);
 
     ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS overdoses;",
                                   CreateOverdoses(),
                                   "INSERT INTO overdoses "
                                   "VALUES (0, 4, 1.0);"}});
-                                  // moud, drug_behavior, fatality_probability
 
     std::unique_ptr<datamanagement::ModelData> model_data2;
 
-    model_data2 = datamanagement::ModelData::Create("sim2.conf");
+    model_data2 = datamanagement::ModelData::Create(test_conf);
     model_data2->AddSource(test_db);
-
-    // Make person die of fatal overdose
-
-    // Requirements
-    //getcurrentlyoverdosing, toggleoverdose, getmouddetails, getbehaviordetails
 
     data::MOUDDetails moud_details;
     ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
-        //behaviors.behavior
+
     ON_CALL(mock_person, GetCurrentlyOverdosing()).WillByDefault(Return(true));
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
 
     const std::vector<double> probs = {1.0, 0.0};
-    //{0, 0, 1};
     EXPECT_CALL(mock_sampler, GetDecision(probs)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kOverdose)).Times(1);
 
@@ -147,31 +139,23 @@ TEST_F(DeathTest, FatalOverdoseDR) {
     event->Execute(mock_person, mock_sampler);
 
     std::filesystem::remove(LOG_FILE);
-    std::filesystem::remove("sim2.conf");
-    //std::filesystem::remove("inputs.db");
 }
 
 // my HIV test
-/*
-TEST_F(DeathTest, HivDR) {
-    BuildOverdoseSimConf("sim2.conf");
 
-    std::string test_db2 = "input2.db";
-    ExecuteQueries(test_db2, {{"DROP TABLE IF EXISTS overdoses;",
-                                  CreateOverdoses(),
-                                  "INSERT INTO overdoses "
-                                  "VALUES (0, 4, 1.0);"}});
-                                  // moud, drug_behavior, fatality_probability
+TEST_F(DeathTest, HivDR) {
+    // ExecuteQueries(test_db2, {{"DROP TABLE IF EXISTS overdoses;",
+    //                               CreateOverdoses(),
+    //                               "INSERT INTO overdoses "
+    //                               "VALUES (0, 4, 1.0);"}});
+    //                               // moud, drug_behavior, fatality_probability
 
     std::unique_ptr<datamanagement::ModelData> model_data2;
 
-    model_data2 = datamanagement::ModelData::Create("sim2.conf");
-    model_data2->AddSource(test_db2);
-
-    // Make person die of fatal overdose
+    // Make person die of hiv
 
     // Requirements
-    //getcurrentlyoverdosing, toggleoverdose, getmouddetails, getbehaviordetails
+    // 
 
     data::MOUDDetails moud_details;
     ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));

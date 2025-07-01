@@ -58,7 +58,6 @@ inline const std::string CreateBackgroundMortalities() {
     return s.str();
 }
 
-//added by matt
 inline const std::string CreateOverdoses() {
     std::stringstream s;
     s << ("CREATE TABLE overdoses "
