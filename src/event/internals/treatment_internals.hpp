@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-20                                                  //
+// Last Modified: 2025-06-30                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -172,14 +172,14 @@ protected:
     /// @param
     /// @return
     bool IsEligible(const model::Person &person) const {
-        auto not_retreatment_restricted =
-            ((_treatment_limit >
-              person.GetTreatmentDetails(GetInfectionType()).num_starts) ||
-             _treatment_limit < 0);
+        auto too_many_treatments =
+            ((_treatment_limit <=
+              person.GetTreatmentDetails(GetInfectionType()).num_starts) &&
+             _treatment_limit > 0);
 
-        auto not_on_treatment = (!person.GetTreatmentDetails(GetInfectionType())
-                                      .initiated_treatment);
-        return (not_retreatment_restricted && not_on_treatment &&
+        auto on_treatment = (person.GetTreatmentDetails(GetInfectionType())
+                                 .initiated_treatment);
+        return (!too_many_treatments && !on_treatment &&
                 IsEligibleFibrosisStage(person) && IsEligibleBehavior(person) &&
                 IsEligiblePregnancy(person) &&
                 IsEligibleTimeLastActive(person) &&
