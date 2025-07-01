@@ -10,3 +10,11 @@
 a code {
     color: var(--primary-color);
 }
+
+td code {
+    text-wrap: nowrap;
+}
+
+div.fragment .line {
+    line-height: 1.13;
+}
