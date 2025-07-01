@@ -1,25 +1,45 @@
 # Building & Installation
 
-The HEPCE model is available to users through multiple methods. That being said, HEPCE has been built and tested on machinese running ubuntu 24.04 and CI/CD tested on Windows machines. We recommend a basic installation either through building the source code or utilizing CMake's [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) feature. We do plan to eventually work towards providing a debaian package install as well.
+There are several pre-configured builds provided for the `HEP-CE` simulation model.
+We recommend either building the source code directly, if you intend to use the
+model standalone, or utilizing CMake's [FetchContent][fetchcontent] feature to include the model as a dependency. We have plans to provide packages to package managers for Linux distributions directly in the future.
 
 ## Dependencies
 
-HEPCE has several dependencies that require being satisified before installation. This is primarily a concern if you intend to build from source as FetchContent should generally manage the dependencies if installed that way. Our `FetchContent_Declare` statements all attempt to `find_package` before downloading, so if you choose to make use of specific versions of these dependencies you simply install the dependencies before attempting to install HEPCE.
+Assuming you have the required building tools (i.e. [GNU Compiler Collection (GCC)][gcc], [CMake][cmake], [Ninja][ninja]), you still need:
+
+- [DataManagement](https://github.com/SyndemicsLab/DataManagement)
+- [spdlog](https://github.com/gabime/spdlog)
 
 **Note:** DataManagement is a Syndemics Lab library and under heavy development. It is *NOT* recommended to attempt to install a separate version.
 
-- [DataManagement](https://github.com/SyndemicsLab/DataManagement)
-- [Spdlog](https://github.com/gabime/spdlog)
+If you build from source, missing dependencies are installed via CMake's [FetchContent][fetchcontent].
+You will need to install these packages for yourself if you intend to use a specific version or release.
 
-## Installing From Source
-
-In order to install from source, clone the repository and run cmake. We provide workflows in the `CMakePresets.json` and encourage the use of them for easy building. Our primary workflow is built using the [GCC compiler](https://gcc.gnu.org/) and the [Ninja build system](https://ninja-build.org/).
+## Building From Source
+In order to build `HEP-CE` from source, clone the repository and use CMake. We
+recommend building the `gcc-release` preset, included in the following
+example:
 
 ```bash
 git clone https://github.com/SyndemicsLab/hep-ce.git
 cd hep-ce
-cmake --workflow gcc-release
+cmake --workflow --preset gcc-release
 ```
+
+### Presets
+
+Definitions for presets are located in `CMakePresets.json`, and we encourage their use, especially if you intend to contribute to or to use the library downstream.
+
+There are currently five presets provided:
+
+| Preset Name | Description |
+| ----------- | ----------- |
+| `gcc-release` | Builds the simulation model, including the executable, with CPU parallelization via OpenMP |
+| `gcc-debug` | Builds the simulation model, including the executable and tests, *without* parallelization and runs unit tests |
+| `gcc-release-cluster` | `gcc-release` with additional settings for use with the [Boston University Shared Computing Cluster (SCC)][scc] |
+| `gcc-debug-cluster` | `gcc-release` with additional settings for use with the [SCC][scc] |
+| `gcc-release-strict` | `gcc-release-cluster` with additional settings that cause the model to treat warnings as errors |
 
 We also provide a debug version that is slower, but prints more to the logger to help debug problems:
 

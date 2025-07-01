@@ -33,9 +33,24 @@ cmake --workflow gcc-release
 
 ## Using the HEP-CE Executable
 
-To use the executable, you need to structure your data correctly. config file and a SQLite database.
+To use the provided executable, you need data in the correct structure.
 
-Each run is put into a folder titled `input<number>` where the number is replaced with the ID of the input. Then, after these folders are created and HEPCE is built we simply run the command:
+Each set of model inputs must be provided in a folder named `input<number>`, where the number is replaced with the ID of the input. The following depicts a tree of directories in which there are two input sets for HEP-CE in the same source directory:
+```
+data-source
+├── input1
+│   ├── inputs.db
+│   └── sim.conf
+└── input2
+    ├── inputs.db
+    └── sim.conf
+```
+
+### Configuration Keys
+
+The `sim.conf` uses the `.ini` configuration format to break down model settings
+into key-value pairs that are also grouped into sections. For detailed descriptions
+of these values, reference [Managing the Data](data.md).
 
 ### Database Schema
 
@@ -43,8 +58,19 @@ An empty database with the correct structure can be created via the [example sch
 
 ### Calling the Executable
 
+Once you have model inputs in the correct structure, you can call the executable
+from the git directory with
+
 ```bash
-build/extras/executable/hepce_exe <input_start> <input_end>
+build/extras/executable/hepce_exe /path/to/data/source <input_number_start> <input_number_end>
+```
+
+#### Example
+
+To run the model for the example `data-source` shown above, you'd use the
+following command:
+```bash
+build/extras/executable/hepce_exe data-source 1 2
 ```
 
 Next: [Building & Installation](installation.md)
