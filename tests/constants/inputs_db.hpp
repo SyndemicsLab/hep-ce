@@ -58,6 +58,15 @@ inline const std::string CreateBackgroundMortalities() {
     return s.str();
 }
 
+//added by matt
+inline const std::string CreateOverdoses() {
+    std::stringstream s;
+    s << ("CREATE TABLE overdoses "
+        "(moud INTEGER, drug_behavior INTEGER, "
+        "fatality_probability REAL);");
+    return s.str();
+}
+
 inline const std::string CreateSmrs() {
     std::stringstream s;
     s << ("CREATE TABLE smr (gender	INTEGER NOT NULL,drug_behavior "
