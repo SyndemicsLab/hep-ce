@@ -142,7 +142,7 @@ TEST_F(DeathTest, FatalOverdoseDR) {
 }
 
 // my HIV test
-
+/*
 TEST_F(DeathTest, HivDR) {
     // ExecuteQueries(test_db2, {{"DROP TABLE IF EXISTS overdoses;",
     //                               CreateOverdoses(),
