@@ -115,19 +115,16 @@ TEST_F(DeathTest, FatalOverdoseDR) {
                                   "INSERT INTO overdoses "
                                   "VALUES (0, 4, 1.0);"}});
 
-    std::unique_ptr<datamanagement::ModelData> model_data2;
-
-    model_data2 = datamanagement::ModelData::Create(test_conf);
-    model_data2->AddSource(test_db);
+    std::unique_ptr<datamanagement::ModelData> model_data_alt;
+    model_data_alt = datamanagement::ModelData::Create(test_conf);
+    model_data_alt->AddSource(test_db);
 
     data::MOUDDetails moud_details;
     ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
 
     ON_CALL(mock_person, GetCurrentlyOverdosing()).WillByDefault(Return(true));
-    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
 
-    const std::vector<double> probs = {1.0, 0.0};
-    EXPECT_CALL(mock_sampler, GetDecision(probs)).WillOnce(Return(0));
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kOverdose)).Times(1);
 
     const std::string LOG_NAME = "FatalOverdoseDR";
@@ -135,50 +132,34 @@ TEST_F(DeathTest, FatalOverdoseDR) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data2, LOG_NAME);
+    auto event = event::base::Death::Create(*model_data_alt, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     std::filesystem::remove(LOG_FILE);
 }
 
-// my HIV test
-/*
 TEST_F(DeathTest, HivDR) {
-    // ExecuteQueries(test_db2, {{"DROP TABLE IF EXISTS overdoses;",
-    //                               CreateOverdoses(),
-    //                               "INSERT INTO overdoses "
-    //                               "VALUES (0, 4, 1.0);"}});
-    //                               // moud, drug_behavior, fatality_probability
+    BuildAlternateSimConf(test_conf);
+    std::unique_ptr<datamanagement::ModelData> model_data_alt;
+    model_data_alt = datamanagement::ModelData::Create(test_conf);
 
-    std::unique_ptr<datamanagement::ModelData> model_data2;
-
-    // Make person die of hiv
-
-    // Requirements
-    // 
-
-    data::MOUDDetails moud_details;
-    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
-
-    ON_CALL(mock_person, GetCurrentlyOverdosing()).WillByDefault(Return(false));
-    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
+    data::HIVDetails hiv_details;
+    hiv_details.hiv = HIV::kHiUn;
+    ON_CALL(mock_person, GetHIVDetails()).WillByDefault(Return(hiv_details));
     
-    const std::vector<double> probs = {1.0, 0.0};
-    EXPECT_CALL(mock_sampler, GetDecision(probs)).WillOnce(Return(0));
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kHiv)).Times(1);
 
-    const std::string LOG_NAME = "FatalOverdoseDR";
+    const std::string LOG_NAME = "HivDR";
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data2, LOG_NAME);
+    auto event = event::base::Death::Create(*model_data_alt, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     std::filesystem::remove(LOG_FILE);
-    std::filesystem::remove("sim2.conf");
-    std::filesystem::remove("input2.db");
-}*/
+}
 
 
 TEST_F(DeathTest, F4_Infected_BackgroundDR) {

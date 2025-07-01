@@ -136,7 +136,7 @@ inline void BuildAlternateSimConf(const std::string &name) {
       << "population_size = 100" << std::endl
       << "events = Aging, BehaviorChanges, Clearance, Pregnancy, "
          "FibrosisProgression, HCVInfections, HCVScreening, HCVLinking, "
-         "HCVTreatment, HIVInfections, HIVScreening, HIVLinking, Death"
+         "HCVTreatment, HIVInfection, HIVScreening, HIVLinking, Death"
       << std::endl
       << "duration = 60" << std::endl
       << "start_time = 0" << std::endl
