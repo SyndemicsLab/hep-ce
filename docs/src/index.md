@@ -46,7 +46,7 @@ data-source
     └── sim.conf
 ```
 
-### Configuration Keys
+### Configuration
 
 The `sim.conf` uses the `.ini` configuration format to break down model settings
 into key-value pairs that are also grouped into sections. For detailed descriptions

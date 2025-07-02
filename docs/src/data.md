@@ -1,4 +1,4 @@
-# Managing the Data
+# Data & Inputs
 
 The HEPCE model is packaged as a library, but for ease of use we do also provide a basic command line interface executable for users to run the model. To this end, we make use of command line arguments and required input structures.
 
@@ -33,7 +33,7 @@ The simulation section governs the basic details of the simulation. An example i
 [simulation]
 seed            = 1234  # Seed value to start the random number generator
 population_size = 10000 # Number of people to run through the simulation
-events          = Aging, Clearance, HCVInfections, Death 
+events          = Aging, Clearance, HCVInfections, Death
 duration        = 1200  # Time in months
 start_time      = 0     # Used for checkpointing. Default: 0
 ```
@@ -50,7 +50,7 @@ The mortality section governs the details of non-stratified death rates due to v
 
 ```ini
 [mortality]
-f4_infected         = 0.0106842628666393    # Monthly probability of dying due to F4 fibrosis while infected with HCV 
+f4_infected         = 0.0106842628666393    # Monthly probability of dying due to F4 fibrosis while infected with HCV
 f4_uninfected       = 0.000641055772        # Monthly probability of dying due to F4 fibrosis while not infected with HCV
 decomp_infected     = 0.028923195           # Monthly probability of dying due to Decompensated fibrosis while infected with HCV
 decomp_uninfected   = 0.0017353917          # Monthly probability of dying due to Decompensated fibrosis while not infected with HCV
@@ -178,7 +178,7 @@ intervention_cost               = 0             # Cost for linking due to an int
 voluntary_relinkage_probability = 0.020580315   # Voluntary relinking monthly probability
 voluntary_relink_duration       = 16            # Time period in months (since unlinking from treatment) during which a person can relink
 false_positive_test_cost        = 515.79        # Cost of a false positive test
-recent_screen_multiplier        = 1.0           # 
+recent_screen_multiplier        = 1.0           #
 recent_screen_cutoff            = 0
 ```
 
