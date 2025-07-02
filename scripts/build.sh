@@ -26,7 +26,7 @@ showhelp () {
     echo "Syntax: $(basename "$0") [-h|-t OPTION|-p|l]"
     echo "h              Print this help screen."
     echo "t OPTION       Set the build type to OPTION"
-    echo "               Options: [Debug|Release]"
+    echo "               Options: [Debug|Release|Strict]"
     echo "               Default: Release"
 }
 
@@ -59,11 +59,11 @@ while getopts ":ht:" option; do
             ;;
         t)
             case "$OPTARG" in
-                "Debug"|"Release")
+                "Debug"|"Release"|"Strict")
                     BUILDTYPE="$OPTARG"
                     ;;
                 *)
-                    echo "Specified build type is invalid!"
+                    echo "Specified build type is unrecognized!"
                     exit
                     ;;
             esac
@@ -94,14 +94,17 @@ done
     fi
 
     (
-	case $BUILDTYPE in
-	    "Debug")
-		PRESET="gcc-debug-cluster"
-		;;
-	    "Release")
-		PRESET="gcc-release-cluster"
-		;;
-	esac
+        case $BUILDTYPE in
+            "Debug")
+                PRESET="gcc-debug-cluster"
+                ;;
+            "Release")
+                PRESET="gcc-release-cluster"
+                ;;
+            "Strict")
+                PRESET="gcc-release-strict-cluster"
+                ;;
+        esac
         cmake --workflow --preset "$PRESET" --fresh
     )
 )
