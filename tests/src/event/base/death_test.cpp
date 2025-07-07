@@ -124,7 +124,8 @@ TEST_F(DeathTest, FatalOverdoseDR) {
 
     ON_CALL(mock_person, GetCurrentlyOverdosing()).WillByDefault(Return(true));
 
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+    std::vector<double> expected_prob = {1.0, 0.0};
+    EXPECT_CALL(mock_sampler, GetDecision(expected_prob)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kOverdose)).Times(1);
 
     const std::string LOG_NAME = "FatalOverdoseDR";
@@ -147,7 +148,8 @@ TEST_F(DeathTest, HivDR) {
     hiv_details.hiv = HIV::kHiUn;
     ON_CALL(mock_person, GetHIVDetails()).WillByDefault(Return(hiv_details));
     
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+    std::vector<double> expected_prob = {0.0};
+    EXPECT_CALL(mock_sampler, GetDecision(expected_prob)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kHiv)).Times(1);
 
     const std::string LOG_NAME = "HivDR";
