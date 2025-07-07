@@ -107,6 +107,63 @@ TEST_F(DeathTest, AgeDR) {
     std::filesystem::remove(LOG_FILE);
 }
 
+TEST_F(DeathTest, FatalOverdoseDR) {
+    BuildOverdoseSimConf(test_conf);
+
+    ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS overdoses;",
+                                  CreateOverdoses(),
+                                  "INSERT INTO overdoses "
+                                  "VALUES (0, 4, 1.0);"}});
+
+    std::unique_ptr<datamanagement::ModelData> model_data_alt;
+    model_data_alt = datamanagement::ModelData::Create(test_conf);
+    model_data_alt->AddSource(test_db);
+
+    data::MOUDDetails moud_details;
+    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
+
+    ON_CALL(mock_person, GetCurrentlyOverdosing()).WillByDefault(Return(true));
+
+    std::vector<double> expected_prob = {1.0, 0.0};
+    EXPECT_CALL(mock_sampler, GetDecision(expected_prob)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, Die(data::DeathReason::kOverdose)).Times(1);
+
+    const std::string LOG_NAME = "FatalOverdoseDR";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    // Running Test
+    auto event = event::base::Death::Create(*model_data_alt, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(DeathTest, HivDR) {
+    BuildAlternateSimConf(test_conf);
+    std::unique_ptr<datamanagement::ModelData> model_data_alt;
+    model_data_alt = datamanagement::ModelData::Create(test_conf);
+
+    data::HIVDetails hiv_details;
+    hiv_details.hiv = HIV::kHiUn;
+    ON_CALL(mock_person, GetHIVDetails()).WillByDefault(Return(hiv_details));
+    
+    std::vector<double> expected_prob = {0.0};
+    EXPECT_CALL(mock_sampler, GetDecision(expected_prob)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, Die(data::DeathReason::kHiv)).Times(1);
+
+    const std::string LOG_NAME = "HivDR";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    // Running Test
+    auto event = event::base::Death::Create(*model_data_alt, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    std::filesystem::remove(LOG_FILE);
+}
+
+
 TEST_F(DeathTest, F4_Infected_BackgroundDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kF4;
     hcv_details.hcv = data::HCV::kChronic;
