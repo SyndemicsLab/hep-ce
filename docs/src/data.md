@@ -1,6 +1,45 @@
 # Data & Inputs
 
-The HEPCE model is packaged as a library, but for ease of use we do also provide a basic command line interface executable for users to run the model. To this end, we make use of command line arguments and required input structures.
+The `HEP-CE` model requires structured data in order to obtain meaningful
+outcomes. Here, we'll describe, in detail, how your data should be structured
+when using the model.
+
+## Directory Structure
+
+The example, reiterated below, from the [landing page](index.md) illustrates
+some details about the necessary file structure to use the model:
+
+```
+data-source/
+├── input1/
+│   ├── inputs.db
+│   └── sim.conf
+└── input2/
+    ├── inputs.db
+    └── sim.conf
+```
+
+Let's break all this down. First, there's the `data-source/` directory,
+containing individual input sets for the model. While the executable doesn't
+require a folder analogous to `data-source`, it can be useful to use such
+a folder as a record of what the inputs within it represent (e.g. `basecase/`,
+`hcv-positive-cohort/`, etc.) since you can name these folders arbitrarily.
+Regardless of whether or not you use such a directory, there must be at least
+one input folder, named `input<X>` where `<X>` is replaced with an integer, that
+contains the two required files `sim.conf` and `inputs.db`, which will be
+explained in detail in the following sections.
+
+**Note:** There is no requirement that input folders start at 1. You can have
+any assortment of input numbers, though it is convenient for their numbers to be
+sequential, as using the executable with multiple input sets in one call expects
+them to be sequential:
+
+```
+# this set of inputs could run in a single call of the executable
+input7, input8, input9, input10 #
+# this set of inputs could run too, but with multiple calls of the executable
+input7, input8, input10, input11
+```
 
 ## Required Inputs
 

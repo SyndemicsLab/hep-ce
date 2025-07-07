@@ -2,10 +2,13 @@
 
 **Source Code:** https://github.com/SyndemicsLab/hep-ce
 
-<a href="https://www.syndemicslab.org/hep-ce"><img align="right" src="HEPCE_logo.png" alt="HEPCE Logo" height="120" /></a>
+<a href="https://www.syndemicslab.org/hep-ce">
+<img align="right" src="HEPCE_logo.png" alt="HEPCE Logo" height="120" />
+</a>
 
-`HEP-CE` is a simulation model written and maintained by the [Syndemics Lab](https://www.syndemicslab.org) at [Boston Medical Center](https://bmc.org).
-This is the `HEP-CE` user guide.
+`HEP-CE` is a simulation model written and maintained by the
+[Syndemics Lab](https://www.syndemicslab.org) at
+[Boston Medical Center](https://bmc.org).
 
 The version of `HEP-CE` you see now is a complete refactor developed with a focus on four goals:
 
@@ -35,13 +38,17 @@ cmake --workflow gcc-release
 
 To use the provided executable, you need data in the correct structure.
 
-Each set of model inputs must be provided in a folder named `input<number>`, where the number is replaced with the ID of the input. The following depicts a tree of directories in which there are two input sets for HEP-CE in the same source directory:
+Each set of model inputs must be provided in a folder named `input<number>`,
+where the `<number>` is replaced with the identifier of the input. The
+following depicts a tree of directories in which there are two input sets,
+numbered 1 and 2, for `HEP-CE` in the same source directory:
+
 ```
-data-source
-├── input1
+data-source/
+├── input1/
 │   ├── inputs.db
 │   └── sim.conf
-└── input2
+└── input2/
     ├── inputs.db
     └── sim.conf
 ```
