@@ -83,6 +83,13 @@ Death is the capstone of the events. It aggregates all the things that have happ
 
 ![Death](Death.png)
 
-Previous: [Data & Inputs](data.md)
+<div class="section_buttons">
 
-Next: [Run](run.md)
+| Previous              |       Next |
+|:----------------------|-----------:|
+| [Data & Inputs][data] | [Run][run] |
+
+</div>
+
+[run]: run.md
+[data]: data.md

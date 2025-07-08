@@ -80,4 +80,12 @@ following command:
 build/extras/executable/hepce_exe data-source 1 2
 ```
 
-Next: [Building & Installation](installation.md)
+<div class="section_buttons">
+
+| Previous |                               Next |
+|:---------|-----------------------------------:|
+|          | [Building & Installation][install] |
+
+</div>
+
+[install]: installation.md

@@ -1,5 +1,5 @@
 /*
- * Filename: /home/matt/Repos/hep-ce/docs/src/custom.css
+ * Filename: custom.css
  * Path: /home/matt/Repos/hep-ce/docs/src
  * Created Date: Friday, May 30th 2025, 4:06:42 pm
  * Author: Matthew Carroll
@@ -7,12 +7,22 @@
  * Copyright (c) 2025 Syndemics Lab
  */
 
-a code {
-    color: var(--primary-color);
+html, html.dark-mode {
+    --primary-color: #3D9BE9;
 }
 
-td code {
+#top {
+    height: fit-content;
+}
+
+code {
     text-wrap: nowrap;
+}
+
+a {
+    code  {
+        color: var(--primary-color);
+    }
 }
 
 div.fragment .line {

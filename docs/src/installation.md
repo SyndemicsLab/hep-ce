@@ -88,14 +88,22 @@ scripts/build.sh
 To build alternate presets, use the command `scripts/build.sh -h` to see the
 options in the help dialog.
 
+
+
+<div class="section_buttons">
+
+| Previous     |                  Next |
+|:-------------|----------------------:|
+| [Home][home] | [Data & Inputs][data] |
+
+</div>
+
 [cmake]: https://cmake.org
+[data]: data.md
 [fetchcontent]: https://cmake.org/cmake/help/latest/module/FetchContent.html
 [gcc]: https://gcc.gnu.org/
 [gtest]: https://github.com/google/googletest
 [hepceoptions]: https://github.com/SyndemicsLab/hep-ce/blob/main/cmake/options.cmake
+[home]: index.md
 [ninja]: https://ninja-build.org
 [scc]: https://www.bu.edu/tech/support/research/computing-resources/scc/
-
-Previous: [Home](index.md)
-
-Next: [Data & Inputs](data.md)

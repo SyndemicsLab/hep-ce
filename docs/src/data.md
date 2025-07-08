@@ -34,10 +34,14 @@ any assortment of input numbers, though it is convenient for their numbers to be
 sequential, as using the executable with multiple input sets in one call expects
 them to be sequential:
 
-```
-# this set of inputs could run in a single call of the executable
-input7, input8, input9, input10 #
-# this set of inputs could run too, but with multiple calls of the executable
+```bash
+# this set of inputs could run in a single call of the executable, i.e.
+# `build/extras/executable/hepce_exe data-source 7 10`
+input7, input8, input9, input10
+
+# this set of inputs could run too, but with multiple calls of the executable,
+# i.e. `build/extras/executable/hepce_exe data-source 7 8` and
+# `build/extras/executable/hepce_exe data-source 10 11`
 input7, input8, input10, input11
 ```
 
@@ -340,6 +344,13 @@ TODO
 
 TODO
 
-Previous: [Installation](installation.md)
+<div class="section_buttons">
 
-Next: [Events](events.md)
+| Previous                |             Next |
+|:------------------------|-----------------:|
+| [Installation][install] | [Events][events] |
+
+</div>
+
+[install]: installation.md
+[events]: events.md

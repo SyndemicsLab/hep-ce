@@ -6,6 +6,12 @@
 **Q: What do I put here for question 2?**
 > This is my answer for question 2.
 
-Previous: [Limitations](limitations.md)
+<div class="section_buttons">
 
-Home: [Home](index.md)
+| Previous              | Next |
+|:----------------------|-----:|
+| [Limitations][limits] |      |
+
+</div>
+
+[limits]: limitations.md
