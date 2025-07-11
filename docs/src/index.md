@@ -27,7 +27,7 @@ code from HEPCEv1.
 
 - Easy addition and removal of events
 - Parallel execution using OpenMP
-- Able to be used standalone or as an API in your projects
+- Able to be used standalone or as a library in your projects
 
 ## Installation
 
