@@ -7,17 +7,21 @@
 </a>
 
 `HEP-CE` is a simulation model written and maintained by the
-[Syndemics Lab](https://www.syndemicslab.org) at
-[Boston Medical Center](https://bmc.org).
+[Syndemics Lab][syndemics] at [Boston Medical Center][bmc]. `HEP-CE` is a Markov
+chain Monte Carlo state-transition model which simulates the spread and
+treatment of Hepatitis C Virus (HCV).
 
-The version of `HEP-CE` you see now is a complete refactor developed with a focus on four goals:
+The version of `HEP-CE` you see now is a complete refactor developed with a
+focus on four goals:
 
 1. Implement the model as a discrete-event simulation
 2. Improve the maintainability of the model
 3. Make adding/removing events easier
 4. Make building the model easier across systems
 
-The [old `HEP-CE` model](https://github.com/SyndemicsLab/hep-ce-v1) (HEPCEv1) was written in C++, like this one, but to honor the above goals we did not reuse code from HEPCEv1.
+The [old `HEP-CE` model](https://github.com/SyndemicsLab/hep-ce-v1) (HEPCEv1)
+was written in C++, like this one, but to honor the above goals we did not reuse
+code from HEPCEv1.
 
 ## Key Features
 
@@ -56,12 +60,13 @@ data-source/
 ### Configuration
 
 The `sim.conf` uses the `.ini` configuration format to break down model settings
-into key-value pairs that are also grouped into sections. For detailed descriptions
-of these values, reference [Managing the Data](data.md).
+into key-value pairs that are also grouped into sections. For detailed
+descriptions of these values, reference [Managing the Data](data.md).
 
 ### Database Schema
 
-An empty database with the correct structure can be created via the [example schema](https://github.com/SyndemicsLab/hep-ce/tree/main/extras/examples/inputs.db.sql).
+An empty database with the correct structure can be created via the
+[example schema][dbscheme].
 
 ### Calling the Executable
 
@@ -88,4 +93,7 @@ build/extras/executable/hepce_exe data-source 1 2
 
 </div>
 
+[bmc]: https://bmc.org
+[dbscheme]: https://github.com/SyndemicsLab/hep-ce/tree/main/extras/examples/inputs.db.sql
 [install]: installation.md
+[syndemics]: https://www.syndemicslab.org

@@ -1,15 +1,23 @@
 # HEP-CE: A Hepatitis C Virus Microsimulation
 
-<a href="https://www.syndemicslab.org/hep-ce"><img align="right" src="https://github.com/SyndemicsLab/.github/blob/main/profile/images/HEPCE.png" alt="HEP-CE Logo" height="120" /></a>
+<a href="https://www.syndemicslab.org/hep-ce">
+    <img align="right"
+        src="https://github.com/SyndemicsLab/.github/blob/main/profile/images/HEPCE.png"
+        alt="HEP-CE Logo"
+        height="120"
+    />
+</a>
 
 The `HEP-CE` (**Hep**atitis C **C**ost **E**ffectiveness) model is a Markov
 chain Monte Carlo health state-transition model which simulates the spread and
-treatment of Hepatitis C Virus (HCV) in the United States.  The model uses
-values and information derived from a variety of sources, including clinical
-data and relevant literature.  HEP-CE is used to model the efficacy and
+treatment of Hepatitis C Virus (HCV). `HEP-CE` is used to model the efficacy and
 cost-effectiveness of treatments, policies, and interventions aimed at
 controlling the HCV epidemic on a population-wide basis by understanding the
-effects of changes on individual persons' quality of life.
+effects of changes on individual persons' quality of life and the associated
+relative costs of these approaches to managing the epidemic.
+
+For more/more detailed information about the model, refer to the
+[full documentation][docs].
 
 ## Table of Contents
 
@@ -80,3 +88,6 @@ git clone git@github.com:SyndemicsLab/hep-ce
 cd hep-ce
 cmake --workflow --preset gcc-release
 ```
+
+
+[docs]: https://syndemicslab.github.io/hep-ce

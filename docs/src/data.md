@@ -67,20 +67,20 @@ parameters are specified—there is no tabular data in this file. As is typical 
 `.ini` files, `sim.conf` is broken down into sections, each of which contain
 key-value pairs. `HEP-CE` has fourteen such sections:
 
-- simulation
-- mortality
-- infection
-- eligibility
-- fibrosis
-- fibrosis_staging
-- screening
-- screening_background_ab
-- screening_background_rna
-- screening_intervention_ab
-- screening_intervention_rna
-- linking
-- treatment
-- cost
+- `simulation`
+- `mortality`
+- `infection`
+- `eligibility`
+- `fibrosis`
+- `fibrosis_staging`
+- `screening`
+- `screening_background_ab`
+- `screening_background_rna`
+- `screening_intervention_ab`
+- `screening_intervention_rna`
+- `linking`
+- `treatment`
+- `cost`
 
 [An example `sim.conf`][exampleconf] is provided within the GitHub repository
 for reference.
@@ -377,4 +377,5 @@ TODO
 [ini]: https://docs.fileformat.com/system/ini/
 [install]: installation.md
 [events]: events.md
+[exampleconf]: https://github.com/SyndemicsLab/hep-ce/blob/main/extras/examples/sim.conf
 [sqlite]: https://sqlite.org/index.html
