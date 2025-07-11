@@ -4,8 +4,8 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-11                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -146,14 +146,14 @@ TEST_F(HCVScreeningTest, InterventionScreen_NegativeRNA) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    screen.identified = true;
+    screen.ab_positive = true;
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
-        .WillOnce(Return(0))
-        .WillOnce(Return(1));
+        .WillOnce(Return(0))  // Decision to screen
+        .WillOnce(Return(1)); // Test decision - negative
 
-    EXPECT_CALL(mock_person, GetScreeningDetails(_))
-        .Times(1)
+    EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
+        .Times(2) // once for `valid_screen` and again for antibody testing
         .WillRepeatedly(Return(screen));
     EXPECT_CALL(mock_person, GetHCVDetails())
         .Times(1)
