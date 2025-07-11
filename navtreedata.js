@@ -26,78 +26,47 @@ var NAVTREE =
 [
   [ "HEP-CE", "index.html", [
     [ "Hepatitis-C Cost Effectiveness", "index.html", "index" ],
-    [ "Installation", "md_docs_src_installation.html", [
-      [ "Dependencies", "md_docs_src_installation.html#autotoc_md10", null ],
-      [ "Installing From Source", "md_docs_src_installation.html#autotoc_md11", null ],
-      [ "Installing with CMake", "md_docs_src_installation.html#autotoc_md12", null ]
-    ] ],
-    [ "Managing the Data", "md_docs_src_data.html", [
-      [ "Required Inputs", "md_docs_src_data.html#autotoc_md14", [
-        [ "sim.conf", "md_docs_src_data.html#autotoc_md15", [
-          [ "simulation", "md_docs_src_data.html#autotoc_md16", null ],
-          [ "mortality", "md_docs_src_data.html#autotoc_md17", null ],
-          [ "infection", "md_docs_src_data.html#autotoc_md18", null ],
-          [ "eligibility", "md_docs_src_data.html#autotoc_md19", null ],
-          [ "fibrosis", "md_docs_src_data.html#autotoc_md20", null ],
-          [ "fibrosis_staging", "md_docs_src_data.html#autotoc_md21", null ],
-          [ "screening", "md_docs_src_data.html#autotoc_md22", null ],
-          [ "screening_background_ab", "md_docs_src_data.html#autotoc_md23", null ],
-          [ "screening_background_rna", "md_docs_src_data.html#autotoc_md24", null ],
-          [ "screening_intervention_ab", "md_docs_src_data.html#autotoc_md25", null ],
-          [ "screening_intervention_rna", "md_docs_src_data.html#autotoc_md26", null ],
-          [ "linking", "md_docs_src_data.html#autotoc_md27", null ],
-          [ "treatment", "md_docs_src_data.html#autotoc_md28", null ],
-          [ "cost", "md_docs_src_data.html#autotoc_md29", null ]
-        ] ],
-        [ "Input Database", "md_docs_src_data.html#autotoc_md30", [
-          [ "antibody_testing", "md_docs_src_data.html#autotoc_md31", null ],
-          [ "background_impacts", "md_docs_src_data.html#autotoc_md32", null ],
-          [ "background_mortality", "md_docs_src_data.html#autotoc_md33", null ],
-          [ "behavior_impacts", "md_docs_src_data.html#autotoc_md34", null ],
-          [ "behavior_transitions", "md_docs_src_data.html#autotoc_md35", null ],
-          [ "bool_lookup", "md_docs_src_data.html#autotoc_md36", null ],
-          [ "drug_behaviors", "md_docs_src_data.html#autotoc_md37", null ],
-          [ "fibrosis", "md_docs_src_data.html#autotoc_md38", null ],
-          [ "fibrosis_diagnosis_states", "md_docs_src_data.html#autotoc_md39", null ],
-          [ "fibrosis_states", "md_docs_src_data.html#autotoc_md40", null ],
-          [ "hcv_impacts", "md_docs_src_data.html#autotoc_md41", null ],
-          [ "incidence", "md_docs_src_data.html#autotoc_md42", null ],
-          [ "init_cohort", "md_docs_src_data.html#autotoc_md43", null ],
-          [ "link_states", "md_docs_src_data.html#autotoc_md44", null ],
-          [ "lost_to_follow_up", "md_docs_src_data.html#autotoc_md45", null ],
-          [ "moud", "md_docs_src_data.html#autotoc_md46", null ],
-          [ "pregnancy", "md_docs_src_data.html#autotoc_md47", null ],
-          [ "pregnancy_states", "md_docs_src_data.html#autotoc_md48", null ],
-          [ "screening_and_linkage", "md_docs_src_data.html#autotoc_md49", null ],
-          [ "sex", "md_docs_src_data.html#autotoc_md50", null ],
-          [ "smr", "md_docs_src_data.html#autotoc_md51", null ],
-          [ "treatment_initiations", "md_docs_src_data.html#autotoc_md52", null ],
-          [ "treatments", "md_docs_src_data.html#autotoc_md53", null ]
-        ] ]
+    [ "Building & Installation", "md_docs_src_installation.html", [
+      [ "Dependencies", "md_docs_src_installation.html#autotoc_md9", null ],
+      [ "Building From Source", "md_docs_src_installation.html#autotoc_md10", [
+        [ "Presets", "md_docs_src_installation.html#autotoc_md11", null ],
+        [ "Using HEP-CE in Your Project", "md_docs_src_installation.html#autotoc_md12", null ],
+        [ "Building on UNIX", "md_docs_src_installation.html#autotoc_md13", null ]
       ] ]
     ] ],
-    [ "The Discrete Events", "md_docs_src_events.html", [
-      [ "Aging", "md_docs_src_events.html#autotoc_md55", null ],
-      [ "Behavior Changes", "md_docs_src_events.html#autotoc_md56", null ],
-      [ "Clearance", "md_docs_src_events.html#autotoc_md57", null ],
-      [ "Fibrosis Progression", "md_docs_src_events.html#autotoc_md58", null ],
-      [ "HCV Infection", "md_docs_src_events.html#autotoc_md59", null ],
-      [ "HCV Screening", "md_docs_src_events.html#autotoc_md60", null ],
-      [ "HCV Linking", "md_docs_src_events.html#autotoc_md61", null ],
-      [ "Voluntary Relinking", "md_docs_src_events.html#autotoc_md62", null ],
-      [ "Fibrosis Staging", "md_docs_src_events.html#autotoc_md63", null ],
-      [ "HCV Treatment", "md_docs_src_events.html#autotoc_md64", null ],
-      [ "Death", "md_docs_src_events.html#autotoc_md65", null ]
+    [ "Inputs & Outputs", "md_docs_src_data.html", [
+      [ "Directory Structure", "md_docs_src_data.html#autotoc_md15", null ],
+      [ "Input Files", "md_docs_src_data.html#autotoc_md16", [
+        [ "sim.conf", "md_docs_src_data.html#autotoc_md17", null ],
+        [ "Input Database", "md_docs_src_data.html#autotoc_md18", null ]
+      ] ],
+      [ "Outputs", "md_docs_src_data.html#autotoc_md19", null ]
+    ] ],
+    [ "Events", "md_docs_src_events.html", [
+      [ "Aging", "md_docs_src_events.html#autotoc_md21", null ],
+      [ "Behavior Changes", "md_docs_src_events.html#autotoc_md22", null ],
+      [ "Clearance", "md_docs_src_events.html#autotoc_md23", null ],
+      [ "Fibrosis Progression", "md_docs_src_events.html#autotoc_md24", null ],
+      [ "HCV Infection", "md_docs_src_events.html#autotoc_md25", null ],
+      [ "HCV Screening", "md_docs_src_events.html#autotoc_md26", null ],
+      [ "HCV Linking", "md_docs_src_events.html#autotoc_md27", null ],
+      [ "Voluntary Relinking", "md_docs_src_events.html#autotoc_md28", null ],
+      [ "Fibrosis Staging", "md_docs_src_events.html#autotoc_md29", null ],
+      [ "HCV Treatment", "md_docs_src_events.html#autotoc_md30", null ],
+      [ "Death", "md_docs_src_events.html#autotoc_md31", null ]
     ] ],
     [ "Running the Model", "md_docs_src_run.html", [
-      [ "Using the Executable", "md_docs_src_run.html#autotoc_md67", null ],
-      [ "Arguments", "md_docs_src_run.html#autotoc_md68", null ]
+      [ "Using the Executable", "md_docs_src_run.html#autotoc_md33", null ],
+      [ "Arguments", "md_docs_src_run.html#autotoc_md34", null ]
     ] ],
     [ "Limitations", "md_docs_src_limitations.html", [
-      [ "Library", "md_docs_src_limitations.html#autotoc_md70", null ],
-      [ "Data", "md_docs_src_limitations.html#autotoc_md71", null ]
+      [ "Library", "md_docs_src_limitations.html#autotoc_md36", null ],
+      [ "Data", "md_docs_src_limitations.html#autotoc_md37", null ]
     ] ],
     [ "FAQs", "md_docs_src_faq.html", null ],
+    [ "Differences from HEP-CEv1", "md_docs_src_differences.html", [
+      [ "HCV Screening", "md_docs_src_differences.html#autotoc_md40", null ]
+    ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -130,9 +99,9 @@ var NAVTREEINDEX =
 [
 "aging_8hpp.html",
 "classhepce_1_1model_1_1Person.html#afc9fc2b56135bc906144d07f9ecec733",
-"namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303fa",
-"structhepce_1_1data_1_1MOUDDetails.html#ad0ce119f09cd8778839d44339e40b592",
-"types_8hpp.html#a14b516b2c0fe01d8105d76cc7e8cef42"
+"namespacehepce_1_1data.html#a9de6da60e3609e0f10ba39fe1e2af601a83dffb3af0b588afad1227cdf75a95a9",
+"structhepce_1_1data_1_1PersonSelect.html#a1e902f2a43b3eef6b8a71dfe617cbd3c",
+"types_8hpp.html#a5b26367b2bd73dc3436451e1809a0f1b"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

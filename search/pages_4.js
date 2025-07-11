@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['managing_20the_20data_0',['Managing the Data',['../md_docs_src_data.html',1,'']]]
+  ['hepatitis_2dc_20cost_20effectiveness_0',['Hepatitis-C Cost Effectiveness',['../index.html',1,'']]]
 ];

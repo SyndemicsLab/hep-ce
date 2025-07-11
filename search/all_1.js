@@ -11,5 +11,6 @@ var searchData=
   ['behaviordetails_8',['BehaviorDetails',['../structhepce_1_1data_1_1BehaviorDetails.html',1,'hepce::data']]],
   ['birth_9',['Birth',['../classhepce_1_1model_1_1Person.html#ada91d776ed21e663464d499a40b9c77a',1,'hepce::model::Person']]],
   ['booltostring_10',['BoolToString',['../namespacehepce_1_1utils.html#ae847015d1decdbbddb7d1542ffa72c21',1,'hepce::utils']]],
-  ['boomer_5fclassification_11',['boomer_classification',['../structhepce_1_1data_1_1PersonSelect.html#a7d80aaed25191e8b84db072c475cf8e6',1,'hepce::data::PersonSelect']]]
+  ['boomer_5fclassification_11',['boomer_classification',['../structhepce_1_1data_1_1PersonSelect.html#a7d80aaed25191e8b84db072c475cf8e6',1,'hepce::data::PersonSelect']]],
+  ['building_20_26_20installation_12',['Building &amp; Installation',['../md_docs_src_installation.html',1,'']]]
 ];

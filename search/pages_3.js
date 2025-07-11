@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['limitations_0',['Limitations',['../md_docs_src_limitations.html',1,'']]]
+  ['faqs_0',['FAQs',['../md_docs_src_faq.html',1,'']]]
 ];

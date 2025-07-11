@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['faqs_0',['FAQs',['../md_docs_src_faq.html',1,'']]]
+  ['building_20_26_20installation_0',['Building &amp; Installation',['../md_docs_src_installation.html',1,'']]]
 ];
