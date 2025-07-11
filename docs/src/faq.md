@@ -8,10 +8,11 @@
 
 <div class="section_buttons">
 
-| Previous              | Next |
-|:----------------------|-----:|
-| [Limitations][limits] |      |
+| Previous              | Next                              |
+|:----------------------|----------------------------------:|
+| [Limitations][limits] | [Differences from HEP-CEv1][diff] |
 
 </div>
 
 [limits]: limitations.md
+[diff]: differences.md

@@ -9,10 +9,8 @@
 
 html, html.dark-mode {
     --primary-color: #3D9BE9;
-}
-
-#top {
-    height: fit-content;
+    --secondary-color: #003771;
+    --tertiary-color: #F0325F;
 }
 
 code {
@@ -20,8 +18,17 @@ code {
 }
 
 a {
+    transition-duration: 0.2s;
+
     code  {
         color: var(--primary-color);
+    }
+}
+
+a:hover {
+    color: var(--secondary-color) !important;
+    * {
+        color: var(--secondary-color) !important;
     }
 }
 

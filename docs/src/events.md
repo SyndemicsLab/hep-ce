@@ -87,7 +87,7 @@ Death is the capstone of the events. It aggregates all the things that have happ
 
 | Previous              |       Next |
 |:----------------------|-----------:|
-| [Data & Inputs][data] | [Run][run] |
+| [Inputs & Outputs][data] | [Run][run] |
 
 </div>
 

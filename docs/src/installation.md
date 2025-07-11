@@ -94,7 +94,7 @@ options in the help dialog.
 
 | Previous     |                  Next |
 |:-------------|----------------------:|
-| [Home][home] | [Data & Inputs][data] |
+| [Home][home] | [Inputs & Outputs][data] |
 
 </div>
 

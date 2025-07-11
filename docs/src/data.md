@@ -1,4 +1,4 @@
-# Data & Inputs
+# Inputs & Outputs
 
 The `HEP-CE` model requires structured data in order to obtain meaningful
 outcomes. Here, we'll describe, in detail, how your data should be structured
@@ -34,7 +34,7 @@ any assortment of input numbers, though it is convenient for their numbers to be
 sequential, as using the executable with multiple input sets in one call expects
 them to be sequential:
 
-```bash
+```
 # this set of inputs could run in a single call of the executable, i.e.
 # `build/extras/executable/hepce_exe data-source 7 10`
 input7, input8, input9, input10
@@ -45,13 +45,24 @@ input7, input8, input9, input10
 input7, input8, input10, input11
 ```
 
-## Required Inputs
 
-There are two required input files that contain all the data we need. The first file is a configuration file titled `sim.conf`. The second is an SQLite Database file which contains multiple tables.
+
+## Input Files
+
+Within each numbered input folder, there are two files, `sim.conf` and
+`inputs.db`, which are both required to use the `HEP-CE` executable. `sim.conf`
+is a standard, `.ini`-formatted configuration file and `inputs.db` is a SQLite
+database. In the next sections, we'll dive into the details of each of these
+files.
 
 ### sim.conf
 
-The `sim.conf` file forms the backbone of the HEP-CE model. It governs the general event flow and the basic single-value parameters in the model. This file is meant to be changed by the users to determine what events occur to a person in the model and it does not contain tabular data. The general structure follows a prototypical `.ini` file with a header describing a set of key-value pairs. For HEPCE, there are 14 unique sets:
+The `sim.conf` file forms the backbone of the HEP-CE model. It governs the
+general event flow and the basic single-value parameters in the model. This file
+is meant to be changed by the users to determine what events occur to a person
+in the model and it does not contain tabular data. The general structure follows
+a prototypical `.ini` file with a header describing a set of key-value
+pairs. For HEPCE, there are 14 unique sets:
 
 - simulation
 - mortality
@@ -341,6 +352,10 @@ TODO
 TODO
 
 #### treatments
+
+TODO
+
+## Outputs
 
 TODO
 
