@@ -4,8 +4,8 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-11                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -512,11 +512,11 @@ std::ostream &operator<<(std::ostream &os, const PregnancyState &inst) {
 }
 PregnancyState &operator<<(PregnancyState &inst, const std::string &str) {
     const std::string temp_string = utils::ToLower(str);
-    if (temp_string == "restricted-postpartum") {
+    if (temp_string == "restricted_postpartum") {
         inst = PregnancyState::kRestrictedPostpartum;
-    } else if (temp_string == "year-one-postpartum") {
+    } else if (temp_string == "year_one_postpartum") {
         inst = PregnancyState::kYearOnePostpartum;
-    } else if (temp_string == "year-two-postpartum") {
+    } else if (temp_string == "year_two_postpartum") {
         inst = PregnancyState::kYearTwoPostpartum;
     } else if (temp_string == "pregnant") {
         inst = PregnancyState::kPregnant;

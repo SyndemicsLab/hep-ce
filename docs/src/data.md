@@ -32,37 +32,40 @@ explained in detail in the following sections.
 **Note:** There is no requirement that input folders start at 1. You can have
 any assortment of input numbers, though it is convenient for their numbers to be
 sequential, as using the executable with multiple input sets in one call expects
-them to be sequential:
+them to be sequential. Consider the situation where you have the following
+input folders in `data-source/`:
 
 ```
-# this set of inputs could run in a single call of the executable, i.e.
-# `build/extras/executable/hepce_exe data-source 7 10`
-input7, input8, input9, input10
-
-# this set of inputs could run too, but with multiple calls of the executable,
-# i.e. `build/extras/executable/hepce_exe data-source 7 8` and
-# `build/extras/executable/hepce_exe data-source 10 11`
 input7, input8, input10, input11
 ```
 
+Because they are not sequential, you would need to use two calls to the
+executable to simulate all of the inputs:
 
+```
+build/extras/executable/hepce_exe data-source 7 8
+build/extras/executable/hepce_exe data-source 10 11
+```
+
+Our recommendation is simply that you structure your inputs in a way that makes
+them intuitive and interpretable, so that when someone looks at the data, they
+might understand the meaning without significant effort.
 
 ## Input Files
 
 Within each numbered input folder, there are two files, `sim.conf` and
 `inputs.db`, which are both required to use the `HEP-CE` executable. `sim.conf`
-is a standard, `.ini`-formatted configuration file and `inputs.db` is a SQLite
-database. In the next sections, we'll dive into the details of each of these
-files.
+is a standard, [`.ini`-formatted][ini] configuration file and `inputs.db` is a
+[SQLite database][sqlite]. In the next sections, we'll dive into the details of
+each of these files.
 
 ### sim.conf
 
-The `sim.conf` file forms the backbone of the HEP-CE model. It governs the
-general event flow and the basic single-value parameters in the model. This file
-is meant to be changed by the users to determine what events occur to a person
-in the model and it does not contain tabular data. The general structure follows
-a prototypical `.ini` file with a header describing a set of key-value
-pairs. For HEPCE, there are 14 unique sets:
+The `sim.conf` file defines the structure of a `HEP-CE` simulation run. In this
+file the discrete events, characteristics of HCV care, and single-value
+parameters are specified—there is no tabular data in this file. As is typical of
+`.ini` files, `sim.conf` is broken down into sections, each of which contain
+key-value pairs. `HEP-CE` has fourteen such sections:
 
 - simulation
 - mortality
@@ -78,6 +81,9 @@ pairs. For HEPCE, there are 14 unique sets:
 - linking
 - treatment
 - cost
+
+[An example `sim.conf`][exampleconf] is provided within the GitHub repository
+for reference.
 
 #### simulation
 
@@ -242,6 +248,7 @@ The treatment section governs the details around hepatitis-C treatment. An examp
 
 ```ini
 [treatment]
+treatment_limit     = 100       # The maximum number of treatments a person can experience in the simulation
 treatment_cost      = 118.72    # The monthly cost of applying a treatment
 salvage_cost        = 131.81    # The monthly cost of applying a salvage treatment
 treatment_utility   = 0.99      # The monthly utility of a person on treatment
@@ -367,5 +374,7 @@ TODO
 
 </div>
 
+[ini]: https://docs.fileformat.com/system/ini/
 [install]: installation.md
 [events]: events.md
+[sqlite]: https://sqlite.org/index.html
