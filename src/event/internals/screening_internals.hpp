@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-11                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,9 +62,11 @@ public:
 
         bool do_periodic_screen =
             (GetInterventionType() == "periodic") &&
-            (GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
-                                      .time_of_last_screening) >=
-             GetScreeningPeriod());
+            ((GetTimeSince(person,
+                           person.GetScreeningDetails(GetInfectionType())
+                               .time_of_last_screening) >=
+              GetScreeningPeriod()) ||
+             person.GetCurrentTimestep() == 1);
 
         // If it is time to do a one-time intervention screen or periodic
         // screen, run an intervention screen
