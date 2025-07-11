@@ -88,99 +88,37 @@ in the example.
 
 ### Input Database
 
-All tabular data is stored in the database. In order to generate the database, one simply needs to execute the [script in the examples](extras/examples/inputs.db.sql) and the SQLite file is built accordingly. Due to data constraints, we are not able to share the data we used with our model, only the schema. Users have to insert their own data accordingly.
+All tabular data is stored in the database. In order to generate a database with
+the necessary structure, one simply needs to execute the [script][examplesql]
+provided in the examples—the SQLite file is built accordingly. Due to data use
+agreements, we are not able to share the data we use with our model, only the
+schema. Users will have to provide their own data. The tables within `inputs.db`
+are named as follows:
 
-#### antibody_testing
-
-TODO
-
-#### background_impacts
-
-TODO
-
-#### background_mortality
-
-TODO
-
-#### behavior_impacts
-
-TODO
-
-#### behavior_transitions
-
-TODO
-
-#### bool_lookup
-
-TODO
-
-#### drug_behaviors
-
-TODO
-
-#### fibrosis
-
-TODO
-
-#### fibrosis_diagnosis_states
-
-TODO
-
-#### fibrosis_states
-
-TODO
-
-#### hcv_impacts
-
-TODO
-
-#### incidence
-
-TODO
-
-#### init_cohort
-
-TODO
-
-#### link_states
-
-TODO
-
-#### lost_to_follow_up
-
-TODO
-
-#### moud
-
-TODO
-
-#### pregnancy
-
-TODO
-
-#### pregnancy_states
-
-TODO
-
-#### screening_and_linkage
-
-TODO
-
-#### sex
-
-TODO
-
-#### smr
-
-TODO
-
-#### treatment_initiations
-
-TODO
-
-#### treatments
-
-TODO
+- `antibody_testing`
+- `background_impacts`
+- `background_mortality`
+- `behavior_impacts`
+- `behavior_transitions`
+- `bool_lookup`
+- `drug_behaviors`
+- `fibrosis`
+- `fibrosis_diagnosis_states`
+- `fibrosis_states`
+- `hcv_impacts`
+- `hcv_states`
+- `incidence`
+- `init_cohort`
+- `link_states`
+- `lost_to_follow_up`
+- `moud`
+- `pregnancy`
+- `pregnancy_states`
+- `screening_and_linkage`
+- `sex`
+- `smr`
+- `treatment_initiations`
+- `treatments`
 
 ## Outputs
 
@@ -198,4 +136,5 @@ TODO
 [install]: installation.md
 [events]: events.md
 [exampleconf]: https://github.com/SyndemicsLab/hep-ce/blob/main/extras/examples/sim.conf
+[examplesql]: https://github.com/SyndemicsLab/hep-ce/blob/main/extras/examples/inputs.db.sql
 [sqlite]: https://sqlite.org/index.html
