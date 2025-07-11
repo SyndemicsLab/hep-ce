@@ -6,6 +6,13 @@
 **Q: What do I put here for question 2?**
 > This is my answer for question 2.
 
-Previous: [Limitations](limitations.md)
+<div class="section_buttons">
 
-Home: [Home](index.md)
+| Previous              | Next                              |
+|:----------------------|----------------------------------:|
+| [Limitations][limits] | [Differences from HEP-CEv1][diff] |
+
+</div>
+
+[limits]: limitations.md
+[diff]: differences.md

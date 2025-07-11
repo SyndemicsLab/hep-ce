@@ -1,4 +1,4 @@
-# The Discrete Events
+# Events
 
 The core function of the redesign for HEPCE focused on making the model contain discrete events. Given the nature of discrete events, this means that each event is able to stand on it's own and be added or removed from the simulation without impacting the model's ability to operate on a person. There are two (and only 2) exceptions to the discrete events: 1. Aging and 2. Death. They must be the capstones of the model so that they can ensure the model does not continue running forever. If these are the only events in the model then the model will simulate the lives of a population cohort with the standard US mortality rates with no specific health conditions. The traditional model flow is a cyclical pattern with each event specified in the `sim.conf` occurring in sequence.
 
@@ -83,6 +83,13 @@ Death is the capstone of the events. It aggregates all the things that have happ
 
 ![Death](Death.png)
 
-Previous: [Data](data.md)
+<div class="section_buttons">
 
-Next: [Run](run.md)
+| Previous              |       Next |
+|:----------------------|-----------:|
+| [Inputs & Outputs][data] | [Run][run] |
+
+</div>
+
+[run]: run.md
+[data]: data.md

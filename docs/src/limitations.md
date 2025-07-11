@@ -4,6 +4,13 @@
 
 ## Data
 
-Previous: [Run](run.md)
+<div class="section_buttons">
 
-Next: [FAQs](faq.md)
+| Previous   |        Next |
+|:-----------|------------:|
+| [Run][run] | [FAQs][faq] |
+
+</div>
+
+[run]: run.md
+[faq]: faq.md
