@@ -46,11 +46,7 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
 
     // BehaviorDetails
     SetBehavior(storage.drug_behavior);
-    _behavior_details.time_last_active =
-        (storage.time_last_active_drug_use < -1)
-        ? -1
-        : storage.time_last_active_drug_use;
-    //_behavior_details.time_last_active = storage.time_last_active_drug_use;
+    SetBehaviorLastTimeActive(storage.time_last_active_drug_use);
 
     // HCVDetails
     _hcv_details.hcv = storage.hcv;
