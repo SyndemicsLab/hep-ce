@@ -35,3 +35,9 @@ a:hover {
 div.fragment .line {
     line-height: 1.13;
 }
+
+.flowchart {
+    display: block;
+    margin: auto;
+    max-height: 80vh;
+}
