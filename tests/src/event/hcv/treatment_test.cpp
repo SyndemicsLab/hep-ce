@@ -368,7 +368,7 @@ TEST_F(HCVTreatmentTest, FailsIsEligibleTimeLastUse) {
     behaviors.time_last_active = 7;
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(12));
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
-    EXPECT_CALL(mock_person, GetLinkageDetails(_))
+    EXPECT_CALL(mock_person, GetLinkageDetails(data::InfectionType::kHcv))
         .Times(1)
         .WillOnce(Return(linkage));
     EXPECT_CALL(mock_sampler, GetDecision({{0.0}})).WillOnce(Return(1));
@@ -391,9 +391,8 @@ TEST_F(HCVTreatmentTest, PassesIsEligibleTimeLastUse) {
     behaviors.time_last_active = 7;
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(14));
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
-    EXPECT_CALL(mock_person, GetLinkageDetails(_))
-        .WillOnce(Return(linkage))
-        .WillOnce(Return(linkage));
+    EXPECT_CALL(mock_person, GetLinkageDetails(data::InfectionType::kHcv))
+    .Times(2).WillRepeatedly(Return(linkage));
     EXPECT_CALL(mock_sampler, GetDecision({{0.0}})).WillOnce(Return(1));
     EXPECT_CALL(mock_sampler, GetDecision({{.92}})).WillOnce(Return(1));
 
