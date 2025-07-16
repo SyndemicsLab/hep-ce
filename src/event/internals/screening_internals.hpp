@@ -325,12 +325,15 @@ private:
         if (valid_screen &&
             (!person.GetScreeningDetails(GetInfectionType()).ab_positive)) {
             if (!RunTest(person, type, data::ScreeningTest::kAb, sampler)) {
+                person.ClearDiagnosis(GetInfectionType());
                 return;
             }
         }
 
         if (RunTest(person, type, data::ScreeningTest::kRna, sampler)) {
             person.Diagnose(GetInfectionType());
+        } else {
+            person.ClearDiagnosis(GetInfectionType());
         }
     }
 };
