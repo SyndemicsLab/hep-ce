@@ -356,5 +356,52 @@ TEST_F(HCVTreatmentTest, Withdraw) {
     std::filesystem::remove(LOG_FILE);
 }
 
+TEST_F(HCVTreatmentTest, FailsIsEligibleTimeLastUse) {
+    const std::string LOG_NAME = "FailsIsEligibleTimeLastUse";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    BuildEligibilitySimConf(test_conf);
+    model_data = datamanagement::ModelData::Create(test_conf);
+    model_data->AddSource(test_db);
+
+    behaviors.time_last_active = 7;
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(12));
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
+    EXPECT_CALL(mock_person, GetLinkageDetails(data::InfectionType::kHcv))
+        .Times(1)
+        .WillOnce(Return(linkage));
+    EXPECT_CALL(mock_sampler, GetDecision({{0.0}})).WillOnce(Return(1));
+
+    auto event = event::hcv::Treatment::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVTreatmentTest, PassesIsEligibleTimeLastUse) {
+    const std::string LOG_NAME = "PassesIsEligibleTimeLastUse";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    BuildEligibilitySimConf(test_conf);
+    model_data = datamanagement::ModelData::Create(test_conf);
+    model_data->AddSource(test_db);
+
+    behaviors.time_last_active = 7;
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(14));
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
+    EXPECT_CALL(mock_person, GetLinkageDetails(data::InfectionType::kHcv))
+        .Times(2)
+        .WillRepeatedly(Return(linkage));
+    EXPECT_CALL(mock_sampler, GetDecision({{0.0}})).WillOnce(Return(1));
+    EXPECT_CALL(mock_sampler, GetDecision({{.92}})).WillOnce(Return(1));
+
+    auto event = event::hcv::Treatment::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    std::filesystem::remove(LOG_FILE);
+}
+
 } // namespace testing
 } // namespace hepce

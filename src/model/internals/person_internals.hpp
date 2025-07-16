@@ -328,6 +328,13 @@ private:
         }
         return mult;
     }
+
+    inline void SetBehaviorLastTimeActive(int tla) {
+        if (_behavior_details.time_last_active == _current_time) {
+            return;
+        }
+        _behavior_details.time_last_active = tla < -1 ? -1 : tla;
+    }
 };
 } // namespace model
 } // namespace hepce

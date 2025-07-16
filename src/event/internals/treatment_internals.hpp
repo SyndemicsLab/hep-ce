@@ -221,7 +221,8 @@ private:
 
     bool IsEligibleTimeLastActive(const model::Person &person) const {
         auto time = person.GetBehaviorDetails().time_last_active;
-        if (time == -1 || time > _eligibilities.time_since_last_use) {
+        auto time_diff = person.GetCurrentTimestep() - time;
+        if (time <= -1 || time_diff > _eligibilities.time_since_last_use) {
             return true;
         }
         return false;
