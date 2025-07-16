@@ -60,7 +60,7 @@ MathJax.Hub.Config({
                 <table cellspacing="0" cellpadding="0">
                     <tbody>
                         <tr id="projectrow">
-                            <td id="projectlogo"><img alt="Logo" src="Syndemics_main_logo_50px.png" /></td>
+                            <td id="projectlogo"><img alt="Logo" src="syndemics-logo.png" /></td>
                             <td id="projectalign">
                                 <div id="projectname">HEP-CE<span
                                         id="projectnumber">&#160;2.0.1</span>
@@ -132,18 +132,12 @@ $(document).ready(function(){initNavTree('md_docs_src_events.html',''); initResi
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>The core function of the redesign for HEPCE focused on making the model contain discrete events. Given the nature of discrete events, this means that each event is able to stand on it's own and be added or removed from the simulation without impacting the model's ability to operate on a person. There are two (and only 2) exceptions to the discrete events: 1. Aging and 2. Death. They must be the capstones of the model so that they can ensure the model does not continue running forever. If these are the only events in the model then the model will simulate the lives of a population cohort with the standard US mortality rates with no specific health conditions. The traditional model flow is a cyclical pattern with each event specified in the <code>sim.conf</code> occurring in sequence.</p>
-<div class="image">
-<img src="HEPCEv2-General-Flow.png" alt=""/>
-<div class="caption">
-General Flow</div></div>
-    <h1><a class="anchor" id="autotoc_md21"></a>
+<p><img src="general-flow.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md21"></a>
 Aging</h1>
 <p>Aging is perhaps the most straightforward event in the entire set. It simply checks if the person is alive then attempts to update all timers associated with a person in the simulation. This is why it must occur at the beginning of all simulations, it is responsible for the idea of time.</p>
-<div class="image">
-<img src="Aging.png" alt=""/>
-<div class="caption">
-Aging Event</div></div>
-    <h1><a class="anchor" id="autotoc_md22"></a>
+<p><img src="aging.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md22"></a>
 Behavior Changes</h1>
 <p>Behavior Changes is the event that governs a person's drug use behaviors. These are being modeled as a set of discrete states in which a person could exist in:</p>
 <ul>
@@ -154,18 +148,12 @@ Behavior Changes</h1>
 <li>Former Noninjection</li>
 </ul>
 <p>People are free to transition back and forth between them over each timestep, but once "Never" is left, it cannot be returned to.</p>
-<div class="image">
-<img src="Behavior.png" alt=""/>
-<div class="caption">
-Behavior Changes Event</div></div>
-    <h1><a class="anchor" id="autotoc_md23"></a>
+<p><img src="behavior-changes.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md23"></a>
 Clearance</h1>
 <p>Clearance focuses on the ability of a person to acutely clear their hepatitis-C infection. This is a phenomena seen in the study of hepatitis and generally estimated to be a 25% clearance rate over 6 months. Because we don't want to attribute accute clearances to treatment, we do not allow users in treatment to clear their HCV infection. This naturally results in an overcount of treatment clearances and an undercount in acute clearances, but the impacts are believed to be negligible.</p>
-<div class="image">
-<img src="Clearance.png" alt=""/>
-<div class="caption">
-Clearance Event</div></div>
-    <h1><a class="anchor" id="autotoc_md24"></a>
+<p><img src="clearance.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md24"></a>
 Fibrosis Progression</h1>
 <p>Fibrosis progression focuses on the movement a person experiences through the various phases of liver fibrosis.</p>
 <ul>
@@ -176,56 +164,35 @@ Fibrosis Progression</h1>
 <li>F4: Cirrhosis</li>
 <li>Decompensated: A futher complication of F4 cirrhosis showing significant decline in liver function</li>
 </ul>
-<div class="image">
-<img src="FibrosisProgression.png" alt=""/>
-<div class="caption">
-Fibrosis Progression Event</div></div>
-    <h1><a class="anchor" id="autotoc_md25"></a>
+<p><img src="fibrosis-progression.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md25"></a>
 HCV Infection</h1>
 <p>HCV infection focuses on the chances of being infected by the hepatitis-C virus (HCV). As this is not a transmission model, all infection is on a per-person basis. Additionally, acute HCV infections last for a total of six months before progressing to chronic infection. A key addition to this event is that anybody infected is immediately staged with a fibrosis level of F0 (if no previous fibrosis staging has occurred).</p>
-<div class="image">
-<img src="HCVInfection.png" alt=""/>
-<div class="caption">
-HCV Infection</div></div>
-    <h1><a class="anchor" id="autotoc_md26"></a>
+<p><img src="hcv-infection.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md26"></a>
 HCV Screening</h1>
 <p>HCV screening focuses on the discovery of the hepatitis-C virus. There are two branches in which someone can be screened: 1. intervention and 2. background. These screenings govern the manner in which people can be later linked to care. If someone does not screen and have never been linked to care, they will never be able to link to care under the logic that they do not know they have HCV.</p>
-<div class="image">
-<img src="HCVScreening.png" alt=""/>
-<div class="caption">
-HCV Screening</div></div>
-    <h1><a class="anchor" id="autotoc_md27"></a>
+<p><img src="hcv-screening.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md27"></a>
 HCV Linking</h1>
 <p>HCV linking focuses on the connecting of patients to care for the hepatitis-C virus. This is an event that connects someone being screened to them recieving treatment and can include things such as patients lost to follow up.</p>
-<div class="image">
-<img src="HCVLinking.png" alt=""/>
-<div class="caption">
-HCV Linking</div></div>
-    <h1><a class="anchor" id="autotoc_md28"></a>
+<p><img src="hcv-linking.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md28"></a>
 Voluntary Relinking</h1>
 <p>Voluntary relinking attempts to model the idea that a patient can relink after being treated. This means they previously have been screened, linked, and started treatment but for whatever reason they fell out of treatment without completeing the course. As such, they have all the resources available to them for a certain time and can voluntarily relink to the healthcare system without being re-screened and linked. This is a carry over event from v1 and likely not meant to be included in most modeling efforts as delayed linking is achieved through the HCV Linking event.</p>
 <h1><a class="anchor" id="autotoc_md29"></a>
 Fibrosis Staging</h1>
 <p>Fibrosis staging attempts to organize and assign a measurement to the progression of fibrosis on a patient's liver. This has a history of being invasive tests but recent advances have been made bringing into question the cost effectiveness of various tests and number of tests taken.</p>
-<div class="image">
-<img src="FibrosisStaging.png" alt=""/>
-<div class="caption">
-Fibrosis Staging</div></div>
-    <h1><a class="anchor" id="autotoc_md30"></a>
+<p><img src="fibrosis-staging.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md30"></a>
 HCV Treatment</h1>
 <p>HCV treatment focuses on actually treating patients for HCV. As such, it deals with the various costs and complications that come with treatment, and handles a salvage follow up strategy for those that do not achieve clearance of their condition (SVR). As mentioned in the Clearance event, we know the SVRs are a slight overcount due to the fact that people cannot accute clear while in treatment.</p>
-<div class="image">
-<img src="HCVTreatment.png" alt=""/>
-<div class="caption">
-HCV Treatment</div></div>
-    <h1><a class="anchor" id="autotoc_md31"></a>
+<p><img src="hcv-treatment.png" alt="" class="flowchart" class="inline"/></p>
+<h1><a class="anchor" id="autotoc_md31"></a>
 Death</h1>
 <p>Death is the capstone of the events. It aggregates all the things that have happened to a person in the timestep and then decides whether or not the person dies. Depending on the events in the list, this can include fibrosis complications, HCV complications, background mortality, overdoses, etc.</p>
-<div class="image">
-<img src="Death.png" alt=""/>
-<div class="caption">
-Death</div></div>
-    <div class="section_buttons"></div><div class="section_buttons"><table class="markdownTable">
+<p><img src="death.png" alt="" class="flowchart" class="inline"/></p>
+<div class="section_buttons"></div><div class="section_buttons"><table class="markdownTable">
 <tr class="markdownTableHead">
 <th class="markdownTableHeadLeft">Previous   </th><th class="markdownTableHeadRight">Next    </th></tr>
 <tr class="markdownTableRowOdd">
@@ -237,7 +204,7 @@ Death</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Fri Jul 11 2025 18:57:20 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Wed Jul 16 2025 15:29:44 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>
