@@ -102,7 +102,10 @@ Fibrosis staging attempts to organize and assign a measurement to the progressio
 
 HCV treatment focuses on actually treating patients for HCV. As such, it deals with the various costs and complications that come with treatment, and handles a salvage follow up strategy for those that do not achieve clearance of their condition (SVR). As mentioned in the [Clearance](#clearance) event, we know the SVRs are a slight overcount due to the fact that people cannot accute clear while in treatment.
 
-![HCV Treatment](HCVTreatment.png)
+<img
+    class="flowchart"
+    src="hcv-treatment.png"
+/>
 
 ## Death
 
