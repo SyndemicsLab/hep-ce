@@ -235,12 +235,15 @@ private:
     /// @return Whether intervention screening should happen this timestep
     inline bool IsPeriodicScreen(model::Person &person) {
         bool is_periodic = (GetInterventionType() == "periodic");
+        if (!is_periodic) {
+            return false;
+        }
         bool period_reached =
             (GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
                                       .time_of_last_screening) >=
              GetScreeningPeriod());
         bool is_first_timestep = (person.GetCurrentTimestep() == 1);
-        return (is_periodic && (period_reached || is_first_timestep));
+        return (period_reached || is_first_timestep);
     }
 
     inline const std::string ScreenSQL() const {
