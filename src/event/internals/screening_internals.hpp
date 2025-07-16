@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-11                                                  //
+// Last Modified: 2025-07-16                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -60,13 +60,7 @@ public:
         bool do_one_time_screen = (GetInterventionType() == "one-time") &&
                                   (person.GetCurrentTimestep() == 1);
 
-        bool do_periodic_screen =
-            (GetInterventionType() == "periodic") &&
-            ((GetTimeSince(person,
-                           person.GetScreeningDetails(GetInfectionType())
-                               .time_of_last_screening) >=
-              GetScreeningPeriod()) ||
-             person.GetCurrentTimestep() == 1);
+        bool do_periodic_screen = IsPeriodicScreen(person);
 
         // If it is time to do a one-time intervention screen or periodic
         // screen, run an intervention screen
@@ -230,6 +224,23 @@ private:
             Screen(data::ScreeningType::kBackground, person, sampler);
         }
         return decision;
+    }
+
+    /// @brief Determine whether periodic screening should happen
+    /// when periodic screening, first attempt to screen people on the first
+    /// timestep rather than waiting until a full period has passed before
+    /// the first screen: "if intervention is periodic AND (the period has
+    /// been reached OR it is the first timestep), intervention screen"
+    /// @param person The person to be checked that the conditions are met
+    /// @return Whether intervention screening should happen this timestep
+    inline bool IsPeriodicScreen(model::Person &person) {
+        bool is_periodic = (GetInterventionType() == "periodic");
+        bool period_reached =
+            (GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
+                                      .time_of_last_screening) >=
+             GetScreeningPeriod());
+        bool is_first_timestep = (person.GetCurrentTimestep() == 1);
+        return (is_periodic && (period_reached || is_first_timestep));
     }
 
     inline const std::string ScreenSQL() const {
