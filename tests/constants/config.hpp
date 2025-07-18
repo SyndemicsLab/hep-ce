@@ -12,14 +12,29 @@
 #ifndef HEPCE_TESTS_CONSTANTS_CONFIG_HPP_
 #define HEPCE_TESTS_CONSTANTS_CONFIG_HPP_
 
-#include <hepce/utils/logging.hpp>
-
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace hepce {
 namespace testing {
+
+inline void BuildSimConf(const std::string &name,
+  std::unordered_map<std::string, std::vector<std::string>> config) {
+    std::stringstream ss;
+    for (auto& [section, keys] : config) {
+        ss << '[' << section << ']' << std::endl;
+        for (auto& k : keys) {
+            ss << k << std::endl;
+        }
+    }
+    std::ofstream f(name);
+    f << ss.str();
+    f.close();
+}
+
 inline void BuildSimConf(const std::string &name) {
     std::stringstream s;
     s << "[simulation]" << std::endl
@@ -465,60 +480,6 @@ inline void BuildEligibilitySimConf(const std::string &name) {
     f.close();
 }
 
-inline bool SetSimConfValue(std::string& file, const std::string& log,
-  const std::string& s, std::string val) {
-  int index = s.find('.');
-  std::string sec = s.substr(0, index);
-  sec.insert(0, 1, '[');
-  sec += ']';
-  std::string key = s.substr(index + 1);
-  key += " =";
-
-  std::ifstream fin(file);
-  if(!fin) {
-    hepce::utils::LogError(log, "Failed to open sim.conf for reading!");
-    return false;
-  }
-  std::string tmp;
-  std::vector<std::string> lines;
-  while (getline(fin, tmp)) {
-    lines.push_back(tmp);
-    if (tmp == sec) {
-        while(getline(fin, tmp)) {
-            if (!tmp.empty() && tmp.front() == '[') {
-                //key not found
-                std::string msg = "Failed to change sim.conf value -- ";
-                msg += s;
-                msg += " -- not found";
-                hepce::utils::LogError(log, msg);
-                fin.close();
-                return false;
-            }
-            auto key_len = key.size();
-            if (tmp.substr(0, key_len) == key) {
-              if (val != "") {
-                val.insert(0, 1, ' ');
-              }
-                tmp.replace(key_len, tmp.size() - key_len, val);
-                lines.push_back(tmp);
-                break;
-            }
-            lines.push_back(tmp);
-        }
-    }
-  }
-  fin.close();
-  std::ofstream fout(file, std::ios::trunc);
-  if(!fout) {
-    hepce::utils::LogError(log, "Failed to open sim.conf for writing!");
-    return false;
-  }
-  for (auto& l : lines) {
-    fout << l << std::endl;
-  }
-  fout.close();
-  return true;
-}
 } // namespace testing
 } // namespace hepce
 

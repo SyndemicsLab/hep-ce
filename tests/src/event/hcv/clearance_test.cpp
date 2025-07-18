@@ -45,6 +45,7 @@ protected:
     NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_conf = "sim.conf";
+    std::unordered_map<std::string, std::vector<std::string>> config;
     std::unique_ptr<datamanagement::ModelData> model_data;
     data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
     data::HCVDetails hcv = {data::HCV::kNone,
@@ -150,8 +151,9 @@ TEST_F(HCVClearanceTest, ClearanceProbZero) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    ASSERT_TRUE(SetSimConfValue(test_conf, LOG_NAME,
-        "infection.clearance_prob", "0"));
+    config = {{"infection", {"clearance_prob = 0"}}};
+
+    BuildSimConf(test_conf, config);
     model_data = datamanagement::ModelData::Create(test_conf, LOG_NAME);
 
     hcv.hcv = data::HCV::kAcute;
@@ -162,7 +164,7 @@ TEST_F(HCVClearanceTest, ClearanceProbZero) {
     event->Execute(mock_person, mock_sampler);
 
     std::filesystem::remove(LOG_FILE);
-    std::fstream f(test_conf);
 }
+
 } // namespace testing
 } // namespace hepce
