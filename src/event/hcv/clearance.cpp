@@ -62,9 +62,9 @@ void ClearanceImpl::LoadData(datamanagement::ModelData &model_data) {
         utils::GetDoubleFromConfig("infection.clearance_prob", model_data);
 
     if (_probability == -1) {
-        hepce::utils::LogInfo(GetLogName(),
-                              "Infection Clearance Probability is not found "
-                              "setting to default value of 25\% over 6 months");
+        hepce::utils::LogInfo(
+            GetLogName(), "Infection Clearance Probability is not found. "
+                          "setting to default value of 25\% over 6 months.");
         _probability =
             utils::RateToProbability(utils::ProbabilityToRate(0.25, 6));
     }

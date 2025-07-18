@@ -225,6 +225,8 @@ TEST_F(HCVScreeningTest, Identified_NegativeABTest) {
     EXPECT_CALL(mock_person, Screen(infection_type, data::ScreeningTest::kAb,
                                     screen.screen_type))
         .Times(1);
+    EXPECT_CALL(mock_person, AddCost(14.27, _, model::CostCategory::kScreening))
+        .Times(1);
     EXPECT_CALL(mock_sampler, GetDecision({{.98}})).WillOnce(Return(1));
     EXPECT_CALL(mock_person, ClearDiagnosis(infection_type)).Times(1);
 
