@@ -4,8 +4,8 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-18                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,8 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
         storage.time_of_last_hcv_screening;
     _screening_details[it].num_ab_tests = storage.num_hcv_ab_tests;
     _screening_details[it].num_rna_tests = storage.num_hcv_rna_tests;
-    _screening_details[it].ab_positive = storage.hcv_antibody_positive;
+    _screening_details[it].ab_positive =
+        (storage.hcv_antibody_positive || storage.seropositive);
     _screening_details[it].identified = storage.hcv_identified;
     _screening_details[it].time_identified = storage.time_hcv_identified;
     _screening_details[it].times_identified = storage.times_hcv_identified;

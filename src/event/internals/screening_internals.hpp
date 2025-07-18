@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-16                                                  //
+// Last Modified: 2025-07-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -315,15 +315,18 @@ private:
     /// @param person The Person undergoing an Intervention Screening
     inline void Screen(data::ScreeningType type, model::Person &person,
                        model::Sampler &sampler) {
-        // if person is intervention screening and not identified OR background screened
+        // if person is intervention screening and not identified OR background
+        // screened
         bool valid_screen =
             ((type == data::ScreeningType::kIntervention &&
               !person.GetScreeningDetails(GetInfectionType()).identified) ||
              type == data::ScreeningType::kBackground);
 
-        // if valid screen AND no positive history
-        if (valid_screen &&
-            (!person.GetScreeningDetails(GetInfectionType()).ab_positive)) {
+        if (!valid_screen) {
+            return;
+        }
+
+        if (!person.GetScreeningDetails(GetInfectionType()).ab_positive) {
             if (!RunTest(person, type, data::ScreeningTest::kAb, sampler)) {
                 person.ClearDiagnosis(GetInfectionType());
                 return;
