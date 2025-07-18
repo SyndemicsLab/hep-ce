@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-18                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,8 @@ public:
     MOCK_METHOD(void, ClearHCV, (bool is_acute), (override));
     MOCK_METHOD(void, SetHCV, (data::HCV hcv), (override));
     MOCK_METHOD(void, Diagnose, (data::InfectionType it), (override));
-    MOCK_METHOD(void, ClearDiagnosis, (data::InfectionType it), (override));
+    MOCK_METHOD(void, ClearDiagnosis, (data::InfectionType it, bool fp),
+                (override));
     MOCK_METHOD(bool, IsCirrhotic, (), (const, override));
 
     // Screening
