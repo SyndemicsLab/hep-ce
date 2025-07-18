@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-11                                                  //
+// Last Modified: 2025-07-18                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -42,6 +42,7 @@ namespace testing {
 
 class HCVScreeningTest : public ::testing::Test {
 protected:
+    data::InfectionType TYPE = data::InfectionType::kHcv;
     NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
@@ -179,24 +180,25 @@ TEST_F(HCVScreeningTest, InterventionScreen_PositiveRNA) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    screen.identified = true;
+    screen.ab_positive = true;
+    screen.identified = false;
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(Return(0))
         .WillOnce(Return(0));
 
     EXPECT_CALL(mock_person, GetScreeningDetails(_))
-        .Times(1)
+        .Times(2) // once for checking ab_positive and another for rna test
         .WillRepeatedly(Return(screen));
     EXPECT_CALL(mock_person, GetHCVDetails())
         .Times(1)
         .WillRepeatedly(Return(hcv));
-    EXPECT_CALL(mock_person, Screen(_, data::ScreeningTest::kRna,
+    EXPECT_CALL(mock_person, Screen(TYPE, data::ScreeningTest::kRna,
                                     data::ScreeningType::kIntervention))
         .Times(1);
     EXPECT_CALL(mock_person, AddCost(31.22, _, model::CostCategory::kScreening))
         .Times(1);
-    EXPECT_CALL(mock_person, Diagnose(_)).Times(1);
+    EXPECT_CALL(mock_person, Diagnose(TYPE)).Times(1);
 
     auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
