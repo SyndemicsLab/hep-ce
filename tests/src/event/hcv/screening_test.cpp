@@ -217,14 +217,14 @@ TEST_F(HCVScreeningTest, Identified_NegativeABTest) {
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(2));
 
     ON_CALL(mock_person, GetAge()).WillByDefault(Return(26 * 12));
-    EXPECT_CALL(mock_sampler, GetDecision({{1.0}}))
-        .WillOnce(Return(0));
+    EXPECT_CALL(mock_sampler, GetDecision({{1.0}})).WillOnce(Return(0));
     ON_CALL(mock_person, GetScreeningDetails(infection_type))
         .WillByDefault(Return(screen));
-    
+
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
     EXPECT_CALL(mock_person, Screen(infection_type, data::ScreeningTest::kAb,
-        screen.screen_type)).Times(1);
+                                    screen.screen_type))
+        .Times(1);
     EXPECT_CALL(mock_sampler, GetDecision({{.98}})).WillOnce(Return(1));
     EXPECT_CALL(mock_person, ClearDiagnosis(infection_type)).Times(1);
 

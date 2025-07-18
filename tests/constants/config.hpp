@@ -21,12 +21,13 @@
 namespace hepce {
 namespace testing {
 
-inline void BuildSimConf(const std::string &name,
-  std::unordered_map<std::string, std::vector<std::string>> config) {
+inline void
+BuildSimConf(const std::string &name,
+             std::unordered_map<std::string, std::vector<std::string>> config) {
     std::stringstream ss;
-    for (auto& [section, keys] : config) {
+    for (auto &[section, keys] : config) {
         ss << '[' << section << ']' << std::endl;
-        for (auto& k : keys) {
+        for (auto &k : keys) {
             ss << k << std::endl;
         }
     }
