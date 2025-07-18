@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: person_internals.hpp                                                 //
 // Project: hep-ce                                                            //
-// Created Date: 2025-04-18                                                  //
+// Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-18                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +105,11 @@ public:
         _screening_details[it].times_identified++;
         _screening_details[it].ab_positive = true;
     }
-    inline void ClearDiagnosis(data::InfectionType it) override {
+    inline void ClearDiagnosis(data::InfectionType it, bool fp) override {
+        // remove identification from count if false positive
+        if (fp) {
+            _screening_details[it].times_identified--;
+        }
         _screening_details[it].identified = false;
     }
 
