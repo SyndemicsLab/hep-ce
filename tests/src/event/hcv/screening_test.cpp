@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-18                                                  //
+// Last Modified: 2025-07-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -230,7 +230,7 @@ TEST_F(HCVScreeningTest, Identified_NegativeABTest) {
     EXPECT_CALL(mock_person, AddCost(14.27, _, model::CostCategory::kScreening))
         .Times(1);
     EXPECT_CALL(mock_sampler, GetDecision({{.98}})).WillOnce(Return(1));
-    EXPECT_CALL(mock_person, ClearDiagnosis(infection_type)).Times(1);
+    EXPECT_CALL(mock_person, ClearDiagnosis(infection_type, false)).Times(1);
 
     auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
