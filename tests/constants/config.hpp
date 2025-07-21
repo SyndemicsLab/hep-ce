@@ -106,6 +106,7 @@ inline void BuildSimConf(const std::string &name) {
       << "false_positive_test_cost = 442.39" << std::endl
       << "recent_screen_multiplier = 1.1" << std::endl
       << "recent_screen_cutoff = 0" << std::endl
+      << "decay_type = multiplier" << std::endl
       << "[treatment]" << std::endl
       << "treatment_limit = 5" << std::endl
       << "treatment_cost = 12603.02" << std::endl

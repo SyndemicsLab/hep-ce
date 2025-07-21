@@ -50,6 +50,7 @@ void LinkingImpl::LoadData(datamanagement::ModelData &model_data) {
         "linking.recent_screen_multiplier", model_data));
     SetRecentScreenCutoff(
         utils::GetIntFromConfig("linking.recent_screen_cutoff", model_data));
+    SetDecayType(utils::GetStringFromConfig("linking.decay_type", model_data));
 }
 } // namespace hcv
 } // namespace event

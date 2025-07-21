@@ -55,14 +55,18 @@ public:
         }
 
         double prob = GetLinkProbability(person);
+        int time_diff_ls =
+            GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
+                                     .time_of_last_screening);
         // check if the person was recently screened, for multiplier
-        bool recently_screened =
-            (GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
-                                      .time_of_last_screening) <=
-             _recent_screen_cutoff);
-        // apply the multiplier to recently screened persons
+        bool recently_screened = (time_diff_ls <= _recent_screen_cutoff);
+        // apply the decay to recently screened persons
         if (recently_screened && (prob < 1)) {
-            prob = ApplyMultiplier(prob, _recent_screen_multiplier);
+            if (GetDecayType() == "exponential") {
+                prob = ApplyExpDecay(prob, time_diff_ls);
+            } else if (GetDecayType() == "multiplier") {
+                prob = ApplyMultiplier(prob, _recent_screen_multiplier);
+            }
         }
 
         // draw from link probability
@@ -82,6 +86,7 @@ protected:
     }
     inline double GetInterventionCost() const { return _intervention_cost; }
     inline double GetFalsePositiveCost() const { return _false_positive_cost; }
+    inline std::string GetDecayType() const { return _decay_type; }
 
     static void CallbackLink(std::any &storage, const SQLite::Statement &stmt) {
         linkmap_t *temp = std::any_cast<linkmap_t>(&storage);
@@ -128,6 +133,9 @@ protected:
     }
     inline void SetRecentScreenMultiplier(double mult) {
         _recent_screen_multiplier = mult;
+    }
+    inline void SetDecayType(const std::string decay_type) {
+        _decay_type = decay_type;
     }
 
     inline void SetLinkData(const linkmap_t &link_data) {
@@ -176,6 +184,10 @@ protected:
     inline double ApplyMultiplier(double prob, double mult) {
         return utils::RateToProbability(utils::ProbabilityToRate(prob) * mult);
     }
+    inline double ApplyExpDecay(double prob, int t) {
+        return utils::RateToProbability(utils::ProbabilityToRate(prob) *
+                                        exp(-t));
+    }
 
 private:
     // properties
@@ -185,6 +197,7 @@ private:
     bool _stratify_by_pregnancy = false;
     double _intervention_cost = 0.0;
     double _false_positive_cost = 0.0;
+    std::string _decay_type;
 };
 } // namespace event
 } // namespace hepce
