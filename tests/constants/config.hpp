@@ -15,9 +15,27 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 namespace hepce {
 namespace testing {
+
+inline void
+BuildSimConf(const std::string &name,
+             std::unordered_map<std::string, std::vector<std::string>> config) {
+    std::stringstream ss;
+    for (auto &[section, keys] : config) {
+        ss << '[' << section << ']' << std::endl;
+        for (auto &k : keys) {
+            ss << k << std::endl;
+        }
+    }
+    std::ofstream f(name);
+    f << ss.str();
+    f.close();
+}
+
 inline void BuildSimConf(const std::string &name) {
     std::stringstream s;
     s << "[simulation]" << std::endl
@@ -462,6 +480,7 @@ inline void BuildEligibilitySimConf(const std::string &name) {
     f << s.str();
     f.close();
 }
+
 } // namespace testing
 } // namespace hepce
 

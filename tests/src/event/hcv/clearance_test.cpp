@@ -45,6 +45,7 @@ protected:
     NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_conf = "sim.conf";
+    std::unordered_map<std::string, std::vector<std::string>> config;
     std::unique_ptr<datamanagement::ModelData> model_data;
     data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
     data::HCVDetails hcv = {data::HCV::kNone,
@@ -144,5 +145,26 @@ TEST_F(HCVClearanceTest, Clearance) {
 
     std::filesystem::remove(LOG_FILE);
 }
+
+TEST_F(HCVClearanceTest, ClearanceProbZero) {
+    const std::string LOG_NAME = "ClearanceProbZero";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    config = {{"infection", {"clearance_prob = 0"}}};
+
+    BuildSimConf(test_conf, config);
+    model_data = datamanagement::ModelData::Create(test_conf, LOG_NAME);
+
+    hcv.hcv = data::HCV::kAcute;
+    EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
+    EXPECT_CALL(mock_sampler, GetDecision({{0, 1}})).WillOnce(Return(1));
+
+    auto event = event::hcv::Clearance::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    std::filesystem::remove(LOG_FILE);
+}
+
 } // namespace testing
 } // namespace hepce

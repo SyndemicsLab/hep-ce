@@ -72,8 +72,12 @@ protected:
                          "VALUES (25, 1, 4, -1, 0, 0.02, 1, 0.3);",
                          "INSERT INTO screening_and_linkage "
                          "VALUES (25, 1, 4, 1, 0, 0.03, 1, 0.4);",
+                         "INSERT INTO screening_and_linkage "
+                         "VALUES (26, 1, 4, -1, 1, 1, 0, 0);",
                          "INSERT INTO antibody_testing "
-                         "VALUES (25, 4, 1.0);"}});
+                         "VALUES (25, 4, 1.0);",
+                         "INSERT INTO antibody_testing "
+                         "VALUES (26, 4, 1.0);"}});
         BuildSimConf(test_conf);
         discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
         discounted_life = utils::Discount(1, 0.0025, 1, false);
@@ -193,6 +197,38 @@ TEST_F(HCVScreeningTest, InterventionScreen_PositiveRNA) {
     EXPECT_CALL(mock_person, AddCost(31.22, _, model::CostCategory::kScreening))
         .Times(1);
     EXPECT_CALL(mock_person, Diagnose(_)).Times(1);
+
+    auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVScreeningTest, Identified_NegativeABTest) {
+    const std::string LOG_NAME = "Identified_NegativeABTest";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    screen.identified = true;
+    screen.screen_type = data::ScreeningType::kBackground;
+    auto infection_type = data::InfectionType::kHcv;
+    hcv.hcv = data::HCV::kChronic;
+
+    // to force background rather than intervention screen
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(2));
+
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(26 * 12));
+    EXPECT_CALL(mock_sampler, GetDecision({{1.0}})).WillOnce(Return(0));
+    ON_CALL(mock_person, GetScreeningDetails(infection_type))
+        .WillByDefault(Return(screen));
+
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+    EXPECT_CALL(mock_person, Screen(infection_type, data::ScreeningTest::kAb,
+                                    screen.screen_type))
+        .Times(1);
+    EXPECT_CALL(mock_person, AddCost(14.27, _, model::CostCategory::kScreening))
+        .Times(1);
+    EXPECT_CALL(mock_sampler, GetDecision({{.98}})).WillOnce(Return(1));
+    EXPECT_CALL(mock_person, ClearDiagnosis(infection_type)).Times(1);
 
     auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
