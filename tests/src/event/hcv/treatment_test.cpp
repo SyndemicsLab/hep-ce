@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-18                                                  //
+// Last Modified: 2025-07-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -42,6 +42,7 @@ namespace testing {
 
 class HCVTreatmentTest : public ::testing::Test {
 protected:
+    data::InfectionType TYPE = data::InfectionType::kHcv;
     NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
@@ -238,7 +239,7 @@ TEST_F(HCVTreatmentTest, SVR) {
     EXPECT_CALL(mock_person, AddCompletedTreatment(_)).Times(1);
     EXPECT_CALL(mock_person, AddSVR()).Times(1);
     EXPECT_CALL(mock_person, ClearHCV(_)).Times(1);
-    EXPECT_CALL(mock_person, ClearDiagnosis(_, false)).Times(1);
+    EXPECT_CALL(mock_person, ClearDiagnosis(TYPE, false)).Times(1);
     EXPECT_CALL(mock_person, EndTreatment(_)).Times(1);
     EXPECT_CALL(mock_person, Unlink(_)).Times(1);
     EXPECT_CALL(mock_person, SetUtility(1, model::UtilityCategory::kTreatment))

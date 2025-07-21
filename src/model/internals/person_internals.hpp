@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-18                                                  //
+// Last Modified: 2025-07-21                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -109,6 +109,10 @@ public:
         // remove identification from count if false positive
         if (fp) {
             _screening_details[it].times_identified--;
+            if (_screening_details[it].times_identified == 0) {
+                _screening_details[it].time_identified = -1;
+                _screening_details[it].ab_positive = false;
+            }
         }
         _screening_details[it].identified = false;
     }
