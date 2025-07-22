@@ -437,6 +437,5 @@ TEST_F(PersonTest, LastTimeActiveLessThanNegOne) {
     person->SetPersonDetails(person_select);
     EXPECT_EQ(person->GetBehaviorDetails().time_last_active, -1);
 }
-
 } // namespace testing
 } // namespace hepce
