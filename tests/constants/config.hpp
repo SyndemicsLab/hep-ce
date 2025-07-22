@@ -4,8 +4,8 @@
 // Created Date: 2025-04-23                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-09                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-22                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,9 +104,9 @@ inline void BuildSimConf(const std::string &name) {
       << "voluntary_relinkage_probability = 0.001113" << std::endl
       << "voluntary_relink_duration = 3" << std::endl
       << "false_positive_test_cost = 442.39" << std::endl
+      << "scaling_type = multiplier" << std::endl
       << "recent_screen_multiplier = 1.1" << std::endl
       << "recent_screen_cutoff = 0" << std::endl
-      << "decay_type = multiplier" << std::endl
       << "[treatment]" << std::endl
       << "treatment_limit = 5" << std::endl
       << "treatment_cost = 12603.02" << std::endl

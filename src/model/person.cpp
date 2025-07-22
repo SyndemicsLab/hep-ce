@@ -4,8 +4,8 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-18                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-07-22                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,8 +45,8 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     SetDeathReason(storage.death_reason);
 
     // BehaviorDetails
+    _behavior_details.time_last_active = storage.time_last_active_drug_use;
     SetBehavior(storage.drug_behavior);
-    SetBehaviorLastTimeActive(storage.time_last_active_drug_use);
 
     // HCVDetails
     _hcv_details.hcv = storage.hcv;

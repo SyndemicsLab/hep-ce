@@ -5,7 +5,7 @@
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-07-22                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -433,9 +433,9 @@ TEST_F(PersonTest, MakePopulationRow) {
 
 TEST_F(PersonTest, LastTimeActiveLessThanNegOne) {
     PersonSelect person_select;
-    person_select.time_last_active_drug_use = -3;
+    person_select.time_last_active_drug_use = -6;
     person->SetPersonDetails(person_select);
-    EXPECT_EQ(person->GetBehaviorDetails().time_last_active, -1);
+    EXPECT_EQ(person->GetBehaviorDetails().time_last_active, -6);
 }
 } // namespace testing
 } // namespace hepce

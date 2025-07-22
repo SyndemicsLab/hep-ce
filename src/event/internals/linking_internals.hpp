@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-22                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -58,12 +58,12 @@ public:
         int time_diff_ls =
             GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
                                      .time_of_last_screening);
-        // check if the person was recently screened, for multiplier
         if (prob < 1) {
+            // check if the person was recently screened, for multiplier
             bool recently_screened = (time_diff_ls <= _recent_screen_cutoff);
-            if (GetDecayType() == "exponential") {
+            if (GetScalingType() == "exponential") {
                 prob = ApplyExpDecay(prob, time_diff_ls);
-            } else if (recently_screened && GetDecayType() == "multiplier") {
+            } else if (recently_screened && GetScalingType() == "multiplier") {
                 prob = ApplyMultiplier(prob, _recent_screen_multiplier);
             }
         }
@@ -85,7 +85,7 @@ protected:
     }
     inline double GetInterventionCost() const { return _intervention_cost; }
     inline double GetFalsePositiveCost() const { return _false_positive_cost; }
-    inline std::string GetDecayType() const { return _decay_type; }
+    inline std::string GetScalingType() const { return _scaling_type; }
 
     static void CallbackLink(std::any &storage, const SQLite::Statement &stmt) {
         linkmap_t *temp = std::any_cast<linkmap_t>(&storage);
@@ -133,8 +133,15 @@ protected:
     inline void SetRecentScreenMultiplier(double mult) {
         _recent_screen_multiplier = mult;
     }
-    inline void SetDecayType(const std::string decay_type) {
-        _decay_type = decay_type;
+    inline void SetScalingType(const std::string scaling_type) {
+        if (scaling_type.empty()) {
+            std::stringstream msg;
+            msg << "Scaling type is Empty: " << GetInfectionType()
+                << " linking behavior may be unexpected.";
+            hepce::utils::LogWarning(GetLogName(), msg.str());
+            return;
+        }
+        _scaling_type = scaling_type;
     }
 
     inline void SetLinkData(const linkmap_t &link_data) {
@@ -196,7 +203,7 @@ private:
     bool _stratify_by_pregnancy = false;
     double _intervention_cost = 0.0;
     double _false_positive_cost = 0.0;
-    std::string _decay_type;
+    std::string _scaling_type;
 };
 } // namespace event
 } // namespace hepce

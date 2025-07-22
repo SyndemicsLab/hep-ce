@@ -5,7 +5,7 @@
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-07-22                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -249,7 +249,7 @@ TEST_F(HCVLinkingTest, LinkRateExpDecay) {
 
     config = {{"linking",
                {"recent_screen_cutoff = 10", "recent_screen_multiplier = 1.0",
-                "decay_type = exponential"}}};
+                "scaling_type = exponential"}}};
 
     BuildSimConf(test_conf, config);
     model_data = datamanagement::ModelData::Create(test_conf, LOG_NAME);
@@ -282,7 +282,7 @@ TEST_F(HCVLinkingTest, LinkRateMultiplier) {
 
     config = {{"linking",
                {"recent_screen_cutoff = 10", "recent_screen_multiplier = 0.5",
-                "decay_type = multiplier"}}};
+                "scaling_type = multiplier"}}};
 
     BuildSimConf(test_conf, config);
     model_data = datamanagement::ModelData::Create(test_conf, LOG_NAME);
