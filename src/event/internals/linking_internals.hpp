@@ -59,12 +59,11 @@ public:
             GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
                                      .time_of_last_screening);
         // check if the person was recently screened, for multiplier
-        bool recently_screened = (time_diff_ls <= _recent_screen_cutoff);
-        // apply the decay to recently screened persons
-        if (recently_screened && (prob < 1)) {
+        if (prob < 1) {
+            bool recently_screened = (time_diff_ls <= _recent_screen_cutoff);
             if (GetDecayType() == "exponential") {
                 prob = ApplyExpDecay(prob, time_diff_ls);
-            } else if (GetDecayType() == "multiplier") {
+            } else if (recently_screened && GetDecayType() == "multiplier") {
                 prob = ApplyMultiplier(prob, _recent_screen_multiplier);
             }
         }
