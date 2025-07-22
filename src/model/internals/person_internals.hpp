@@ -109,7 +109,7 @@ public:
         _screening_details[it].identified = false;
     }
     inline void FalsePositive(data::InfectionType it) override {
-        _screening_details[it].identified = false;
+        ClearDiagnosis(it);
         _screening_details[it].times_identified--;
         if (_screening_details[it].times_identified == 0) {
             _screening_details[it].time_identified = -1;
