@@ -1,5 +1,7 @@
 var NAVTREEINDEX4 =
 {
+"types_8hpp.html#a505936e8feff5cc6c4e9eef9fd31df87af44803932b2e37ce114dc5064285019e":[10,0,1,0,0,0,15,2],
+"types_8hpp.html#a519af3b81d0867bd7a82da9c14ea92e8":[10,0,1,0,0,0,69],
 "types_8hpp.html#a5b26367b2bd73dc3436451e1809a0f1b":[10,0,1,0,0,0,61],
 "types_8hpp.html#a5ba6cbf4221a2080c1bc969c37948b14":[10,0,1,0,0,0,45],
 "types_8hpp.html#a5cd60c185e15d27341d7389766d3812f":[10,0,1,0,0,0,23],
