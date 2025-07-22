@@ -4,7 +4,7 @@
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-21                                                  //
+// Last Modified: 2025-07-22                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -147,9 +147,9 @@ TEST_F(PersonTest, ClearDiagnosis) {
               person->GetCurrentTimestep());
 }
 
-TEST_F(PersonTest, ClearDiagnosis_FalsePositive) {
+TEST_F(PersonTest, FalsePositive) {
     person->Diagnose(TYPE);
-    person->ClearDiagnosis(TYPE, true);
+    person->FalsePositive(TYPE);
     EXPECT_FALSE(person->GetScreeningDetails(TYPE).identified);
     EXPECT_FALSE(person->GetScreeningDetails(TYPE).ab_positive);
     EXPECT_EQ(person->GetScreeningDetails(TYPE).times_identified, 0);

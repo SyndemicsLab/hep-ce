@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-18                                                  //
+// Last Modified: 2025-07-22                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -102,7 +102,7 @@ TEST_F(HCVLinkingTest, Linked) {
 
     // Ensure we don't execute anything if we are already linked.
     EXPECT_CALL(mock_person, Link(_)).Times(0);
-    EXPECT_CALL(mock_person, ClearDiagnosis(_, _)).Times(0);
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
     auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
@@ -124,7 +124,7 @@ TEST_F(HCVLinkingTest, NotIdentified) {
 
     // Ensure we don't progress and try to evaluate details if they're not identified
     EXPECT_CALL(mock_person, Link(_)).Times(0);
-    EXPECT_CALL(mock_person, ClearDiagnosis(_, _)).Times(0);
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
     auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
@@ -147,7 +147,7 @@ TEST_F(HCVLinkingTest, FalsePositive) {
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
 
     // Clear and add costs automatically, Not Sample Dependent
-    EXPECT_CALL(mock_person, ClearDiagnosis(TYPE, true)).Times(1);
+    EXPECT_CALL(mock_person, FalsePositive(TYPE)).Times(1);
     EXPECT_CALL(mock_person, AddCost(442.39, _, model::CostCategory::kLinking))
         .Times(1);
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
@@ -178,7 +178,7 @@ TEST_F(HCVLinkingTest, RecentScreen) {
 
     // Test the Decision But do not clear
     EXPECT_CALL(mock_sampler, GetDecision(p)).WillOnce(Return(1));
-    EXPECT_CALL(mock_person, ClearDiagnosis(_, _)).Times(0);
+    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(0);
 
     auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
