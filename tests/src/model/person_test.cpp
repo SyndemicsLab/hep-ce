@@ -4,8 +4,8 @@
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-22                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -142,6 +142,18 @@ TEST_F(PersonTest, ClearDiagnosis) {
     person->ClearDiagnosis(TYPE);
     EXPECT_FALSE(person->GetScreeningDetails(TYPE).identified);
     EXPECT_TRUE(person->GetScreeningDetails(TYPE).ab_positive);
+    EXPECT_EQ(person->GetScreeningDetails(TYPE).times_identified, 1);
+    EXPECT_EQ(person->GetScreeningDetails(TYPE).time_identified,
+              person->GetCurrentTimestep());
+}
+
+TEST_F(PersonTest, FalsePositive) {
+    person->Diagnose(TYPE);
+    person->FalsePositive(TYPE);
+    EXPECT_FALSE(person->GetScreeningDetails(TYPE).identified);
+    EXPECT_FALSE(person->GetScreeningDetails(TYPE).ab_positive);
+    EXPECT_EQ(person->GetScreeningDetails(TYPE).times_identified, 0);
+    EXPECT_EQ(person->GetScreeningDetails(TYPE).time_identified, -1);
 }
 
 TEST_F(PersonTest, IsCirrhotic_False) {

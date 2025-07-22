@@ -4,8 +4,8 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-22                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,6 +42,7 @@ namespace testing {
 
 class HCVLinkingTest : public ::testing::Test {
 protected:
+    data::InfectionType TYPE = data::InfectionType::kHcv;
     NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
@@ -146,7 +147,7 @@ TEST_F(HCVLinkingTest, FalsePositive) {
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
 
     // Clear and add costs automatically, Not Sample Dependent
-    EXPECT_CALL(mock_person, ClearDiagnosis(_)).Times(1);
+    EXPECT_CALL(mock_person, FalsePositive(TYPE)).Times(1);
     EXPECT_CALL(mock_person, AddCost(442.39, _, model::CostCategory::kLinking))
         .Times(1);
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);

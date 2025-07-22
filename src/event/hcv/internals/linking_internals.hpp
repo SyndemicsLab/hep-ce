@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-22                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ private:
         if (person.GetHCVDetails().hcv != data::HCV::kNone) {
             return false;
         }
-        person.ClearDiagnosis(data::InfectionType::kHcv);
+        person.FalsePositive(GetInfectionType());
         AddFalsePositiveCost(person, GetEventCostCategory());
         return true;
     }

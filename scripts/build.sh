@@ -93,18 +93,16 @@ done
         fi
     fi
 
-    (
-        case $BUILDTYPE in
-            "Debug")
-                PRESET="gcc-debug-cluster"
-                ;;
-            "Release")
-                PRESET="gcc-release-cluster"
-                ;;
-            "Strict")
-                PRESET="gcc-release-strict-cluster"
-                ;;
-        esac
-        cmake --workflow --preset "$PRESET" --fresh
-    )
+    case $BUILDTYPE in
+        "Debug")
+            PRESET="gcc-debug-cluster"
+            ;;
+        "Release")
+            PRESET="gcc-release-cluster"
+            ;;
+        "Strict")
+            PRESET="gcc-release-strict-cluster"
+            ;;
+    esac
+    cmake --workflow --preset "$PRESET" --fresh
 )

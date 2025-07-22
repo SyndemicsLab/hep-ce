@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: person.hpp                                                           //
 // Project: hep-ce                                                            //
-// Created Date: 2025-04-17                                                  //
+// Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-22                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +40,7 @@ public:
     virtual void SetHCV(data::HCV hcv) = 0;
     virtual void Diagnose(data::InfectionType it) = 0;
     virtual void ClearDiagnosis(data::InfectionType it) = 0;
+    virtual void FalsePositive(data::InfectionType it) = 0;
     virtual bool IsCirrhotic() const = 0;
     virtual void SetFibrosis(data::FibrosisState) = 0;
     virtual void AddSVR() = 0;
