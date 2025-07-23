@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: costing_mock.hpp                                                     //
 // Project: hep-ce                                                            //
-// Created Date: 2025-05-09                                                   //
+// Created Date: 2025-05-09                                                    //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-05-09                                                  //

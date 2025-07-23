@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: sampler.cpp                                                          //
 // Project: hep-ce                                                            //
-// Created Date: 2025-05-02                                                   //
+// Created Date: 2025-05-02                                                    //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-05-08                                                  //

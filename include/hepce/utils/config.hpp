@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: config.hpp                                                           //
 // Project: hep-ce                                                            //
-// Created Date: 2025-04-18                                                  //
+// Created Date: 2025-04-18                                                    //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-13                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-22                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
