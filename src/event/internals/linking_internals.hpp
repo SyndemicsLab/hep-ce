@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                  //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-22                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,14 +55,17 @@ public:
         }
 
         double prob = GetLinkProbability(person);
-        // check if the person was recently screened, for multiplier
-        bool recently_screened =
-            (GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
-                                      .time_of_last_screening) <=
-             _recent_screen_cutoff);
-        // apply the multiplier to recently screened persons
-        if (recently_screened && (prob < 1)) {
-            prob = ApplyMultiplier(prob, _recent_screen_multiplier);
+        int time_diff_ls =
+            GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
+                                     .time_of_last_screening);
+        if (prob < 1) {
+            // check if the person was recently screened, for multiplier
+            bool recently_screened = (time_diff_ls <= _recent_screen_cutoff);
+            if (GetScalingType() == "exponential") {
+                prob = ApplyExpDecay(prob, time_diff_ls);
+            } else if (recently_screened && GetScalingType() == "multiplier") {
+                prob = ApplyMultiplier(prob, _recent_screen_multiplier);
+            }
         }
 
         // draw from link probability
@@ -82,6 +85,7 @@ protected:
     }
     inline double GetInterventionCost() const { return _intervention_cost; }
     inline double GetFalsePositiveCost() const { return _false_positive_cost; }
+    inline std::string GetScalingType() const { return _scaling_type; }
 
     static void CallbackLink(std::any &storage, const SQLite::Statement &stmt) {
         linkmap_t *temp = std::any_cast<linkmap_t>(&storage);
@@ -128,6 +132,16 @@ protected:
     }
     inline void SetRecentScreenMultiplier(double mult) {
         _recent_screen_multiplier = mult;
+    }
+    inline void SetScalingType(const std::string scaling_type) {
+        if (scaling_type.empty()) {
+            std::stringstream msg;
+            msg << "Scaling type is Empty: " << GetInfectionType()
+                << " linking behavior may be unexpected.";
+            hepce::utils::LogWarning(GetLogName(), msg.str());
+            return;
+        }
+        _scaling_type = scaling_type;
     }
 
     inline void SetLinkData(const linkmap_t &link_data) {
@@ -176,6 +190,10 @@ protected:
     inline double ApplyMultiplier(double prob, double mult) {
         return utils::RateToProbability(utils::ProbabilityToRate(prob) * mult);
     }
+    inline double ApplyExpDecay(double prob, int t) {
+        return utils::RateToProbability(utils::ProbabilityToRate(prob) *
+                                        exp(-t));
+    }
 
 private:
     // properties
@@ -185,6 +203,7 @@ private:
     bool _stratify_by_pregnancy = false;
     double _intervention_cost = 0.0;
     double _false_positive_cost = 0.0;
+    std::string _scaling_type;
 };
 } // namespace event
 } // namespace hepce

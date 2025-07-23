@@ -5,7 +5,7 @@
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-07-22                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -335,13 +335,6 @@ private:
             mult *= kv.second;
         }
         return mult;
-    }
-
-    inline void SetBehaviorLastTimeActive(int tla) {
-        if (_behavior_details.time_last_active == _current_time) {
-            return;
-        }
-        _behavior_details.time_last_active = tla < -1 ? -1 : tla;
     }
 };
 } // namespace model
