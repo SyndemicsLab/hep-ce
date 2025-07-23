@@ -148,7 +148,7 @@ void DeathImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
             [](std::any &storage, const SQLite::Statement &stmt) {
                 utils::tuple_2i tup = std::make_tuple(
                     stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt());
-                std::any_cast<overdosemap_t&>(storage)[tup] =
+                std::any_cast<overdosemap_t &>(storage)[tup] =
                     stmt.getColumn(2).getDouble();
             },
             storage);
