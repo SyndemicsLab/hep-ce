@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: infection_test.cpp                                                   //
 // Project: hep-ce                                                            //
-// Created Date: 2025-05-01                                                    //
+// Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-14                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-23                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
