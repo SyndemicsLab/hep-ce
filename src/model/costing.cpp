@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: costing.cpp                                                          //
 // Project: hep-ce                                                            //
-// Created Date: 2025-04-22                                                  //
+// Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-05-08                                                  //

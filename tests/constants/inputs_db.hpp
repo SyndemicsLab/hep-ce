@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: inputs_db.hpp                                                        //
 // Project: hep-ce                                                            //
-// Created Date: 2025-04-23                                                  //
+// Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-06-12                                                  //
@@ -61,8 +61,8 @@ inline const std::string CreateBackgroundMortalities() {
 inline const std::string CreateOverdoses() {
     std::stringstream s;
     s << ("CREATE TABLE overdoses "
-        "(moud INTEGER, drug_behavior INTEGER, "
-        "fatality_probability REAL);");
+          "(moud INTEGER, drug_behavior INTEGER, "
+          "fatality_probability REAL);");
     return s.str();
 }
 

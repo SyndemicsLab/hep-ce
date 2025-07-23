@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: screening_internals.hpp                                              //
 // Project: hep-ce                                                            //
-// Created Date: 2025-04-18                                                  //
+// Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
 // Last Modified: 2025-05-06                                                  //
