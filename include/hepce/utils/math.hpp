@@ -63,6 +63,15 @@ inline int GetCurrentTimeInMilliseconds() {
             current_time.time_since_epoch())
             .count());
 }
+
+/// @brief Sigmoidal Decay Function
+/// @param timestep The timestep to adjust for
+/// @param decay_start The timestep at which decay is steepest
+/// @param steepness The steepness of the decay
+/// @return Decayed value
+inline double SigmoidalDecay(double value, int time, int decay_start, double steepness) {
+    return value / (1 + exp(steepness * (time - decay_start)));
+}
 } // namespace utils
 } // namespace hepce
 

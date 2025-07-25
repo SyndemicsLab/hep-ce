@@ -194,6 +194,11 @@ protected:
         return utils::RateToProbability(utils::ProbabilityToRate(prob) *
                                         exp(-t));
     }
+    inline double ApplySigmoidalDecay(double prob, int t) {
+        double rate = utils::ProbabilityToRate(prob);
+        double decayed_rate = utils::SigmoidalDecay(rate, t, _peak_decay, _steepness);
+        return utils::RateToProbability(decayed_rate);
+    }
 
 private:
     // properties
@@ -204,6 +209,8 @@ private:
     double _intervention_cost = 0.0;
     double _false_positive_cost = 0.0;
     std::string _scaling_type;
+    double _peak_decay = 3.5;
+    double _steepness = 3;
 };
 } // namespace event
 } // namespace hepce
