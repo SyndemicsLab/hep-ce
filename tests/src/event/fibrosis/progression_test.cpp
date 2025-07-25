@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-25                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -97,18 +97,22 @@ TEST_F(ProgressionTest, NoProgression) {
     const std::string LOG_NAME = "NoProgression";
     const std::string LOG_FILE = "NoProgression.log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
-    hcv.hcv = data::HCV::kAcute;
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(5)
-        .WillRepeatedly(Return(hcv));
-    EXPECT_CALL(mock_sampler, GetDecision(_))
-        .Times(1)
-        .WillRepeatedly(Return(1));
-    EXPECT_CALL(mock_person, SetFibrosis(_)).Times(0);
-    EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
-        .Times(0);
 
-    EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
+    // person setup
+    hcv.hcv = data::HCV::kAcute;
+    hcv.fibrosis_state = data::FibrosisState::kF0;
+
+    // expectations
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(7)
+        .WillRepeatedly(Return(hcv));
+    EXPECT_CALL(mock_sampler, GetDecision({{0.008877, 1 - 0.008877}}))
+        .WillOnce(Return(1));
+    EXPECT_CALL(mock_person, SetFibrosis(_)).Times(0);
+    EXPECT_CALL(mock_person, GetScreeningDetails(_)).Times(0);
+
+    EXPECT_CALL(mock_person, AddCost(430.00, _, model::CostCategory::kLiver))
+        .Times(1);
     EXPECT_CALL(mock_person, SetUtility(0.8, model::UtilityCategory::kLiver))
         .Times(1);
 
@@ -192,31 +196,28 @@ TEST_F(ProgressionTest, Progression) {
     const std::string LOG_NAME = "Progression";
     const std::string LOG_FILE = "Progression.log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
-    data::HCVDetails new_hcv = {data::HCV::kNone,
-                                data::FibrosisState::kF1,
-                                false,
-                                false,
-                                -1,
-                                -1,
-                                0,
-                                0,
-                                0};
 
     hcv.hcv = data::HCV::kAcute;
+    data::HCVDetails new_hcv = hcv;
+    new_hcv.fibrosis_state = data::FibrosisState::kF1;
+
     EXPECT_CALL(mock_person, GetHCVDetails())
         .WillOnce(Return(hcv))
         .WillOnce(Return(hcv))
         .WillOnce(Return(hcv))
-        .WillOnce(Return(hcv))
+        .WillOnce(Return(new_hcv))
+        .WillOnce(Return(new_hcv))
+        .WillOnce(Return(new_hcv))
         .WillOnce(Return(new_hcv));
-    EXPECT_CALL(mock_sampler, GetDecision(_))
+    EXPECT_CALL(mock_sampler, GetDecision({{0.008877, 1 - 0.008877}}))
         .Times(1)
         .WillRepeatedly(Return(0));
     EXPECT_CALL(mock_person, SetFibrosis(data::FibrosisState::kF1)).Times(1);
     EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
         .Times(0);
 
-    EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
+    EXPECT_CALL(mock_person, AddCost(500.00, _, model::CostCategory::kLiver))
+        .Times(1);
     EXPECT_CALL(mock_person, SetUtility(0.7, model::UtilityCategory::kLiver))
         .Times(1);
 
