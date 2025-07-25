@@ -4,8 +4,8 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-30                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-25                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +77,7 @@ int main(int argc, char *argv[]) {
         std::filesystem::path dbfile = input_dir / "inputs.db";
         std::filesystem::path config = input_dir / "sim.conf";
         std::filesystem::path popfile = output_dir / "population.csv";
+        std::filesystem::path costfile = output_dir / "categorized_costs.csv";
 
         std::filesystem::path log_file = output_dir / "hepce.log";
         std::string log_name = "hepce-task-" + std::to_string(i);
@@ -94,6 +95,8 @@ int main(int argc, char *argv[]) {
             hepce::data::Writer::Create(output_dir.string(), log_name);
         writer->WritePopulation(population, popfile.string(),
                                 hepce::data::OutputType::kFile);
+        writer->WriteCostsByCategory(population, costfile.string(),
+                                     hepce::data::OutputType::kFile);
     }
 
     return 0;

@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-25                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ public:
     void LoadData(datamanagement::ModelData &model_data) override;
 
 private:
-    bool _add_cost_data = false;
+    bool _add_if_identified = false;
     progression_probabilities _probabilities;
     costutilmap_t _cost_data;
 

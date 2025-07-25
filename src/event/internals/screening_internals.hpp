@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-21                                                  //
+// Last Modified: 2025-07-25                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -199,7 +199,14 @@ private:
             probability = _probability[tup].intervention;
         }
         if (person.IsBoomer()) {
-            probability *= _seropositivity_boomer_multiplier;
+            // there is no need to scale the probability up if it is already 1.
+            // it is also outside the domain of ln(1-prob), needed by
+            // `ProbabilityToRate()`
+            if (probability < 1.0) {
+                probability = utils::RateToProbability(
+                    utils::ProbabilityToRate(probability) *
+                    _seropositivity_boomer_multiplier);
+            }
         }
         return probability;
     }

@@ -4,8 +4,8 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-12                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-24                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,6 +22,10 @@ public:
                const std::string &log_name = "console");
     ~WriterImpl() = default;
     std::string WritePopulation(
+        const std::vector<std::unique_ptr<model::Person>> &population,
+        const std::string &filename, const OutputType output_type,
+        std::vector<int> ids = {}) override;
+    std::string WriteCostsByCategory(
         const std::vector<std::unique_ptr<model::Person>> &population,
         const std::string &filename, const OutputType output_type,
         std::vector<int> ids = {}) override;

@@ -4,8 +4,8 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-07-25                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,13 +60,15 @@ void ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
         person.SetFibrosis(fs);
     }
 
+    AddProgressionUtility(person);
     // insert Person's liver-related disease cost (taking the highest
     // fibrosis state) only if the person is identified as infected
-    if (_add_cost_data &&
-        person.GetScreeningDetails(data::InfectionType::kHcv).identified) {
-        AddProgressionCost(person);
+    if (_add_if_identified) {
+        if (!person.GetScreeningDetails(data::InfectionType::kHcv).identified) {
+            return;
+        }
     }
-    AddProgressionUtility(person);
+    AddProgressionCost(person);
 }
 
 void ProgressionImpl::LoadData(datamanagement::ModelData &model_data) {
@@ -79,7 +81,7 @@ void ProgressionImpl::LoadData(datamanagement::ModelData &model_data) {
                       utils::GetDoubleFromConfig("fibrosis.f34", model_data),
                       utils::GetDoubleFromConfig("fibrosis.f4d", model_data)};
 
-    _add_cost_data = utils::GetBoolFromConfig(
+    _add_if_identified = utils::GetBoolFromConfig(
         "fibrosis.add_cost_only_if_identified", model_data);
 
     std::any storage = costutilmap_t{};
