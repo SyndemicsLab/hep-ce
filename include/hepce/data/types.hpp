@@ -203,9 +203,9 @@ enum class FibrosisState {
     kF1 = 1, ///< Mild Liver Scarring
     kF2 = 2, ///< Scarring has occurred and extends outside the liver area
     kF3 =
-        3, ///< Fibrosis spreading and forming bridges with other fibrotic liver areas
+         3, ///< Fibrosis spreading and forming bridges with other fibrotic liver areas
     kF4 =
-    4,     ///< Cirrhosis or advanced scarring
+      4,     ///< Cirrhosis or advanced scarring
     kDecomp = 5, ///< Symptomatic cirrhosis; over complications
     kNone = 6,   ///< No adverse liver effects
     kCount = 7   ///< Count of `FibrosisState` Enum
