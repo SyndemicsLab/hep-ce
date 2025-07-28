@@ -28,8 +28,7 @@ namespace hcv {
 std::unique_ptr<hepce::event::Event>
 Infection::Create(datamanagement::ModelData &model_data,
                   const std::string &log_name) {
-    return std::make_unique<InfectionImpl>
-    (model_data, log_name);
+    return std::make_unique<InfectionImpl>(model_data, log_name);
 }
 
 // Constructor
