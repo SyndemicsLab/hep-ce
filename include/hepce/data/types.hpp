@@ -20,7 +20,8 @@
 namespace hepce {
 namespace data {
 inline static const std::string
-POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
+POPULATION_HEADERS(
+    bool pregnancy = false, bool hcc = false,
                    bool overdose = false, bool hiv = false, bool moud = false) {
     std::stringstream headers;
     // basic characteristics
