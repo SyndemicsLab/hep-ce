@@ -203,7 +203,7 @@ enum class FibrosisState {
     kF1 = 1, ///< Mild Liver Scarring
     kF2 = 2, ///< Scarring has occurred and extends outside the liver area
     kF3 =
-         3, ///< Fibrosis spreading and forming bridges with other fibrotic liver areas
+        3, ///< Fibrosis spreading and forming bridges with other fibrotic liver areas
     kF4 = 4,     ///< Cirrhosis or advanced scarring
     kDecomp = 5, ///< Symptomatic cirrhosis; over complications
     kNone = 6,   ///< No adverse liver effects
@@ -361,8 +361,7 @@ struct StagingDetails {
     MeasuredFibrosisState measured_fibrosis_state =
         MeasuredFibrosisState::kNone;
     bool had_second_test = false;
-    int time_of_last_staging =
-    -1;
+    int time_of_last_staging = -1;
 };
 std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet);
 
