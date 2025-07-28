@@ -2,9 +2,9 @@ name: Clang Formatting
 
 on:
   push:
-    branches: [ "main", "workflow/clangformatting" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "main", "workflow/clangformatting" ]
+    branches: [ "main" ]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
