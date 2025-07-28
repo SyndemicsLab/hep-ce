@@ -51,7 +51,7 @@ sqliteinstall () {
 BUILDTYPE="Release"
 
 # process optional command line flags
-while getopts ":ht:" option; do
+while getopts "ht:" option; do
     case $option in
         h)
             showhelp
