@@ -49,7 +49,8 @@ void InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     // infection
     if (person.GetHCVDetails().hcv == data::HCV::kAcute &&
         GetTimeSince(person, person.GetHCVDetails().time_changed) >= 6) {
-        person.SetHCV(data::HCV::kChronic);
+        person
+        .SetHCV(data::HCV::kChronic);
     }
 
     // If already infected, skip
