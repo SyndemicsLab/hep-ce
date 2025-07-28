@@ -361,7 +361,8 @@ struct StagingDetails {
     MeasuredFibrosisState measured_fibrosis_state =
         MeasuredFibrosisState::kNone;
     bool had_second_test = false;
-    int time_of_last_staging = -1;
+    int time_of_last_staging =
+    -1;
 };
 std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet);
 
