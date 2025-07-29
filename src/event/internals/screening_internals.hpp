@@ -337,9 +337,9 @@ private:
         if (!person.GetScreeningDetails(GetInfectionType()).ab_positive) {
             if (!RunTest(person, type, data::ScreeningTest::kAb, sampler) &&
                 person.GetHCVDetails().hcv != data::HCV::kNone) {
-                    person.AddFalseNegative(GetInfectionType());
-                    person.ClearDiagnosis(GetInfectionType());
-                    return;
+                person.AddFalseNegative(GetInfectionType());
+                person.ClearDiagnosis(GetInfectionType());
+                return;
             }
         }
 
