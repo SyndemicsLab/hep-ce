@@ -115,6 +115,8 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     _screening_details[it].time_identified = storage.time_hcv_identified;
     _screening_details[it].times_identified = storage.times_hcv_identified;
     _screening_details[it].screen_type = storage.hcv_link_type;
+    _screening_details[it].num_false_negatives =
+        storage.num_hcv_false_negatives;
 
     // TreatmentDetails
     _treatment_details[it].initiated_treatment =
@@ -357,7 +359,8 @@ std::string PersonImpl::MakePopulationRow() const {
                        << std::boolalpha << hcvsd.identified << ","
                        << hcvsd.time_identified << ","
                        << hcvsd.times_identified << ","
-                       << hcvsd.screen_type << ",";
+                       << hcvsd.screen_type << ","
+                       << hcvsd.num_false_negatives << ",";
         const auto &hivsd = _screening_details.at(data::InfectionType::kHiv);
         population_row << hivsd.time_of_last_screening << ","
                        << hivsd.num_ab_tests << ","

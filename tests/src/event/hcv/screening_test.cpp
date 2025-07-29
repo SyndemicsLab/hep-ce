@@ -160,9 +160,7 @@ TEST_F(HCVScreeningTest, InterventionScreen_NegativeRNA) {
     EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
         .Times(2) // once for `valid_screen` and again for antibody testing
         .WillRepeatedly(Return(screen));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(1)
-        .WillRepeatedly(Return(hcv));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
     EXPECT_CALL(mock_person, Screen(_, data::ScreeningTest::kRna,
                                     data::ScreeningType::kIntervention))
         .Times(1);
@@ -229,6 +227,7 @@ TEST_F(HCVScreeningTest, Identified_NegativeABTest) {
     EXPECT_CALL(mock_person, AddCost(14.27, _, model::CostCategory::kScreening))
         .Times(1);
     EXPECT_CALL(mock_sampler, GetDecision({{.98}})).WillOnce(Return(1));
+    EXPECT_CALL(mock_person, AddFalseNegative(TYPE)).Times(1);
     EXPECT_CALL(mock_person, ClearDiagnosis(TYPE)).Times(1);
 
     auto event = event::hcv::Screening::Create(*model_data, LOG_NAME);

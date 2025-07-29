@@ -44,6 +44,7 @@ public:
     virtual bool IsCirrhotic() const = 0;
     virtual void SetFibrosis(data::FibrosisState) = 0;
     virtual void AddSVR() = 0;
+    virtual void AddFalseNegative(data::InfectionType it) = 0;
 
     // Screening
     virtual data::ScreeningDetails

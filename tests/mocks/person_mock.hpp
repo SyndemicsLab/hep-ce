@@ -50,6 +50,7 @@ public:
                  data::ScreeningType type),
                 (override));
     MOCK_METHOD(void, GiveSecondStagingTest, (), (override));
+    MOCK_METHOD(void, AddFalseNegative, (data::InfectionType it), (override));
 
     // Linking
     MOCK_METHOD(data::LinkageDetails, GetLinkageDetails,

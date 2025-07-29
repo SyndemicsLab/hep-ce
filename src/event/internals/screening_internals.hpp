@@ -335,9 +335,11 @@ private:
         }
 
         if (!person.GetScreeningDetails(GetInfectionType()).ab_positive) {
-            if (!RunTest(person, type, data::ScreeningTest::kAb, sampler)) {
-                person.ClearDiagnosis(GetInfectionType());
-                return;
+            if (!RunTest(person, type, data::ScreeningTest::kAb, sampler) &&
+                person.GetHCVDetails().hcv != data::HCV::kNone) {
+                    person.AddFalseNegative(GetInfectionType());
+                    person.ClearDiagnosis(GetInfectionType());
+                    return;
             }
         }
 
@@ -345,7 +347,8 @@ private:
             if (!identified) {
                 person.Diagnose(GetInfectionType());
             }
-        } else {
+        } else if (person.GetHCVDetails().hcv != data::HCV::kNone) {
+            person.AddFalseNegative(GetInfectionType());
             person.ClearDiagnosis(GetInfectionType());
         }
     }

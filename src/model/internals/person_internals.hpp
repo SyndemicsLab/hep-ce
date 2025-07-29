@@ -116,6 +116,9 @@ public:
             _screening_details[it].ab_positive = false;
         }
     }
+    inline void AddFalseNegative(data::InfectionType it) override {
+        _screening_details[it].num_false_negatives++;
+    }
 
     void Screen(data::InfectionType it, data::ScreeningTest test,
                 data::ScreeningType type) override {
