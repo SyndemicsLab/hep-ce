@@ -160,7 +160,9 @@ TEST_F(HCVScreeningTest, InterventionScreen_NegativeRNA) {
     EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
         .Times(2) // once for `valid_screen` and again for antibody testing
         .WillRepeatedly(Return(screen));
-    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(2)
+        .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_person, Screen(_, data::ScreeningTest::kRna,
                                     data::ScreeningType::kIntervention))
         .Times(1);
@@ -308,6 +310,5 @@ TEST_F(HCVScreeningTest, RedundantIdentification) {
     event->Execute(mock_person, mock_sampler);
     std::filesystem::remove(LOG_FILE);
 }
-
 } // namespace testing
 } // namespace hepce

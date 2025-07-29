@@ -334,22 +334,22 @@ private:
             return;
         }
 
-        if (!person.GetScreeningDetails(GetInfectionType()).ab_positive) {
-            if (!RunTest(person, type, data::ScreeningTest::kAb, sampler) &&
-                person.GetHCVDetails().hcv != data::HCV::kNone) {
+        if (!person.GetScreeningDetails(GetInfectionType()).ab_positive &&
+            !RunTest(person, type, data::ScreeningTest::kAb, sampler)) {
+            if (person.GetHCVDetails().hcv != data::HCV::kNone) {
                 person.AddFalseNegative(GetInfectionType());
-                person.ClearDiagnosis(GetInfectionType());
-                return;
             }
+            person.ClearDiagnosis(GetInfectionType());
+            return;
         }
 
-        if (RunTest(person, type, data::ScreeningTest::kRna, sampler)) {
-            if (!identified) {
-                person.Diagnose(GetInfectionType());
+        if (!RunTest(person, type, data::ScreeningTest::kRna, sampler)) {
+            if (person.GetHCVDetails().hcv != data::HCV::kNone) {
+                person.AddFalseNegative(GetInfectionType());
             }
-        } else if (person.GetHCVDetails().hcv != data::HCV::kNone) {
-            person.AddFalseNegative(GetInfectionType());
             person.ClearDiagnosis(GetInfectionType());
+        } else if (!identified) {
+            person.Diagnose(GetInfectionType());
         }
     }
 };
