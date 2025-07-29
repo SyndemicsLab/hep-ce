@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-25                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-07-29                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -334,19 +334,22 @@ private:
             return;
         }
 
-        if (!person.GetScreeningDetails(GetInfectionType()).ab_positive) {
-            if (!RunTest(person, type, data::ScreeningTest::kAb, sampler)) {
-                person.ClearDiagnosis(GetInfectionType());
-                return;
+        if (!person.GetScreeningDetails(GetInfectionType()).ab_positive &&
+            !RunTest(person, type, data::ScreeningTest::kAb, sampler)) {
+            if (person.GetHCVDetails().hcv != data::HCV::kNone) {
+                person.AddFalseNegative(GetInfectionType());
             }
+            person.ClearDiagnosis(GetInfectionType());
+            return;
         }
 
-        if (RunTest(person, type, data::ScreeningTest::kRna, sampler)) {
-            if (!identified) {
-                person.Diagnose(GetInfectionType());
+        if (!RunTest(person, type, data::ScreeningTest::kRna, sampler)) {
+            if (person.GetHCVDetails().hcv != data::HCV::kNone) {
+                person.AddFalseNegative(GetInfectionType());
             }
-        } else {
             person.ClearDiagnosis(GetInfectionType());
+        } else if (!identified) {
+            person.Diagnose(GetInfectionType());
         }
     }
 };

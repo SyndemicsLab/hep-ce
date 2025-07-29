@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-07-29                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -115,6 +115,9 @@ public:
             _screening_details[it].time_identified = -1;
             _screening_details[it].ab_positive = false;
         }
+    }
+    inline void AddFalseNegative(data::InfectionType it) override {
+        _screening_details[it].num_false_negatives++;
     }
 
     void Screen(data::InfectionType it, data::ScreeningTest test,

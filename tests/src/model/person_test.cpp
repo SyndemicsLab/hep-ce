@@ -4,8 +4,8 @@
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-07-29                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -428,7 +428,7 @@ TEST_F(PersonTest, Accumulate) {
 // Not sure how to test this, its a dump of the data into a CSV string
 TEST_F(PersonTest, MakePopulationRow) {
     std::string str = person->MakePopulationRow();
-    EXPECT_EQ(utils::SplitToVecT<std::string>(str, ',').size(), 86);
+    EXPECT_EQ(utils::SplitToVecT<std::string>(str, ',').size(), 87);
 }
 
 TEST_F(PersonTest, LastTimeActiveLessThanNegOne) {
