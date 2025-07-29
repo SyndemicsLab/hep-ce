@@ -36,6 +36,7 @@ var structhepce_1_1data_1_1PersonSelect =
     [ "moud_state", "structhepce_1_1data_1_1PersonSelect.html#aaeaeb75ebf09e586a95e54b8b9259e60", null ],
     [ "num_completed_hcv_treatments", "structhepce_1_1data_1_1PersonSelect.html#af57f90d1bcd6b5639d1fc637588a182c", null ],
     [ "num_hcv_ab_tests", "structhepce_1_1data_1_1PersonSelect.html#a5d9c88f6f4e100115e8a2b026055bc21", null ],
+    [ "num_hcv_false_negatives", "structhepce_1_1data_1_1PersonSelect.html#a8a04598d224d8943ce93bda2b9b81b0a", null ],
     [ "num_hcv_rna_tests", "structhepce_1_1data_1_1PersonSelect.html#a975db8478fdf46945e78bf35ba2869b1", null ],
     [ "num_hcv_salvages", "structhepce_1_1data_1_1PersonSelect.html#ae0e5829a9c6ee7d61d0769bfea713092", null ],
     [ "num_hcv_treatment_starts", "structhepce_1_1data_1_1PersonSelect.html#a16e56d5ce432db1a12598e32da0178ff", null ],
