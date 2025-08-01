@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-25                                                  //
+// Last Modified: 2025-08-01                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -126,11 +126,13 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_NoID) {
     const std::string LOG_FILE = "NoProgression_AddCost.log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    BuildAlternateSimConf("sim2.conf");
+    auto config = DEFAULT_CONFIG;
+    config["fibrosis"][5] = "add_cost_only_if_identified = true";
+    BuildSimConf(test_conf, config);
     discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
     discounted_life = utils::Discount(1, 0.0025, 1, false);
     std::unique_ptr<datamanagement::ModelData> alt_model_data =
-        datamanagement::ModelData::Create("sim2.conf", LOG_NAME);
+        datamanagement::ModelData::Create("sim.conf", LOG_NAME);
     alt_model_data->AddSource(test_db);
 
     hcv.hcv = data::HCV::kAcute;
@@ -151,7 +153,7 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_NoID) {
     auto event =
         event::fibrosis::Progression::Create(*alt_model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove("sim2.conf");
+    std::filesystem::remove("sim.conf");
     std::filesystem::remove(LOG_FILE);
 }
 
@@ -160,11 +162,13 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_ID) {
     const std::string LOG_FILE = "NoProgression_AddCost.log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    BuildAlternateSimConf("sim2.conf");
+    auto config = DEFAULT_CONFIG;
+    config["fibrosis"][5] = "add_cost_only_if_identified = true";
+    BuildSimConf(test_conf, config);
     discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
     discounted_life = utils::Discount(1, 0.0025, 1, false);
     std::unique_ptr<datamanagement::ModelData> alt_model_data =
-        datamanagement::ModelData::Create("sim2.conf", LOG_NAME);
+        datamanagement::ModelData::Create("sim.conf", LOG_NAME);
     alt_model_data->AddSource(test_db);
 
     hcv.hcv = data::HCV::kAcute;
@@ -188,7 +192,7 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_ID) {
     auto event =
         event::fibrosis::Progression::Create(*alt_model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove("sim2.conf");
+    std::filesystem::remove("sim.conf");
     std::filesystem::remove(LOG_FILE);
 }
 

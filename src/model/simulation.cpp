@@ -4,8 +4,8 @@
 // Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-08-01                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ HepceImpl::CreateEvent(std::string event_name,
         return hepce::event::fibrosis::Staging::Create(model_data,
                                                        GetLogName());
     }
-    if (event_name == "HCVInfections") {
+    if (event_name == "HCVInfection") {
         return hepce::event::hcv::Infection::Create(model_data, GetLogName());
     }
     if (event_name == "HCVLinking") {
@@ -190,7 +190,7 @@ HepceImpl::CreateEvent(std::string event_name,
     if (event_name == "HCVTreatment") {
         return hepce::event::hcv::Treatment::Create(model_data, GetLogName());
     }
-    if (event_name == "HIVInfections") {
+    if (event_name == "HIVInfection") {
         return hepce::event::hiv::Infection::Create(model_data, GetLogName());
     }
     if (event_name == "HIVLinking") {
@@ -214,8 +214,9 @@ HepceImpl::CreateEvent(std::string event_name,
     if (event_name == "MOUD") {
         return hepce::event::behavior::Moud::Create(model_data, GetLogName());
     }
-    hepce::utils::LogError(GetLogName(),
-                           "Unknown Event Provided in sim.conf! Exiting...");
+    std::string message =
+        "Unknown Event `" + event_name + "` provided in `sim.conf`! Exiting...";
+    hepce::utils::LogError(GetLogName(), message);
     exit(-1);
 }
 } // namespace model
