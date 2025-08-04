@@ -4,16 +4,18 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-08-04                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_UTILS_MATH_HPP_
 #define HEPCE_UTILS_MATH_HPP_
 
+#include <chrono>
 #include <cmath>
 #include <stdexcept>
+
 namespace hepce {
 namespace utils {
 /// @brief Convert Probability to Rate
@@ -49,6 +51,17 @@ inline double Discount(double value, double discount_rate, double timestep,
     discount_rate = annual ? discount_rate / 12 : discount_rate;
     double denominator = std::pow(1 + discount_rate, timestep);
     return value / denominator;
+}
+
+/// @brief Retrieves the current time since epoch in milliseconds as an integer.
+/// @return The current time in milliseconds
+inline int GetCurrentTimeInMilliseconds() {
+    const std::chrono::time_point<std::chrono::steady_clock> current_time =
+        std::chrono::steady_clock::now();
+    return static_cast<int>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            current_time.time_since_epoch())
+            .count());
 }
 } // namespace utils
 } // namespace hepce
