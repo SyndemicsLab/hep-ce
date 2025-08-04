@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-01                                                  //
+// Last Modified: 2025-08-04                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -16,6 +16,7 @@
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/logging.hpp>
+#include <hepce/utils/math.hpp>
 
 #include "internals/simulation_internals.hpp"
 
@@ -34,6 +35,14 @@ HepceImpl::HepceImpl(datamanagement::ModelData &model_data,
     : _log_name(log_name) {
     _duration = utils::GetIntFromConfig("simulation.duration", model_data);
     _sim_seed = utils::GetIntFromConfig("simulation.seed", model_data);
+    if (_sim_seed < 0) {
+        _sim_seed = utils::GetTimeInt();
+        std::stringstream msg;
+        msg << "No seed or negative seed provided in `sim.conf`. Using "
+               "generated seed value: "
+            << _sim_seed << ".";
+        hepce::utils::LogWarning(GetLogName(), msg.str());
+    }
 }
 
 void HepceImpl::Run(
