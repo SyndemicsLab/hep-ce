@@ -55,7 +55,7 @@ inline double Discount(double value, double discount_rate, double timestep,
 
 /// @brief Retrieves the current time since epoch in milliseconds as an integer.
 /// @return The current time in milliseconds
-inline int GetTimeInt() {
+inline int GetCurrentTimeInMilliseconds() {
     const std::chrono::time_point<std::chrono::steady_clock> current_time =
         std::chrono::steady_clock::now();
     return static_cast<int>(

@@ -36,7 +36,7 @@ HepceImpl::HepceImpl(datamanagement::ModelData &model_data,
     _duration = utils::GetIntFromConfig("simulation.duration", model_data);
     _sim_seed = utils::GetIntFromConfig("simulation.seed", model_data);
     if (_sim_seed < 0) {
-        _sim_seed = utils::GetTimeInt();
+        _sim_seed = utils::GetCurrentTimeInMilliseconds();
         std::stringstream msg;
         msg << "No seed or negative seed provided in `sim.conf`. Using "
                "generated seed value: "
