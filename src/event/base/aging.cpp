@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-08-04                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,9 +45,11 @@ void AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
+    // Set person background utility before accumulating, which makes the first
+    // timestep slightly more realistic
+    AddBackgroundCostAndUtility(person);
     person.AccumulateTotalUtility(GetEventDiscount());
     person.Grow();
-    AddBackgroundCostAndUtility(person);
     person.AddDiscountedLifeSpan(
         utils::Discount(1, GetEventDiscount(), person.GetCurrentTimestep()));
 }
