@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-08-01                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -199,8 +199,10 @@ TEST_F(StagingTest, NeverStaged_TestTwo_maximum) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    BuildAlternateSimConf("sim2.conf");
-    auto alt_model_data = datamanagement::ModelData::Create("sim2.conf");
+    auto config = DEFAULT_CONFIG;
+    config["fibrosis_staging"][5] = "multitest_result_method = maximum";
+    BuildSimConf(test_conf, config);
+    auto alt_model_data = datamanagement::ModelData::Create("sim.conf");
     alt_model_data->AddSource(test_db);
 
     hcv.fibrosis_state = data::FibrosisState::kF1;
@@ -230,7 +232,7 @@ TEST_F(StagingTest, NeverStaged_TestTwo_maximum) {
     auto event = event::fibrosis::Staging::Create(*alt_model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
     std::filesystem::remove(LOG_FILE);
-    std::filesystem::remove("sim2.conf");
+    std::filesystem::remove("sim.conf");
 }
 
 } // namespace testing

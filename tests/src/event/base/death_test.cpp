@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-08-01                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -108,12 +108,15 @@ TEST_F(DeathTest, AgeDR) {
 }
 
 TEST_F(DeathTest, FatalOverdoseDR) {
-    BuildOverdoseSimConf(test_conf);
+    auto config = DEFAULT_CONFIG;
+    // change the events list
+    config["simulation"][2] = OVERDOSE_EVENTS;
+    BuildSimConf(test_conf, config);
 
-    ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS overdoses;",
-                                  CreateOverdoses(),
-                                  "INSERT INTO overdoses "
-                                  "VALUES (0, 4, 1.0);"}});
+    ExecuteQueries(test_db,
+                   {{"DROP TABLE IF EXISTS overdoses;", CreateOverdoses(),
+                     "INSERT INTO overdoses "
+                     "VALUES (0, 4, 1.0);"}});
 
     std::unique_ptr<datamanagement::ModelData> model_data_alt;
     model_data_alt = datamanagement::ModelData::Create(test_conf);
@@ -140,14 +143,14 @@ TEST_F(DeathTest, FatalOverdoseDR) {
 }
 
 TEST_F(DeathTest, HivDR) {
-    BuildAlternateSimConf(test_conf);
+    BuildSimConf(test_conf);
     std::unique_ptr<datamanagement::ModelData> model_data_alt;
     model_data_alt = datamanagement::ModelData::Create(test_conf);
 
     data::HIVDetails hiv_details;
     hiv_details.hiv = HIV::kHiUn;
     ON_CALL(mock_person, GetHIVDetails()).WillByDefault(Return(hiv_details));
-    
+
     std::vector<double> expected_prob = {0.0};
     EXPECT_CALL(mock_sampler, GetDecision(expected_prob)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kHiv)).Times(1);
@@ -162,7 +165,6 @@ TEST_F(DeathTest, HivDR) {
 
     std::filesystem::remove(LOG_FILE);
 }
-
 
 TEST_F(DeathTest, F4_Infected_BackgroundDR) {
     hcv_details.fibrosis_state = data::FibrosisState::kF4;

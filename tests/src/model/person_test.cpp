@@ -4,8 +4,8 @@
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-29                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2025-08-04                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,6 +24,7 @@
 #include <hepce/data/types.hpp>
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/logging.hpp>
+#include <hepce/utils/math.hpp>
 
 using namespace hepce::model;
 using namespace hepce::data;
@@ -412,17 +413,30 @@ TEST_F(PersonTest, InfantExposure) {
 
 // Utility Testing
 TEST_F(PersonTest, Utility) {
-    person->SetUtility(.5, UtilityCategory::kBehavior);
+    person->SetUtility(0.5, UtilityCategory::kBehavior);
     auto utils = person->GetUtilities();
-    EXPECT_EQ(utils[UtilityCategory::kBehavior], .5);
+    EXPECT_EQ(utils[UtilityCategory::kBehavior], 0.5);
 }
 
 TEST_F(PersonTest, Accumulate) {
-    person->SetUtility(.5, UtilityCategory::kBehavior);
-    person->AccumulateTotalUtility(.25);
+    double discount_rate = 0.25;
+
+    // Use a non-zero timestep to check discounting
+    person->Grow();
+    person->Grow();
+    person->Grow();
+
+    person->SetUtility(0.5, UtilityCategory::kBehavior);
+    person->AccumulateTotalUtility(discount_rate);
+
     auto total_utils = person->GetTotalUtility();
-    EXPECT_EQ(total_utils.mult_util, .5);
-    EXPECT_EQ(total_utils.min_util, .5);
+    double discounted_utility = hepce::utils::Discount(
+        0.5, discount_rate, person->GetCurrentTimestep());
+
+    EXPECT_EQ(total_utils.mult_util, 0.5);
+    EXPECT_EQ(total_utils.min_util, 0.5);
+    EXPECT_EQ(total_utils.discount_mult_util, discounted_utility);
+    EXPECT_EQ(total_utils.discount_min_util, discounted_utility);
 }
 
 // Not sure how to test this, its a dump of the data into a CSV string

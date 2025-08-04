@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
+// Last Modified: 2025-08-01                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -362,7 +362,9 @@ TEST_F(HCVTreatmentTest, FailsIsEligibleTimeLastUse) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    BuildEligibilitySimConf(test_conf);
+    auto config = DEFAULT_CONFIG;
+    config["eligibility"][2] = "ineligible_time_former_threshold = 6";
+    BuildSimConf(test_conf, config);
     model_data = datamanagement::ModelData::Create(test_conf);
     model_data->AddSource(test_db);
 
@@ -385,7 +387,9 @@ TEST_F(HCVTreatmentTest, PassesIsEligibleTimeLastUse) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    BuildEligibilitySimConf(test_conf);
+    auto config = DEFAULT_CONFIG;
+    config["eligibility"][2] = "ineligible_time_former_threshold = 6";
+    BuildSimConf(test_conf, config);
     model_data = datamanagement::ModelData::Create(test_conf);
     model_data->AddSource(test_db);
 

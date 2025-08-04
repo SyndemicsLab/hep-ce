@@ -193,14 +193,14 @@ public:
 
     // Life, Quality of Life
     inline data::LifetimeUtility GetTotalUtility() const override {
-        return _life_utilites;
+        return _life_utilities;
     }
     inline void AccumulateTotalUtility(double discount) override {
-        _life_utilites.min_util += GetMinimizedUtility();
-        _life_utilites.mult_util += GetMultipliedUtility();
-        _life_utilites.discount_min_util += utils::Discount(
+        _life_utilities.min_util += GetMinimizedUtility();
+        _life_utilities.mult_util += GetMultipliedUtility();
+        _life_utilities.discount_min_util += utils::Discount(
             GetMinimizedUtility(), discount, GetCurrentTimestep());
-        _life_utilites.discount_mult_util += utils::Discount(
+        _life_utilities.discount_mult_util += utils::Discount(
             GetMultipliedUtility(), discount, GetCurrentTimestep());
     }
     inline std::unordered_map<model::UtilityCategory, double>
@@ -305,7 +305,7 @@ private:
         _treatment_details;
     // utility
     std::unordered_map<model::UtilityCategory, double> _utilities;
-    data::LifetimeUtility _life_utilites;
+    data::LifetimeUtility _life_utilities;
     // life span tracking
     int _life_span = 0;
     double _discounted_life_span = 0;
