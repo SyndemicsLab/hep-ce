@@ -30,6 +30,7 @@ var namespacehepce_1_1utils =
     [ "FindInEventList", "namespacehepce_1_1utils.html#a80358a13181a67c272308be2b28c7e06", null ],
     [ "FindInVector", "namespacehepce_1_1utils.html#acbe6fba3ebcedfa258bfe55b84523ba0", null ],
     [ "GetBoolFromConfig", "namespacehepce_1_1utils.html#ad4be61c0337bdeddf64823195bec94b6", null ],
+    [ "GetCurrentTimeInMilliseconds", "namespacehepce_1_1utils.html#a82f8e229f02f01d752a28b07c39233e1", null ],
     [ "GetDoubleFromConfig", "namespacehepce_1_1utils.html#ada3bd82681aec94f27c2423e30df3437", null ],
     [ "GetIntFromConfig", "namespacehepce_1_1utils.html#a0b2b7f5525f3d20c23f972136a8e9646", null ],
     [ "GetStringFromConfig", "namespacehepce_1_1utils.html#a364afb8fb44ea191d84b23ce229c128c", null ],

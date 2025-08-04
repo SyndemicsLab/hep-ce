@@ -137,47 +137,59 @@ $(document).ready(function(){initNavTree('math_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// Created Date: 2025-04-17                                                   //</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Author: Matthew Carroll                                                    //</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// -----                                                                      //</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-05-02                                                  //</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// Modified By: Matthew Carroll                                               //</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-08-04                                                  //</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// Modified By: Dimitri Baptiste                                              //</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// -----                                                                      //</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"></span><span class="preprocessor">#ifndef HEPCE_UTILS_MATH_HPP_</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#define HEPCE_UTILS_MATH_HPP_</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacehepce.html">hepce</a> {</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span>utils {</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a52df6a1ec41a6c589b3a89df74ca9085">   22</a></span><span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a52df6a1ec41a6c589b3a89df74ca9085">ProbabilityToRate</a>(<span class="keywordtype">double</span> probability, <span class="keywordtype">int</span> time = 1) {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (probability &lt; 0 || probability &gt;= 1) {</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">throw</span> std::domain_error(<span class="stringliteral">&quot;Out of probability value range&quot;</span>);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    }</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> -log(1 - probability) / time;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#ad2b12a7d68664ba10c3db105d3bec637">   32</a></span><span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#ad2b12a7d68664ba10c3db105d3bec637">RateToProbability</a>(<span class="keywordtype">double</span> rate, <span class="keywordtype">int</span> time = 1) {</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (rate &lt; 0) {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">throw</span> std::domain_error(<span class="stringliteral">&quot;Out of rate value range&quot;</span>);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    }</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> 1 - exp(-rate * time);</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a78e6fb9715bd35a1f996a78e258d9f88">   44</a></span><span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a78e6fb9715bd35a1f996a78e258d9f88">Discount</a>(<span class="keywordtype">double</span> value, <span class="keywordtype">double</span> discount_rate, <span class="keywordtype">double</span> timestep,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                       <span class="keywordtype">bool</span> annual = <span class="keyword">false</span>) {</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (discount_rate &lt; 0 || timestep &lt; 0) {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">throw</span> std::domain_error(<span class="stringliteral">&quot;Out of discount rate or Timestep Range&quot;</span>);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    discount_rate = annual ? discount_rate / 12 : discount_rate;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordtype">double</span> denominator = std::pow(1 + discount_rate, timestep);</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">return</span> value / denominator;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>} <span class="comment">// namespace utils</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>} <span class="comment">// namespace hepce</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacehepce.html">hepce</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">namespace </span>utils {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a52df6a1ec41a6c589b3a89df74ca9085">   24</a></span><span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a52df6a1ec41a6c589b3a89df74ca9085">ProbabilityToRate</a>(<span class="keywordtype">double</span> probability, <span class="keywordtype">int</span> time = 1) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (probability &lt; 0 || probability &gt;= 1) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">throw</span> std::domain_error(<span class="stringliteral">&quot;Out of probability value range&quot;</span>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">return</span> -log(1 - probability) / time;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#ad2b12a7d68664ba10c3db105d3bec637">   34</a></span><span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#ad2b12a7d68664ba10c3db105d3bec637">RateToProbability</a>(<span class="keywordtype">double</span> rate, <span class="keywordtype">int</span> time = 1) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> (rate &lt; 0) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">throw</span> std::domain_error(<span class="stringliteral">&quot;Out of rate value range&quot;</span>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> 1 - exp(-rate * time);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a78e6fb9715bd35a1f996a78e258d9f88">   46</a></span><span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a78e6fb9715bd35a1f996a78e258d9f88">Discount</a>(<span class="keywordtype">double</span> value, <span class="keywordtype">double</span> discount_rate, <span class="keywordtype">double</span> timestep,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                       <span class="keywordtype">bool</span> annual = <span class="keyword">false</span>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">if</span> (discount_rate &lt; 0 || timestep &lt; 0) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">throw</span> std::domain_error(<span class="stringliteral">&quot;Out of discount rate or Timestep Range&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    discount_rate = annual ? discount_rate / 12 : discount_rate;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">double</span> denominator = std::pow(1 + discount_rate, timestep);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">return</span> value / denominator;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="preprocessor">#endif </span><span class="comment">// HEPCE_UTILS_MATH_HPP_</span></div>
-<div class="ttc" id="anamespacehepce_1_1utils_html_a52df6a1ec41a6c589b3a89df74ca9085"><div class="ttname"><a href="namespacehepce_1_1utils.html#a52df6a1ec41a6c589b3a89df74ca9085">hepce::utils::ProbabilityToRate</a></div><div class="ttdeci">double ProbabilityToRate(double probability, int time=1)</div><div class="ttdoc">Convert Probability to Rate.</div><div class="ttdef"><b>Definition:</b> math.hpp:22</div></div>
-<div class="ttc" id="anamespacehepce_1_1utils_html_a78e6fb9715bd35a1f996a78e258d9f88"><div class="ttname"><a href="namespacehepce_1_1utils.html#a78e6fb9715bd35a1f996a78e258d9f88">hepce::utils::Discount</a></div><div class="ttdeci">double Discount(double value, double discount_rate, double timestep, bool annual=false)</div><div class="ttdoc">Calculate Discount to Provide.</div><div class="ttdef"><b>Definition:</b> math.hpp:44</div></div>
-<div class="ttc" id="anamespacehepce_1_1utils_html_ad2b12a7d68664ba10c3db105d3bec637"><div class="ttname"><a href="namespacehepce_1_1utils.html#ad2b12a7d68664ba10c3db105d3bec637">hepce::utils::RateToProbability</a></div><div class="ttdeci">double RateToProbability(double rate, int time=1)</div><div class="ttdoc">Convert Rate to Probability.</div><div class="ttdef"><b>Definition:</b> math.hpp:32</div></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a82f8e229f02f01d752a28b07c39233e1">   58</a></span><span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a82f8e229f02f01d752a28b07c39233e1">GetCurrentTimeInMilliseconds</a>() {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keyword">const</span> std::chrono::time_point&lt;std::chrono::steady_clock&gt; current_time =</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        std::chrono::steady_clock::now();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        std::chrono::duration_cast&lt;std::chrono::milliseconds&gt;(</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            current_time.time_since_epoch())</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            .count());</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>} <span class="comment">// namespace utils</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>} <span class="comment">// namespace hepce</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="preprocessor">#endif </span><span class="comment">// HEPCE_UTILS_MATH_HPP_</span></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_a52df6a1ec41a6c589b3a89df74ca9085"><div class="ttname"><a href="namespacehepce_1_1utils.html#a52df6a1ec41a6c589b3a89df74ca9085">hepce::utils::ProbabilityToRate</a></div><div class="ttdeci">double ProbabilityToRate(double probability, int time=1)</div><div class="ttdoc">Convert Probability to Rate.</div><div class="ttdef"><b>Definition:</b> math.hpp:24</div></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_a78e6fb9715bd35a1f996a78e258d9f88"><div class="ttname"><a href="namespacehepce_1_1utils.html#a78e6fb9715bd35a1f996a78e258d9f88">hepce::utils::Discount</a></div><div class="ttdeci">double Discount(double value, double discount_rate, double timestep, bool annual=false)</div><div class="ttdoc">Calculate Discount to Provide.</div><div class="ttdef"><b>Definition:</b> math.hpp:46</div></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_a82f8e229f02f01d752a28b07c39233e1"><div class="ttname"><a href="namespacehepce_1_1utils.html#a82f8e229f02f01d752a28b07c39233e1">hepce::utils::GetCurrentTimeInMilliseconds</a></div><div class="ttdeci">int GetCurrentTimeInMilliseconds()</div><div class="ttdoc">Retrieves the current time since epoch in milliseconds as an integer.</div><div class="ttdef"><b>Definition:</b> math.hpp:58</div></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_ad2b12a7d68664ba10c3db105d3bec637"><div class="ttname"><a href="namespacehepce_1_1utils.html#ad2b12a7d68664ba10c3db105d3bec637">hepce::utils::RateToProbability</a></div><div class="ttdeci">double RateToProbability(double rate, int time=1)</div><div class="ttdoc">Convert Rate to Probability.</div><div class="ttdef"><b>Definition:</b> math.hpp:34</div></div>
 <div class="ttc" id="anamespacehepce_html"><div class="ttname"><a href="namespacehepce.html">hepce</a></div><div class="ttdoc">Namespace containing Utility Helper Functions.</div><div class="ttdef"><b>Definition:</b> types.hpp:20</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
@@ -185,7 +197,7 @@ $(document).ready(function(){initNavTree('math_8hpp_source.html',''); initResiza
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_05c933d59f351fefb8caab5fd9b918a4.html">hepce</a></li><li class="navelem"><a class="el" href="dir_e28addd3979671bd06dbb695f19b84f3.html">utils</a></li><li class="navelem"><a class="el" href="math_8hpp.html">math.hpp</a></li>
-    <li class="footer">Generated on Mon Aug 4 2025 15:54:56 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Mon Aug 4 2025 18:48:53 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>
