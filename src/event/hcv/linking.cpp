@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                    //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-22                                                  //
+// Last Modified: 2025-08-05                                                  //
 // Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -48,11 +48,11 @@ void LinkingImpl::LoadData(datamanagement::ModelData &model_data) {
         "linking.false_positive_test_cost", model_data));
     SetScalingType(
         utils::GetStringFromConfig("linking.scaling_type", model_data));
-    if (GetScalingType() == "multiplier") {
-        SetRecentScreenMultiplier(utils::GetDoubleFromConfig(
-            "linking.recent_screen_multiplier", model_data));
+    if (GetScalingType() == "multiplier" || GetScalingType() == "sigmoidal") {
         SetRecentScreenCutoff(utils::GetIntFromConfig(
             "linking.recent_screen_cutoff", model_data));
+        SetScalingCoefficient(utils::GetDoubleFromConfig(
+            "linking.recent_screen_multiplier", model_data));
     }
 }
 } // namespace hcv

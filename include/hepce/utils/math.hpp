@@ -4,8 +4,8 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-04                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-08-05                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,10 +67,11 @@ inline int GetCurrentTimeInMilliseconds() {
 /// @brief Sigmoidal Decay Function
 /// @param timestep The timestep to adjust for
 /// @param decay_start The timestep at which decay is steepest
-/// @param steepness The steepness of the decay
+/// @param scaling_coeff Determines the steepness of the decay
 /// @return Decayed value
-inline double SigmoidalDecay(double value, int time, int decay_start, double steepness) {
-    return value / (1 + exp(steepness * (time - decay_start)));
+inline double SigmoidalDecay(double value, int time, int cutoff,
+                             double scaling_coeff) {
+    return value / (1 + exp(scaling_coeff * (time - cutoff)));
 }
 } // namespace utils
 } // namespace hepce
