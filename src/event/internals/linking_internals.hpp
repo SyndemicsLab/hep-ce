@@ -143,9 +143,7 @@ protected:
             _recent_screen_cutoff = cutoff;
         }
     }
-    inline void SetScalingCoefficient(double sc) {
-        _scaling_coefficient = sc;
-    }
+    inline void SetScalingCoefficient(double sc) { _scaling_coefficient = sc; }
     inline void SetScalingType(const std::string scaling_type) {
         if (scaling_type.empty()) {
             std::stringstream msg;

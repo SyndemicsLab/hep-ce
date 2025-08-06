@@ -54,9 +54,10 @@ void LinkingImpl::LoadData(datamanagement::ModelData &model_data) {
         try {
             SetScalingCoefficient(utils::GetDoubleFromConfig(
                 "linking.scaling_coefficient", model_data));
-        } catch(std::exception &e) {
+        } catch (std::exception &e) {
             std::stringstream msg;
-            msg << "Invalid argument: linking.scaling_coefficient -- " << e.what();
+            msg << "Invalid argument: linking.scaling_coefficient -- "
+                << e.what();
             hepce::utils::LogError(GetLogName(), msg.str());
         }
     }
