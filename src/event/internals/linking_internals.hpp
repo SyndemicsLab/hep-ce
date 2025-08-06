@@ -134,9 +134,9 @@ protected:
             // an alternate default value if one is not set
             double sig_def_val = 3.0;
             std::stringstream msg;
-            msg << "Recent screen cutoff not set for sigmoidal scaling."
-                << "Using default value: " << sig_def_val
-                << ". Linking behavior may be unexpected.";
+            msg << "linking.recent_screen_cutoff not set for sigmoidal scaling."
+                << " Using default value: " << sig_def_val
+                << " Linking behavior may be unexpected";
             hepce::utils::LogWarning(GetLogName(), msg.str());
             _recent_screen_cutoff = sig_def_val;
         } else {
@@ -144,13 +144,6 @@ protected:
         }
     }
     inline void SetScalingCoefficient(double sc) {
-        if (sc <= 0) {
-            std::stringstream msg;
-            msg << "Scaling coefficient is less than or equal to 0: " << sc
-                << " linking behavior may be unexpected.";
-            hepce::utils::LogWarning(GetLogName(), msg.str());
-            return;
-        }
         _scaling_coefficient = sc;
     }
     inline void SetScalingType(const std::string scaling_type) {

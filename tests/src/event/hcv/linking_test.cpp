@@ -4,8 +4,8 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-08-05                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -248,7 +248,7 @@ TEST_F(HCVLinkingTest, LinkRateExpDecay) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     config = {{"linking",
-               {"recent_screen_cutoff = 10", "recent_screen_multiplier = 1.0",
+               {"recent_screen_cutoff = 10", "scaling_coefficient = 1.0",
                 "scaling_type = exponential"}}};
 
     BuildSimConf(test_conf, config);
@@ -281,7 +281,7 @@ TEST_F(HCVLinkingTest, LinkRateMultiplier) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     config = {{"linking",
-               {"recent_screen_cutoff = 10", "recent_screen_multiplier = 0.5",
+               {"recent_screen_cutoff = 10", "scaling_coefficient = 0.5",
                 "scaling_type = multiplier"}}};
 
     BuildSimConf(test_conf, config);
@@ -300,6 +300,40 @@ TEST_F(HCVLinkingTest, LinkRateMultiplier) {
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(5));
 
     EXPECT_CALL(mock_sampler, GetDecision({{0.015114219820389518}}))
+        .WillOnce(Return(0));
+    EXPECT_CALL(mock_person, Link(it)).Times(1);
+
+    auto event = event::hcv::Linking::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(HCVLinkingTest, LinkRateSigmoidal) {
+    const std::string LOG_NAME = "LinkRateSigmoidal";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    config = {{"linking",
+               {"recent_screen_cutoff = 3.0", "scaling_coefficient = 3.0",
+                "scaling_type = sigmoidal"}}};
+
+    BuildSimConf(test_conf, config);
+    model_data = datamanagement::ModelData::Create(test_conf, LOG_NAME);
+    model_data->AddSource(test_db);
+
+    auto it = data::InfectionType::kHcv;
+    hcv.hcv = data::HCV::kAcute;
+    linkage.link_state = data::LinkageState::kUnlinked;
+    screen.screen_type = data::ScreeningType::kBackground;
+    screen.time_of_last_screening = 1;
+    screen.identified = true;
+
+    ON_CALL(mock_person, GetLinkageDetails(it)).WillByDefault(Return(linkage));
+    ON_CALL(mock_person, GetScreeningDetails(it)).WillByDefault(Return(screen));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(3));
+
+    EXPECT_CALL(mock_sampler, GetDecision({{0.0285977695687718038}}))
         .WillOnce(Return(0));
     EXPECT_CALL(mock_person, Link(it)).Times(1);
 

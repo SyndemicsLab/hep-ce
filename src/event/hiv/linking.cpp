@@ -44,7 +44,7 @@ void LinkingImpl::LoadData(datamanagement::ModelData &model_data) {
     SetFalsePositiveCost(utils::GetDoubleFromConfig(
         "hiv_linking.false_positive_test_cost", model_data));
     SetScalingCoefficient(utils::GetDoubleFromConfig(
-        "hiv_linking.recent_screen_multiplier", model_data));
+        "hiv_linking.scaling_coefficient", model_data));
     SetRecentScreenCutoff(utils::GetIntFromConfig(
         "hiv_linking.recent_screen_cutoff", model_data));
 }
