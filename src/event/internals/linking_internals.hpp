@@ -58,7 +58,7 @@ public:
         int time_diff_ls =
             GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
                                      .time_of_last_screening);
-        if (prob < 1) {
+        if (prob < 1.0) {
             // check if the person was recently screened, for multiplier
             bool recently_screened = (time_diff_ls <= _recent_screen_cutoff);
             if (GetScalingType() == "exponential") {
@@ -128,8 +128,7 @@ protected:
     inline void SetFalsePositiveCost(double cost) {
         _false_positive_cost = cost;
     }
-
-    inline void SetRecentScreenCutoff(int cutoff) {
+    inline void DetermineRecentScreenCutoff(int cutoff) {
         if (_scaling_type == "sigmoidal" && cutoff == -1) {
             // an alternate default value if one is not set
             double sig_def_val = 3.0;
@@ -138,11 +137,16 @@ protected:
                 << " Using default value: " << sig_def_val
                 << " Linking behavior may be unexpected";
             hepce::utils::LogWarning(GetLogName(), msg.str());
-            _recent_screen_cutoff = sig_def_val;
+            SetRecentScreenCutoff(sig_def_val);
         } else {
-            _recent_screen_cutoff = cutoff;
+            SetRecentScreenCutoff(cutoff);
         }
     }
+
+    inline void SetRecentScreenCutoff(int cutoff) {
+        _recent_screen_cutoff = cutoff;
+    }
+
     inline void SetScalingCoefficient(double sc) { _scaling_coefficient = sc; }
     inline void SetScalingType(const std::string scaling_type) {
         if (scaling_type.empty()) {

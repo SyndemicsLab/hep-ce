@@ -66,7 +66,7 @@ inline int GetCurrentTimeInMilliseconds() {
 
 /// @brief Sigmoidal Decay Function
 /// @param timestep The timestep to adjust for
-/// @param decay_start The timestep at which decay is steepest
+/// @param cutoff The timestep at which decay is steepest
 /// @param scaling_coeff Determines the steepness of the decay
 /// @return Decayed value
 inline double SigmoidalDecay(double value, int time, int cutoff,
