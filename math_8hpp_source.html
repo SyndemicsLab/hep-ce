@@ -137,8 +137,8 @@ $(document).ready(function(){initNavTree('math_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// Created Date: 2025-04-17                                                   //</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Author: Matthew Carroll                                                    //</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// -----                                                                      //</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-08-04                                                  //</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// Modified By: Dimitri Baptiste                                              //</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-08-05                                                  //</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// Modified By: Andrew Clark                                                  //</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// -----                                                                      //</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"></span><span class="preprocessor">#ifndef HEPCE_UTILS_MATH_HPP_</span></div>
@@ -182,11 +182,17 @@ $(document).ready(function(){initNavTree('math_8hpp_source.html',''); initResiza
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            current_time.time_since_epoch())</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            .count());</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>} <span class="comment">// namespace utils</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>} <span class="comment">// namespace hepce</span></div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="preprocessor">#endif </span><span class="comment">// HEPCE_UTILS_MATH_HPP_</span></div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="namespacehepce_1_1utils.html#a74ddd0d45489c77ebbfa8e22d7c1d5a7">   72</a></span><span class="keyword">inline</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespacehepce_1_1utils.html#a74ddd0d45489c77ebbfa8e22d7c1d5a7">SigmoidalDecay</a>(<span class="keywordtype">double</span> value, <span class="keywordtype">int</span> time, <span class="keywordtype">int</span> cutoff,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                             <span class="keywordtype">double</span> scaling_coeff) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">return</span> value / (1 + exp(scaling_coeff * (time - cutoff)));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>} <span class="comment">// namespace utils</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>} <span class="comment">// namespace hepce</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#endif </span><span class="comment">// HEPCE_UTILS_MATH_HPP_</span></div>
 <div class="ttc" id="anamespacehepce_1_1utils_html_a52df6a1ec41a6c589b3a89df74ca9085"><div class="ttname"><a href="namespacehepce_1_1utils.html#a52df6a1ec41a6c589b3a89df74ca9085">hepce::utils::ProbabilityToRate</a></div><div class="ttdeci">double ProbabilityToRate(double probability, int time=1)</div><div class="ttdoc">Convert Probability to Rate.</div><div class="ttdef"><b>Definition:</b> math.hpp:24</div></div>
+<div class="ttc" id="anamespacehepce_1_1utils_html_a74ddd0d45489c77ebbfa8e22d7c1d5a7"><div class="ttname"><a href="namespacehepce_1_1utils.html#a74ddd0d45489c77ebbfa8e22d7c1d5a7">hepce::utils::SigmoidalDecay</a></div><div class="ttdeci">double SigmoidalDecay(double value, int time, int cutoff, double scaling_coeff)</div><div class="ttdoc">Sigmoidal Decay Function.</div><div class="ttdef"><b>Definition:</b> math.hpp:72</div></div>
 <div class="ttc" id="anamespacehepce_1_1utils_html_a78e6fb9715bd35a1f996a78e258d9f88"><div class="ttname"><a href="namespacehepce_1_1utils.html#a78e6fb9715bd35a1f996a78e258d9f88">hepce::utils::Discount</a></div><div class="ttdeci">double Discount(double value, double discount_rate, double timestep, bool annual=false)</div><div class="ttdoc">Calculate Discount to Provide.</div><div class="ttdef"><b>Definition:</b> math.hpp:46</div></div>
 <div class="ttc" id="anamespacehepce_1_1utils_html_a82f8e229f02f01d752a28b07c39233e1"><div class="ttname"><a href="namespacehepce_1_1utils.html#a82f8e229f02f01d752a28b07c39233e1">hepce::utils::GetCurrentTimeInMilliseconds</a></div><div class="ttdeci">int GetCurrentTimeInMilliseconds()</div><div class="ttdoc">Retrieves the current time since epoch in milliseconds as an integer.</div><div class="ttdef"><b>Definition:</b> math.hpp:58</div></div>
 <div class="ttc" id="anamespacehepce_1_1utils_html_ad2b12a7d68664ba10c3db105d3bec637"><div class="ttname"><a href="namespacehepce_1_1utils.html#ad2b12a7d68664ba10c3db105d3bec637">hepce::utils::RateToProbability</a></div><div class="ttdeci">double RateToProbability(double rate, int time=1)</div><div class="ttdoc">Convert Rate to Probability.</div><div class="ttdef"><b>Definition:</b> math.hpp:34</div></div>
@@ -197,7 +203,7 @@ $(document).ready(function(){initNavTree('math_8hpp_source.html',''); initResiza
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_05c933d59f351fefb8caab5fd9b918a4.html">hepce</a></li><li class="navelem"><a class="el" href="dir_e28addd3979671bd06dbb695f19b84f3.html">utils</a></li><li class="navelem"><a class="el" href="math_8hpp.html">math.hpp</a></li>
-    <li class="footer">Generated on Mon Aug 4 2025 18:48:53 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Thu Aug 7 2025 12:49:59 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

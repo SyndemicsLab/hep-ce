@@ -40,6 +40,7 @@ var namespacehepce_1_1utils =
     [ "LogWarning", "namespacehepce_1_1utils.html#a90e1a3f19260ebddf42aaa39dde80857", null ],
     [ "ProbabilityToRate", "namespacehepce_1_1utils.html#a52df6a1ec41a6c589b3a89df74ca9085", null ],
     [ "RateToProbability", "namespacehepce_1_1utils.html#ad2b12a7d68664ba10c3db105d3bec637", null ],
+    [ "SigmoidalDecay", "namespacehepce_1_1utils.html#a74ddd0d45489c77ebbfa8e22d7c1d5a7", null ],
     [ "SplitToVecT", "namespacehepce_1_1utils.html#a899dc70044aed7e794e203e99bb72aa1", null ],
     [ "SToBool", "namespacehepce_1_1utils.html#aa73f0b8977c616f250eed51bd694c588", null ],
     [ "SToDPositive", "namespacehepce_1_1utils.html#afc818ec07b1d1b5549e5515cb13cef1f", null ],

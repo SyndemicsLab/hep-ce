@@ -1,18 +1,18 @@
 var NAVTREEINDEX1 =
 {
 "classhepce_1_1model_1_1Person.html#aef5a9675688856cbcda615a73986844b":[9,0,0,2,1,56],
-"classhepce_1_1model_1_1Person.html#af249beed8de4de6fbb2a11bd4d55bbb0":[9,0,0,2,1,48],
 "classhepce_1_1model_1_1Person.html#af249beed8de4de6fbb2a11bd4d55bbb0":[8,0,0,2,1,48],
-"classhepce_1_1model_1_1Person.html#af36d781b0e401e54ee6bbbc942f72d60":[8,0,0,2,1,58],
+"classhepce_1_1model_1_1Person.html#af249beed8de4de6fbb2a11bd4d55bbb0":[9,0,0,2,1,48],
 "classhepce_1_1model_1_1Person.html#af36d781b0e401e54ee6bbbc942f72d60":[9,0,0,2,1,58],
+"classhepce_1_1model_1_1Person.html#af36d781b0e401e54ee6bbbc942f72d60":[8,0,0,2,1,58],
 "classhepce_1_1model_1_1Person.html#afc9fc2b56135bc906144d07f9ecec733":[8,0,0,2,1,49],
 "classhepce_1_1model_1_1Person.html#afc9fc2b56135bc906144d07f9ecec733":[9,0,0,2,1,49],
 "classhepce_1_1model_1_1Sampler.html":[8,0,0,2,2],
 "classhepce_1_1model_1_1Sampler.html":[9,0,0,2,2],
 "classhepce_1_1model_1_1Sampler.html#abc7923d44d5bdb0957ecf824997a1c42":[9,0,0,2,2,0],
 "classhepce_1_1model_1_1Sampler.html#abc7923d44d5bdb0957ecf824997a1c42":[8,0,0,2,2,0],
-"classhepce_1_1model_1_1Sampler.html#aeee1287f566c21aabd35d5f131c29173":[8,0,0,2,2,1],
 "classhepce_1_1model_1_1Sampler.html#aeee1287f566c21aabd35d5f131c29173":[9,0,0,2,2,1],
+"classhepce_1_1model_1_1Sampler.html#aeee1287f566c21aabd35d5f131c29173":[8,0,0,2,2,1],
 "clearance_8hpp.html":[10,0,1,0,1,3,0],
 "clearance_8hpp_source.html":[10,0,1,0,1,3,0],
 "config_8hpp.html":[10,0,1,0,3,0],
@@ -136,6 +136,7 @@ var NAVTREEINDEX1 =
 "logging_8hpp_source.html":[10,0,1,0,3,2],
 "math_8hpp.html":[10,0,1,0,3,3],
 "math_8hpp.html#a52df6a1ec41a6c589b3a89df74ca9085":[10,0,1,0,3,3,2],
+"math_8hpp.html#a74ddd0d45489c77ebbfa8e22d7c1d5a7":[10,0,1,0,3,3,4],
 "math_8hpp.html#a78e6fb9715bd35a1f996a78e258d9f88":[10,0,1,0,3,3,0],
 "math_8hpp.html#a82f8e229f02f01d752a28b07c39233e1":[10,0,1,0,3,3,1],
 "math_8hpp.html#ad2b12a7d68664ba10c3db105d3bec637":[10,0,1,0,3,3,3],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "namespacehepce_1_1data.html#a88cdf99b2e11cadb5dac10c977616c0c":[8,0,0,0,52],
 "namespacehepce_1_1data.html#a8c891b6253ad64a14ffa8befd60cf057":[8,0,0,0,76],
 "namespacehepce_1_1data.html#a8cb7d8ae478f55b0e8229f91f998baf9":[8,0,0,0,40],
-"namespacehepce_1_1data.html#a961a10a36e197b32a6cff43a25ee833f":[8,0,0,0,45],
-"namespacehepce_1_1data.html#a9b40a05f3b44880021b3d6f537245e6d":[8,0,0,0,39]
+"namespacehepce_1_1data.html#a961a10a36e197b32a6cff43a25ee833f":[8,0,0,0,45]
 };

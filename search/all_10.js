@@ -21,13 +21,14 @@ var searchData=
   ['setutility_18',['SetUtility',['../classhepce_1_1model_1_1Person.html#ad092edeb32db46c148fb7c6ceec735d5',1,'hepce::model::Person']]],
   ['sex_19',['sex',['../structhepce_1_1data_1_1PersonSelect.html#a8173ca301f6dda3f4ad69652ae31dd9d',1,'hepce::data::PersonSelect']]],
   ['sex_20',['Sex',['../namespacehepce_1_1data.html#a9cb3b8ba4ebabeb998811ba7a16ff6ce',1,'hepce::data']]],
-  ['simulation_2ehpp_21',['simulation.hpp',['../simulation_8hpp.html',1,'']]],
-  ['splittovect_22',['SplitToVecT',['../namespacehepce_1_1utils.html#a899dc70044aed7e794e203e99bb72aa1',1,'hepce::utils']]],
-  ['staging_23',['Staging',['../classhepce_1_1event_1_1fibrosis_1_1Staging.html',1,'hepce::event::fibrosis']]],
-  ['staging_2ehpp_24',['staging.hpp',['../staging_8hpp.html',1,'']]],
-  ['stagingdetails_25',['StagingDetails',['../structhepce_1_1data_1_1StagingDetails.html',1,'hepce::data']]],
-  ['stillbirth_26',['Stillbirth',['../classhepce_1_1model_1_1Person.html#a7ae80aa885558f319fd3148d0ed48178',1,'hepce::model::Person']]],
-  ['stobool_27',['SToBool',['../namespacehepce_1_1utils.html#aa73f0b8977c616f250eed51bd694c588',1,'hepce::utils']]],
-  ['stodpositive_28',['SToDPositive',['../namespacehepce_1_1utils.html#afc818ec07b1d1b5549e5515cb13cef1f',1,'hepce::utils']]],
-  ['svrs_29',['svrs',['../structhepce_1_1data_1_1PersonSelect.html#aa26c8ec88e964eafd0ecc5f1a3dd3f74',1,'hepce::data::PersonSelect::svrs()'],['../structhepce_1_1data_1_1HCVDetails.html#a9af6466ce053a38bb9fd3f36ad632133',1,'hepce::data::HCVDetails::svrs()']]]
+  ['sigmoidaldecay_21',['SigmoidalDecay',['../namespacehepce_1_1utils.html#a74ddd0d45489c77ebbfa8e22d7c1d5a7',1,'hepce::utils']]],
+  ['simulation_2ehpp_22',['simulation.hpp',['../simulation_8hpp.html',1,'']]],
+  ['splittovect_23',['SplitToVecT',['../namespacehepce_1_1utils.html#a899dc70044aed7e794e203e99bb72aa1',1,'hepce::utils']]],
+  ['staging_24',['Staging',['../classhepce_1_1event_1_1fibrosis_1_1Staging.html',1,'hepce::event::fibrosis']]],
+  ['staging_2ehpp_25',['staging.hpp',['../staging_8hpp.html',1,'']]],
+  ['stagingdetails_26',['StagingDetails',['../structhepce_1_1data_1_1StagingDetails.html',1,'hepce::data']]],
+  ['stillbirth_27',['Stillbirth',['../classhepce_1_1model_1_1Person.html#a7ae80aa885558f319fd3148d0ed48178',1,'hepce::model::Person']]],
+  ['stobool_28',['SToBool',['../namespacehepce_1_1utils.html#aa73f0b8977c616f250eed51bd694c588',1,'hepce::utils']]],
+  ['stodpositive_29',['SToDPositive',['../namespacehepce_1_1utils.html#afc818ec07b1d1b5549e5515cb13cef1f',1,'hepce::utils']]],
+  ['svrs_30',['svrs',['../structhepce_1_1data_1_1PersonSelect.html#aa26c8ec88e964eafd0ecc5f1a3dd3f74',1,'hepce::data::PersonSelect::svrs()'],['../structhepce_1_1data_1_1HCVDetails.html#a9af6466ce053a38bb9fd3f36ad632133',1,'hepce::data::HCVDetails::svrs()']]]
 ];

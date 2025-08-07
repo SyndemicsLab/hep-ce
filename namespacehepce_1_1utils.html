@@ -238,6 +238,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a82f8e229f02f01d752a28b07c39233e1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a82f8e229f02f01d752a28b07c39233e1">GetCurrentTimeInMilliseconds</a> ()</td></tr>
 <tr class="memdesc:a82f8e229f02f01d752a28b07c39233e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the current time since epoch in milliseconds as an integer.  <br /></td></tr>
 <tr class="separator:a82f8e229f02f01d752a28b07c39233e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74ddd0d45489c77ebbfa8e22d7c1d5a7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a74ddd0d45489c77ebbfa8e22d7c1d5a7">SigmoidalDecay</a> (double value, int time, int cutoff, double scaling_coeff)</td></tr>
+<tr class="memdesc:a74ddd0d45489c77ebbfa8e22d7c1d5a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sigmoidal Decay Function.  <br /></td></tr>
+<tr class="separator:a74ddd0d45489c77ebbfa8e22d7c1d5a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="aa96136b1c992d26f88000dde8c3a6513" name="aa96136b1c992d26f88000dde8c3a6513"></a>
@@ -971,6 +974,63 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
+<a id="a74ddd0d45489c77ebbfa8e22d7c1d5a7" name="a74ddd0d45489c77ebbfa8e22d7c1d5a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74ddd0d45489c77ebbfa8e22d7c1d5a7">&#9670;&#160;</a></span>SigmoidalDecay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double hepce::utils::SigmoidalDecay </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cutoff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>scaling_coeff</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">timestep</td><td>The timestep to adjust for </td></tr>
+    <tr><td class="paramname">cutoff</td><td>The timestep at which decay is steepest </td></tr>
+    <tr><td class="paramname">scaling_coeff</td><td>Determines the steepness of the decay </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Decayed value </dd></dl>
+
+</div>
+</div>
 <a id="a899dc70044aed7e794e203e99bb72aa1" name="a899dc70044aed7e794e203e99bb72aa1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a899dc70044aed7e794e203e99bb72aa1">&#9670;&#160;</a></span>SplitToVecT()</h2>
 
@@ -1159,7 +1219,7 @@ template&lt;typename T &gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacehepce.html">hepce</a></li><li class="navelem"><a class="el" href="namespacehepce_1_1utils.html">utils</a></li>
-    <li class="footer">Generated on Mon Aug 4 2025 18:48:54 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Thu Aug 7 2025 12:49:59 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>
