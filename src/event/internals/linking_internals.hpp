@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-22                                                  //
+// Last Modified: 2025-08-05                                                  //
 // Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -58,13 +58,15 @@ public:
         int time_diff_ls =
             GetTimeSince(person, person.GetScreeningDetails(GetInfectionType())
                                      .time_of_last_screening);
-        if (prob < 1) {
+        if (prob < 1.0) {
             // check if the person was recently screened, for multiplier
             bool recently_screened = (time_diff_ls <= _recent_screen_cutoff);
             if (GetScalingType() == "exponential") {
                 prob = ApplyExpDecay(prob, time_diff_ls);
+            } else if (GetScalingType() == "sigmoidal") {
+                prob = ApplySigmoidalDecay(prob, time_diff_ls);
             } else if (recently_screened && GetScalingType() == "multiplier") {
-                prob = ApplyMultiplier(prob, _recent_screen_multiplier);
+                prob = ApplyMultiplier(prob, _scaling_coefficient);
             }
         }
 
@@ -126,13 +128,26 @@ protected:
     inline void SetFalsePositiveCost(double cost) {
         _false_positive_cost = cost;
     }
+    inline void DetermineRecentScreenCutoff(int cutoff) {
+        if (_scaling_type == "sigmoidal" && cutoff == -1) {
+            // an alternate default value if one is not set
+            double sig_def_val = 3.0;
+            std::stringstream msg;
+            msg << "linking.recent_screen_cutoff not set for sigmoidal scaling."
+                << " Using default value: " << sig_def_val
+                << " Linking behavior may be unexpected";
+            hepce::utils::LogWarning(GetLogName(), msg.str());
+            SetRecentScreenCutoff(sig_def_val);
+        } else {
+            SetRecentScreenCutoff(cutoff);
+        }
+    }
 
     inline void SetRecentScreenCutoff(int cutoff) {
         _recent_screen_cutoff = cutoff;
     }
-    inline void SetRecentScreenMultiplier(double mult) {
-        _recent_screen_multiplier = mult;
-    }
+
+    inline void SetScalingCoefficient(double sc) { _scaling_coefficient = sc; }
     inline void SetScalingType(const std::string scaling_type) {
         if (scaling_type.empty()) {
             std::stringstream msg;
@@ -194,12 +209,18 @@ protected:
         return utils::RateToProbability(utils::ProbabilityToRate(prob) *
                                         exp(-t));
     }
+    inline double ApplySigmoidalDecay(double prob, int t) {
+        double rate = utils::ProbabilityToRate(prob);
+        double scaled_rate = utils::SigmoidalDecay(
+            rate, t, _recent_screen_cutoff, _scaling_coefficient);
+        return utils::RateToProbability(scaled_rate);
+    }
 
 private:
     // properties
     linkmap_t _link_data;
     int _recent_screen_cutoff = -1;
-    double _recent_screen_multiplier = 1.0;
+    double _scaling_coefficient = 1.0;
     bool _stratify_by_pregnancy = false;
     double _intervention_cost = 0.0;
     double _false_positive_cost = 0.0;

@@ -4,8 +4,8 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-01                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-08-05                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ static std::unordered_map<std::string, std::vector<std::string>>
             "voluntary_relink_duration = 3",
             "false_positive_test_cost = 442.39",
             "scaling_type = multiplier",
-            "recent_screen_multiplier = 1.1",
+            "scaling_coefficient = 1.1",
             "recent_screen_cutoff = 0"
         }},
     {"treatment", {
@@ -134,7 +134,7 @@ static std::unordered_map<std::string, std::vector<std::string>>
     {"hiv_linking", {
             "intervention_cost = 100.00",
             "false_positive_test_cost = 1800.00",
-            "recent_screen_multiplier = 2.0",
+            "scaling_coefficient = 2.0",
             "recent_screen_cutoff = 2"
         }},
     {"pregnancy", {

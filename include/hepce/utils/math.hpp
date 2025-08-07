@@ -4,8 +4,8 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-04                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-08-05                                                  //
+// Modified By: Andrew Clark                                                  //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,6 +62,16 @@ inline int GetCurrentTimeInMilliseconds() {
         std::chrono::duration_cast<std::chrono::milliseconds>(
             current_time.time_since_epoch())
             .count());
+}
+
+/// @brief Sigmoidal Decay Function
+/// @param timestep The timestep to adjust for
+/// @param cutoff The timestep at which decay is steepest
+/// @param scaling_coeff Determines the steepness of the decay
+/// @return Decayed value
+inline double SigmoidalDecay(double value, int time, int cutoff,
+                             double scaling_coeff) {
+    return value / (1 + exp(scaling_coeff * (time - cutoff)));
 }
 } // namespace utils
 } // namespace hepce
