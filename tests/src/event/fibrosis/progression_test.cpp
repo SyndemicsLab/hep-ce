@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File:progression_test.cpp                                                  //
+// File: progression_test.cpp                                                 //
 // Project: hep-ce                                                            //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-01                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-08-08                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +86,9 @@ protected:
 };
 
 TEST_F(ProgressionTest, NoHCV) {
-    EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(6)
+        .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
     auto event = event::fibrosis::Progression::Create(*model_data);
@@ -104,7 +106,7 @@ TEST_F(ProgressionTest, NoProgression) {
 
     // expectations
     EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(7)
+        .Times(8)
         .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_sampler, GetDecision({{0.008877, 1 - 0.008877}}))
         .WillOnce(Return(1));
@@ -137,7 +139,7 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_NoID) {
 
     hcv.hcv = data::HCV::kAcute;
     EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(5)
+        .Times(6)
         .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .Times(1)
@@ -174,7 +176,7 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_ID) {
     hcv.hcv = data::HCV::kAcute;
     screen.identified = true;
     EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(7)
+        .Times(8)
         .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .Times(1)
@@ -209,6 +211,7 @@ TEST_F(ProgressionTest, Progression) {
         .WillOnce(Return(hcv))
         .WillOnce(Return(hcv))
         .WillOnce(Return(hcv))
+        .WillOnce(Return(new_hcv))
         .WillOnce(Return(new_hcv))
         .WillOnce(Return(new_hcv))
         .WillOnce(Return(new_hcv))
