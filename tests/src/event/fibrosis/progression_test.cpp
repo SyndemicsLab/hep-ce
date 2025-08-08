@@ -86,9 +86,9 @@ protected:
 };
 
 TEST_F(ProgressionTest, NoHCV) {
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(6)
-        .WillRepeatedly(Return(hcv));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+
+    EXPECT_CALL(mock_person, SetFibrosis(_)).Times(0);
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
     auto event = event::fibrosis::Progression::Create(*model_data);
@@ -103,16 +103,11 @@ TEST_F(ProgressionTest, NoProgression) {
     // person setup
     hcv.hcv = data::HCV::kAcute;
     hcv.fibrosis_state = data::FibrosisState::kF0;
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
 
     // expectations
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(8)
-        .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_sampler, GetDecision({{0.008877, 1 - 0.008877}}))
         .WillOnce(Return(1));
-    EXPECT_CALL(mock_person, SetFibrosis(_)).Times(0);
-    EXPECT_CALL(mock_person, GetScreeningDetails(_)).Times(0);
-
     EXPECT_CALL(mock_person, AddCost(430.00, _, model::CostCategory::kLiver))
         .Times(1);
     EXPECT_CALL(mock_person, SetUtility(0.8, model::UtilityCategory::kLiver))
@@ -138,16 +133,13 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_NoID) {
     alt_model_data->AddSource(test_db);
 
     hcv.hcv = data::HCV::kAcute;
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(6)
-        .WillRepeatedly(Return(hcv));
-    EXPECT_CALL(mock_sampler, GetDecision(_))
-        .Times(1)
-        .WillRepeatedly(Return(1));
-    EXPECT_CALL(mock_person, SetFibrosis(_)).Times(0);
-    EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
-        .WillOnce(Return(screen));
+    hcv.fibrosis_state = data::FibrosisState::kF0;
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+    ON_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
+        .WillByDefault(Return(screen));
 
+    // expectations
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
     EXPECT_CALL(mock_person, SetUtility(0.8, model::UtilityCategory::kLiver))
         .Times(1);
@@ -175,17 +167,12 @@ TEST_F(ProgressionTest, NoProgression_AddCostFlag_ID) {
 
     hcv.hcv = data::HCV::kAcute;
     screen.identified = true;
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(8)
-        .WillRepeatedly(Return(hcv));
-    EXPECT_CALL(mock_sampler, GetDecision(_))
-        .Times(1)
-        .WillRepeatedly(Return(1));
-    EXPECT_CALL(mock_person, SetFibrosis(_)).Times(0);
-    EXPECT_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
-        .WillOnce(Return(screen));
-    EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(1));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+    ON_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
+        .WillByDefault(Return(screen));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
 
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, AddCost(430.00, _, model::CostCategory::kLiver))
         .Times(1);
     EXPECT_CALL(mock_person, SetUtility(0.8, model::UtilityCategory::kLiver))
