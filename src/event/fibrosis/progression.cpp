@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: progression.cpp                                                      //
 // Project: hep-ce                                                            //
-// Created Date: 2025-04-23                                                   //
+// Created Date: 2025-08-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-25                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-08-08                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +45,7 @@ void ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
     // can only progress in fibrosis state if actively infected with HCV
     if (person.GetHCVDetails().hcv == data::HCV::kNone) {
+        ResolveLiverCostAndUtility(person);
         return;
     }
     // 1. Get current fibrosis status
@@ -59,16 +60,7 @@ void ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
         // 4. Apply the result state
         person.SetFibrosis(fs);
     }
-
-    AddProgressionUtility(person);
-    // insert Person's liver-related disease cost (taking the highest
-    // fibrosis state) only if the person is identified as infected
-    if (_add_if_identified) {
-        if (!person.GetScreeningDetails(data::InfectionType::kHcv).identified) {
-            return;
-        }
-    }
-    AddProgressionCost(person);
+    ResolveLiverCostAndUtility(person);
 }
 
 void ProgressionImpl::LoadData(datamanagement::ModelData &model_data) {
