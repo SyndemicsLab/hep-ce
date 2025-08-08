@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: progression_internals.hpp                                            //
 // Project: hep-ce                                                            //
-// Created Date: 2025-04-18                                                   //
+// Created Date: 2025-08-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-25                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-08-08                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +75,24 @@ private:
 
     inline void AddProgressionUtility(model::Person &person) {
         AddEventUtility(person, _cost_data[TupleBuilder(person)].util);
+    }
+
+    /// @brief Determine if a person accrues a utility and cost.
+    /// @param person The person to check if they accrue cost and utility
+    inline void ResolveLiverCostAndUtility(model::Person &person) {
+        AddProgressionUtility(person);
+        data::FibrosisState fs = person.GetHCVDetails().fibrosis_state;
+
+        bool presenting_fib_stages = (fs == data::FibrosisState::kF4 ||
+                                      fs == data::FibrosisState::kDecomp);
+
+        // If the sim is set to only accrue costs for identified individuals AND they are identified AND they are not in the clinically presenting fibrosis stages then do not accrue costs.
+        if (_add_if_identified &&
+            !person.GetScreeningDetails(data::InfectionType::kHcv).identified &&
+            !presenting_fib_stages) {
+            return;
+        }
+        AddProgressionCost(person);
     }
 };
 } // namespace fibrosis
