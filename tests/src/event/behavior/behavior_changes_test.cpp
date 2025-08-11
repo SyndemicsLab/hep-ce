@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-08-11                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,6 +32,7 @@
 #include <inputs_db.hpp>
 #include <person_mock.hpp>
 #include <sampler_mock.hpp>
+#include <utility.hpp>
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -81,8 +82,13 @@ protected:
 };
 
 TEST_F(BehaviorChangesTest, InjectionToFormer) {
+    // Setup
+    const std::string LOG_NAME = "InjectionToFormer";
+    CreateTestLog(LOG_NAME);
     data::BehaviorDetails behaviors_new = {data::Behavior::kFormerInjection, 0};
+    std::vector<double> expected_probs = {0.0, 0.0, 0.002, 0.0, 0.998};
 
+    // Expectations
     EXPECT_CALL(mock_person, GetBehaviorDetails())
         .WillOnce(Return(behaviors))
         .WillOnce(Return(behaviors_new));
@@ -90,7 +96,7 @@ TEST_F(BehaviorChangesTest, InjectionToFormer) {
         .Times(1)
         .WillRepeatedly(Return(mouds));
     // Return former injection behavior
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(2));
+    EXPECT_CALL(mock_sampler, GetDecision(expected_probs)).WillOnce(Return(2));
     EXPECT_CALL(mock_person, SetBehavior(data::Behavior::kFormerInjection))
         .Times(1);
 
@@ -103,17 +109,20 @@ TEST_F(BehaviorChangesTest, InjectionToFormer) {
                 SetUtility(0.744, model::UtilityCategory::kBehavior))
         .Times(1);
 
-    const std::string LOG_NAME = "InjectionToFormer";
-    const std::string LOG_FILE = "InjectionToFormer.log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
-
+    // Run test
     auto event =
         event::behavior::BehaviorChanges::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(BehaviorChangesTest, InvalidPersonDetails) {
+    // Setup
+    const std::string LOG_NAME = "InvalidPersonDetails";
+    CreateTestLog(LOG_NAME);
+
+    // Expectations
     EXPECT_CALL(mock_person, GetSex())
         .Times(3)
         .WillRepeatedly(Return(data::Sex::kFemale));
@@ -134,30 +143,31 @@ TEST_F(BehaviorChangesTest, InvalidPersonDetails) {
     EXPECT_CALL(mock_person, SetUtility(0, model::UtilityCategory::kBehavior))
         .Times(1);
 
-    const std::string LOG_NAME = "InvalidPersonDetails";
-    const std::string LOG_FILE = "InvalidPersonDetails.log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
-
-    auto event =
-        event::behavior::BehaviorChanges::Create(*model_data, LOG_NAME);
-    event->Execute(mock_person, mock_sampler);
-
     std::string expected =
         "Behavior Transition Probabilities are not found for the person "
         "details (age, Sex, Behavior, MOUD):";
     std::string line;
 
-    std::ifstream f(LOG_FILE);
+    // Run test
+    auto event =
+        event::behavior::BehaviorChanges::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    std::ifstream f(LOG_NAME + ".log");
     std::getline(f, line);
     f.close();
 
     ASSERT_TRUE(line.find(expected) != std::string::npos);
-    std::filesystem::remove(LOG_FILE);
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(BehaviorChangesTest, InvalidSampling) {
+    // Setup
+    const std::string LOG_NAME = "InvalidSampling";
+    CreateTestLog(LOG_NAME);
     data::BehaviorDetails behaviors_new = {data::Behavior::kFormerInjection, 0};
 
+    // Expectations
     EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
     EXPECT_CALL(mock_person, GetMoudDetails())
         .Times(1)
@@ -170,33 +180,35 @@ TEST_F(BehaviorChangesTest, InvalidSampling) {
     EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
     EXPECT_CALL(mock_person, SetUtility(_, _)).Times(0);
 
-    const std::string LOG_NAME = "InvalidSampling";
     const std::string LOG_FILE = "InvalidSampling.log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
-
-    auto event =
-        event::behavior::BehaviorChanges::Create(*model_data, LOG_NAME);
-    event->Execute(mock_person, mock_sampler);
 
     std::string expected =
         "Invalid Decision returned during the Behavior Change Event!";
     std::string line;
 
-    std::ifstream f(LOG_FILE);
+    // Run test
+    auto event =
+        event::behavior::BehaviorChanges::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    std::ifstream f(LOG_NAME + ".log");
     std::getline(f, line);
     f.close();
 
     ASSERT_TRUE(line.find(expected) != std::string::npos);
-    std::filesystem::remove(LOG_FILE);
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(BehaviorChangesTest, InvalidModelData) {
+    // Setup
     const std::string LOG_NAME = "InvalidModelData";
-    const std::string LOG_FILE = "InvalidModelData.log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+    CreateTestLog(LOG_NAME);
+
     std::unique_ptr<datamanagement::ModelData> empty_model_data =
         datamanagement::ModelData::Create(test_conf, LOG_NAME);
 
+    // Expectations
     EXPECT_CALL(mock_person, GetBehaviorDetails())
         .Times(3)
         .WillRepeatedly(Return(behaviors));
@@ -214,19 +226,20 @@ TEST_F(BehaviorChangesTest, InvalidModelData) {
     EXPECT_CALL(mock_person, SetUtility(0, model::UtilityCategory::kBehavior))
         .Times(1);
 
+    std::string expected = "Error getting cost data in behavior changes:";
+    std::string line;
+
+    // Run test
     auto event =
         event::behavior::BehaviorChanges::Create(*empty_model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
-    std::string expected = "Error getting cost data in behavior changes:";
-    std::string line;
-
-    std::ifstream f(LOG_FILE);
+    std::ifstream f(LOG_NAME + ".log");
     std::getline(f, line);
     f.close();
 
     ASSERT_TRUE(line.find(expected) != std::string::npos);
-    std::filesystem::remove(LOG_FILE);
+    RemoveTestLog(LOG_NAME);
 }
 } // namespace testing
 } // namespace hepce
