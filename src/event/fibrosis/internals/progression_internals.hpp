@@ -4,7 +4,7 @@
 // Created Date: 2025-08-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-11                                                  //
+// Last Modified: 2025-08-12                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -89,7 +89,7 @@ private:
                                       fs == data::FibrosisState::kDecomp);
 
         // If the sim is set to only accrue costs for identified individuals AND
-        // they are identified AND they are not in the clinically presenting
+        // they are not identified AND they are not in the clinically presenting
         // fibrosis stages then do not accrue costs.
         if (_add_if_identified &&
             !person.GetScreeningDetails(data::InfectionType::kHcv).identified &&
