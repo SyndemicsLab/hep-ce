@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-01                                                  //
+// Last Modified: 2025-08-08                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -32,6 +32,7 @@
 #include <inputs_db.hpp>
 #include <person_mock.hpp>
 #include <sampler_mock.hpp>
+#include <utility.hpp>
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -92,22 +93,26 @@ protected:
 };
 
 TEST_F(DeathTest, AgeDR) {
+    // Setup
+    const std::string LOG_NAME = "AgeDR";
+    CreateTestLog(LOG_NAME);
 
+    // Expectations
     EXPECT_CALL(mock_person, GetAge()).WillOnce(Return(1200));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kAge)).Times(1);
-
-    const std::string LOG_NAME = "AgeDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
-    std::filesystem::remove(LOG_FILE);
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, FatalOverdoseDR) {
+    // Setup
+    const std::string LOG_NAME = "FatalOverdoseDR";
+    CreateTestLog(LOG_NAME);
+
     auto config = DEFAULT_CONFIG;
     // change the events list
     config["simulation"][2] = OVERDOSE_EVENTS;
@@ -127,22 +132,23 @@ TEST_F(DeathTest, FatalOverdoseDR) {
 
     ON_CALL(mock_person, GetCurrentlyOverdosing()).WillByDefault(Return(true));
 
+    // Expectations
     std::vector<double> expected_prob = {1.0, 0.0};
     EXPECT_CALL(mock_sampler, GetDecision(expected_prob)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kOverdose)).Times(1);
-
-    const std::string LOG_NAME = "FatalOverdoseDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data_alt, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
-    std::filesystem::remove(LOG_FILE);
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, HivDR) {
+    // Setup
+    const std::string LOG_NAME = "HivDR";
+    CreateTestLog(LOG_NAME);
+
     BuildSimConf(test_conf);
     std::unique_ptr<datamanagement::ModelData> model_data_alt;
     model_data_alt = datamanagement::ModelData::Create(test_conf);
@@ -151,190 +157,208 @@ TEST_F(DeathTest, HivDR) {
     hiv_details.hiv = HIV::kHiUn;
     ON_CALL(mock_person, GetHIVDetails()).WillByDefault(Return(hiv_details));
 
+    // Expectations
     std::vector<double> expected_prob = {0.0};
     EXPECT_CALL(mock_sampler, GetDecision(expected_prob)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kHiv)).Times(1);
-
-    const std::string LOG_NAME = "HivDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data_alt, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
-    std::filesystem::remove(LOG_FILE);
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, F4_Infected_BackgroundDR) {
+    // Setup
+    const std::string LOG_NAME = "F4_Infected_BackgroundDR";
+    CreateTestLog(LOG_NAME);
+
     hcv_details.fibrosis_state = data::FibrosisState::kF4;
     hcv_details.hcv = data::HCV::kChronic;
 
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
-
-    const std::string LOG_NAME = "F4_Infected_BackgroundDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, F4_Infected_LiverDR) {
+    // Setup
+    const std::string LOG_NAME = "F4_Infected_LiverDR";
+    CreateTestLog(LOG_NAME);
+
     hcv_details.fibrosis_state = data::FibrosisState::kF4;
     hcv_details.hcv = data::HCV::kChronic;
 
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
-
-    const std::string LOG_NAME = "F4_Infected_LiverDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, F4_Uninfected_BackgroundDR) {
+    // Setup
+    const std::string LOG_NAME = "F4_Uninfected_BackgroundDR";
+    CreateTestLog(LOG_NAME);
+
     hcv_details.fibrosis_state = data::FibrosisState::kF4;
     hcv_details.hcv = data::HCV::kNone;
 
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
-
-    const std::string LOG_NAME = "F4_Uninfected_BackgroundDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, F4_Uninfected_LiverDR) {
+    // Setup
+    const std::string LOG_NAME = "F4_Uninfected_LiverDR";
+    CreateTestLog(LOG_NAME);
+
     hcv_details.fibrosis_state = data::FibrosisState::kF4;
     hcv_details.hcv = data::HCV::kNone;
 
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
-
-    const std::string LOG_NAME = "F4_Uninfected_LiverDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, Decomp_Infected_BackgroundDR) {
+    // Setup
+    const std::string LOG_NAME = "Decomp_Infected_BackgroundDR";
+    CreateTestLog(LOG_NAME);
+
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kChronic;
 
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
-
-    const std::string LOG_NAME = "Decomp_Infected_BackgroundDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, Decomp_Infected_LiverDR) {
+    // Setup
+    const std::string LOG_NAME = "Decomp_Infected_LiverDR";
+    CreateTestLog(LOG_NAME);
+
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kChronic;
 
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
-
-    const std::string LOG_NAME = "Decomp_Infected_LiverDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, Decomp_Uninfected_BackgroundDR) {
+    // Setup
+    const std::string LOG_NAME = "Decomp_Uninfected_BackgroundDR";
+    CreateTestLog(LOG_NAME);
+
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kNone;
 
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
 
-    const std::string LOG_NAME = "Decomp_Uninfected_BackgroundDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
-
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, Decomp_Uninfected_LiverDR) {
+    // Setup
+    const std::string LOG_NAME = "Decomp_Uninfected_LiverDR";
+    CreateTestLog(LOG_NAME);
+
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kNone;
 
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
 
-    const std::string LOG_NAME = "Decomp_Uninfected_LiverDR";
-    const std::string LOG_FILE = LOG_NAME + ".log";
-    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
-
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 
 TEST_F(DeathTest, NoDeath) {
+    // Setup
+    const std::string LOG_NAME = "NoDeath";
+    CreateTestLog(LOG_NAME);
+
     hcv_details.fibrosis_state = data::FibrosisState::kDecomp;
     hcv_details.hcv = data::HCV::kNone;
 
     ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv_details));
 
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(2));
     EXPECT_CALL(mock_person, Die(_)).Times(0);
 
-    const std::string LOG_NAME = "NoDeath";
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
     auto event = event::base::Death::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-    std::filesystem::remove(LOG_FILE);
+
+    RemoveTestLog(LOG_NAME);
 }
 } // namespace testing
 } // namespace hepce

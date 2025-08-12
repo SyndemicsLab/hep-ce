@@ -4,8 +4,8 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-08-08                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,14 +70,16 @@ protected:
 
 TEST_F(AgingTest, Execute) {
     // Setup
-    EXPECT_CALL(mock_person, GetAge()).WillOnce(Return(300));
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(Sex::kMale));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+    ON_CALL(mock_person, GetSex()).WillByDefault(Return(Sex::kMale));
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
 
     // Expectations
     EXPECT_CALL(mock_person, IsAlive()).WillOnce(Return(true));
     EXPECT_CALL(mock_person, Grow()).Times(1);
-    EXPECT_CALL(mock_person, GetCurrentTimestep()).WillRepeatedly(Return(1));
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(2)
+        .WillRepeatedly(Return(1));
     EXPECT_CALL(mock_person,
                 AddCost(370.75, discounted_cost, CostCategory::kBackground))
         .Times(1);
@@ -92,13 +94,11 @@ TEST_F(AgingTest, Execute) {
 }
 
 TEST_F(AgingTest, ExecuteDead) {
-    // Setup
+    // Expectations
+    EXPECT_CALL(mock_person, IsAlive()).WillOnce(Return(false));
     EXPECT_CALL(mock_person, GetAge()).Times(0);
     EXPECT_CALL(mock_person, GetSex()).Times(0);
     EXPECT_CALL(mock_person, GetBehaviorDetails()).Times(0);
-
-    // Expectations
-    EXPECT_CALL(mock_person, IsAlive()).WillOnce(Return(false));
     EXPECT_CALL(mock_person, Grow()).Times(0);
     EXPECT_CALL(mock_person, GetCurrentTimestep()).Times(0);
     EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
