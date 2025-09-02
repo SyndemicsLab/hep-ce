@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: simulation_internals.hpp                                             //
 // Project: hep-ce                                                            //
-// Created Date: 2025-04-18                                                   //
+// Created Date: 2025-07-25                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
+// Last Modified: 2025-09-02                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -30,8 +30,7 @@ public:
     std::vector<std::unique_ptr<event::Event>>
     CreateEvents(datamanagement::ModelData &model_data) const override;
     std::vector<std::unique_ptr<model::Person>>
-    CreatePopulation(datamanagement::ModelData &model_data,
-                     bool read_init_cohort = false) const override;
+    CreatePopulation(datamanagement::ModelData &model_data) const override;
 
     int GetDuration() const override { return _duration; }
     int GetSeed() const override { return _sim_seed; }
