@@ -4,8 +4,8 @@
 // Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-04                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-09-02                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -71,12 +71,14 @@ HepceImpl::CreateEvents(datamanagement::ModelData &model_data) const {
 }
 
 std::vector<std::unique_ptr<model::Person>>
-HepceImpl::CreatePopulation(datamanagement::ModelData &model_data,
-                            bool read_init_cohort) const {
+HepceImpl::CreatePopulation(datamanagement::ModelData &model_data) const {
     int population_size =
         utils::GetIntFromConfig("simulation.population_size", model_data);
 
-    if (read_init_cohort) {
+    bool use_population_table =
+        utils::GetBoolFromConfig("simulation.use_population_table", model_data);
+
+    if (!use_population_table) {
         return ReadICPopulation(population_size, model_data);
     }
     return ReadPopPopulation(population_size, model_data);

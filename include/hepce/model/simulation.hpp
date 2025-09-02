@@ -4,8 +4,8 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-08                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-09-02                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,8 +28,7 @@ public:
     virtual std::vector<std::unique_ptr<event::Event>>
     CreateEvents(datamanagement::ModelData &model_data) const = 0;
     virtual std::vector<std::unique_ptr<model::Person>>
-    CreatePopulation(datamanagement::ModelData &model_data,
-                     bool read_init_cohort = false) const = 0;
+    CreatePopulation(datamanagement::ModelData &model_data) const = 0;
 
     virtual int GetDuration() const = 0;
     virtual int GetSeed() const = 0;

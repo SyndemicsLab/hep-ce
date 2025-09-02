@@ -4,8 +4,8 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-25                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-09-02                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
         model_data->AddSource(dbfile);
 
         auto sim = hepce::model::Hepce::Create(*model_data, log_name);
-        auto population = sim->CreatePopulation(*model_data, true);
+        auto population = sim->CreatePopulation(*model_data);
         auto events = sim->CreateEvents(*model_data);
         sim->Run(population, events);
 
