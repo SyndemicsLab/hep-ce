@@ -106,6 +106,28 @@ TEST_F(StagingTest, NoFibrosis) {
     std::filesystem::remove(LOG_FILE);
 }
 
+TEST_F(StagingTest, BadFibrosisState) {
+    const std::string LOG_NAME = "StagingLimit";
+    const std::string LOG_FILE = LOG_NAME + ".log";
+    hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
+
+    hcv.fibrosis_state = data::FibrosisState(-1);
+    staging.time_of_last_staging = 3;
+
+    EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
+    EXPECT_CALL(mock_person, GetFibrosisStagingDetails())
+        .WillOnce(Return(staging));
+
+    EXPECT_CALL(mock_person, GetCurrentTimestep())
+        .Times(1)
+        .WillRepeatedly(Return(15));
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+
+    auto event = event::fibrosis::Staging::Create(*model_data, LOG_NAME);
+    // need to check that the logging output matches what was set
+    std::filesystem::remove(LOG_FILE);
+}
+
 TEST_F(StagingTest, StagingLimit) {
     const std::string LOG_NAME = "StagingLimit";
     const std::string LOG_FILE = LOG_NAME + ".log";
