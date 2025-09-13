@@ -191,9 +191,10 @@ void StagingImpl::LoadTestOneStagingData(
         model_data.GetDBSource("inputs").Select(StagingSQL(_test_one), Callback,
                                                 storage);
     } catch (std::exception &e) {
-        std::stringstream msg;
-        msg << "Error getting Test One Fibrosis Staging Data: " << e.what();
-        hepce::utils::LogError(GetLogName(), msg.str());
+        hepce::utils::LogError(
+            GetLogName(),
+            utils::ConstructMessage(
+                e, "Error getting Test One Fibrosis Staging Data"));
         return;
     }
     _test1_data = std::any_cast<testmap_t>(storage);
@@ -205,9 +206,10 @@ void StagingImpl::LoadTestTwoStagingData(
         model_data.GetDBSource("inputs").Select(StagingSQL(_test_two), Callback,
                                                 storage);
     } catch (std::exception &e) {
-        std::stringstream msg;
-        msg << "Error getting Test Two Fibrosis Staging Data: " << e.what();
-        hepce::utils::LogError(GetLogName(), msg.str());
+        hepce::utils::LogError(
+            GetLogName(),
+            utils::ConstructMessage(
+                e, "Error getting Test Two Fibrosis Staging Data"));
         return;
     }
     _test2_data = std::any_cast<testmap_t>(storage);
