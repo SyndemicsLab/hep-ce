@@ -12,6 +12,7 @@
 #ifndef HEPCE_UTILS_LOGGING_HPP_
 #define HEPCE_UTILS_LOGGING_HPP_
 
+#include <exception>
 #include <string>
 
 namespace hepce {
@@ -32,7 +33,7 @@ void LogInfo(const std::string &logger_name, const std::string &message);
 void LogWarning(const std::string &logger_name, const std::string &message);
 void LogError(const std::string &logger_name, const std::string &message);
 void LogDebug(const std::string &logger_name, const std::string &message);
-
+std::string ConstructMessage(const std::exception& error, std::string message);
 } // namespace utils
 } // namespace hepce
 

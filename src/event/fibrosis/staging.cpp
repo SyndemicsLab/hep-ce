@@ -153,18 +153,30 @@ StagingImpl::ProbabilityBuilder(const model::Person &person,
                                 const testmap_t &test) const {
     int fibrosis_state =
         static_cast<int>(person.GetHCVDetails().fibrosis_state);
-
-    // Returning the probability tuples for each diagnosis of a true fibrosis state
-    std::vector<utils::tuple_2i> tuples = {
-        std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::kF01)),
-        std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::kF23)),
-        std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::kF4)),
-        std::make_tuple(
-            fibrosis_state,
-            static_cast<int>(data::MeasuredFibrosisState::kDecomp))};
+    std::vector<utils::tuple_2i> tuples;
+    try {
+        // Returning the probability tuples for each diagnosis of a true fibrosis
+        // state
+        tuples = {
+            std::make_tuple(
+                fibrosis_state,
+                static_cast<int>(data::MeasuredFibrosisState::kF01)),
+            std::make_tuple(
+                fibrosis_state,
+                static_cast<int>(data::MeasuredFibrosisState::kF23)),
+            std::make_tuple(fibrosis_state,
+                            static_cast<int>(data::MeasuredFibrosisState::kF4)),
+            std::make_tuple(
+                fibrosis_state,
+                static_cast<int>(data::MeasuredFibrosisState::kDecomp))};
+    } catch (std::exception &e) {
+        hepce::utils::LogError(
+            GetLogName(),
+            utils::ConstructMessage(
+                e, "Error getting measured fibrosis states for liver fibrosis "
+                   "measurement"));
+        return {};
+    }
 
     std::vector<double> probs;
     for (const auto &tup : tuples) {
