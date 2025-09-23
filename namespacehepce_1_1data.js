@@ -34,13 +34,13 @@ var namespacehepce_1_1data =
       [ "kCount", "namespacehepce_1_1data.html#a505936e8feff5cc6c4e9eef9fd31df87a5a162d352f3b3603e03fc9b2f043fb40", null ]
     ] ],
     [ "FibrosisState", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303fa", [
+      [ "kNone", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa35c3ace1970663a16e5c65baa5941b13", null ],
       [ "kF0", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faac27ba7930c85d16d22925fd4ce54b633", null ],
       [ "kF1", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faad2d061264cf90ab1754f9ba7717f5d57", null ],
       [ "kF2", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa582b7df4dec29324eea38ac0db25bfc9", null ],
       [ "kF3", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa3504cd76b393e254fceed30ae1839bee", null ],
       [ "kF4", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faabfd953fb0ecc6c78ede55cb66645005d", null ],
       [ "kDecomp", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa626935f10c86e524389284daee86c264", null ],
-      [ "kNone", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa35c3ace1970663a16e5c65baa5941b13", null ],
       [ "kCount", "namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa5a162d352f3b3603e03fc9b2f043fb40", null ]
     ] ],
     [ "HCCState", "namespacehepce_1_1data.html#a3111ab4902bf5dfdee98ab4aecd5da03", [

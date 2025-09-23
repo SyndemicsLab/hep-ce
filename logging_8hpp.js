@@ -14,6 +14,7 @@ var logging_8hpp =
       [ "kDebug", "logging_8hpp.html#a633ed499ab3f9f1778139b6c0c4583d2abb53ce21b7c0b7c8a8f7860a41901d29", null ],
       [ "kCount", "logging_8hpp.html#a633ed499ab3f9f1778139b6c0c4583d2a5a162d352f3b3603e03fc9b2f043fb40", null ]
     ] ],
+    [ "ConstructMessage", "logging_8hpp.html#a40550243e7d45dd4557945907209ea52", null ],
     [ "CreateFileLogger", "logging_8hpp.html#a865f8022b02dec37fc9717481b4eecee", null ],
     [ "DropLogger", "logging_8hpp.html#a42bf6284cdb9e87a23654fb81b2fc8fc", null ],
     [ "LogDebug", "logging_8hpp.html#abd89686fadbfff4dcaf747028efaef3e", null ],

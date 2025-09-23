@@ -254,15 +254,15 @@ Enumerations</h2></td></tr>
 <tr class="memdesc:a19e35ff7983e89e690ccab8a97d8ab71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Status of Linkage.  <a href="namespacehepce_1_1data.html#a19e35ff7983e89e690ccab8a97d8ab71">More...</a><br /></td></tr>
 <tr class="separator:a19e35ff7983e89e690ccab8a97d8ab71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f4e9751efaea52f6cb9751d329303fa"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303fa">FibrosisState</a> { <br />
-&#160;&#160;<a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faac27ba7930c85d16d22925fd4ce54b633">kF0</a> = 0
+&#160;&#160;<a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa35c3ace1970663a16e5c65baa5941b13">kNone</a> = -1
+, <a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faac27ba7930c85d16d22925fd4ce54b633">kF0</a> = 0
 , <a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faad2d061264cf90ab1754f9ba7717f5d57">kF1</a> = 1
 , <a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa582b7df4dec29324eea38ac0db25bfc9">kF2</a> = 2
-, <a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa3504cd76b393e254fceed30ae1839bee">kF3</a>
 , <br />
-&#160;&#160;<a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faabfd953fb0ecc6c78ede55cb66645005d">kF4</a> = 4
+&#160;&#160;<a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa3504cd76b393e254fceed30ae1839bee">kF3</a>
+, <a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faabfd953fb0ecc6c78ede55cb66645005d">kF4</a> = 4
 , <a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa626935f10c86e524389284daee86c264">kDecomp</a> = 5
-, <a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa35c3ace1970663a16e5c65baa5941b13">kNone</a> = 6
-, <a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa5a162d352f3b3603e03fc9b2f043fb40">kCount</a> = 7
+, <a class="el" href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303faa5a162d352f3b3603e03fc9b2f043fb40">kCount</a> = 6
 <br />
  }</td></tr>
 <tr class="memdesc:a6f4e9751efaea52f6cb9751d329303fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classification of Liver Fibrosis Stage.  <a href="namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303fa">More...</a><br /></td></tr>
@@ -521,7 +521,9 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>HCV infection causes liver fibrosis and cirrhosis and increases the risk of development of hepatocellular carcinoma (HCC). These states strictly increase, with the possibility of progressing to HCC being possible at any time from stage F3 and higher. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a6f4e9751efaea52f6cb9751d329303faac27ba7930c85d16d22925fd4ce54b633" name="a6f4e9751efaea52f6cb9751d329303faac27ba7930c85d16d22925fd4ce54b633"></a>kF0&#160;</td><td class="fielddoc"><p>No Scarring. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a6f4e9751efaea52f6cb9751d329303faa35c3ace1970663a16e5c65baa5941b13" name="a6f4e9751efaea52f6cb9751d329303faa35c3ace1970663a16e5c65baa5941b13"></a>kNone&#160;</td><td class="fielddoc"><p>No adverse liver effects. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a6f4e9751efaea52f6cb9751d329303faac27ba7930c85d16d22925fd4ce54b633" name="a6f4e9751efaea52f6cb9751d329303faac27ba7930c85d16d22925fd4ce54b633"></a>kF0&#160;</td><td class="fielddoc"><p>No Scarring. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a6f4e9751efaea52f6cb9751d329303faad2d061264cf90ab1754f9ba7717f5d57" name="a6f4e9751efaea52f6cb9751d329303faad2d061264cf90ab1754f9ba7717f5d57"></a>kF1&#160;</td><td class="fielddoc"><p>Mild Liver Scarring. </p>
 </td></tr>
@@ -532,8 +534,6 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a6f4e9751efaea52f6cb9751d329303faabfd953fb0ecc6c78ede55cb66645005d" name="a6f4e9751efaea52f6cb9751d329303faabfd953fb0ecc6c78ede55cb66645005d"></a>kF4&#160;</td><td class="fielddoc"><p>Cirrhosis or advanced scarring. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a6f4e9751efaea52f6cb9751d329303faa626935f10c86e524389284daee86c264" name="a6f4e9751efaea52f6cb9751d329303faa626935f10c86e524389284daee86c264"></a>kDecomp&#160;</td><td class="fielddoc"><p>Symptomatic cirrhosis; over complications. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="a6f4e9751efaea52f6cb9751d329303faa35c3ace1970663a16e5c65baa5941b13" name="a6f4e9751efaea52f6cb9751d329303faa35c3ace1970663a16e5c65baa5941b13"></a>kNone&#160;</td><td class="fielddoc"><p>No adverse liver effects. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a6f4e9751efaea52f6cb9751d329303faa5a162d352f3b3603e03fc9b2f043fb40" name="a6f4e9751efaea52f6cb9751d329303faa5a162d352f3b3603e03fc9b2f043fb40"></a>kCount&#160;</td><td class="fielddoc"><p>Count of <code>FibrosisState</code> Enum. </p>
 </td></tr>
@@ -2283,7 +2283,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacehepce.html">hepce</a></li><li class="navelem"><a class="el" href="namespacehepce_1_1data.html">data</a></li>
-    <li class="footer">Generated on Tue Sep 2 2025 18:26:37 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Tue Sep 23 2025 20:14:48 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

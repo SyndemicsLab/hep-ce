@@ -24,6 +24,7 @@ var namespacehepce_1_1utils =
       [ "kCount", "namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2a5a162d352f3b3603e03fc9b2f043fb40", null ]
     ] ],
     [ "BoolToString", "namespacehepce_1_1utils.html#ae847015d1decdbbddb7d1542ffa72c21", null ],
+    [ "ConstructMessage", "namespacehepce_1_1utils.html#a40550243e7d45dd4557945907209ea52", null ],
     [ "CreateFileLogger", "namespacehepce_1_1utils.html#a865f8022b02dec37fc9717481b4eecee", null ],
     [ "Discount", "namespacehepce_1_1utils.html#a78e6fb9715bd35a1f996a78e258d9f88", null ],
     [ "DropLogger", "namespacehepce_1_1utils.html#a42bf6284cdb9e87a23654fb81b2fc8fc", null ],
