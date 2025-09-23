@@ -4,8 +4,8 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-29                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2025-09-23                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -200,15 +200,15 @@ LinkageState &operator<<(LinkageState &inst, const std::string &str);
 /// These states strictly increase, with the possibility of progressing to
 /// HCC being possible at any time from stage F3 and higher.
 enum class FibrosisState {
-    kF0 = 0, ///< No Scarring
-    kF1 = 1, ///< Mild Liver Scarring
-    kF2 = 2, ///< Scarring has occurred and extends outside the liver area
+    kNone = -1, ///< No adverse liver effects
+    kF0 = 0,    ///< No Scarring
+    kF1 = 1,    ///< Mild Liver Scarring
+    kF2 = 2,    ///< Scarring has occurred and extends outside the liver area
     kF3 =
         3, ///< Fibrosis spreading and forming bridges with other fibrotic liver areas
     kF4 = 4,     ///< Cirrhosis or advanced scarring
     kDecomp = 5, ///< Symptomatic cirrhosis; over complications
-    kNone = 6,   ///< No adverse liver effects
-    kCount = 7   ///< Count of `FibrosisState` Enum
+    kCount = 6   ///< Count of `FibrosisState` Enum
 };
 std::ostream &operator<<(std::ostream &os, const FibrosisState &inst);
 FibrosisState &operator<<(FibrosisState &inst, const std::string &str);

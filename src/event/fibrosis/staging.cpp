@@ -63,6 +63,9 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     // 3. Get the probability of each of the test_one fibrosis outcomes.
     std::vector<double> probs = ProbabilityBuilder(person, _test1_data);
+    if (probs.empty()) {
+        return;
+    }
 
     // 4. Decide which stage is assigned to the person
     int res = sampler.GetDecision(probs);
@@ -152,6 +155,13 @@ StagingImpl::ProbabilityBuilder(const model::Person &person,
                                 const testmap_t &test) const {
     int fibrosis_state =
         static_cast<int>(person.GetHCVDetails().fibrosis_state);
+    if (fibrosis_state > static_cast<int>(data::FibrosisState::kCount) ||
+        fibrosis_state < static_cast<int>(data::FibrosisState::kNone)) {
+        hepce::utils::LogError(
+            GetLogName(),
+            "Invalid Fibrosis State provided in Fibrosis Staging");
+        return {};
+    }
     std::vector<utils::tuple_2i> tuples;
     try {
         // Returning the probability tuples for each diagnosis of a true fibrosis

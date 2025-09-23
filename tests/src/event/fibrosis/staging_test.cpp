@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-01                                                  //
+// Last Modified: 2025-09-23                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -111,10 +111,12 @@ TEST_F(StagingTest, BadFibrosisState) {
     const std::string LOG_FILE = LOG_NAME + ".log";
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
-    hcv.fibrosis_state = data::FibrosisState(-1);
+    hcv.fibrosis_state = data::FibrosisState(-2);
     staging.time_of_last_staging = 3;
 
-    EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
+    EXPECT_CALL(mock_person, GetHCVDetails())
+        .Times(2)
+        .WillRepeatedly(Return(hcv));
     EXPECT_CALL(mock_person, GetFibrosisStagingDetails())
         .WillOnce(Return(staging));
 
@@ -124,7 +126,7 @@ TEST_F(StagingTest, BadFibrosisState) {
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
     auto event = event::fibrosis::Staging::Create(*model_data, LOG_NAME);
-    // need to check that the logging output matches what was set
+    event->Execute(mock_person, mock_sampler);
     std::filesystem::remove(LOG_FILE);
 }
 
