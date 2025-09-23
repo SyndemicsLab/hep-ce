@@ -13,6 +13,8 @@
 
 #include "internals/logging_internals.hpp"
 
+#include <sstream>
+
 namespace hepce {
 namespace utils {
 CreationStatus CreateFileLogger(const std::string &logger_name,
@@ -46,6 +48,12 @@ void LogError(const std::string &logger_name, const std::string &message) {
 
 void LogDebug(const std::string &logger_name, const std::string &message) {
     log(logger_name, message, LogType::kDebug);
+}
+
+std::string ConstructMessage(const std::exception &error, std::string message) {
+    std::stringstream msg;
+    msg << message << ": " << error.what();
+    return msg.str();
 }
 } // namespace utils
 } // namespace hepce

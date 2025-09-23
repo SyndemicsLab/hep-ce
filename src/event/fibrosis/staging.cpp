@@ -4,8 +4,8 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-09-23                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,6 +63,9 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
 
     // 3. Get the probability of each of the test_one fibrosis outcomes.
     std::vector<double> probs = ProbabilityBuilder(person, _test1_data);
+    if (probs.empty()) {
+        return;
+    }
 
     // 4. Decide which stage is assigned to the person
     int res = sampler.GetDecision(probs);
@@ -78,10 +81,9 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     person.DiagnoseFibrosis(stateOne);
     AddStagingCost(person, _test_one_cost);
 
-    // 6. Get a vector of the probabilities of each of the possible
-    // fibrosis outcomes (test two) provided there is a second test.
-    // If No Second Test Specified or not an eligible fibrosis state,
-    // End
+    // 6. Get a vector of the probabilities of each of the possible fibrosis
+    // outcomes (test two) provided there is a second test. If no second test
+    // specified or not an eligible fibrosis state, end.
     if (_test_two.empty() ||
         !utils::FindInVector<data::FibrosisState>(
             _testtwo_eligible_fibs, {person.GetHCVDetails().fibrosis_state})) {
@@ -153,18 +155,37 @@ StagingImpl::ProbabilityBuilder(const model::Person &person,
                                 const testmap_t &test) const {
     int fibrosis_state =
         static_cast<int>(person.GetHCVDetails().fibrosis_state);
-
-    // Returning the probability tuples for each diagnosis of a true fibrosis state
-    std::vector<utils::tuple_2i> tuples = {
-        std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::kF01)),
-        std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::kF23)),
-        std::make_tuple(fibrosis_state,
-                        static_cast<int>(data::MeasuredFibrosisState::kF4)),
-        std::make_tuple(
-            fibrosis_state,
-            static_cast<int>(data::MeasuredFibrosisState::kDecomp))};
+    if (fibrosis_state > static_cast<int>(data::FibrosisState::kCount) ||
+        fibrosis_state < static_cast<int>(data::FibrosisState::kNone)) {
+        hepce::utils::LogError(
+            GetLogName(),
+            "Invalid Fibrosis State provided in Fibrosis Staging");
+        return {};
+    }
+    std::vector<utils::tuple_2i> tuples;
+    try {
+        // Returning the probability tuples for each diagnosis of a true fibrosis
+        // state
+        tuples = {
+            std::make_tuple(
+                fibrosis_state,
+                static_cast<int>(data::MeasuredFibrosisState::kF01)),
+            std::make_tuple(
+                fibrosis_state,
+                static_cast<int>(data::MeasuredFibrosisState::kF23)),
+            std::make_tuple(fibrosis_state,
+                            static_cast<int>(data::MeasuredFibrosisState::kF4)),
+            std::make_tuple(
+                fibrosis_state,
+                static_cast<int>(data::MeasuredFibrosisState::kDecomp))};
+    } catch (std::exception &e) {
+        hepce::utils::LogError(
+            GetLogName(),
+            utils::ConstructMessage(
+                e, "Error getting measured fibrosis states for liver fibrosis "
+                   "measurement"));
+        return {};
+    }
 
     std::vector<double> probs;
     for (const auto &tup : tuples) {
@@ -179,9 +200,10 @@ void StagingImpl::LoadTestOneStagingData(
         model_data.GetDBSource("inputs").Select(StagingSQL(_test_one), Callback,
                                                 storage);
     } catch (std::exception &e) {
-        std::stringstream msg;
-        msg << "Error getting Test One Fibrosis Staging Data: " << e.what();
-        hepce::utils::LogError(GetLogName(), msg.str());
+        hepce::utils::LogError(
+            GetLogName(),
+            utils::ConstructMessage(
+                e, "Error getting Test One Fibrosis Staging Data"));
         return;
     }
     _test1_data = std::any_cast<testmap_t>(storage);
@@ -193,9 +215,10 @@ void StagingImpl::LoadTestTwoStagingData(
         model_data.GetDBSource("inputs").Select(StagingSQL(_test_two), Callback,
                                                 storage);
     } catch (std::exception &e) {
-        std::stringstream msg;
-        msg << "Error getting Test Two Fibrosis Staging Data: " << e.what();
-        hepce::utils::LogError(GetLogName(), msg.str());
+        hepce::utils::LogError(
+            GetLogName(),
+            utils::ConstructMessage(
+                e, "Error getting Test Two Fibrosis Staging Data"));
         return;
     }
     _test2_data = std::any_cast<testmap_t>(storage);
