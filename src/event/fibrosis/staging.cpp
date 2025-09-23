@@ -4,8 +4,8 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-09-23                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -78,10 +78,9 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     person.DiagnoseFibrosis(stateOne);
     AddStagingCost(person, _test_one_cost);
 
-    // 6. Get a vector of the probabilities of each of the possible
-    // fibrosis outcomes (test two) provided there is a second test.
-    // If No Second Test Specified or not an eligible fibrosis state,
-    // End
+    // 6. Get a vector of the probabilities of each of the possible fibrosis
+    // outcomes (test two) provided there is a second test. If no second test
+    // specified or not an eligible fibrosis state, end.
     if (_test_two.empty() ||
         !utils::FindInVector<data::FibrosisState>(
             _testtwo_eligible_fibs, {person.GetHCVDetails().fibrosis_state})) {

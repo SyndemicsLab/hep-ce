@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2025-08-14                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
         AddEventCost(person, visit_cost);
     }
 
-    // 4. Charge the person for the Course they are on
+    // 4. Charge the person for the treatment course they are on
     AddEventCost(person, _treatment_sql_data[GetTreatmentThruple(person)].cost);
     AddEventUtility(person, GetTreatmentUtilities().treatment);
 
@@ -94,13 +94,15 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
         person.AddCompletedTreatment(GetInfectionType());
         int decision = DecideIfPersonAchievesSVR(person, sampler);
         if (decision == 0) {
+            // person achieves SVR and clears of infection, ceases treatment
+            // because cured
             person.AddSVR();
             person.ClearHCV(false);
             person.ClearDiagnosis(GetInfectionType());
             QuitEngagement(person);
         } else if (!person.GetTreatmentDetails(GetInfectionType())
                         .in_salvage_treatment) {
-            // initiate Salvage
+            // initiate salvage
             person.InitiateTreatment(GetInfectionType());
         } else {
             // if salvage fails, it is a failure and treatment ceases
