@@ -7,7 +7,7 @@
 // Last Modified: 2025-10-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Your Company                                            //
+// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
 // Testing File
