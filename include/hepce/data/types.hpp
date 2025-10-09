@@ -65,10 +65,10 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
         headers << "never,-1,0,";
     }
     // ScreeningDetails
-    headers
-        << "time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,"
-           "hcv_antibody_positive,hcv_identified,time_hcv_identified,num_"
-           "hcv_identifications,hcv_screening_type,num_hcv_false_negatives,";
+    headers << "time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,"
+               "hcv_antibody_positive,hcv_identified,time_hcv_identified,num_"
+               "hcv_identifications,hcv_screening_type,num_hcv_false_negatives,"
+               "identifications_cleared,";
     if (hiv) {
         headers
             << "time_of_last_hiv_screening,num_hiv_ab_tests,num_hiv_rna_tests,"

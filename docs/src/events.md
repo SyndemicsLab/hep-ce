@@ -69,7 +69,7 @@ HCV infection focuses on the chances of being infected by the hepatitis-C virus 
 
 ## HCV Screening
 
-HCV screening focuses on the discovery of the hepatitis-C virus. There are two branches in which someone can be screened: 1. intervention and 2. background. These screenings govern the manner in which people can be later linked to care. If someone does not screen and have never been linked to care, they will never be able to link to care under the logic that they do not know they have HCV. The default screening process is:
+HCV screening focuses on the discovery of the hepatitis C virus. There are two branches in which someone can be screened: 1. intervention and 2. background. These screenings govern the manner in which people can be later linked to care. If someone does not screen and have never been linked to care, they will never be able to link to care under the logic that they do not know they have HCV. The default screening process is:
 
 1. Check if the person is either undergoing an intervention screening and currently unidentified OR undergoing a background screening
 2. If the person is experiencing a valid screen, then check if a person has already been reported as having antibodies.
