@@ -4,8 +4,8 @@
 // Created Date: 2025-05-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-10-09                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,12 +31,21 @@ MoudImpl::MoudImpl(datamanagement::ModelData &model_data,
 }
 
 void MoudImpl::Execute(model::Person &person, model::Sampler &sampler) {
-    if (!ValidExecute(person)) {
+    if (!ValidExecute(person) || !HistoryOfOud(person)) {
         return;
     }
 }
 
 void MoudImpl::LoadData(datamanagement::ModelData &model_data) {}
+
+bool MoudImpl::HistoryOfOud(const model::Person &person) const {
+    return (person.GetBehaviorDetails().behavior != data::Behavior::kNever);
+}
+
+bool MoudImpl::ActiveOud(const model::Person &person) const {
+    data::Behavior b = person.GetBehaviorDetails().behavior;
+    return (b == data::Behavior::kInjection || b == data::Behavior::kInjection);
+}
 } // namespace behavior
 } // namespace event
 } // namespace hepce
