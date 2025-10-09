@@ -4,10 +4,10 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-29                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2025-10-09                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025 Your Company                                            //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_MODEL_PERSONINTERNALS_HPP_
 #define HEPCE_MODEL_PERSONINTERNALS_HPP_
@@ -118,6 +118,10 @@ public:
     }
     inline void AddFalseNegative(data::InfectionType it) override {
         _screening_details[it].num_false_negatives++;
+    }
+
+    inline void AddIdentificationsCleared(data::InfectionType it) override {
+        _screening_details[it].identifications_cleared++;
     }
 
     void Screen(data::InfectionType it, data::ScreeningTest test,

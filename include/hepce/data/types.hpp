@@ -4,10 +4,10 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-09-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-10-09                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025 Your Company                                            //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_DATA_TYPES_HPP_
 #define HEPCE_DATA_TYPES_HPP_
@@ -378,6 +378,7 @@ struct ScreeningDetails {
     int times_identified = 0;
     ScreeningType screen_type = ScreeningType::kNa;
     int num_false_negatives = 0;
+    int identifications_cleared = 0;
 };
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 

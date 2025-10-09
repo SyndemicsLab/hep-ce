@@ -4,10 +4,10 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-09-23                                                  //
+// Last Modified: 2025-10-09                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025 Your Company                                            //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_SCREENINGINTERNALS_HPP_
 #define HEPCE_EVENT_SCREENINGINTERNALS_HPP_
@@ -267,6 +267,9 @@ private:
                                   model::Sampler &sampler) {
         bool result = RunTest(person, type, test, sampler);
         if (!result && person.GetHCVDetails().hcv != data::HCV::kNone) {
+            if (person.GetScreeningDetails(GetInfectionType()).identified) {
+                person.AddIdentificationsCleared(GetInfectionType());
+            }
             person.AddFalseNegative(GetInfectionType());
             person.ClearDiagnosis(GetInfectionType());
         } else if (!result) {

@@ -4,10 +4,10 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-29                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2025-10-09                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025 Your Company                                            //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_MODEL_PERSON_HPP_
 #define HEPCE_MODEL_PERSON_HPP_
@@ -45,6 +45,7 @@ public:
     virtual void SetFibrosis(data::FibrosisState) = 0;
     virtual void AddSVR() = 0;
     virtual void AddFalseNegative(data::InfectionType it) = 0;
+    virtual void AddIdentificationsCleared(data::InfectionType it) = 0;
 
     // Screening
     virtual data::ScreeningDetails
