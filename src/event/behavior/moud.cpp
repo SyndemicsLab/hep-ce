@@ -34,6 +34,18 @@ void MoudImpl::Execute(model::Person &person, model::Sampler &sampler) {
     if (!ValidExecute(person) || !HistoryOfOud(person)) {
         return;
     }
+    // Draw Transition Probability, increment months or start/stop
+    switch (person.GetMoudDetails().moud_state) {
+    case data::MOUD::kPost:
+        person.SetMoudState(data::MOUD::kNone);
+        break;
+    case data::MOUD::kCurrent:
+        break;
+    case data::MOUD::kNone:
+        break;
+    default:
+        break;
+    }
 }
 
 void MoudImpl::LoadData(datamanagement::ModelData &model_data) {}
