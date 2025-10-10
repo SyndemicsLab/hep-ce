@@ -216,4 +216,25 @@ CREATE TABLE "treatments" (
 	"withdrawal"	REAL,
 	"toxicity_prob"	REAL
 );
+CREATE TABLE IF NOT EXISTS "moud_transitions" (
+  "age_years" INTEGER NOT NULL,
+  "current_moud" INTEGER NOT NULL,
+  "current_duration" INTEGER NOT NULL,
+  "pregnancy" INTEGER NOT NULL,
+  "none" REAL NOT NULL DEFAULT 0.0,
+  "current" REAL NOT NULL DEFAULT 0.0,
+  "post" REAL NOT NULL DEFAULT 0.0,
+  PRIMARY KEY("age_years", "current_moud", "current_duration", "pregnancy"),
+  FOREIGN KEY("current_moud") REFERENCES "moud"("id"),
+  FOREIGN KEY("pregnancy") REFERENCES "pregnancy_states"("id")
+);
+CREATE TABLE IF NOT EXISTS "moud_costs" (
+  "moud" INTEGER NOT NULL,
+  "pregnancy" INTEGER NOT NULL,
+  "cost" REAL NOT NULL DEFAULT 0.0,
+  "utility" REAL NOT NULL DEFAULT 1.0,
+  PRIMARY KEY("moud", "pregnancy"),
+  FOREIGN KEY("moud") REFERENCES "moud"("id"),
+  FOREIGN KEY("pregnancy") REFERENCES "pregnancy_states"("id")
+);
 COMMIT;

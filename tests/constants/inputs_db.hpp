@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
+// Last Modified: 2025-10-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -91,6 +91,22 @@ inline const std::string CreateBehaviorTransitions() {
          "0.0,former_injection	REAL NOT NULL DEFAULT 0.0,noninjection	REAL "
          "NOT NULL DEFAULT 0.0,injection	REAL NOT NULL DEFAULT "
          "0.0,PRIMARY KEY(age_years,gender,drug_behavior,moud));";
+    return s.str();
+}
+
+inline const std::string CreateMoudTransitions() {
+    std::stringstream s;
+    s << "CREATE TABLE IF NOT EXISTS moud_transitions ("
+         "age_years INTEGER NOT NULL,"
+         "current_moud INTEGER NOT NULL,"
+         "current_duration INTEGER NOT NULL,"
+         "pregnancy INTEGER NOT NULL,"
+         "none REAL NOT NULL DEFAULT 0.0,"
+         "current REAL NOT NULL DEFAULT 0.0,"
+         "post REAL NOT NULL DEFAULT 0.0,"
+         "PRIMARY KEY(age_years, current_moud, current_duration, pregnancy),"
+         "FOREIGN KEY(current_moud) REFERENCES moud(id),"
+         "FOREIGN KEY(pregnancy) REFERENCES pregnancy_states(id));";
     return s.str();
 }
 
