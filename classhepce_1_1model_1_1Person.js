@@ -5,6 +5,7 @@ var classhepce_1_1model_1_1Person =
     [ "AddCost", "classhepce_1_1model_1_1Person.html#abc7b20aa607f2b807c1c37aaa9006991", null ],
     [ "AddDiscountedLifeSpan", "classhepce_1_1model_1_1Person.html#a28a1c3ee3cfb8dbdccdd66e9a6155472", null ],
     [ "AddFalseNegative", "classhepce_1_1model_1_1Person.html#a05922d174d3003afcedde727d104060c", null ],
+    [ "AddIdentificationsCleared", "classhepce_1_1model_1_1Person.html#a6b77e144191af3180c3a555f02bcc824", null ],
     [ "AddInfantExposure", "classhepce_1_1model_1_1Person.html#a391bb531daf06489011bc542a1dba87a", null ],
     [ "AddSVR", "classhepce_1_1model_1_1Person.html#abc5af6c7e9d4b2e855e987c6ba84cfc6", null ],
     [ "AddToxicReaction", "classhepce_1_1model_1_1Person.html#a8f551625016e7c01f36b664d3861ce7a", null ],

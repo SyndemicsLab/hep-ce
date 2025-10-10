@@ -14,6 +14,7 @@ var structhepce_1_1data_1_1PersonSelect =
     [ "hcc_state", "structhepce_1_1data_1_1PersonSelect.html#aff3f64f1052b4cc2f628be92ce2f5770", null ],
     [ "hcv", "structhepce_1_1data_1_1PersonSelect.html#a820d90f8b5a4b8d1a6eaf2f3aecc7831", null ],
     [ "hcv_antibody_positive", "structhepce_1_1data_1_1PersonSelect.html#aeae27609d2bb2c541ef8b9e3521a5a14", null ],
+    [ "hcv_identifications_cleared", "structhepce_1_1data_1_1PersonSelect.html#ae7f4079a262c9c5645aea26ab242feb6", null ],
     [ "hcv_identified", "structhepce_1_1data_1_1PersonSelect.html#aaf0c48652df53b1972af5b68da159461", null ],
     [ "hcv_link_count", "structhepce_1_1data_1_1PersonSelect.html#a0f226503cfc45160f407635aa6eab222", null ],
     [ "hcv_link_state", "structhepce_1_1data_1_1PersonSelect.html#a005e5c12e344eb7026edc3b8e2d64853", null ],

@@ -1,6 +1,7 @@
 var structhepce_1_1data_1_1ScreeningDetails =
 [
     [ "ab_positive", "structhepce_1_1data_1_1ScreeningDetails.html#a0840b7c028c5740ad27a5828de3228a7", null ],
+    [ "identifications_cleared", "structhepce_1_1data_1_1ScreeningDetails.html#a3142bf2638eb392a5e22e77ad264a95b", null ],
     [ "identified", "structhepce_1_1data_1_1ScreeningDetails.html#aa1b5aa4a8577946c9e1342a80edb1cc8", null ],
     [ "num_ab_tests", "structhepce_1_1data_1_1ScreeningDetails.html#adc6bacb4d54de867f43ba672dace50df", null ],
     [ "num_false_negatives", "structhepce_1_1data_1_1ScreeningDetails.html#a92230dfff7a56f1d300c53ead9896642", null ],

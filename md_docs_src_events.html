@@ -171,7 +171,22 @@ HCV Infection</h1>
 <p><img src="hcv-infection.png" alt="" class="flowchart" class="inline"/></p>
 <h1><a class="anchor" id="autotoc_md26"></a>
 HCV Screening</h1>
-<p>HCV screening focuses on the discovery of the hepatitis-C virus. There are two branches in which someone can be screened: 1. intervention and 2. background. These screenings govern the manner in which people can be later linked to care. If someone does not screen and have never been linked to care, they will never be able to link to care under the logic that they do not know they have HCV.</p>
+<p>HCV screening focuses on the discovery of the hepatitis C virus. There are two branches in which someone can be screened: 1. intervention and 2. background. These screenings govern the manner in which people can be later linked to care. If someone does not screen and have never been linked to care, they will never be able to link to care under the logic that they do not know they have HCV. The default screening process is:</p>
+<ol type="1">
+<li>Check if the person is either undergoing an intervention screening and currently unidentified OR undergoing a background screening</li>
+<li>If the person is experiencing a valid screen, then check if a person has already been reported as having antibodies.</li>
+<li>If a person does not have a history of antibodies reported, run an antibody test.<ol type="a">
+<li>If the AB test is negative clear the diagnosis and end the screening event.</li>
+<li>If the AB test is negative and the person has an HCV Infection, record the false negative, clear the diagnosis, and end the screening event.</li>
+</ol>
+</li>
+<li>If the antibody test is positive, run an RNA test.<ol type="a">
+<li>If the RNA test is positive and the person is not currently identified, diagnose the person with HCV.</li>
+<li>If the RNA test is negative clear the diagnosis and end the screening event.</li>
+<li>If the RNA test is negative and the person has an HCV Infection, record the false negative, clear the diagnosis, and end the screening event.</li>
+</ol>
+</li>
+</ol>
 <p><img src="hcv-screening.png" alt="" class="flowchart" class="inline"/></p>
 <h1><a class="anchor" id="autotoc_md27"></a>
 HCV Linking</h1>
@@ -204,7 +219,7 @@ Death</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Sep 23 2025 20:14:48 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Fri Oct 10 2025 14:41:23 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>
