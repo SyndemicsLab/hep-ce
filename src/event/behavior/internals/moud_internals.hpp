@@ -59,7 +59,7 @@ private:
     }
 
     void LoadCostData(datamanagement::ModelData &model_data);
-    void LoadMOUDData(datamanagement::ModelData &model_data) override;
+    void LoadMOUDData(datamanagement::ModelData &model_data);
 
     bool HistoryOfOud(const model::Person &person) const;
     bool ActiveOud(const model::Person &person) const;

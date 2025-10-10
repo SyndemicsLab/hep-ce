@@ -30,8 +30,8 @@ MoudImpl::MoudImpl(datamanagement::ModelData &model_data,
                    const std::string &log_name)
     : EventBase(model_data, log_name) {
     LoadData(model_data);
-    SetEventCostCategory(model::CostCategory::kMisc);
-    SetEventUtilityCategory(model::UtilityCategory::kMisc);
+    SetEventCostCategory(model::CostCategory::kBehavior);
+    SetEventUtilityCategory(model::UtilityCategory::kBehavior);
 }
 
 void MoudImpl::Execute(model::Person &person, model::Sampler &sampler) {
