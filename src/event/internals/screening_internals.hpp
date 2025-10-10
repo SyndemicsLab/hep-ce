@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-29                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2025-10-09                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -261,6 +261,23 @@ private:
                "sl.age_years) AND (at.drug_behavior = sl.drug_behavior));";
     }
 
+    inline bool HandleTestResults(model::Person &person,
+                                  const data::ScreeningType &type,
+                                  const data::ScreeningTest &test,
+                                  model::Sampler &sampler) {
+        bool result = RunTest(person, type, test, sampler);
+        if (!result && person.GetHCVDetails().hcv != data::HCV::kNone) {
+            if (person.GetScreeningDetails(GetInfectionType()).identified) {
+                person.AddIdentificationsCleared(GetInfectionType());
+            }
+            person.AddFalseNegative(GetInfectionType());
+            person.ClearDiagnosis(GetInfectionType());
+        } else if (!result) {
+            person.ClearDiagnosis(GetInfectionType());
+        }
+        return result;
+    }
+
     inline bool RunTest(model::Person &person, const data::ScreeningType &type,
                         const data::ScreeningTest &test,
                         model::Sampler &sampler) {
@@ -324,31 +341,27 @@ private:
                        model::Sampler &sampler) {
         bool identified =
             person.GetScreeningDetails(GetInfectionType()).identified;
+
         // if person is intervention screening and not identified OR background
         // screened
         bool valid_screen =
             ((type == data::ScreeningType::kIntervention && !identified) ||
              type == data::ScreeningType::kBackground);
-
         if (!valid_screen) {
             return;
         }
-
+        // if a person does not have antibodies, then first do an antibody test; if positive the AB test is positive, do an RNA test
         if (!person.GetScreeningDetails(GetInfectionType()).ab_positive &&
-            !RunTest(person, type, data::ScreeningTest::kAb, sampler)) {
-            if (person.GetHCVDetails().hcv != data::HCV::kNone) {
-                person.AddFalseNegative(GetInfectionType());
-            }
-            person.ClearDiagnosis(GetInfectionType());
+            !HandleTestResults(person, type, data::ScreeningTest::kAb,
+                               sampler)) {
             return;
         }
 
-        if (!RunTest(person, type, data::ScreeningTest::kRna, sampler)) {
-            if (person.GetHCVDetails().hcv != data::HCV::kNone) {
-                person.AddFalseNegative(GetInfectionType());
-            }
-            person.ClearDiagnosis(GetInfectionType());
-        } else if (!identified) {
+        bool result =
+            HandleTestResults(person, type, data::ScreeningTest::kRna, sampler);
+
+        // if RNA test is positive and not previously identified, diagnose
+        if (result && !identified) {
             person.Diagnose(GetInfectionType());
         }
     }

@@ -4,8 +4,8 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-10-09                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -613,6 +613,8 @@ std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet) {
     os << "Is Identified: " << std::boolalpha << sdet.identified << std::endl;
     os << "Time Identified: " << sdet.time_identified << std::endl;
     os << "Screening Type: " << sdet.screen_type << std::endl;
+    os << "Screenings Cleared By False Negatives: "
+       << sdet.identifications_cleared << std::endl;
     return os;
 }
 

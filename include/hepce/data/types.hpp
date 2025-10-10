@@ -4,8 +4,8 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-09-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-10-10                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,10 +65,10 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
         headers << "never,-1,0,";
     }
     // ScreeningDetails
-    headers
-        << "time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,"
-           "hcv_antibody_positive,hcv_identified,time_hcv_identified,num_"
-           "hcv_identifications,hcv_screening_type,num_hcv_false_negatives,";
+    headers << "time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,"
+               "hcv_antibody_positive,hcv_identified,time_hcv_identified,num_"
+               "hcv_identifications,hcv_screening_type,num_hcv_false_negatives,"
+               "identifications_cleared,";
     if (hiv) {
         headers
             << "time_of_last_hiv_screening,num_hiv_ab_tests,num_hiv_rna_tests,"
@@ -378,6 +378,7 @@ struct ScreeningDetails {
     int times_identified = 0;
     ScreeningType screen_type = ScreeningType::kNa;
     int num_false_negatives = 0;
+    int identifications_cleared = 0;
 };
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 
@@ -484,6 +485,7 @@ struct PersonSelect {
     int time_hcv_identified = -1;
     int times_hcv_identified = 0;
     int num_hcv_false_negatives = 0;
+    int hcv_identifications_cleared = 0;
     // HIV
     int time_of_last_hiv_screening = -1;
     int num_hiv_ab_tests = 0;

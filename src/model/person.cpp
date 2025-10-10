@@ -4,8 +4,8 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-29                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2025-10-10                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,6 +117,8 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     _screening_details[it].screen_type = storage.hcv_link_type;
     _screening_details[it].num_false_negatives =
         storage.num_hcv_false_negatives;
+    _screening_details[it].identifications_cleared =
+        storage.hcv_identifications_cleared;
 
     // TreatmentDetails
     _treatment_details[it].initiated_treatment =
