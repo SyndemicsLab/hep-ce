@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-09                                                  //
+// Last Modified: 2025-10-10                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -485,6 +485,7 @@ struct PersonSelect {
     int time_hcv_identified = -1;
     int times_hcv_identified = 0;
     int num_hcv_false_negatives = 0;
+    int hcv_identifications_cleared = 0;
     // HIV
     int time_of_last_hiv_screening = -1;
     int num_hiv_ab_tests = 0;
