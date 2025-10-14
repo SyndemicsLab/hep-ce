@@ -50,6 +50,8 @@ private:
     const double _decomp_uninfected_probability;
 
     double _probability_of_overdose_fatality = 0.0;
+    double _fatal_overdose_cost = 0.0;
+    double _fatal_overdose_utility = 0.0;
     double _hiv_mortality_probability = 0.0;
 
     bool check_overdose = false;

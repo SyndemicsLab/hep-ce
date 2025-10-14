@@ -87,7 +87,11 @@ void DeathImpl::LoadData(datamanagement::ModelData &model_data) {
     if (utils::FindInEventList("overdose", model_data)) {
         check_overdose = true;
         _probability_of_overdose_fatality = utils::GetDoubleFromConfig(
-            "mortality.probability_of_overdose_fatality", model_data);
+            "overdose.probability_of_overdose_fatality", model_data);
+        _fatal_overdose_cost = utils::GetDoubleFromConfig(
+            "overdose.fatal_overdose_cost", model_data);
+        _fatal_overdose_utility = utils::GetDoubleFromConfig(
+            "overdose.fatal_overdose_utility", model_data);
     }
     if (utils::FindInEventList("hivinfection", model_data)) {
         check_hiv = true;
@@ -149,6 +153,10 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
     if (sampler.GetDecision({_probability_of_overdose_fatality,
                              1 - _probability_of_overdose_fatality}) != 0) {
         person.ToggleOverdose();
+        SetEventCostCategory(model::CostCategory::kOverdose);
+        SetEventUtilityCategory(model::UtilityCategory::kOverdose);
+        AddEventCost(person, _fatal_overdose_cost);
+        AddEventUtility(person, _fatal_overdose_utility);
         return false;
     }
     Die(person, data::DeathReason::kOverdose);

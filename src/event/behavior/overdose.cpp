@@ -96,7 +96,7 @@ void OverdoseImpl::CalculateCostAndUtility(model::Person &person) {
     utils::tuple_3i tup = std::make_tuple(pregnancy, moud, drug_behavior);
 
     AddEventCost(person, _overdose_data[tup].cost);
-    AddEventUtility(person, _overdose_data[tup].util);
+    AddEventUtility(person, _overdose_data[tup].utility);
 }
 } // namespace behavior
 } // namespace event
