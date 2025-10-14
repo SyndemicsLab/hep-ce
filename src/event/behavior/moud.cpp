@@ -4,7 +4,7 @@
 // Created Date: 2025-05-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-10                                                  //
+// Last Modified: 2025-10-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -134,7 +134,8 @@ bool MoudImpl::HistoryOfOud(const model::Person &person) const {
 
 bool MoudImpl::ActiveOud(const model::Person &person) const {
     data::Behavior b = person.GetBehaviorDetails().behavior;
-    return (b == data::Behavior::kInjection || b == data::Behavior::kInjection);
+    return (b == data::Behavior::kInjection ||
+            b == data::Behavior::kNoninjection);
 }
 
 std::vector<double>
