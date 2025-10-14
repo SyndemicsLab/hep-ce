@@ -4,7 +4,7 @@
 // Created Date: 2025-05-01                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-09                                                  //
+// Last Modified: 2025-10-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -32,8 +32,10 @@
 #include <inputs_db.hpp>
 #include <person_mock.hpp>
 #include <sampler_mock.hpp>
+#include <utility.hpp>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace hepce {
@@ -41,39 +43,49 @@ namespace testing {
 
 class OverdoseTest : public ::testing::Test {
 protected:
-    MockPerson mock_person;
+    NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
     std::unique_ptr<datamanagement::ModelData> model_data;
-    double discounted_cost;
-    double discounted_life;
-    data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
-    data::HCVDetails hcv = {data::HCV::kNone,
-                            data::FibrosisState::kF0,
-                            false,
-                            false,
-                            -1,
-                            -1,
-                            0,
-                            0,
-                            0};
-    data::ScreeningDetails screen = {-1, 0, 0, false, false, -1, 0};
+    data::BehaviorDetails behavior_current;
+    data::MOUDDetails moud_details;
+    data::PregnancyDetails pregnancy_details;
 
     void SetUp() override {
         ExecuteQueries(
-            test_db, {{"DROP TABLE IF EXISTS hcv_impacts;", CreateHCVImpacts(),
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (0, 0, 230.65, 0.915);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 0, 430.00, 0.8);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 1, 500.00, 0.7);"}});
+            test_db,
+            {{"DROP TABLE IF EXISTS overdoses;",
+              CreateOverdoses(),
+              "INSERT INTO overdoses VALUES (-1, 0, 1, 0.0, 0.0, 1.0);",
+              "INSERT INTO overdoses VALUES (-1, 0, 4, 0.5, 10.00, 0.2);",
+              "INSERT INTO overdoses VALUES (-1, 1, 1, 0.0, 0.0, 1.0);",
+              "INSERT INTO overdoses VALUES (-1, 1, 4, 0.3, 10.00, 0.2);",
+              "INSERT INTO overdoses VALUES (-1, 2, 1, 0.0, 0.0, 1.0);",
+              "INSERT INTO overdoses VALUES (-1, 2, 4, 0.6, 10.00, 0.2);",
+              "INSERT INTO overdoses VALUES (0, 0, 1, 0.0, 0.0, 1.0);",
+              "INSERT INTO overdoses VALUES (0, 0, 4, 0.5, 10.00, 0.2);",
+              "INSERT INTO overdoses VALUES (0, 1, 1, 0.0, 0.0, 1.0);",
+              "INSERT INTO overdoses VALUES (0, 1, 4, 0.3, 10.00, 0.2);",
+              "INSERT INTO overdoses VALUES (0, 2, 1, 0.0, 0.0, 1.0);",
+              "INSERT INTO overdoses VALUES (0, 2, 4, 0.6, 10.00, 0.2);",
+              "INSERT INTO overdoses VALUES (1, 0, 1, 0.0, 0.0, 1.0);",
+              "INSERT INTO overdoses VALUES (1, 0, 4, 0.5, 12.00, 0.1);",
+              "INSERT INTO overdoses VALUES (1, 1, 1, 0.0, 0.0, 1.0);",
+              "INSERT INTO overdoses VALUES (1, 1, 4, 0.3, 12.00, 0.1);",
+              "INSERT INTO overdoses VALUES (1, 2, 1, 0.0, 0.0, 1.0);",
+              "INSERT INTO overdoses VALUES (1, 2, 4, 0.6, 12.00, 0.1);"}});
         BuildSimConf(test_conf);
-        discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
-        discounted_life = utils::Discount(1, 0.0025, 1, false);
         model_data = datamanagement::ModelData::Create(test_conf);
         model_data->AddSource(test_db);
+
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behavior_current));
+        ON_CALL(mock_person, GetMoudDetails())
+            .WillByDefault(Return(moud_details));
+        ON_CALL(mock_person, GetPregnancyDetails())
+            .WillByDefault(Return(pregnancy_details));
     }
 
     void TearDown() override {
@@ -81,5 +93,70 @@ protected:
         std::filesystem::remove(test_conf);
     }
 };
+
+TEST_F(OverdoseTest, PersonIsDead) {
+    // Setup
+    const std::string LOG_NAME = "PersonIsDead";
+    CreateTestLog(LOG_NAME);
+
+    // Expectations
+    EXPECT_CALL(mock_person, IsAlive()).WillOnce(Return(false));
+    EXPECT_CALL(mock_person, GetPregnancyDetails()).Times(0);
+    EXPECT_CALL(mock_person, GetMoudDetails()).Times(0);
+
+    // Run test
+    auto event = event::behavior::Overdose::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    RemoveTestLog(LOG_NAME);
+}
+
+TEST_F(OverdoseTest, OverdoseOccurs) {
+    // Setup
+    const std::string LOG_NAME = "OverdoseOccurs";
+    CreateTestLog(LOG_NAME);
+
+    // Adjust On Call Returns
+    behavior_current.behavior = data::Behavior::kInjection;
+    ON_CALL(mock_person, GetBehaviorDetails())
+        .WillByDefault(Return(behavior_current));
+
+    // Expectations
+    std::vector<double> prob = {0.5, 0.5};
+    EXPECT_CALL(mock_sampler, GetDecision(prob)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, ToggleOverdose()).Times(1);
+    EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(1);
+    EXPECT_CALL(mock_person, SetUtility(_, _)).Times(1);
+
+    // Run test
+    auto event = event::behavior::Overdose::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    RemoveTestLog(LOG_NAME);
+}
+
+TEST_F(OverdoseTest, NoOverdoseOccurs) {
+    // Setup
+    const std::string LOG_NAME = "NoOverdoseOccurs";
+    CreateTestLog(LOG_NAME);
+
+    // Adjust On Call Returns
+    behavior_current.behavior = data::Behavior::kFormerNoninjection;
+    ON_CALL(mock_person, GetBehaviorDetails())
+        .WillByDefault(Return(behavior_current));
+
+    // Expectations
+    std::vector<double> prob = {0.0, 1.0};
+    EXPECT_CALL(mock_sampler, GetDecision(prob)).WillOnce(Return(1));
+    EXPECT_CALL(mock_person, ToggleOverdose()).Times(0);
+    EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
+    EXPECT_CALL(mock_person, SetUtility(_, _)).Times(0);
+
+    // Run test
+    auto event = event::behavior::Overdose::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    RemoveTestLog(LOG_NAME);
+}
 } // namespace testing
 } // namespace hepce

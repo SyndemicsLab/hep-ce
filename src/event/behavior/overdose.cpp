@@ -46,7 +46,7 @@ void OverdoseImpl::Execute(model::Person &person, model::Sampler &sampler) {
     int drug_behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_3i tup = std::make_tuple(pregnancy, moud, drug_behavior);
     double prob = _overdose_data[tup].overdose_probability;
-    if (sampler.GetDecision({prob, 1 - prob}) != 0) {
+    if (sampler.GetDecision({prob, 1 - prob}) == 0) {
         person.ToggleOverdose();
         CalculateCostAndUtility(person);
     }

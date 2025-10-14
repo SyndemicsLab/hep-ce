@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-10                                                  //
+// Last Modified: 2025-10-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -61,8 +61,10 @@ inline const std::string CreateBackgroundMortalities() {
 inline const std::string CreateOverdoses() {
     std::stringstream s;
     s << ("CREATE TABLE overdoses "
-          "(moud INTEGER, drug_behavior INTEGER, "
-          "fatality_probability REAL);");
+          "(pregnancy INTEGER NOT NULL, moud INTEGER NOT NULL, drug_behavior "
+          "INTEGER NOT NULL, overdose_probability REAL NOT NULL, cost REAL NOT "
+          "NULL, utility REAL NOT NULL, PRIMARY KEY(pregnancy, moud, "
+          "drug_behavior));");
     return s.str();
 }
 
