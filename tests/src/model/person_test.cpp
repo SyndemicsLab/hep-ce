@@ -451,5 +451,41 @@ TEST_F(PersonTest, LastTimeActiveLessThanNegOne) {
     person->SetPersonDetails(person_select);
     EXPECT_EQ(person->GetBehaviorDetails().time_last_active, -6);
 }
+
+TEST_F(PersonTest, TransitionMOUD_NeverUsed) {
+    PersonSelect p;
+    p.drug_behavior = data::Behavior::kNever;
+    p.moud_state = data::MOUD::kCurrent;
+    person->SetPersonDetails(p);
+    person->TransitionMOUD();
+    EXPECT_EQ(person->GetMoudDetails().moud_state, data::MOUD::kCurrent);
+}
+
+TEST_F(PersonTest, TransitionMOUD_Current) {
+    PersonSelect p;
+    p.drug_behavior = data::Behavior::kInjection;
+    p.moud_state = data::MOUD::kCurrent;
+    person->SetPersonDetails(p);
+    person->TransitionMOUD();
+    EXPECT_EQ(person->GetMoudDetails().moud_state, data::MOUD::kPost);
+}
+
+TEST_F(PersonTest, TransitionMOUD_Post) {
+    PersonSelect p;
+    p.drug_behavior = data::Behavior::kInjection;
+    p.moud_state = data::MOUD::kPost;
+    person->SetPersonDetails(p);
+    person->TransitionMOUD();
+    EXPECT_EQ(person->GetMoudDetails().moud_state, data::MOUD::kNone);
+}
+
+TEST_F(PersonTest, TransitionMOUD_None) {
+    PersonSelect p;
+    p.drug_behavior = data::Behavior::kInjection;
+    p.moud_state = data::MOUD::kNone;
+    person->SetPersonDetails(p);
+    person->TransitionMOUD();
+    EXPECT_EQ(person->GetMoudDetails().moud_state, data::MOUD::kCurrent);
+}
 } // namespace testing
 } // namespace hepce
