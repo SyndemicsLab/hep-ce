@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-20                                                  //
+// Last Modified: 2025-10-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -86,7 +86,8 @@ void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
 void DeathImpl::LoadData(datamanagement::ModelData &model_data) {
     if (utils::FindInEventList("overdose", model_data)) {
         check_overdose = true;
-        LoadOverdoseData(model_data);
+        _probability_of_overdose_fatality = utils::GetDoubleFromConfig(
+            "mortality.probability_of_overdose_fatality", model_data);
     }
     if (utils::FindInEventList("hivinfection", model_data)) {
         check_hiv = true;
@@ -140,54 +141,13 @@ void DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
     }
 }
 
-void DeathImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
-    std::any storage = _overdose_data;
-    try {
-        model_data.GetDBSource("inputs").Select(
-            OverdoseSQL(),
-            [](std::any &storage, const SQLite::Statement &stmt) {
-                utils::tuple_2i tup = std::make_tuple(
-                    stmt.getColumn(0).getInt(), stmt.getColumn(1).getInt());
-                std::any_cast<overdosemap_t &>(storage)[tup] =
-                    stmt.getColumn(2).getDouble();
-            },
-            storage);
-    } catch (std::exception &e) {
-        hepce::utils::LogInfo(
-            GetLogName(), "No Overdose Table Found in the inputs database...");
-        return;
-    }
-
-    _overdose_data = std::any_cast<overdosemap_t>(storage);
-    if (_overdose_data.empty()) {
-        hepce::utils::LogWarning(GetLogName(), "Overdose Table is Empty...");
-#ifdef EXIT_ON_WARNING
-        std::exit(EXIT_FAILURE);
-#endif
-    }
-}
-
 bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
     if (!person.GetCurrentlyOverdosing()) {
         return false;
     }
 
-    if (_overdose_data.empty()) {
-        hepce::utils::LogWarning(GetLogName(),
-                                 "No Fatal Overdose Probability Found!");
-#ifdef EXIT_ON_WARNING
-        std::exit(EXIT_FAILURE);
-#endif
-        person.ToggleOverdose();
-        return false;
-    }
-
-    int moud = static_cast<int>(person.GetMoudDetails().moud_state);
-    int drug_behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
-    utils::tuple_2i tup = std::make_tuple(moud, drug_behavior);
-    double probability = _overdose_data[tup];
-
-    if (sampler.GetDecision({probability, 1 - probability}) != 0) {
+    if (sampler.GetDecision({_probability_of_overdose_fatality,
+                             1 - _probability_of_overdose_fatality}) != 0) {
         person.ToggleOverdose();
         return false;
     }

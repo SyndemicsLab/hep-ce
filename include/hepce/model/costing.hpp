@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-10-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -29,7 +29,9 @@ enum class CostCategory : int {
     kTreatment = 6,
     kBackground = 7,
     kHiv = 8,
-    kCount = 9
+    kMoud = 9,
+    kOverdose = 10,
+    kCount = 11
 };
 
 std::ostream &operator<<(std::ostream &os, const CostCategory &inst);
