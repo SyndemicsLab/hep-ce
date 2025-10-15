@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2025-10-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -92,7 +92,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
     // Utility - NOTE: While LifetimeUtility values are listed here, they cannot
     // be assigned when creating a new Person. They are effectively read-only.
     headers << "behavior_utility,liver_utility,treatment_utility,background_"
-               "utility,moud_utility,overdose_utility,";
+               "utility,";
     if (hiv) {
         headers << "hiv_utility,";
     } else {
@@ -519,8 +519,6 @@ struct PersonSelect {
     double treatment_utility = 1.0;
     double background_utility = 1.0;
     double hiv_utility = 1.0;
-    double moud_utility = 1.0;
-    double overdose_utility = 1.0;
     // NOTE: Like cost, LifetimeUtility, life_span, and discounted_life_span are
     // used to track only the accumulation over the course of the simulated time
     // horizon, so they are not used when creating a new person.

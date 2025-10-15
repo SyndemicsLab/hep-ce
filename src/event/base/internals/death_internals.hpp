@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2025-10-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -51,7 +51,6 @@ private:
 
     double _probability_of_overdose_fatality = 0.0;
     double _fatal_overdose_cost = 0.0;
-    double _fatal_overdose_utility = 0.0;
     double _hiv_mortality_probability = 0.0;
 
     bool check_overdose = false;

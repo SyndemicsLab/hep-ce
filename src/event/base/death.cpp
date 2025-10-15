@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2025-10-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -90,8 +90,6 @@ void DeathImpl::LoadData(datamanagement::ModelData &model_data) {
             "overdose.probability_of_overdose_fatality", model_data);
         _fatal_overdose_cost = utils::GetDoubleFromConfig(
             "overdose.fatal_overdose_cost", model_data);
-        _fatal_overdose_utility = utils::GetDoubleFromConfig(
-            "overdose.fatal_overdose_utility", model_data);
     }
     if (utils::FindInEventList("hivinfection", model_data)) {
         check_hiv = true;
@@ -154,9 +152,8 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
                              1 - _probability_of_overdose_fatality}) != 0) {
         person.ToggleOverdose();
         SetEventCostCategory(model::CostCategory::kOverdose);
-        SetEventUtilityCategory(model::UtilityCategory::kOverdose);
+        SetEventUtilityCategory(model::UtilityCategory::kBehavior);
         AddEventCost(person, _fatal_overdose_cost);
-        AddEventUtility(person, _fatal_overdose_utility);
         return false;
     }
     Die(person, data::DeathReason::kOverdose);

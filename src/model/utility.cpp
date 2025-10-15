@@ -4,7 +4,7 @@
 // Created Date: 2025-04-30                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2025-10-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,12 +34,6 @@ std::ostream &operator<<(std::ostream &os, const UtilityCategory &uc) {
         break;
     case UtilityCategory::kHiv:
         os << "kHiv";
-        break;
-    case UtilityCategory::kMoud:
-        os << "kMoud";
-        break;
-    case UtilityCategory::kOverdose:
-        os << "kOverdose";
         break;
     default:
         os << "kNa";

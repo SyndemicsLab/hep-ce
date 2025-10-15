@@ -4,7 +4,7 @@
 // Created Date: 2025-05-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2025-10-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -32,7 +32,6 @@ OverdoseImpl::OverdoseImpl(datamanagement::ModelData &model_data,
     : EventBase(model_data, log_name) {
     LoadData(model_data);
     SetEventCostCategory(model::CostCategory::kOverdose);
-    SetEventUtilityCategory(model::UtilityCategory::kOverdose);
 }
 
 void OverdoseImpl::Execute(model::Person &person, model::Sampler &sampler) {

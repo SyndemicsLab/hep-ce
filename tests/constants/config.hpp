@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2025-10-15                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -41,8 +41,7 @@ static std::unordered_map<std::string, std::vector<std::string>>
         }},
     {"overdose", {
             "probability_of_overdose_fatality = 0.1",
-            "fatal_overdose_cost = 100.00",
-            "fatal_overdose_utility = 0.0"
+            "fatal_overdose_cost = 100.00"
         }},
     {"infection", {
             "clearance_prob = 0.0489",
