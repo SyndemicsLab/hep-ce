@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS "overdoses" (
   "overdose_probability" REAL NOT NULL DEFAULT 0.0,
   "cost" REAL NOT NULL DEFAULT 0.0,
   "utility" REAL NOT NULL DEFAULT 1.0,
-  PRIMARY KEY("pregnancy", "moud", "behavior"),
+  PRIMARY KEY("pregnancy", "moud", "drug_behavior"),
   FOREIGN KEY("moud") REFERENCES "moud"("id"),
   FOREIGN KEY("pregnancy") REFERENCES "pregnancy_states"("id"),
   FOREIGN KEY("drug_behavior") REFERENCES "drug_behaviors"("id")
