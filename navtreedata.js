@@ -53,19 +53,20 @@ var NAVTREE =
       [ "Voluntary Relinking", "md_docs_src_events.html#autotoc_md28", null ],
       [ "Fibrosis Staging", "md_docs_src_events.html#autotoc_md29", null ],
       [ "HCV Treatment", "md_docs_src_events.html#autotoc_md30", null ],
-      [ "Death", "md_docs_src_events.html#autotoc_md31", null ]
+      [ "Overdose", "md_docs_src_events.html#autotoc_md31", null ],
+      [ "Death", "md_docs_src_events.html#autotoc_md32", null ]
     ] ],
     [ "Running the Model", "md_docs_src_run.html", [
-      [ "Using the Executable", "md_docs_src_run.html#autotoc_md33", null ],
-      [ "Arguments", "md_docs_src_run.html#autotoc_md34", null ]
+      [ "Using the Executable", "md_docs_src_run.html#autotoc_md34", null ],
+      [ "Arguments", "md_docs_src_run.html#autotoc_md35", null ]
     ] ],
     [ "Limitations", "md_docs_src_limitations.html", [
-      [ "Library", "md_docs_src_limitations.html#autotoc_md36", null ],
-      [ "Data", "md_docs_src_limitations.html#autotoc_md37", null ]
+      [ "Library", "md_docs_src_limitations.html#autotoc_md37", null ],
+      [ "Data", "md_docs_src_limitations.html#autotoc_md38", null ]
     ] ],
     [ "FAQs", "md_docs_src_faq.html", null ],
     [ "Differences from HEP-CEv1", "md_docs_src_differences.html", [
-      [ "HCV Screening", "md_docs_src_differences.html#autotoc_md40", null ]
+      [ "HCV Screening", "md_docs_src_differences.html#autotoc_md41", null ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -99,9 +100,9 @@ var NAVTREEINDEX =
 [
 "aging_8hpp.html",
 "classhepce_1_1model_1_1Person.html#aed73f5abcc00f297d521581434b80185",
-"namespacehepce_1_1data.html#a8c891b6253ad64a14ffa8befd60cf057",
-"structhepce_1_1data_1_1PersonSelect.html#a13725878e0273eda905706b51a6e4617",
-"types_8hpp.html#a2db9342133b39992151b6755d24f8a02"
+"namespacehepce_1_1data.html#a88cdf99b2e11cadb5dac10c977616c0c",
+"structhepce_1_1data_1_1PersonSelect.html#a0f226503cfc45160f407635aa6eab222",
+"types_8hpp.html#a19e35ff7983e89e690ccab8a97d8ab71a5a162d352f3b3603e03fc9b2f043fb40"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

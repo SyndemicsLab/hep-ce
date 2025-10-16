@@ -204,6 +204,9 @@ HCV Treatment</h1>
 <p>HCV treatment focuses on actually treating patients for HCV. As such, it deals with the various costs and complications that come with treatment, and handles a salvage follow up strategy for those that do not achieve clearance of their condition (SVR). As mentioned in the Clearance event, we know the SVRs are a slight overcount due to the fact that people cannot accute clear while in treatment.</p>
 <p><img src="hcv-treatment.png" alt="" class="flowchart" class="inline"/></p>
 <h1><a class="anchor" id="autotoc_md31"></a>
+Overdose</h1>
+<p>Overdose focuses on all type overdoses for patients. We delegate the fatality functionality to the Death event, but instead focus exclusively on the impacts of all overdoses in this event. The primary function of this event loads data from the <code>overdose</code> table and then samples a decision based on the provided probability. If overdose occurs, then cost and utility is updated, if not nothing occurs.</p>
+<h1><a class="anchor" id="autotoc_md32"></a>
 Death</h1>
 <p>Death is the capstone of the events. It aggregates all the things that have happened to a person in the timestep and then decides whether or not the person dies. Depending on the events in the list, this can include fibrosis complications, HCV complications, background mortality, overdoses, etc.</p>
 <p><img src="death.png" alt="" class="flowchart" class="inline"/></p>
@@ -219,7 +222,7 @@ Death</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Oct 14 2025 13:31:41 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Thu Oct 16 2025 16:45:41 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>
