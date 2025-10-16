@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-08                                                  //
+// Last Modified: 2025-10-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -63,6 +63,12 @@ std::ostream &operator<<(std::ostream &os, const CostCategory &inst) {
         break;
     case CostCategory::kBackground:
         os << "kBackground";
+        break;
+    case CostCategory::kMoud:
+        os << "kMoud";
+        break;
+    case CostCategory::kOverdose:
+        os << "kOverdose";
         break;
     default:
         os << "na";

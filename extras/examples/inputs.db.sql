@@ -237,4 +237,16 @@ CREATE TABLE IF NOT EXISTS "moud_costs" (
   FOREIGN KEY("moud") REFERENCES "moud"("id"),
   FOREIGN KEY("pregnancy") REFERENCES "pregnancy_states"("id")
 );
+CREATE TABLE IF NOT EXISTS "overdoses" (
+  "pregnancy" INTEGER NOT NULL,
+  "moud" INTEGER NOT NULL,
+  "drug_behavior" INTEGER NOT NULL,
+  "overdose_probability" REAL NOT NULL DEFAULT 0.0,
+  "cost" REAL NOT NULL DEFAULT 0.0,
+  "utility" REAL NOT NULL DEFAULT 1.0,
+  PRIMARY KEY("pregnancy", "moud", "drug_behavior"),
+  FOREIGN KEY("moud") REFERENCES "moud"("id"),
+  FOREIGN KEY("pregnancy") REFERENCES "pregnancy_states"("id"),
+  FOREIGN KEY("drug_behavior") REFERENCES "drug_behaviors"("id")
+);
 COMMIT;

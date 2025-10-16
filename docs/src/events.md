@@ -117,6 +117,10 @@ HCV treatment focuses on actually treating patients for HCV. As such, it deals w
     src="hcv-treatment.png"
 />
 
+## Overdose
+
+Overdose focuses on all type overdoses for patients. We delegate the fatality functionality to the Death event, but instead focus exclusively on the impacts of all overdoses in this event. The primary function of this event loads data from the `overdose` table and then samples a decision based on the provided probability. If overdose occurs, then cost and utility is updated, if not nothing occurs.
+
 ## Death
 
 Death is the capstone of the events. It aggregates all the things that have happened to a person in the timestep and then decides whether or not the person dies. Depending on the events in the list, this can include fibrosis complications, HCV complications, background mortality, overdoses, etc.

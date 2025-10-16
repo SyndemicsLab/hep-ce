@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2025-10-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -22,7 +22,9 @@ enum class UtilityCategory : int {
     kTreatment = 2,
     kBackground = 3,
     kHiv = 4,
-    kCount = 5
+    kMoud = 5,
+    kOverdose = 6,
+    kCount = 7
 };
 std::ostream &operator<<(std::ostream &os, const UtilityCategory &uc);
 } // namespace model

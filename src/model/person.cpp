@@ -4,7 +4,7 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-10                                                  //
+// Last Modified: 2025-10-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,6 +34,8 @@ PersonImpl::PersonImpl(const std::string &log_name) : _log_name(log_name) {
     SetUtility(1, UtilityCategory::kTreatment);
     SetUtility(1, UtilityCategory::kBackground);
     SetUtility(1, UtilityCategory::kHiv);
+    SetUtility(1, UtilityCategory::kMoud);
+    SetUtility(1, UtilityCategory::kOverdose);
 }
 
 void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
@@ -170,6 +172,8 @@ void PersonImpl::SetPersonDetails(const data::PersonSelect &storage) {
     SetUtility(storage.treatment_utility, UtilityCategory::kTreatment);
     SetUtility(storage.background_utility, UtilityCategory::kBackground);
     SetUtility(storage.hiv_utility, UtilityCategory::kHiv);
+    SetUtility(storage.moud_utility, UtilityCategory::kMoud);
+    SetUtility(storage.overdose_utility, UtilityCategory::kOverdose);
 }
 
 void PersonImpl::InfectHCV() {
@@ -394,7 +398,9 @@ std::string PersonImpl::MakePopulationRow() const {
                        << cu.at(model::UtilityCategory::kLiver) << ","
                        << cu.at(model::UtilityCategory::kTreatment) << ","
                        << cu.at(model::UtilityCategory::kBackground) << ","
-                       << cu.at(model::UtilityCategory::kHiv) << ",";
+                       << cu.at(model::UtilityCategory::kHiv) << ","
+                       << cu.at(model::UtilityCategory::kMoud) << ","
+                       << cu.at(model::UtilityCategory::kOverdose) << ",";
         // total/lifetime utilities
         const auto &tu = GetTotalUtility();
         population_row << tu.min_util << ","

@@ -1,0 +1,22 @@
+# This file contains the CODEOWNERS of hep-ce. It is used to determine 
+# required reviews on Pull Requests. Each line is a file pattern followed 
+# by one or more owners.
+
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @MJC598 and @ddbaptiste will be requested for
+# review when someone opens a pull request.
+*       @MJC598 @ddbaptiste
+
+# Order is important; the last matching pattern takes the most
+# precedence. When someone opens a pull request that only
+# modifies R or C++ files, only @the specified teams and not the global
+# owner(s) will be requested for a review.
+
+# Teams can be specified as code owners as well. Teams should
+# be identified in the format @org/team-name. Teams must have
+# explicit write access to the repository.
+*.R @SyndemicsLab/Analysts @SyndemicsLab/Developers
+*.cpp @SyndemicsLab/Developers
+*.hpp @SyndemicsLab/Developers
+*.sh @SyndemicsLab/Developers

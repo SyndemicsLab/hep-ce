@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-15                                                  //
+// Last Modified: 2025-10-14                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,9 +34,6 @@ public:
     using backgroundmap_t =
         std::unordered_map<utils::tuple_3i, BackgroundSmr, utils::key_hash_3i,
                            utils::key_equal_3i>;
-    using overdosemap_t =
-        std::unordered_map<utils::tuple_2i, double, utils::key_hash_2i,
-                           utils::key_equal_2i>;
 
     DeathImpl(datamanagement::ModelData &model_data,
               const std::string &log_name = "console");
@@ -51,18 +48,16 @@ private:
     const double _f4_uninfected_probability;
     const double _decomp_infected_probability;
     const double _decomp_uninfected_probability;
+
+    double _probability_of_overdose_fatality = 0.0;
+    double _fatal_overdose_cost = 0.0;
+    double _fatal_overdose_utility = 0.0;
     double _hiv_mortality_probability = 0.0;
 
     bool check_overdose = false;
     bool check_hiv = false;
 
     backgroundmap_t _background_data;
-    overdosemap_t _overdose_data;
-
-    inline const std::string OverdoseSQL() const {
-        return "SELECT moud, drug_behavior, fatality_probability FROM "
-               "overdoses;";
-    }
 
     inline const std::string BackgroundMortalitySQL() const {
         std::stringstream sql;
@@ -77,8 +72,6 @@ private:
     inline void Die(model::Person &person, const data::DeathReason &reason) {
         person.Die(reason);
     }
-
-    void LoadOverdoseData(datamanagement::ModelData &model_data);
 
     void LoadBackgroundMortality(datamanagement::ModelData &model_data);
 

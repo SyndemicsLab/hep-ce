@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: DeathTest.cpp                                                        //
+// File: death_test.cpp                                                       //
 // Project: hep-ce                                                            //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-08                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-10-14                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,11 +118,6 @@ TEST_F(DeathTest, FatalOverdoseDR) {
     config["simulation"][2] = OVERDOSE_EVENTS;
     BuildSimConf(test_conf, config);
 
-    ExecuteQueries(test_db,
-                   {{"DROP TABLE IF EXISTS overdoses;", CreateOverdoses(),
-                     "INSERT INTO overdoses "
-                     "VALUES (0, 4, 1.0);"}});
-
     std::unique_ptr<datamanagement::ModelData> model_data_alt;
     model_data_alt = datamanagement::ModelData::Create(test_conf);
     model_data_alt->AddSource(test_db);
@@ -133,7 +128,7 @@ TEST_F(DeathTest, FatalOverdoseDR) {
     ON_CALL(mock_person, GetCurrentlyOverdosing()).WillByDefault(Return(true));
 
     // Expectations
-    std::vector<double> expected_prob = {1.0, 0.0};
+    std::vector<double> expected_prob = {0.1, 0.9};
     EXPECT_CALL(mock_sampler, GetDecision(expected_prob)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Die(data::DeathReason::kOverdose)).Times(1);
 
