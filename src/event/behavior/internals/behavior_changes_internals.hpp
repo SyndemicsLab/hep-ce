@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-10-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -50,6 +50,7 @@ public:
 private:
     behaviormap_t _behavior_data;
     costmap_t _cost_data;
+    const double _relapse_rate;
 
     inline const std::string TransitionSQL() const {
         return "SELECT age_years, gender, drug_behavior, moud, never, "

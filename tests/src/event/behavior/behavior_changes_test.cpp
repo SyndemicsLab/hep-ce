@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: BehaviorChangesTest.cpp                                              //
+// File: behavior_changes_test.cpp                                            //
 // Project: hep-ce                                                            //
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2025-10-23                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,16 +54,18 @@ protected:
     data::MOUDDetails mouds = {data::MOUD::kNone, -1, 0, 0};
 
     void SetUp() override {
-        ExecuteQueries(
-            test_db, {{"DROP TABLE IF EXISTS behavior_transitions;",
-                       "DROP TABLE IF EXISTS behavior_impacts;",
-                       CreateBehaviorImpacts(), CreateBehaviorTransitions(),
-                       "INSERT INTO behavior_impacts "
-                       "VALUES (0, 4, 370.75, 0.574);",
-                       "INSERT INTO behavior_impacts "
-                       "VALUES (0, 2, 86.24, 0.744);"
-                       "INSERT INTO behavior_transitions "
-                       "VALUES (25, 0, 4, 0, 0.0, 0.0, 0.002, 0.0, 0.998);"}});
+        ExecuteQueries(test_db,
+                       {{"DROP TABLE IF EXISTS behavior_transitions;",
+                         "DROP TABLE IF EXISTS behavior_impacts;",
+                         CreateBehaviorImpacts(), CreateBehaviorTransitions(),
+                         "INSERT INTO behavior_impacts "
+                         "VALUES (0, 4, 370.75, 0.574);",
+                         "INSERT INTO behavior_impacts "
+                         "VALUES (0, 2, 86.24, 0.744);"
+                         "INSERT INTO behavior_transitions "
+                         "VALUES (25, 0, 4, 0, 0.0, 0.0, 0.002, 0.0, 0.998);"
+                         "INSERT INTO behavior_transitions "
+                         "VALUES (25, 0, 2, 0, 0.0, 0.0, 0.5, 0.0, 0.5);"}});
         BuildSimConf(test_conf);
         discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
         discounted_life = utils::Discount(1, 0.0025, 1, false);
@@ -85,11 +87,12 @@ TEST_F(BehaviorChangesTest, InjectionToFormer) {
     // Setup
     const std::string LOG_NAME = "InjectionToFormer";
     CreateTestLog(LOG_NAME);
-    data::BehaviorDetails behaviors_new = {data::Behavior::kFormerInjection, 0};
+    data::BehaviorDetails behaviors_new = {data::Behavior::kFormerInjection, 1};
     std::vector<double> expected_probs = {0.0, 0.0, 0.002, 0.0, 0.998};
 
     // Expectations
     EXPECT_CALL(mock_person, GetBehaviorDetails())
+        .WillOnce(Return(behaviors))
         .WillOnce(Return(behaviors))
         .WillOnce(Return(behaviors_new));
     EXPECT_CALL(mock_person, GetMoudDetails())
@@ -127,7 +130,7 @@ TEST_F(BehaviorChangesTest, InvalidPersonDetails) {
         .Times(3)
         .WillRepeatedly(Return(data::Sex::kFemale));
     EXPECT_CALL(mock_person, GetBehaviorDetails())
-        .Times(3)
+        .Times(4)
         .WillRepeatedly(Return(behaviors));
     EXPECT_CALL(mock_person, GetMoudDetails())
         .Times(1)
@@ -167,8 +170,9 @@ TEST_F(BehaviorChangesTest, InvalidSampling) {
     CreateTestLog(LOG_NAME);
     data::BehaviorDetails behaviors_new = {data::Behavior::kFormerInjection, 0};
 
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
+
     // Expectations
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).WillOnce(Return(behaviors));
     EXPECT_CALL(mock_person, GetMoudDetails())
         .Times(1)
         .WillRepeatedly(Return(mouds));
@@ -210,7 +214,7 @@ TEST_F(BehaviorChangesTest, InvalidModelData) {
 
     // Expectations
     EXPECT_CALL(mock_person, GetBehaviorDetails())
-        .Times(3)
+        .Times(4)
         .WillRepeatedly(Return(behaviors));
     EXPECT_CALL(mock_person, GetMoudDetails())
         .Times(1)
@@ -225,6 +229,44 @@ TEST_F(BehaviorChangesTest, InvalidModelData) {
         .Times(1);
     EXPECT_CALL(mock_person, SetUtility(0, model::UtilityCategory::kBehavior))
         .Times(1);
+
+    std::string expected = "Error getting cost data in behavior changes:";
+    std::string line;
+
+    // Run test
+    auto event =
+        event::behavior::BehaviorChanges::Create(*empty_model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    std::ifstream f(LOG_NAME + ".log");
+    std::getline(f, line);
+    f.close();
+
+    ASSERT_TRUE(line.find(expected) != std::string::npos);
+    RemoveTestLog(LOG_NAME);
+}
+
+TEST_F(BehaviorChangesTest, RelapseToInjection) {
+    // Setup
+    const std::string LOG_NAME = "RelapseToInjection";
+    CreateTestLog(LOG_NAME);
+
+    std::unique_ptr<datamanagement::ModelData> empty_model_data =
+        datamanagement::ModelData::Create(test_conf, LOG_NAME);
+
+    behaviors = {data::Behavior::kFormerInjection, 1};
+    data::BehaviorDetails new_behaviors = {data::Behavior::kInjection, 0};
+    std::vector<double> expected_probs = {0.0, 0.0, 0.547581291, 0.0,
+                                          0.452418709};
+
+    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(mouds));
+
+    EXPECT_CALL(mock_person, GetBehaviorDetails())
+        .WillRepeatedly(Return(behaviors));
+
+    // Expectations
+    EXPECT_CALL(mock_sampler, GetDecision(expected_probs)).WillOnce(Return(4));
+    // EXPECT_CALL(mock_person, SetBehavior(data::Behavior::kInjection)).Times(1);
 
     std::string expected = "Error getting cost data in behavior changes:";
     std::string line;

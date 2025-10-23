@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
+// Last Modified: 2025-10-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,7 +34,9 @@ BehaviorChanges::Create(datamanagement::ModelData &model_data,
 // Constructor
 BehaviorChangesImpl::BehaviorChangesImpl(datamanagement::ModelData &model_data,
                                          const std::string &log_name)
-    : EventBase(model_data, log_name) {
+    : EventBase(model_data, log_name),
+      _relapse_rate(
+          utils::GetDoubleFromConfig("behavior.relapse_rate", model_data)) {
     SetEventCostCategory(model::CostCategory::kBehavior);
     SetEventUtilityCategory(model::UtilityCategory::kBehavior);
     LoadData(model_data);
@@ -51,6 +53,33 @@ void BehaviorChangesImpl::Execute(model::Person &person,
     // 1. Generate the transition probabilities based on the starting
     // state
     auto probs = GetBehaviorTransitionProbabilities(person);
+
+    auto behavior = person.GetBehaviorDetails().behavior;
+
+    if (behavior == data::Behavior::kFormerInjection) {
+        // exponential decay, probability to relapse
+        probs[static_cast<int>(data::Behavior::kInjection)] =
+            utils::RateToProbability(
+                utils::ProbabilityToRate(
+                    probs[static_cast<int>(data::Behavior::kInjection)], 1) *
+                    std::exp(-_relapse_rate *
+                             static_cast<double>(
+                                 person.GetBehaviorDetails().time_last_active)),
+                1);
+        probs[static_cast<int>(data::Behavior::kFormerInjection)] =
+            1 - probs[static_cast<int>(data::Behavior::kInjection)];
+    } else if (behavior == data::Behavior::kFormerNoninjection) {
+        probs[static_cast<int>(data::Behavior::kNoninjection)] =
+            utils::RateToProbability(
+                utils::ProbabilityToRate(
+                    probs[static_cast<int>(data::Behavior::kNoninjection)], 1) *
+                    std::exp(-_relapse_rate *
+                             static_cast<double>(
+                                 person.GetBehaviorDetails().time_last_active)),
+                1);
+        probs[static_cast<int>(data::Behavior::kFormerNoninjection)] =
+            1 - probs[static_cast<int>(data::Behavior::kNoninjection)];
+    }
 
     // 2. Draw a behavior state to be transitioned to
     int res = sampler.GetDecision(probs);
