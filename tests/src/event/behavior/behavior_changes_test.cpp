@@ -71,7 +71,9 @@ protected:
                          "INSERT INTO behavior_transitions "
                          "VALUES (25, 0, 2, 0, 0.0, 0.0, 0.5, 0.0, 0.5);"
                          "INSERT INTO behavior_transitions "
-                         "VALUES (25, 0, 1, 0, 0.0, 0.5, 0.0, 0.5, 0.0);"}});
+                         "VALUES (25, 0, 1, 0, 0.0, 0.5, 0.0, 0.5, 0.0);"
+                         "INSERT INTO behavior_transitions "
+                         "VALUES (30, 0, 1, 0, 0.0, 0.6, 0.0, 0.2, 0.2);"}});
         BuildSimConf(test_conf);
         discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
         discounted_life = utils::Discount(1, 0.0025, 1, false);
@@ -295,6 +297,32 @@ TEST_F(BehaviorChangesTest, LongTermRelapseToNoninjection) {
 
     EXPECT_THAT(actual_probs, ElementsAre(0.0, DoubleNear(0.8116, 1e-4), 0.0,
                                           DoubleNear(0.1884, 1e-4), 0.0));
+
+    RemoveTestLog(LOG_NAME);
+}
+
+TEST_F(BehaviorChangesTest, RiskOfRelapseAndEscalation) {
+    // Setup
+    const std::string LOG_NAME = "RiskOfRelapseAndEscalation";
+    CreateTestLog(LOG_NAME);
+
+    behaviors = {data::Behavior::kFormerNoninjection, 1};
+    std::vector<double> actual_probs;
+
+    // Expectations
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(360));
+    EXPECT_CALL(mock_sampler, GetDecision(_))
+        .WillOnce(DoAll(SaveArg<0>(&actual_probs), Return(1)));
+
+    // Run test
+    auto event =
+        event::behavior::BehaviorChanges::Create(*model_data, LOG_NAME);
+    event->Execute(mock_person, mock_sampler);
+
+    EXPECT_THAT(actual_probs, ElementsAre(0.0, DoubleNear(0.6952, 1e-4), 0.0,
+                                          DoubleNear(0.1523, 1e-4),
+                                          DoubleNear(0.1523, 1e-4)));
 
     RemoveTestLog(LOG_NAME);
 }

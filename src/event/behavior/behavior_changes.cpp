@@ -58,14 +58,11 @@ void BehaviorChangesImpl::Execute(model::Person &person,
 
     auto behavior = person.GetBehaviorDetails().behavior;
 
-    if (behavior == data::Behavior::kFormerInjection) {
-        ApplyDecayToRelapseProbabilities(
-            probs, person.GetBehaviorDetails().time_last_active,
-            data::Behavior::kFormerInjection, data::Behavior::kInjection);
-    } else if (behavior == data::Behavior::kFormerNoninjection) {
-        ApplyDecayToRelapseProbabilities(
-            probs, person.GetBehaviorDetails().time_last_active,
-            data::Behavior::kFormerNoninjection, data::Behavior::kNoninjection);
+    if (behavior == data::Behavior::kFormerInjection ||
+        behavior == data::Behavior::kFormerNoninjection) {
+        double decay_value =
+            GetExponentialChange(person.GetBehaviorDetails().time_last_active);
+        ApplyDecayToRelapseProbabilities(probs, decay_value, behavior);
     }
 
     // 2. Draw a behavior state to be transitioned to
@@ -186,21 +183,24 @@ void BehaviorChangesImpl::LoadBehaviorData(
 }
 
 void BehaviorChangesImpl::ApplyDecayToRelapseProbabilities(
-    std::vector<double> &probs, int time_since_quit,
-    data::Behavior current_behavior, data::Behavior relapse_behavior) const {
-    // Magic Number 12 corresponds to 12 months in a year
-    double relapse_rate = (time_since_quit < 12) ? _first_year_relapse_rate
-                                                 : _later_years_relapse_rate;
+    std::vector<double> &probs, double decay_value,
+    data::Behavior current_behavior) const {
+
+    std::vector<data::Behavior> relapse_behaviors = {
+        data::Behavior::kInjection, data::Behavior::kNoninjection};
 
     int current_idx = static_cast<int>(current_behavior);
-    int relapse_idx = static_cast<int>(relapse_behavior);
 
-    double exponential_decay =
-        std::exp(-relapse_rate * static_cast<double>(time_since_quit));
-
-    probs[relapse_idx] = utils::RateToProbability(
-        utils::ProbabilityToRate(probs[current_idx]) * exponential_decay);
-    probs[current_idx] = 1 - probs[relapse_idx];
+    double start_temp = 0.0;
+    double end_temp = 0.0;
+    for (const auto &relapse_behavior : relapse_behaviors) {
+        int relapse_idx = static_cast<int>(relapse_behavior);
+        start_temp += probs[relapse_idx];
+        probs[relapse_idx] = utils::RateToProbability(
+            utils::ProbabilityToRate(probs[relapse_idx]) * decay_value);
+        end_temp += probs[relapse_idx];
+    }
+    probs[current_idx] += start_temp - end_temp;
 }
 
 void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {

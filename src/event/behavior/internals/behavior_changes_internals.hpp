@@ -64,9 +64,19 @@ private:
                "behavior_impacts;";
     }
 
-    void ApplyDecayToRelapseProbabilities(
-        std::vector<double> &probs, int time_since_quit,
-        data::Behavior current_behavior, data::Behavior relapse_behavior) const;
+    inline double GetExponentialChange(int time_since_quit) const {
+        // Magic Number 12 corresponds to 12 months in a year
+        double relapse_rate = (time_since_quit < 12)
+                                  ? _first_year_relapse_rate
+                                  : _later_years_relapse_rate;
+
+        return std::exp(-relapse_rate * static_cast<double>(time_since_quit));
+    }
+
+    void
+    ApplyDecayToRelapseProbabilities(std::vector<double> &probs,
+                                     double decay_value,
+                                     data::Behavior current_behavior) const;
 
     std::vector<double>
     GetBehaviorTransitionProbabilities(const model::Person &person) const;
