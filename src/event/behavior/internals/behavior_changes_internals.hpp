@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-23                                                  //
+// Last Modified: 2025-10-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -50,7 +50,8 @@ public:
 private:
     behaviormap_t _behavior_data;
     costmap_t _cost_data;
-    const double _relapse_rate;
+    const double _first_year_relapse_rate;
+    const double _later_years_relapse_rate;
 
     inline const std::string TransitionSQL() const {
         return "SELECT age_years, gender, drug_behavior, moud, never, "
@@ -62,6 +63,10 @@ private:
         return "SELECT gender, drug_behavior, cost, utility FROM "
                "behavior_impacts;";
     }
+
+    void ApplyDecayToRelapseProbabilities(
+        std::vector<double> &probs, int time_since_quit,
+        data::Behavior current_behavior, data::Behavior relapse_behavior) const;
 
     std::vector<double>
     GetBehaviorTransitionProbabilities(const model::Person &person) const;

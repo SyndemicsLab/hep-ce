@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-23                                                  //
+// Last Modified: 2025-10-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -35,8 +35,10 @@ BehaviorChanges::Create(datamanagement::ModelData &model_data,
 BehaviorChangesImpl::BehaviorChangesImpl(datamanagement::ModelData &model_data,
                                          const std::string &log_name)
     : EventBase(model_data, log_name),
-      _relapse_rate(
-          utils::GetDoubleFromConfig("behavior.relapse_rate", model_data)) {
+      _first_year_relapse_rate(utils::GetDoubleFromConfig(
+          "behavior.first_year_relapse_rate", model_data)),
+      _later_years_relapse_rate(utils::GetDoubleFromConfig(
+          "behavior.later_years_relapse_rate", model_data)) {
     SetEventCostCategory(model::CostCategory::kBehavior);
     SetEventUtilityCategory(model::UtilityCategory::kBehavior);
     LoadData(model_data);
@@ -57,28 +59,13 @@ void BehaviorChangesImpl::Execute(model::Person &person,
     auto behavior = person.GetBehaviorDetails().behavior;
 
     if (behavior == data::Behavior::kFormerInjection) {
-        // exponential decay, probability to relapse
-        probs[static_cast<int>(data::Behavior::kInjection)] =
-            utils::RateToProbability(
-                utils::ProbabilityToRate(
-                    probs[static_cast<int>(data::Behavior::kInjection)], 1) *
-                    std::exp(-_relapse_rate *
-                             static_cast<double>(
-                                 person.GetBehaviorDetails().time_last_active)),
-                1);
-        probs[static_cast<int>(data::Behavior::kFormerInjection)] =
-            1 - probs[static_cast<int>(data::Behavior::kInjection)];
+        ApplyDecayToRelapseProbabilities(
+            probs, person.GetBehaviorDetails().time_last_active,
+            data::Behavior::kFormerInjection, data::Behavior::kInjection);
     } else if (behavior == data::Behavior::kFormerNoninjection) {
-        probs[static_cast<int>(data::Behavior::kNoninjection)] =
-            utils::RateToProbability(
-                utils::ProbabilityToRate(
-                    probs[static_cast<int>(data::Behavior::kNoninjection)], 1) *
-                    std::exp(-_relapse_rate *
-                             static_cast<double>(
-                                 person.GetBehaviorDetails().time_last_active)),
-                1);
-        probs[static_cast<int>(data::Behavior::kFormerNoninjection)] =
-            1 - probs[static_cast<int>(data::Behavior::kNoninjection)];
+        ApplyDecayToRelapseProbabilities(
+            probs, person.GetBehaviorDetails().time_last_active,
+            data::Behavior::kFormerNoninjection, data::Behavior::kNoninjection);
     }
 
     // 2. Draw a behavior state to be transitioned to
@@ -120,8 +107,9 @@ std::vector<double> BehaviorChangesImpl::GetBehaviorTransitionProbabilities(
         std::stringstream msg;
         msg << "Behavior Transition Probabilities are not found for the person "
                "details (age, Sex, Behavior, MOUD): "
-            << age_years << " " << person.GetSex() << " "
-            << person.GetBehaviorDetails().behavior
+            << age_years << ", " << person.GetSex() << ", "
+            << person.GetBehaviorDetails().behavior << ", "
+            << person.GetMoudDetails().moud_state
             << "! Returning guaranteed injection use.";
         hepce::utils::LogError(GetLogName(), msg.str());
         return {0.0, 0.0, 0.0, 0.0, 1.0};
@@ -195,6 +183,24 @@ void BehaviorChangesImpl::LoadBehaviorData(
         std::exit(EXIT_FAILURE);
 #endif
     }
+}
+
+void BehaviorChangesImpl::ApplyDecayToRelapseProbabilities(
+    std::vector<double> &probs, int time_since_quit,
+    data::Behavior current_behavior, data::Behavior relapse_behavior) const {
+    // Magic Number 12 corresponds to 12 months in a year
+    double relapse_rate = (time_since_quit < 12) ? _first_year_relapse_rate
+                                                 : _later_years_relapse_rate;
+
+    int current_idx = static_cast<int>(current_behavior);
+    int relapse_idx = static_cast<int>(relapse_behavior);
+
+    double exponential_decay =
+        std::exp(-relapse_rate * static_cast<double>(time_since_quit));
+
+    probs[relapse_idx] = utils::RateToProbability(
+        utils::ProbabilityToRate(probs[current_idx]) * exponential_decay);
+    probs[current_idx] = 1 - probs[relapse_idx];
 }
 
 void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {

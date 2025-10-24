@@ -4,8 +4,8 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-05                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2025-10-24                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +25,7 @@ inline double ProbabilityToRate(double probability, int time = 1) {
     if (probability < 0 || probability >= 1) {
         throw std::domain_error("Out of probability value range");
     }
-    return -log(1 - probability) / time;
+    return -std::log(1 - probability) / time;
 }
 
 /// @brief Convert Rate to Probability
@@ -35,7 +35,7 @@ inline double RateToProbability(double rate, int time = 1) {
     if (rate < 0) {
         throw std::domain_error("Out of rate value range");
     }
-    return 1 - exp(-rate * time);
+    return 1 - std::exp(-rate * time);
 }
 
 /// @brief Calculate Discount to Provide
@@ -71,7 +71,7 @@ inline int GetCurrentTimeInMilliseconds() {
 /// @return Decayed value
 inline double SigmoidalDecay(double value, int time, int cutoff,
                              double scaling_coeff) {
-    return value / (1 + exp(scaling_coeff * (time - cutoff)));
+    return value / (1 + std::exp(scaling_coeff * (time - cutoff)));
 }
 } // namespace utils
 } // namespace hepce
