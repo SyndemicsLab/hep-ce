@@ -191,16 +191,13 @@ void BehaviorChangesImpl::ApplyDecayToRelapseProbabilities(
 
     int current_idx = static_cast<int>(current_behavior);
 
-    double start_temp = 0.0;
-    double end_temp = 0.0;
     for (const auto &relapse_behavior : relapse_behaviors) {
         int relapse_idx = static_cast<int>(relapse_behavior);
-        start_temp += probs[relapse_idx];
+        double temp = probs[relapse_idx];
         probs[relapse_idx] = utils::RateToProbability(
             utils::ProbabilityToRate(probs[relapse_idx]) * decay_value);
-        end_temp += probs[relapse_idx];
+        probs[current_idx] += temp - probs[relapse_idx];
     }
-    probs[current_idx] += start_temp - end_temp;
 }
 
 void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {
