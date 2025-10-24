@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-16                                                  //
+// Last Modified: 2025-10-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -38,6 +38,10 @@ static std::unordered_map<std::string, std::vector<std::string>>
             "decomp_infected = 0.01734776",
             "decomp_uninfected = 0.005688756",
             "hiv = 0.0"
+        }},
+    {"behavior", {
+            "first_year_relapse_rate = 0.3",
+            "later_years_relapse_rate = 0.1"
         }},
     {"overdose", {
             "probability_of_overdose_fatality = 0.1",

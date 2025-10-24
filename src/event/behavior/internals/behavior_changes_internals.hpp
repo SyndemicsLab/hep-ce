@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-05                                                  //
+// Last Modified: 2025-10-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -50,6 +50,8 @@ public:
 private:
     behaviormap_t _behavior_data;
     costmap_t _cost_data;
+    const double _first_year_relapse_rate;
+    const double _later_years_relapse_rate;
 
     inline const std::string TransitionSQL() const {
         return "SELECT age_years, gender, drug_behavior, moud, never, "
@@ -61,6 +63,20 @@ private:
         return "SELECT gender, drug_behavior, cost, utility FROM "
                "behavior_impacts;";
     }
+
+    inline double GetExponentialChange(int time_since_quit) const {
+        // Magic Number 12 corresponds to 12 months in a year
+        double relapse_rate = (time_since_quit < 12)
+                                  ? _first_year_relapse_rate
+                                  : _later_years_relapse_rate;
+
+        return std::exp(-relapse_rate * static_cast<double>(time_since_quit));
+    }
+
+    void
+    ApplyDecayToRelapseProbabilities(std::vector<double> &probs,
+                                     double decay_value,
+                                     data::Behavior current_behavior) const;
 
     std::vector<double>
     GetBehaviorTransitionProbabilities(const model::Person &person) const;

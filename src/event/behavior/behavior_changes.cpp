@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
+// Last Modified: 2025-10-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -34,7 +34,11 @@ BehaviorChanges::Create(datamanagement::ModelData &model_data,
 // Constructor
 BehaviorChangesImpl::BehaviorChangesImpl(datamanagement::ModelData &model_data,
                                          const std::string &log_name)
-    : EventBase(model_data, log_name) {
+    : EventBase(model_data, log_name),
+      _first_year_relapse_rate(utils::GetDoubleFromConfig(
+          "behavior.first_year_relapse_rate", model_data)),
+      _later_years_relapse_rate(utils::GetDoubleFromConfig(
+          "behavior.later_years_relapse_rate", model_data)) {
     SetEventCostCategory(model::CostCategory::kBehavior);
     SetEventUtilityCategory(model::UtilityCategory::kBehavior);
     LoadData(model_data);
@@ -51,6 +55,15 @@ void BehaviorChangesImpl::Execute(model::Person &person,
     // 1. Generate the transition probabilities based on the starting
     // state
     auto probs = GetBehaviorTransitionProbabilities(person);
+
+    auto behavior = person.GetBehaviorDetails().behavior;
+
+    if (behavior == data::Behavior::kFormerInjection ||
+        behavior == data::Behavior::kFormerNoninjection) {
+        double decay_value =
+            GetExponentialChange(person.GetBehaviorDetails().time_last_active);
+        ApplyDecayToRelapseProbabilities(probs, decay_value, behavior);
+    }
 
     // 2. Draw a behavior state to be transitioned to
     int res = sampler.GetDecision(probs);
@@ -91,8 +104,9 @@ std::vector<double> BehaviorChangesImpl::GetBehaviorTransitionProbabilities(
         std::stringstream msg;
         msg << "Behavior Transition Probabilities are not found for the person "
                "details (age, Sex, Behavior, MOUD): "
-            << age_years << " " << person.GetSex() << " "
-            << person.GetBehaviorDetails().behavior
+            << age_years << ", " << person.GetSex() << ", "
+            << person.GetBehaviorDetails().behavior << ", "
+            << person.GetMoudDetails().moud_state
             << "! Returning guaranteed injection use.";
         hepce::utils::LogError(GetLogName(), msg.str());
         return {0.0, 0.0, 0.0, 0.0, 1.0};
@@ -165,6 +179,24 @@ void BehaviorChangesImpl::LoadBehaviorData(
 #ifdef EXIT_ON_WARNING
         std::exit(EXIT_FAILURE);
 #endif
+    }
+}
+
+void BehaviorChangesImpl::ApplyDecayToRelapseProbabilities(
+    std::vector<double> &probs, double decay_value,
+    data::Behavior current_behavior) const {
+
+    std::vector<data::Behavior> relapse_behaviors = {
+        data::Behavior::kInjection, data::Behavior::kNoninjection};
+
+    int current_idx = static_cast<int>(current_behavior);
+
+    for (const auto &relapse_behavior : relapse_behaviors) {
+        int relapse_idx = static_cast<int>(relapse_behavior);
+        double temp = probs[relapse_idx];
+        probs[relapse_idx] = utils::RateToProbability(
+            utils::ProbabilityToRate(probs[relapse_idx]) * decay_value);
+        probs[current_idx] += temp - probs[relapse_idx];
     }
 }
 
