@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-24                                                  //
+// Last Modified: 2025-10-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -186,18 +186,18 @@ void BehaviorChangesImpl::ApplyDecayToRelapseProbabilities(
     std::vector<double> &probs, double decay_value,
     data::Behavior current_behavior) const {
 
-    std::vector<data::Behavior> relapse_behaviors = {
-        data::Behavior::kInjection, data::Behavior::kNoninjection};
+    std::unordered_map<data::Behavior, data::Behavior> relapse_behaviors = {
+        {data::Behavior::kFormerInjection, data::Behavior::kInjection},
+        {data::Behavior::kFormerNoninjection, data::Behavior::kNoninjection}};
 
     int current_idx = static_cast<int>(current_behavior);
 
-    for (const auto &relapse_behavior : relapse_behaviors) {
-        int relapse_idx = static_cast<int>(relapse_behavior);
-        double temp = probs[relapse_idx];
-        probs[relapse_idx] = utils::RateToProbability(
-            utils::ProbabilityToRate(probs[relapse_idx]) * decay_value);
-        probs[current_idx] += temp - probs[relapse_idx];
-    }
+    int relapse_idx = static_cast<int>(relapse_behaviors[current_behavior]);
+    double temp = probs[relapse_idx];
+    probs[relapse_idx] = utils::RateToProbability(
+        utils::ProbabilityToRate(probs[relapse_idx]) * decay_value);
+    // the change in relapse is applied to retention
+    probs[current_idx] += temp - probs[relapse_idx];
 }
 
 void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {

@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-24                                                  //
+// Last Modified: 2025-10-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -234,7 +234,7 @@ TEST_F(BehaviorChangesTest, RelapseToInjection) {
     const std::string LOG_NAME = "RelapseToInjection";
     CreateTestLog(LOG_NAME);
 
-    behaviors = {data::Behavior::kFormerInjection, 1};
+    behaviors = {data::Behavior::kFormerInjection, 2};
     std::vector<double> actual_probs;
 
     // Expectations
@@ -258,7 +258,7 @@ TEST_F(BehaviorChangesTest, RelapseToNoninjection) {
     const std::string LOG_NAME = "RelapseToNoninjection";
     CreateTestLog(LOG_NAME);
 
-    behaviors = {data::Behavior::kFormerNoninjection, 1};
+    behaviors = {data::Behavior::kFormerNoninjection, 2};
     std::vector<double> actual_probs;
 
     // Expectations
@@ -282,7 +282,7 @@ TEST_F(BehaviorChangesTest, LongTermRelapseToNoninjection) {
     const std::string LOG_NAME = "LongTermRelapseToNoninjection";
     CreateTestLog(LOG_NAME);
 
-    behaviors = {data::Behavior::kFormerNoninjection, 12};
+    behaviors = {data::Behavior::kFormerNoninjection, 13};
     std::vector<double> actual_probs;
 
     // Expectations
@@ -295,8 +295,8 @@ TEST_F(BehaviorChangesTest, LongTermRelapseToNoninjection) {
         event::behavior::BehaviorChanges::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
-    EXPECT_THAT(actual_probs, ElementsAre(0.0, DoubleNear(0.8116, 1e-4), 0.0,
-                                          DoubleNear(0.1884, 1e-4), 0.0));
+    EXPECT_THAT(actual_probs, ElementsAre(0.0, DoubleNear(0.9771, 1e-4), 0.0,
+                                          DoubleNear(0.0228, 1e-4), 0.0));
 
     RemoveTestLog(LOG_NAME);
 }
@@ -306,7 +306,7 @@ TEST_F(BehaviorChangesTest, RiskOfRelapseAndEscalation) {
     const std::string LOG_NAME = "RiskOfRelapseAndEscalation";
     CreateTestLog(LOG_NAME);
 
-    behaviors = {data::Behavior::kFormerNoninjection, 1};
+    behaviors = {data::Behavior::kFormerNoninjection, 2};
     std::vector<double> actual_probs;
 
     // Expectations
@@ -320,9 +320,8 @@ TEST_F(BehaviorChangesTest, RiskOfRelapseAndEscalation) {
         event::behavior::BehaviorChanges::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
-    EXPECT_THAT(actual_probs, ElementsAre(0.0, DoubleNear(0.6952, 1e-4), 0.0,
-                                          DoubleNear(0.1523, 1e-4),
-                                          DoubleNear(0.1523, 1e-4)));
+    EXPECT_THAT(actual_probs, ElementsAre(0.0, DoubleNear(0.6476, 1e-4), 0.0,
+                                          DoubleNear(0.1523, 1e-4), 0.2));
 
     RemoveTestLog(LOG_NAME);
 }
