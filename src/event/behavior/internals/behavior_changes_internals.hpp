@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-24                                                  //
+// Last Modified: 2025-10-29                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -65,12 +65,20 @@ private:
     }
 
     inline double GetExponentialChange(int time_since_quit) const {
-        // Magic Number 12 corresponds to 12 months in a year
-        double relapse_rate = (time_since_quit < 12)
-                                  ? _first_year_relapse_rate
-                                  : _later_years_relapse_rate;
 
-        return std::exp(-relapse_rate * static_cast<double>(time_since_quit));
+        // Magic Number 12 corresponds to 12 months in a year
+        if (time_since_quit >= 1 && time_since_quit <= 12) {
+            return std::exp(-_first_year_relapse_rate *
+                            (static_cast<double>(time_since_quit) - 1));
+        } else if (time_since_quit > 12) {
+            return std::exp(-_first_year_relapse_rate * (12 - 1)) *
+                   std::exp(-_later_years_relapse_rate *
+                            (time_since_quit - 12));
+        }
+        utils::LogWarning(GetLogName(),
+                          "Time Since Quit is less than 1 month, returning 1.0 "
+                          "as exponential change value.");
+        return 1.0;
     }
 
     void
