@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-09-02                                                  //
+// Last Modified: 2025-10-31                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -84,6 +84,9 @@ HepceImpl::CreatePopulation(datamanagement::ModelData &model_data) const {
     return ReadPopPopulation(population_size, model_data);
 }
 
+[[deprecated(
+    "The Initial Cohort Table is deprecated. Please use the Population Table "
+    "instead as it provides more flexibility and control of the data.")]]
 std::vector<std::unique_ptr<model::Person>>
 HepceImpl::ReadICPopulation(const int population_size,
                             datamanagement::ModelData &model_data) const {
