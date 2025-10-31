@@ -234,11 +234,11 @@ TEST_F(BehaviorChangesTest, RelapseToInjection) {
     const std::string LOG_NAME = "RelapseToInjection";
     CreateTestLog(LOG_NAME);
 
-    behaviors = {data::Behavior::kFormerInjection, 2};
+    behaviors = {data::Behavior::kFormerInjection, 0};
     std::vector<double> actual_probs;
 
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
-    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(4));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(2));
 
     // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_))
@@ -260,10 +260,10 @@ TEST_F(BehaviorChangesTest, RelapseToNoninjection) {
     const std::string LOG_NAME = "RelapseToNoninjection";
     CreateTestLog(LOG_NAME);
 
-    behaviors = {data::Behavior::kFormerNoninjection, 2};
+    behaviors = {data::Behavior::kFormerNoninjection, 0};
     std::vector<double> actual_probs;
 
-    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(4));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(2));
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
 
     // Expectations
@@ -286,10 +286,10 @@ TEST_F(BehaviorChangesTest, LongTermRelapseToNoninjection) {
     const std::string LOG_NAME = "LongTermRelapseToNoninjection";
     CreateTestLog(LOG_NAME);
 
-    behaviors = {data::Behavior::kFormerNoninjection, 13};
+    behaviors = {data::Behavior::kFormerNoninjection, 0};
     std::vector<double> actual_probs;
 
-    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(26));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(13));
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
 
     // Expectations
@@ -312,10 +312,10 @@ TEST_F(BehaviorChangesTest, RiskOfRelapseAndEscalation) {
     const std::string LOG_NAME = "RiskOfRelapseAndEscalation";
     CreateTestLog(LOG_NAME);
 
-    behaviors = {data::Behavior::kFormerNoninjection, 2};
+    behaviors = {data::Behavior::kFormerNoninjection, 0};
     std::vector<double> actual_probs;
 
-    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(4));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(2));
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
     ON_CALL(mock_person, GetAge()).WillByDefault(Return(360));
 
