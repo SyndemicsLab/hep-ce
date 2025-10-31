@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-29                                                  //
+// Last Modified: 2025-10-31                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -61,7 +61,8 @@ void BehaviorChangesImpl::Execute(model::Person &person,
     if (behavior == data::Behavior::kFormerInjection ||
         behavior == data::Behavior::kFormerNoninjection) {
         double decay_value =
-            GetExponentialChange(person.GetBehaviorDetails().time_last_active);
+            GetExponentialChange(person.GetCurrentTimestep() -
+                                 person.GetBehaviorDetails().time_last_active);
         ApplyDecayToRelapseProbabilities(probs, decay_value, behavior);
     }
 
