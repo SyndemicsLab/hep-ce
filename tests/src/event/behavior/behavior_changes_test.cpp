@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-29                                                  //
+// Last Modified: 2025-10-31                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -237,8 +237,10 @@ TEST_F(BehaviorChangesTest, RelapseToInjection) {
     behaviors = {data::Behavior::kFormerInjection, 2};
     std::vector<double> actual_probs;
 
-    // Expectations
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(4));
+
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(DoAll(SaveArg<0>(&actual_probs), Return(4)));
 
@@ -261,8 +263,10 @@ TEST_F(BehaviorChangesTest, RelapseToNoninjection) {
     behaviors = {data::Behavior::kFormerNoninjection, 2};
     std::vector<double> actual_probs;
 
-    // Expectations
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(4));
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
+
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(DoAll(SaveArg<0>(&actual_probs), Return(3)));
 
@@ -285,8 +289,10 @@ TEST_F(BehaviorChangesTest, LongTermRelapseToNoninjection) {
     behaviors = {data::Behavior::kFormerNoninjection, 13};
     std::vector<double> actual_probs;
 
-    // Expectations
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(26));
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
+
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(DoAll(SaveArg<0>(&actual_probs), Return(1)));
 
@@ -309,9 +315,11 @@ TEST_F(BehaviorChangesTest, RiskOfRelapseAndEscalation) {
     behaviors = {data::Behavior::kFormerNoninjection, 2};
     std::vector<double> actual_probs;
 
-    // Expectations
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(4));
     ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behaviors));
     ON_CALL(mock_person, GetAge()).WillByDefault(Return(360));
+
+    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_))
         .WillOnce(DoAll(SaveArg<0>(&actual_probs), Return(1)));
 
