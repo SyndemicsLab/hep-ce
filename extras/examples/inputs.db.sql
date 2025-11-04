@@ -4,7 +4,7 @@ CREATE TABLE "population" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"sex"	INTEGER NOT NULL DEFAULT 0,  -- male
 	"age"	INTEGER NOT NULL DEFAULT 0, -- in months
-	"is_alive"	INTEGER NOT NULL DEFAULT 0 CHECK (is_alive IN (0, 1)), -- default dead
+	"is_alive"	INTEGER NOT NULL DEFAULT 1 CHECK (is_alive IN (0, 1)), -- default dead
 	"boomer_classification"	INTEGER NOT NULL DEFAULT 0 CHECK (boomer_classification IN (0, 1)), -- default not boomer
 	"death_reason"	INTEGER NOT NULL DEFAULT -1, -- not dead
 	"drug_behavior"	INTEGER NOT NULL DEFAULT 0, -- never used
