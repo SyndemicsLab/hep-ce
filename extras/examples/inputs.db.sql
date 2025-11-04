@@ -13,8 +13,8 @@ CREATE TABLE "population" (
 	"fibrosis_state"	INTEGER NOT NULL DEFAULT -1, -- no fibrosis
 	"is_genotype_three"	INTEGER NOT NULL DEFAULT 0 CHECK (is_genotype_three IN (0, 1)), -- not genotype 3
 	"seropositive"	INTEGER NOT NULL DEFAULT 0 CHECK (seropositive IN (0, 1)), -- not seropositive
-	"time_hcv_changed"	INTEGER NOT NULL DEFAULT 0,
-	"time_fibrosis_state_changed"	INTEGER NOT NULL DEFAULT 0,
+	"time_hcv_changed"	INTEGER NOT NULL DEFAULT -1,
+	"time_fibrosis_state_changed"	INTEGER NOT NULL DEFAULT -1,
 	"times_hcv_infected"	INTEGER NOT NULL DEFAULT 0,
 	"times_acute_cleared"	INTEGER NOT NULL DEFAULT 0,
 	"svrs"	INTEGER NOT NULL DEFAULT 0,
@@ -26,11 +26,11 @@ CREATE TABLE "population" (
 	"currently_overdosing"	INTEGER NOT NULL DEFAULT 0 CHECK (currently_overdosing IN (0, 1)), -- not overdosing
 	"num_overdoses"	INTEGER NOT NULL DEFAULT 0,
 	"moud_state"	INTEGER NOT NULL DEFAULT 0, -- not in moud
-	"time_started_moud"	INTEGER NOT NULL DEFAULT 0,
+	"time_started_moud"	INTEGER NOT NULL DEFAULT -1,
 	"current_moud_state_concurrent_months"	INTEGER NOT NULL DEFAULT 0,
 	"total_moud_months"	INTEGER NOT NULL DEFAULT 0,
 	"pregnancy_state"	INTEGER NOT NULL DEFAULT -1, -- NA
-	"time_of_pregnancy_change"	INTEGER NOT NULL DEFAULT 0,
+	"time_of_pregnancy_change"	INTEGER NOT NULL DEFAULT -1,
 	"pregnancy_count"	INTEGER NOT NULL DEFAULT 0,
 	"num_infants"	INTEGER NOT NULL DEFAULT 0,
 	"num_stillbirths"	INTEGER NOT NULL DEFAULT 0,
@@ -39,19 +39,19 @@ CREATE TABLE "population" (
 	"num_infant_hcv_tests"	INTEGER NOT NULL DEFAULT 0,
 	"measured_fibrosis_state"	INTEGER NOT NULL DEFAULT 4, -- no staging
 	"had_second_test"	INTEGER NOT NULL DEFAULT 0 CHECK (had_second_test IN (0, 1)), -- no second test
-	"time_of_last_staging"	INTEGER NOT NULL DEFAULT 0,
+	"time_of_last_staging"	INTEGER NOT NULL DEFAULT -1,
 	"hcv_link_state"	INTEGER NOT NULL DEFAULT 0, -- never linked
-	"time_of_hcv_link_change"	INTEGER NOT NULL DEFAULT 0,
+	"time_of_hcv_link_change"	INTEGER NOT NULL DEFAULT -1,
 	"hcv_link_count"	INTEGER NOT NULL DEFAULT 0,
 	"hiv_link_state"	TEXT DEFAULT NULL, -- make foreign key
 	"time_of_hiv_link_change"	INTEGER DEFAULT NULL,
 	"hiv_link_count"	INTEGER DEFAULT NULL,
-	"time_of_last_hcv_screening"	INTEGER NOT NULL DEFAULT 0,
+	"time_of_last_hcv_screening"	INTEGER NOT NULL DEFAULT -1,
 	"num_hcv_ab_tests"	INTEGER NOT NULL DEFAULT 0,
 	"num_hcv_rna_tests"	INTEGER NOT NULL DEFAULT 0,
 	"hcv_antibody_positive"	INTEGER NOT NULL DEFAULT 0 CHECK (hcv_antibody_positive IN (0, 1)), -- not AB positive
 	"hcv_identified"	INTEGER NOT NULL DEFAULT 0 CHECK (hcv_identified IN (0, 1)), -- not currently identified
-	"time_hcv_identified"	INTEGER NOT NULL DEFAULT 0,
+	"time_hcv_identified"	INTEGER NOT NULL DEFAULT -1,
 	"num_hcv_identifications"	INTEGER NOT NULL DEFAULT 0,
 	"hcv_screening_type"	TEXT NOT NULL, -- make foreign key
 	"num_hcv_false_negatives"	INTEGER NOT NULL DEFAULT 0,
@@ -65,7 +65,7 @@ CREATE TABLE "population" (
 	"num_hiv_identified"	INTEGER DEFAULT NULL,
 	"hiv_screening_type"	TEXT DEFAULT NULL,
 	"initiated_hcv_treatment"	INTEGER NOT NULL DEFAULT 0 CHECK (initiated_hcv_treatment IN (0, 1)), -- not started hcv treatment
-	"time_of_hcv_treatment_initiation"	INTEGER NOT NULL DEFAULT 0,
+	"time_of_hcv_treatment_initiation"	INTEGER NOT NULL DEFAULT -1,
 	"num_hcv_treatment_starts"	INTEGER NOT NULL DEFAULT 0,
 	"num_hcv_treatment_withdrawals"	INTEGER NOT NULL DEFAULT 0,
 	"num_hcv_treatment_toxic_reactions"	INTEGER NOT NULL DEFAULT 0,
@@ -84,10 +84,10 @@ CREATE TABLE "population" (
 	"moud_utility"	REAL NOT NULL DEFAULT 1.0,
 	"overdose_utility"	REAL NOT NULL DEFAULT 1.0,
 	"hiv_utility"	REAL NOT NULL DEFAULT 1.0,
-	"min_utility"	REAL NOT NULL DEFAULT 1.0,
-	"mult_utility"	REAL NOT NULL DEFAULT 1.0,
-	"discounted_min_utility"	REAL NOT NULL DEFAULT 1.0,
-	"discounted_mult_utility"	REAL NOT NULL DEFAULT 1.0,
+	"min_utility"	REAL NOT NULL DEFAULT 0.0,
+	"mult_utility"	REAL NOT NULL DEFAULT 0.0,
+	"discounted_min_utility"	REAL NOT NULL DEFAULT 0.0,
+	"discounted_mult_utility"	REAL NOT NULL DEFAULT 0.0,
 	"life_span"	REAL NOT NULL DEFAULT 0.0,
 	"discounted_life_span"	REAL NOT NULL DEFAULT 0.0,
 	"cost"	REAL NOT NULL,
