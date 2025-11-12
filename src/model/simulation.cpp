@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-31                                                  //
+// Last Modified: 2025-11-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -138,7 +138,7 @@ HepceImpl::ReadPopPopulation(const int population_size,
     // TODO: Add string santization (i.e. verify no extra special characters/numbers/phrases/etc.)
     query << "SELECT "
           << data::POPULATION_HEADERS(pregnancy, hcc, overdose, hiv, moud);
-    query << "FROM population ";
+    query << " FROM population ";
     query << "ORDER BY id ";
     query << "LIMIT " << std::to_string(population_size) << ";";
 
