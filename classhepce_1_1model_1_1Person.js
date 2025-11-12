@@ -64,6 +64,7 @@ var classhepce_1_1model_1_1Person =
     [ "SetMoudState", "classhepce_1_1model_1_1Person.html#a02738ad98aa6fcbe56a0c0e2283e482d", null ],
     [ "SetPersonDetails", "classhepce_1_1model_1_1Person.html#a142b6761e38c87a15e1c98f79207d8f1", null ],
     [ "SetPregnancyState", "classhepce_1_1model_1_1Person.html#a390cf861fa92ce89da90472c534b5c63", null ],
+    [ "SetStartTime", "classhepce_1_1model_1_1Person.html#a798d23f118a7603e4bc28073cfa00eb4", null ],
     [ "SetUtility", "classhepce_1_1model_1_1Person.html#ad092edeb32db46c148fb7c6ceec735d5", null ],
     [ "Stillbirth", "classhepce_1_1model_1_1Person.html#a7ae80aa885558f319fd3148d0ed48178", null ],
     [ "ToggleOverdose", "classhepce_1_1model_1_1Person.html#a04d5b238964cc55acad9d56d693ef037", null ],

@@ -10,10 +10,11 @@ var searchData=
   ['setmoudstate_7',['SetMoudState',['../classhepce_1_1model_1_1Person.html#a02738ad98aa6fcbe56a0c0e2283e482d',1,'hepce::model::Person']]],
   ['setpersondetails_8',['SetPersonDetails',['../classhepce_1_1model_1_1Person.html#a142b6761e38c87a15e1c98f79207d8f1',1,'hepce::model::Person']]],
   ['setpregnancystate_9',['SetPregnancyState',['../classhepce_1_1model_1_1Person.html#a390cf861fa92ce89da90472c534b5c63',1,'hepce::model::Person']]],
-  ['setutility_10',['SetUtility',['../classhepce_1_1model_1_1Person.html#ad092edeb32db46c148fb7c6ceec735d5',1,'hepce::model::Person']]],
-  ['sigmoidaldecay_11',['SigmoidalDecay',['../namespacehepce_1_1utils.html#a74ddd0d45489c77ebbfa8e22d7c1d5a7',1,'hepce::utils']]],
-  ['splittovect_12',['SplitToVecT',['../namespacehepce_1_1utils.html#a899dc70044aed7e794e203e99bb72aa1',1,'hepce::utils']]],
-  ['stillbirth_13',['Stillbirth',['../classhepce_1_1model_1_1Person.html#a7ae80aa885558f319fd3148d0ed48178',1,'hepce::model::Person']]],
-  ['stobool_14',['SToBool',['../namespacehepce_1_1utils.html#aa73f0b8977c616f250eed51bd694c588',1,'hepce::utils']]],
-  ['stodpositive_15',['SToDPositive',['../namespacehepce_1_1utils.html#afc818ec07b1d1b5549e5515cb13cef1f',1,'hepce::utils']]]
+  ['setstarttime_10',['SetStartTime',['../classhepce_1_1model_1_1Person.html#a798d23f118a7603e4bc28073cfa00eb4',1,'hepce::model::Person']]],
+  ['setutility_11',['SetUtility',['../classhepce_1_1model_1_1Person.html#ad092edeb32db46c148fb7c6ceec735d5',1,'hepce::model::Person']]],
+  ['sigmoidaldecay_12',['SigmoidalDecay',['../namespacehepce_1_1utils.html#a74ddd0d45489c77ebbfa8e22d7c1d5a7',1,'hepce::utils']]],
+  ['splittovect_13',['SplitToVecT',['../namespacehepce_1_1utils.html#a899dc70044aed7e794e203e99bb72aa1',1,'hepce::utils']]],
+  ['stillbirth_14',['Stillbirth',['../classhepce_1_1model_1_1Person.html#a7ae80aa885558f319fd3148d0ed48178',1,'hepce::model::Person']]],
+  ['stobool_15',['SToBool',['../namespacehepce_1_1utils.html#aa73f0b8977c616f250eed51bd694c588',1,'hepce::utils']]],
+  ['stodpositive_16',['SToDPositive',['../namespacehepce_1_1utils.html#afc818ec07b1d1b5549e5515cb13cef1f',1,'hepce::utils']]]
 ];
