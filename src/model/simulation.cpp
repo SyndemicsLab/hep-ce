@@ -109,9 +109,12 @@ HepceImpl::ReadICPopulation(const int population_size,
     std::vector<data::PersonSelect> vec =
         std::any_cast<std::vector<data::PersonSelect>>(storage);
     std::vector<std::unique_ptr<model::Person>> population = {};
+    int start_time =
+        utils::GetIntFromConfig("simulation.start_time", model_data);
     for (const auto &ps : vec) {
         auto person = model::Person::Create(GetLogName());
         person->SetPersonDetails(ps);
+        person->SetStartTime(start_time);
         population.push_back(std::move(person));
     }
     return population;
@@ -160,9 +163,12 @@ HepceImpl::ReadPopPopulation(const int population_size,
     std::vector<data::PersonSelect> vec =
         std::any_cast<std::vector<data::PersonSelect>>(storage);
     std::vector<std::unique_ptr<model::Person>> population = {};
+    int start_time =
+        utils::GetIntFromConfig("simulation.start_time", model_data);
     for (const auto &ps : vec) {
         auto person = model::Person::Create(GetLogName());
         person->SetPersonDetails(ps);
+        person->SetStartTime(start_time);
         population.push_back(std::move(person));
     }
     return population;

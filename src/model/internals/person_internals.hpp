@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-09                                                  //
+// Last Modified: 2025-11-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -44,6 +44,10 @@ public:
     void SetMoudState(data::MOUD moud) override;
 
     void SetPersonDetails(const data::PersonSelect &select) override;
+
+    void SetStartTime(const int start_time) override {
+        _current_time = start_time;
+    }
 
     // Section Getters
     inline data::HCVDetails GetHCVDetails() const override {
