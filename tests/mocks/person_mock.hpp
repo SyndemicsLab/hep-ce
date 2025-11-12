@@ -4,7 +4,7 @@
 // Created: 2025-01-06                                                        //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-09                                                  //
+// Last Modified: 2025-11-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -31,6 +31,7 @@ public:
     MOCK_METHOD(void, Die, (data::DeathReason deathReason), (override));
     MOCK_METHOD(void, SetPersonDetails, (const data::PersonSelect &select),
                 (override));
+    MOCK_METHOD(void, SetStartTime, (const int), (override));
 
     // HCV
     MOCK_METHOD(data::HCVDetails, GetHCVDetails, (), (const, override));
