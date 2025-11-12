@@ -137,7 +137,7 @@ $(document).ready(function(){initNavTree('types_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// Created Date: 2025-04-17                                                   //</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Author: Matthew Carroll                                                    //</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// -----                                                                      //</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-10-14                                                  //</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-11-12                                                  //</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// Modified By: Matthew Carroll                                               //</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// -----                                                                      //</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //</span></div>
@@ -165,10 +165,10 @@ $(document).ready(function(){initNavTree('types_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>               <span class="stringliteral">&quot;acute_cleared,svrs,&quot;</span>;</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="comment">// HIVDetails</span></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::string hiv_details =</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        hiv ? <span class="stringliteral">&quot;hiv,time_hiv_changed,low_cd4_months_count,&quot;</span> : <span class="stringliteral">&quot;none,-1,0,&quot;</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        hiv ? <span class="stringliteral">&quot;hiv,time_hiv_changed,low_cd4_months_count,&quot;</span> : <span class="stringliteral">&quot;NULL,-1,0,&quot;</span>;</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    headers &lt;&lt; hiv_details;</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// HCCDetails</span></div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::string hcc_details = hcc ? <span class="stringliteral">&quot;hcc_state,hcc_diagnosed,&quot;</span> : <span class="stringliteral">&quot;none,false,&quot;</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::string hcc_details = hcc ? <span class="stringliteral">&quot;hcc_state,hcc_diagnosed,&quot;</span> : <span class="stringliteral">&quot;NULL,false,&quot;</span>;</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    headers &lt;&lt; hcc_details;</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// overdose characteristics</span></div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    std::string overdoses =</div>
@@ -178,14 +178,14 @@ $(document).ready(function(){initNavTree('types_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::string moud_details =</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        moud ? <span class="stringliteral">&quot;moud_state,time_started_moud,current_moud_state_concurrent_&quot;</span></div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>               <span class="stringliteral">&quot;months,total_moud_months,&quot;</span></div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>             : <span class="stringliteral">&quot;none,-1,0,0,&quot;</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>             : <span class="stringliteral">&quot;0,-1,0,0,&quot;</span>;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    headers &lt;&lt; moud_details;</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">// PregnancyDetails</span></div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    std::string pregnancy_details =</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        pregnancy ? <span class="stringliteral">&quot;pregnancy_state,time_of_pregnancy_change,pregnancy_count,&quot;</span></div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                    <span class="stringliteral">&quot;num_infants,num_stillbirths,num_infant_hcv_exposures,num_&quot;</span></div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                    <span class="stringliteral">&quot;infant_hcv_infections,num_infant_hcv_tests,&quot;</span></div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                  : <span class="stringliteral">&quot;na,-1,0,0,0,0,0,0,&quot;</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                  : <span class="stringliteral">&quot;-1,-1,0,0,0,0,0,0,&quot;</span>;</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    headers &lt;&lt; pregnancy_details;</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="comment">// StagingDetails</span></div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    headers &lt;&lt; <span class="stringliteral">&quot;measured_fibrosis_state,had_second_test,time_of_last_staging,&quot;</span>;</div>
@@ -194,7 +194,7 @@ $(document).ready(function(){initNavTree('types_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (hiv) {</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        headers &lt;&lt; <span class="stringliteral">&quot;hiv_link_state,time_of_hiv_link_change,hiv_link_count,&quot;</span>;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        headers &lt;&lt; <span class="stringliteral">&quot;never,-1,0,&quot;</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        headers &lt;&lt; <span class="stringliteral">&quot;0,-1,0,&quot;</span>;</div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="comment">// ScreeningDetails</span></div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    headers &lt;&lt; <span class="stringliteral">&quot;time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,&quot;</span></div>
@@ -207,7 +207,7 @@ $(document).ready(function(){initNavTree('types_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>               <span class="stringliteral">&quot;hiv_antibody_positive,hiv_identified,time_hiv_identified,num_&quot;</span></div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>               <span class="stringliteral">&quot;hiv_identified,hiv_screening_type,&quot;</span>;</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        headers &lt;&lt; <span class="stringliteral">&quot;-1,0,0,false,false,-1,0,na&quot;</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        headers &lt;&lt; <span class="stringliteral">&quot;-1,0,0,false,false,-1,0,NULL,&quot;</span>;</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="comment">// TreatmentDetails</span></div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    headers &lt;&lt; <span class="stringliteral">&quot;initiated_hcv_treatment,time_of_hcv_treatment_initiation,num_&quot;</span></div>
@@ -861,7 +861,7 @@ $(document).ready(function(){initNavTree('types_8hpp_source.html',''); initResiz
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_05c933d59f351fefb8caab5fd9b918a4.html">hepce</a></li><li class="navelem"><a class="el" href="dir_bc0e5ff0f36a3881ae34d5be425a613c.html">data</a></li><li class="navelem"><a class="el" href="types_8hpp.html">types.hpp</a></li>
-    <li class="footer">Generated on Tue Nov 4 2025 19:10:15 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Wed Nov 12 2025 16:43:25 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>
