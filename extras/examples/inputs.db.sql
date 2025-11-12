@@ -43,7 +43,7 @@ CREATE TABLE "population" (
 	"hcv_link_state"	INTEGER NOT NULL DEFAULT 0, -- never linked
 	"time_of_hcv_link_change"	INTEGER NOT NULL DEFAULT -1,
 	"hcv_link_count"	INTEGER NOT NULL DEFAULT 0,
-	"hiv_link_state"	TEXT DEFAULT NULL, -- make foreign key
+	"hiv_link_state"	INTEGER DEFAULT NULL, 
 	"time_of_hiv_link_change"	INTEGER DEFAULT NULL,
 	"hiv_link_count"	INTEGER DEFAULT NULL,
 	"time_of_last_hcv_screening"	INTEGER NOT NULL DEFAULT -1,
@@ -53,17 +53,17 @@ CREATE TABLE "population" (
 	"hcv_identified"	INTEGER NOT NULL DEFAULT 0 CHECK (hcv_identified IN (0, 1)), -- not currently identified
 	"time_hcv_identified"	INTEGER NOT NULL DEFAULT -1,
 	"num_hcv_identifications"	INTEGER NOT NULL DEFAULT 0,
-	"hcv_screening_type"	TEXT NOT NULL, -- make foreign key
+	"hcv_screening_type"	INTEGER NOT NULL NOT NULL DEFAULT -1,
 	"num_hcv_false_negatives"	INTEGER NOT NULL DEFAULT 0,
 	"identifications_cleared"	INTEGER NOT NULL DEFAULT 0,
 	"time_of_last_hiv_screening"	INTEGER DEFAULT NULL,
 	"num_hiv_ab_tests"	INTEGER DEFAULT NULL,
-	"num_hiv_rna_tests"	TEXT DEFAULT NULL,
-	"hiv_antibody_positive"	TEXT DEFAULT NULL,
+	"num_hiv_rna_tests"	INTEGER DEFAULT NULL,
+	"hiv_antibody_positive"	INTEGER DEFAULT NULL,
 	"hiv_identified"	INTEGER DEFAULT NULL,
 	"time_hiv_identified"	INTEGER  DEFAULT NULL,
 	"num_hiv_identified"	INTEGER DEFAULT NULL,
-	"hiv_screening_type"	TEXT DEFAULT NULL,
+	"hiv_screening_type"	INTEGER DEFAULT NULL,
 	"initiated_hcv_treatment"	INTEGER NOT NULL DEFAULT 0 CHECK (initiated_hcv_treatment IN (0, 1)), -- not started hcv treatment
 	"time_of_hcv_treatment_initiation"	INTEGER NOT NULL DEFAULT -1,
 	"num_hcv_treatment_starts"	INTEGER NOT NULL DEFAULT 0,
@@ -97,12 +97,14 @@ CREATE TABLE "population" (
     FOREIGN KEY("death_reasons") REFERENCES "death_reasons"("id"),
     FOREIGN KEY("drug_behavior") REFERENCES "drug_behaviors"("id"),
     FOREIGN KEY("hcv") REFERENCES "hcv_states"("id"),
-    FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_states"("id"),
+    FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_diagnosis_states"("id"),
     FOREIGN KEY("moud_state") REFERENCES "moud"("id"),
     FOREIGN KEY("pregnancy_state") REFERENCES "pregnancy_states"("id"),
     FOREIGN KEY("measured_fibrosis_state") REFERENCES "fibrosis_diagnosis_states"("id"),
     FOREIGN KEY("hcv_link_state") REFERENCES "link_states"("id"),
-    FOREIGN KEY("link_states") REFERENCES "link_states"("id")
+    FOREIGN KEY ("hcv_screening_type") REFERENCES "screening_states"("id"),
+    FOREIGN KEY("hiv_link_states") REFERENCES "link_states"("id"),
+    FOREIGN KEY ("hiv_screening_type") REFERENCES "screening_states"("id")
 );
 DROP TABLE IF EXISTS "death_reasons";
 CREATE TABLE "death_reasons" (
@@ -112,6 +114,12 @@ CREATE TABLE "death_reasons" (
 );
 DROP TABLE IF EXISTS "link_states";
 CREATE TABLE "link_states" (
+    "id" INTEGER NOT NULL UNIQUE,
+    "state" TEXT NOT NULL UNIQUE,
+    PRIMARY KEY ("id");
+);
+DROP TABLE IF EXISTS "screening_states";
+CREATE TABLE "screening_states" (
     "id" INTEGER NOT NULL UNIQUE,
     "state" TEXT NOT NULL UNIQUE,
     PRIMARY KEY ("id");
@@ -192,7 +200,7 @@ CREATE TABLE "fibrosis" (
 	"fib4"	REAL NOT NULL,
 	PRIMARY KEY("fibrosis_state","diagnosed_fibrosis"),
 	FOREIGN KEY("diagnosed_fibrosis") REFERENCES "fibrosis_diagnosis_states"("id"),
-	FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_states"("id")
+	FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_real_states"("id")
 );
 DROP TABLE IF EXISTS "fibrosis_diagnosis_states";
 CREATE TABLE "fibrosis_diagnosis_states" (
@@ -200,8 +208,8 @@ CREATE TABLE "fibrosis_diagnosis_states" (
 	"state"	TEXT NOT NULL,
 	PRIMARY KEY("id")
 );
-DROP TABLE IF EXISTS "fibrosis_states";
-CREATE TABLE "fibrosis_states" (
+DROP TABLE IF EXISTS "fibrosis_real_states";
+CREATE TABLE "fibrosis_real_states" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"state"	TEXT NOT NULL,
 	PRIMARY KEY("id")
@@ -213,7 +221,7 @@ CREATE TABLE "hcv_impacts" (
 	"cost"	REAL NOT NULL DEFAULT 0.0,
 	"utility"	REAL NOT NULL,
 	PRIMARY KEY("hcv_status","fibrosis_state"),
-	FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_states"("id"),
+	FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_real_states"("id"),
 	FOREIGN KEY("hcv_status") REFERENCES "bool_lookup"("id")
 );
 DROP TABLE IF EXISTS "hcv_states";

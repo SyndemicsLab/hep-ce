@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2025-11-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
@@ -33,10 +33,10 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
                "acute_cleared,svrs,";
     // HIVDetails
     std::string hiv_details =
-        hiv ? "hiv,time_hiv_changed,low_cd4_months_count," : "none,-1,0,";
+        hiv ? "hiv,time_hiv_changed,low_cd4_months_count," : "NULL,-1,0,";
     headers << hiv_details;
     // HCCDetails
-    std::string hcc_details = hcc ? "hcc_state,hcc_diagnosed," : "none,false,";
+    std::string hcc_details = hcc ? "hcc_state,hcc_diagnosed," : "NULL,false,";
     headers << hcc_details;
     // overdose characteristics
     std::string overdoses =
@@ -46,14 +46,14 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
     std::string moud_details =
         moud ? "moud_state,time_started_moud,current_moud_state_concurrent_"
                "months,total_moud_months,"
-             : "none,-1,0,0,";
+             : "0,-1,0,0,";
     headers << moud_details;
     // PregnancyDetails
     std::string pregnancy_details =
         pregnancy ? "pregnancy_state,time_of_pregnancy_change,pregnancy_count,"
                     "num_infants,num_stillbirths,num_infant_hcv_exposures,num_"
                     "infant_hcv_infections,num_infant_hcv_tests,"
-                  : "na,-1,0,0,0,0,0,0,";
+                  : "-1,-1,0,0,0,0,0,0,";
     headers << pregnancy_details;
     // StagingDetails
     headers << "measured_fibrosis_state,had_second_test,time_of_last_staging,";
@@ -62,7 +62,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
     if (hiv) {
         headers << "hiv_link_state,time_of_hiv_link_change,hiv_link_count,";
     } else {
-        headers << "never,-1,0,";
+        headers << "0,-1,0,";
     }
     // ScreeningDetails
     headers << "time_of_last_hcv_screening,num_hcv_ab_tests,num_hcv_rna_tests,"
@@ -75,7 +75,7 @@ POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
                "hiv_antibody_positive,hiv_identified,time_hiv_identified,num_"
                "hiv_identified,hiv_screening_type,";
     } else {
-        headers << "-1,0,0,false,false,-1,0,na";
+        headers << "-1,0,0,false,false,-1,0,NULL,";
     }
     // TreatmentDetails
     headers << "initiated_hcv_treatment,time_of_hcv_treatment_initiation,num_"
