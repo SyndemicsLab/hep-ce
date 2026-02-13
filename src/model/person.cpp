@@ -366,7 +366,8 @@ std::string PersonImpl::MakePopulationRow() const {
                        << hcvsd.time_identified << ","
                        << hcvsd.times_identified << ","
                        << hcvsd.screen_type << ","
-                       << hcvsd.num_false_negatives << ",";
+                       << hcvsd.num_false_negatives << ","
+                       << hcvsd.identifications_cleared << ",";
         const auto &hivsd = _screening_details.at(data::InfectionType::kHiv);
         population_row << hivsd.time_of_last_screening << ","
                        << hivsd.num_ab_tests << ","
