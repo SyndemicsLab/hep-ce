@@ -413,8 +413,7 @@ std::string PersonImpl::MakePopulationRow() const {
                    << _discounted_life_span << ",";
 
     // Cost Totals
-    const std::unordered_map<CostCategory, std::pair<double, double>> &ct =
-        GetCostTotals();
+    const std::pair<double, double> &ct = GetCostTotals();
     population_row << ct.first << ","
                    << ct.second;
     // clang-format on
