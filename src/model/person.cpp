@@ -293,128 +293,129 @@ void PersonImpl::DevelopHCC(data::HCCState state) {
 std::string PersonImpl::MakePopulationRow() const {
     std::stringstream population_row;
     // clang-format off
-        // basic characteristics
-        population_row << _sex << ","
-                       << _age << ","
-                       << std::boolalpha << _is_alive << ","
-                       << std::boolalpha << _boomer_classification << ","
-                       << _death_reason << ",";
-        // BehaviorDetails
-        const auto &bd = _behavior_details;
-        population_row << bd.behavior << ","
-                       << bd.time_last_active << ",";
-        // HCVDetails
-        const auto &hcv = _hcv_details;
-        population_row << hcv.hcv << ","
-                       << hcv.fibrosis_state << ","
-                       << std::boolalpha << hcv.is_genotype_three << ","
-                       << std::boolalpha << hcv.seropositive << ","
-                       << hcv.time_changed << ","
-                       << hcv.time_fibrosis_state_changed << ","
-                       << hcv.times_infected << ","
-                       << hcv.times_acute_cleared << ","
-                       << hcv.svrs << ",";
-        // HIVDetails
-        const auto &hiv = _hiv_details;
-        population_row << hiv.hiv << ","
-                       << hiv.time_changed << ","
-                       << hiv.low_cd4_months_count << ",";
-        // HCCDetails
-        const auto &hcc = _hcc_details;
-        population_row << hcc.hcc_state << ","
-                       << std::boolalpha << hcc.hcc_diagnosed << ",";
-        // overdose characteristics
-        population_row << std::boolalpha << _currently_overdosing << ","
-                       << _num_overdoses << ",";
-        // MOUDDetails
-        const auto &moud = _moud_details;
-        population_row << moud.moud_state << ","
-                       << moud.time_started_moud << ","
-                       << moud.current_state_concurrent_months << ","
-                       << moud.total_moud_months << ",";
-        // PregnancyDetails
-        const auto &pd = _pregnancy_details;
-        population_row << pd.pregnancy_state << ","
-                       << pd.time_of_pregnancy_change << ","
-                       << pd.count << ","
-                       << pd.num_infants << ","
-                       << pd.num_stillbirths << ","
-                       << pd.num_hcv_exposures << ","
-                       << pd.num_hcv_infections << ","
-                       << pd.num_hcv_tests << ",";
-        // StagingDetails
-        const auto &sd = _staging_details;
-        population_row << sd.measured_fibrosis_state << ","
-                       << std::boolalpha << sd.had_second_test << ","
-                       << sd.time_of_last_staging << ",";
-        // LinkageDetails
-        const auto &hcvld = _linkage_details.at(data::InfectionType::kHcv);
-        population_row << hcvld.link_state << ","
-                       << hcvld.time_link_change << ","
-                       << hcvld.link_count << ",";
-        const auto &hivld = _linkage_details.at(data::InfectionType::kHiv);
-        population_row << hivld.link_state << ","
-                       << hivld.time_link_change << ","
-                       << hivld.link_count << ",";
-        // ScreeningDetails
-        const auto &hcvsd = _screening_details.at(data::InfectionType::kHcv);
-        population_row << hcvsd.time_of_last_screening << ","
-                       << hcvsd.num_ab_tests << ","
-                       << hcvsd.num_rna_tests << ","
-                       << std::boolalpha << hcvsd.ab_positive << ","
-                       << std::boolalpha << hcvsd.identified << ","
-                       << hcvsd.time_identified << ","
-                       << hcvsd.times_identified << ","
-                       << hcvsd.screen_type << ","
-                       << hcvsd.num_false_negatives << ",";
-        const auto &hivsd = _screening_details.at(data::InfectionType::kHiv);
-        population_row << hivsd.time_of_last_screening << ","
-                       << hivsd.num_ab_tests << ","
-                       << hivsd.num_rna_tests << ","
-                       << std::boolalpha << hivsd.ab_positive << ","
-                       << std::boolalpha << hivsd.identified << ","
-                       << hivsd.time_identified << ","
-                       << hivsd.times_identified << ","
-                       << hivsd.screen_type << ",";
-        const auto &hcvtd = _treatment_details.at(data::InfectionType::kHcv);
-        population_row << std::boolalpha << hcvtd.initiated_treatment << ","
-                       << hcvtd.time_of_treatment_initiation << ","
-                       << hcvtd.num_starts << ","
-                       << hcvtd.num_withdrawals << ","
-                       << hcvtd.num_toxic_reactions << ","
-                       << hcvtd.num_completed << ","
-                       << hcvtd.num_salvages << ","
-                       << std::boolalpha << hcvtd.in_salvage_treatment << ",";
-        const auto &hivtd = _treatment_details.at(data::InfectionType::kHiv);
-        population_row << std::boolalpha << hivtd.initiated_treatment << ","
-                       << hivtd.time_of_treatment_initiation << ","
-                       << hivtd.num_starts << ","
-                       << hivtd.num_withdrawals << ","
-                       << hivtd.num_toxic_reactions << ",";
-        // Utilities
-        // current utilities
-        const auto &cu = GetUtilities();
-        population_row << cu.at(model::UtilityCategory::kBehavior) << ","
-                       << cu.at(model::UtilityCategory::kLiver) << ","
-                       << cu.at(model::UtilityCategory::kTreatment) << ","
-                       << cu.at(model::UtilityCategory::kBackground) << ","
-                       << cu.at(model::UtilityCategory::kHiv) << ","
-                       << cu.at(model::UtilityCategory::kMoud) << ","
-                       << cu.at(model::UtilityCategory::kOverdose) << ",";
-        // total/lifetime utilities
-        const auto &tu = GetTotalUtility();
-        population_row << tu.min_util << ","
-                       << tu.mult_util << ","
-                       << tu.discount_min_util << ","
-                       << tu.discount_mult_util << ",";
-        // lifespan
-        population_row << _life_span << ","
-                       << _discounted_life_span << ",";
+    // basic characteristics
+    population_row << _sex << ","
+                   << _age << ","
+                   << std::boolalpha << _is_alive << ","
+                   << std::boolalpha << _boomer_classification << ","
+                   << _death_reason << ",";
+    // BehaviorDetails
+    const auto &bd = _behavior_details;
+    population_row << bd.behavior << ","
+                   << bd.time_last_active << ",";
+    // HCVDetails
+    const auto &hcv = _hcv_details;
+    population_row << hcv.hcv << ","
+                   << hcv.fibrosis_state << ","
+                   << std::boolalpha << hcv.is_genotype_three << ","
+                   << std::boolalpha << hcv.seropositive << ","
+                   << hcv.time_changed << ","
+                   << hcv.time_fibrosis_state_changed << ","
+                   << hcv.times_infected << ","
+                   << hcv.times_acute_cleared << ","
+                   << hcv.svrs << ",";
+    // HIVDetails
+    const auto &hiv = _hiv_details;
+    population_row << hiv.hiv << ","
+                   << hiv.time_changed << ","
+                   << hiv.low_cd4_months_count << ",";
+    // HCCDetails
+    const auto &hcc = _hcc_details;
+    population_row << hcc.hcc_state << ","
+                   << std::boolalpha << hcc.hcc_diagnosed << ",";
+    // overdose characteristics
+    population_row << std::boolalpha << _currently_overdosing << ","
+                   << _num_overdoses << ",";
+    // MOUDDetails
+    const auto &moud = _moud_details;
+    population_row << moud.moud_state << ","
+                   << moud.time_started_moud << ","
+                   << moud.current_state_concurrent_months << ","
+                   << moud.total_moud_months << ",";
+    // PregnancyDetails
+    const auto &pd = _pregnancy_details;
+    population_row << pd.pregnancy_state << ","
+                   << pd.time_of_pregnancy_change << ","
+                   << pd.count << ","
+                   << pd.num_infants << ","
+                   << pd.num_stillbirths << ","
+                   << pd.num_hcv_exposures << ","
+                   << pd.num_hcv_infections << ","
+                   << pd.num_hcv_tests << ",";
+    // StagingDetails
+    const auto &sd = _staging_details;
+    population_row << sd.measured_fibrosis_state << ","
+                   << std::boolalpha << sd.had_second_test << ","
+                   << sd.time_of_last_staging << ",";
+    // LinkageDetails
+    const auto &hcvld = _linkage_details.at(data::InfectionType::kHcv);
+    population_row << hcvld.link_state << ","
+                   << hcvld.time_link_change << ","
+                   << hcvld.link_count << ",";
+    const auto &hivld = _linkage_details.at(data::InfectionType::kHiv);
+    population_row << hivld.link_state << ","
+                   << hivld.time_link_change << ","
+                   << hivld.link_count << ",";
+    // ScreeningDetails
+    const auto &hcvsd = _screening_details.at(data::InfectionType::kHcv);
+    population_row << hcvsd.time_of_last_screening << ","
+                   << hcvsd.num_ab_tests << ","
+                   << hcvsd.num_rna_tests << ","
+                   << std::boolalpha << hcvsd.ab_positive << ","
+                   << std::boolalpha << hcvsd.identified << ","
+                   << hcvsd.time_identified << ","
+                   << hcvsd.times_identified << ","
+                   << hcvsd.screen_type << ","
+                   << hcvsd.num_false_negatives << ","
+                   << hcvsd.identifications_cleared << ",";
+    const auto &hivsd = _screening_details.at(data::InfectionType::kHiv);
+    population_row << hivsd.time_of_last_screening << ","
+                   << hivsd.num_ab_tests << ","
+                   << hivsd.num_rna_tests << ","
+                   << std::boolalpha << hivsd.ab_positive << ","
+                   << std::boolalpha << hivsd.identified << ","
+                   << hivsd.time_identified << ","
+                   << hivsd.times_identified << ","
+                   << hivsd.screen_type << ",";
+    const auto &hcvtd = _treatment_details.at(data::InfectionType::kHcv);
+    population_row << std::boolalpha << hcvtd.initiated_treatment << ","
+                   << hcvtd.time_of_treatment_initiation << ","
+                   << hcvtd.num_starts << ","
+                   << hcvtd.num_withdrawals << ","
+                   << hcvtd.num_toxic_reactions << ","
+                   << hcvtd.num_completed << ","
+                   << hcvtd.num_salvages << ","
+                   << std::boolalpha << hcvtd.in_salvage_treatment << ",";
+    const auto &hivtd = _treatment_details.at(data::InfectionType::kHiv);
+    population_row << std::boolalpha << hivtd.initiated_treatment << ","
+                   << hivtd.time_of_treatment_initiation << ","
+                   << hivtd.num_starts << ","
+                   << hivtd.num_withdrawals << ","
+                   << hivtd.num_toxic_reactions << ",";
+    // Utilities
+    // current utilities
+    const auto &cu = GetUtilities();
+    population_row << cu.at(model::UtilityCategory::kBehavior) << ","
+                   << cu.at(model::UtilityCategory::kLiver) << ","
+                   << cu.at(model::UtilityCategory::kTreatment) << ","
+                   << cu.at(model::UtilityCategory::kBackground) << ","
+                   << cu.at(model::UtilityCategory::kHiv) << ","
+                   << cu.at(model::UtilityCategory::kMoud) << ","
+                   << cu.at(model::UtilityCategory::kOverdose) << ",";
+    // total/lifetime utilities
+    const auto &tu = GetTotalUtility();
+    population_row << tu.min_util << ","
+                   << tu.mult_util << ","
+                   << tu.discount_min_util << ","
+                   << tu.discount_mult_util << ",";
+    // lifespan
+    population_row << _life_span << ","
+                   << _discounted_life_span << ",";
 
-        // Cost Totals
-        const auto &ct = GetCostTotals();
-        population_row << ct.first << ","
-                       << ct.second;
+    // Cost Totals
+    const std::pair<double, double> &ct = GetCostTotals();
+    population_row << ct.first << ","
+                   << ct.second;
     // clang-format on
     return population_row.str();
 }
