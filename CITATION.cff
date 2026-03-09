@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+title: "HEP-CE: Hepatitis C Cost Effectiveness Microsimulation Model"
+version: 2.3.2
+license: "AGPLv3"
+type: software
+abstract: "This is the HEP-CE simulation model built and used by the Syndemics Lab at Boston Medical Center. It implements a discrete event microsimulation to study cost effectiveness impacts of various cascades of care surrounding HCV."
+message: "If you use this software, please cite it as below."
+authors:
+  - given-names: Matthew
+    family-names: Carroll
+    affiliation: Syndemics Lab at Boston Medical Center
+    orcid: "https://orcid.org/0009-0006-9869-2763"
+  - given-names: Dimitri
+    family-names: Baptiste
+    affiliation: Syndemics Lab at Boston Medical Center
+    orcid: ""
+  - given-names: Andrew
+    family-names: Clark
+    affiliation: Syndemics Lab at Boston Medical Center
+    orcid: ""
+
+keywords:
+  - modeling
+  - hepatitis c
+  - microsimulation
+  - health economics
+  - decision science

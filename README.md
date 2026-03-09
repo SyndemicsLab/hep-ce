@@ -8,6 +8,8 @@
     />
 </a>
 
+[![DOI](https://zenodo.org/badge/673786151.svg)](https://doi.org/10.5281/zenodo.18903353)
+
 The `HEP-CE` (**Hep**atitis C **C**ost **E**ffectiveness) model is a Markov
 chain Monte Carlo health state-transition model which simulates the spread and
 treatment of Hepatitis C Virus (HCV). `HEP-CE` is used to model the efficacy and
