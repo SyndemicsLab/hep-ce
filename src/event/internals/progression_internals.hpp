@@ -4,28 +4,25 @@
 // Created Date: 2025-08-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-12                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2026-03-19                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_FIBROSIS_PROGRESSIONINTERNALS_HPP_
 #define HEPCE_EVENT_FIBROSIS_PROGRESSIONINTERNALS_HPP_
-
-// File Header
-#include <hepce/event/fibrosis/progression.hpp>
 
 // Library Includes
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/pair_hashing.hpp>
 
 // Local Includes
-#include "../../internals/event_internals.hpp"
+#include "event_internals.hpp"
 
 namespace hepce {
 namespace event {
 namespace fibrosis {
-class ProgressionImpl : public virtual Progression, public EventBase {
+class Progression : public virtual EventBase {
 public:
     struct progression_probabilities {
         double f0_to_1 = 0.0;
@@ -39,9 +36,9 @@ public:
         std::unordered_map<utils::tuple_2i, data::CostUtil, utils::key_hash_2i,
                            utils::key_equal_2i>;
 
-    ProgressionImpl(datamanagement::ModelData &model_data,
-                    const std::string &log_name = "console");
-    ~ProgressionImpl() = default;
+    Progression(datamanagement::ModelData &model_data,
+                const std::string &log_name = "console");
+    ~Progression() = default;
 
     void Execute(model::Person &person, model::Sampler &sampler) override;
 

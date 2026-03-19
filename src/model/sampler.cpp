@@ -4,17 +4,18 @@
 // Created Date: 2025-05-02                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2026-03-19                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <hepce/model/sampler.hpp>
 
 #include <algorithm>
-#include <hepce/utils/logging.hpp>
 #include <sstream>
+
+#include <hepce/utils/logging.hpp>
 
 #include "internals/sampler_internals.hpp"
 

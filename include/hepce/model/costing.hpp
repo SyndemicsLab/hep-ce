@@ -4,10 +4,10 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_MODEL_COST_HPP_
 #define HEPCE_MODEL_COST_HPP_
@@ -39,6 +39,14 @@ std::ostream &operator<<(std::ostream &os, const CostCategory &inst);
 class Costs {
 public:
     virtual ~Costs() = default;
+
+    Costs(const Costs &) = delete;
+    Costs &operator=(const Costs &) = delete;
+    virtual std::unique_ptr<Costs> clone() const = 0;
+
+    static std::unique_ptr<Costs>
+    Create(const std::string &log_name = "console");
+
     virtual std::pair<double, double> GetTotals() const = 0;
 
     /// @brief Get the vector of costs as-is
@@ -54,8 +62,8 @@ public:
     virtual void AddCost(double base_cost, double discount_cost,
                          CostCategory category) = 0;
 
-    static std::unique_ptr<Costs>
-    Create(const std::string &log_name = "console");
+protected:
+    Costs() = default;
 };
 
 } // namespace model

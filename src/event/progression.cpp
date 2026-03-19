@@ -4,14 +4,11 @@
 // Created Date: 2025-08-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-08                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
-
-// File Header
-#include <hepce/event/fibrosis/progression.hpp>
 
 // Library Includes
 #include <hepce/utils/config.hpp>

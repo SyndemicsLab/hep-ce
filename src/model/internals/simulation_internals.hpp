@@ -4,10 +4,10 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-09-02                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_MODEL_SIMULATIONINTERNALS_HPP_
 #define HEPCE_MODEL_SIMULATIONINTERNALS_HPP_
@@ -21,38 +21,27 @@ namespace hepce {
 namespace model {
 class HepceImpl : public virtual Hepce {
 public:
-    HepceImpl(datamanagement::ModelData &model_data,
-              const std::string &log_name);
+    HepceImpl(const data::Inputs &inputs, const std::string &log_name);
     ~HepceImpl() = default;
-    void Run(std::vector<std::unique_ptr<model::Person>> &people,
-             const std::vector<std::unique_ptr<event::Event>> &discrete_events)
-        override;
-    std::vector<std::unique_ptr<event::Event>>
-    CreateEvents(datamanagement::ModelData &model_data) const override;
-    std::vector<std::unique_ptr<model::Person>>
-    CreatePopulation(datamanagement::ModelData &model_data) const override;
+    void Run(const model::People &people,
+             const event::EventList &discrete_events) override;
+    event::EventList CreateEvents() const override;
+    model::People CreatePopulation() const override;
 
     int GetDuration() const override { return _duration; }
     int GetSeed() const override { return _sim_seed; }
 
 private:
     const std::string _log_name;
+    const data::Inputs _inputs;
     int _duration;
     int _sim_seed;
 
     const std::string GetLogName() const { return _log_name; }
 
-    std::vector<std::unique_ptr<model::Person>>
-    ReadICPopulation(const int population_size,
-                     datamanagement::ModelData &model_data) const;
+    model::People ReadICPopulation(const int population_size) const;
 
-    std::vector<std::unique_ptr<model::Person>>
-    ReadPopPopulation(const int population_size,
-                      datamanagement::ModelData &model_data) const;
-
-    std::unique_ptr<event::Event>
-    CreateEvent(std::string event_name,
-                datamanagement::ModelData &model_data) const;
+    model::People ReadPopPopulation(const int population_size) const;
 
     inline std::string InitialCohortSQL(int N) const {
         std::stringstream ss;

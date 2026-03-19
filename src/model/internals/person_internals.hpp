@@ -4,10 +4,10 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-11-12                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_MODEL_PERSONINTERNALS_HPP_
 #define HEPCE_MODEL_PERSONINTERNALS_HPP_
@@ -29,7 +29,7 @@ namespace hepce {
 namespace model {
 class PersonImpl : public Person {
 public:
-    PersonImpl(const std::string &log_name = "console");
+    PersonImpl(const std::string &log_name);
     ~PersonImpl() = default;
 
     // Implementation Separated Functions

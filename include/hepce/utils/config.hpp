@@ -4,19 +4,21 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2026-03-19                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_UTILS_CONFIG_HPP_
 #define HEPCE_UTILS_CONFIG_HPP_
 
 #include <memory>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
-#include <datamanagement/datamanagement.hpp>
+#include <hepce/data/inputs.hpp>
+
 #include <spdlog/spdlog.h>
 
 #include "formatting.hpp"
@@ -24,83 +26,94 @@
 /// @brief Namespace containing Utility Helper Functions
 namespace hepce {
 namespace utils {
+
+void ThrowPathError(const std::string &key) {
+    std::ostringstream msg;
+    msg << "Key `" << key << "` not found in config file!";
+    throw std::runtime_error(msg.str());
+}
+
+void ThrowDataError(const std::string &key) {
+    std::ostringstream msg;
+    msg << "Unknown error occurred when attempting to get config value `" << key
+        << "`!";
+    throw std::runtime_error(msg.str());
+}
+
 /// @brief
 /// @param
 /// @return
-inline bool GetBoolFromConfig(std::string config_key,
-                              datamanagement::ModelData &model_data,
+inline bool GetBoolFromConfig(const std::string &config_key,
+                              const data::Inputs &inputs,
                               bool def_val = false) {
-    std::string config_data;
     try {
-        config_data = model_data.GetFromConfig(config_key);
+        return inputs.GetPropertyTree().get<bool>(config_key);
+    } catch (boost::property_tree::ptree_bad_data &e) {
+        return def_val;
+    } catch (boost::property_tree::ptree_bad_path &e) {
+        ThrowPathError(config_key);
     } catch (std::exception &e) {
-        return def_val;
+        ThrowDataError(config_key);
     }
-    if (config_data.empty()) {
-        return def_val;
-    }
-    return SToBool(config_data);
 }
 
 /// @brief
 /// @param
 /// @return
-inline int GetIntFromConfig(std::string config_key,
-                            datamanagement::ModelData &model_data,
-                            int def_val = -1) {
-    std::string config_data;
+inline int GetIntFromConfig(const std::string &config_key,
+                            const data::Inputs &inputs, int def_val = -1) {
     try {
-        config_data = model_data.GetFromConfig(config_key);
+        return inputs.GetPropertyTree().get<int>(config_key);
+    } catch (boost::property_tree::ptree_bad_data &e) {
+        return def_val;
+    } catch (boost::property_tree::ptree_bad_path &e) {
+        ThrowPathError(config_key);
     } catch (std::exception &e) {
-        return def_val;
+        ThrowDataError(config_key);
     }
-    if (config_data.empty()) {
-        return def_val;
-    }
-    return std::stoi(config_data);
 }
 
 /// @brief
 /// @param
 /// @return
-inline double GetDoubleFromConfig(std::string config_key,
-                                  datamanagement::ModelData &model_data,
+inline double GetDoubleFromConfig(const std::string &config_key,
+                                  const data::Inputs &inputs,
                                   bool positive = true, double def_val = -1.0) {
     std::string config_data;
 
     try {
-        config_data = model_data.GetFromConfig(config_key);
-    } catch (std::exception &e) {
-        return def_val; // Should we log this or throw an exception back?
-    }
-    if (config_data.empty()) {
+        auto res = inputs.GetPropertyTree().get<double>(config_key);
+        return (positive) ? std::abs(res) : res;
+    } catch (boost::property_tree::ptree_bad_data &e) {
         return def_val;
+    } catch (boost::property_tree::ptree_bad_path &e) {
+        ThrowPathError(config_key);
+    } catch (std::exception &e) {
+        ThrowDataError(config_key);
     }
-    if (positive) {
-        return SToDPositive(config_data);
-    }
-    return std::stod(config_data);
 }
 
 /// @brief
 /// @param
 /// @return
-inline std::string GetStringFromConfig(std::string config_key,
-                                       datamanagement::ModelData &model_data,
+inline std::string GetStringFromConfig(const std::string &config_key,
+                                       const data::Inputs &inputs,
                                        std::string def_val = "") {
-    std::string s;
     try {
-        s = model_data.GetFromConfig(config_key);
-    } catch (std::exception &e) {
+        return inputs.GetPropertyTree().get<std::string>(config_key);
+    } catch (boost::property_tree::ptree_bad_data &e) {
         return def_val;
+    } catch (boost::property_tree::ptree_bad_path &e) {
+        ThrowPathError(config_key);
+    } catch (std::exception &e) {
+        ThrowDataError(config_key);
     }
-    return s;
 }
 
-inline bool FindInEventList(std::string event_name,
-                            datamanagement::ModelData &model_data) {
+inline bool FindInEventList(const std::string &event_name,
+                            const data::Inputs &inputs) {
     auto event_list = utils::ToLowerVector(utils::SplitToVecT<std::string>(
-        model_data.GetFromConfig("simulation.events"), ','));
+        GetStringFromConfig("simulation.events", inputs), ','));
     auto event_name_lower = utils::ToLower(event_name);
     if (std::find(event_list.begin(), event_list.end(), event_name_lower) !=
         event_list.end()) {

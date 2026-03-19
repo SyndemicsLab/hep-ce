@@ -4,14 +4,14 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-04                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2026-03-19                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-// File Header
-#include <hepce/event/base/aging.hpp>
+#include <memory>
+#include <string>
 
 // Library Includes
 #include <hepce/model/person.hpp>
@@ -24,20 +24,11 @@
 
 namespace hepce {
 namespace event {
-namespace base {
 
 // Factory
-std::unique_ptr<hepce::event::Event>
-Aging::Create(datamanagement::ModelData &model_data,
-              const std::string &log_name) {
-    return std::make_unique<AgingImpl>(model_data, log_name);
-}
-
-// Constructor
-AgingImpl::AgingImpl(datamanagement::ModelData &model_data,
-                     const std::string &log_name)
-    : EventBase(model_data, log_name) {
-    LoadData(model_data);
+std::unique_ptr<Event> Aging::Create(datamanagement::ModelData &model_data,
+                                     const std::string &log_name) {
+    return std::make_unique<Aging>(model_data, log_name);
 }
 
 // Execution
@@ -98,6 +89,5 @@ void AgingImpl::AddBackgroundCostAndUtility(model::Person &person) {
     AddEventCost(person, _age_data[tup].cost);
     AddEventUtility(person, _age_data[tup].util);
 }
-} // namespace base
 } // namespace event
 } // namespace hepce

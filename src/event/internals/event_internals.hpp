@@ -4,10 +4,10 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_EVENTINTERNALS_HPP_
 #define HEPCE_EVENT_EVENTINTERNALS_HPP_
@@ -26,18 +26,19 @@ namespace hepce {
 namespace event {
 class EventBase : public virtual Event {
 public:
-    EventBase(datamanagement::ModelData &model_data,
-              const std::string &log_name = "console")
-        : _log_name(log_name) {
+    EventBase(const std::string &name, datamanagement::ModelData &model_data,
+              const std::string &log_name)
+        : _name(name), _model_data(model_data), _log_name(log_name) {
         SetEventDiscount(
             utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
         SetEventCostCategory(model::CostCategory::kMisc);
         SetEventUtilityCategory(model::UtilityCategory::kBackground);
     }
+    ~EventBase() = default;
+
     bool ValidExecute(model::Person &person) const override {
         return person.IsAlive();
     }
-    ~EventBase() = default;
     void SetEventDiscount(const double &d) { _discount = d; }
     void SetEventCostCategory(const model::CostCategory &cc) {
         _event_cost_category = cc;
@@ -73,6 +74,8 @@ public:
     }
 
 private:
+    const std::string _name;
+    datamanagement::ModelData *_model_data;
     const std::string _log_name;
     double _discount = 0.0;
     model::UtilityCategory _event_utility_category =
