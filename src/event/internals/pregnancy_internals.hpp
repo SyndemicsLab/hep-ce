@@ -4,26 +4,23 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_BEHAVIOR_PREGNANCYINTERNALS_HPP_
 #define HEPCE_EVENT_BEHAVIOR_PREGNANCYINTERNALS_HPP_
-
-#include <hepce/event/behavior/pregnancy.hpp>
 
 #include <sstream>
 
 #include <hepce/utils/formatting.hpp>
 
-#include "../../internals/event_internals.hpp"
+#include "base_event_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace behavior {
-class PregnancyImpl : public virtual Pregnancy, public EventBase {
+class Pregnancy : public virtual EventBase {
 public:
     struct pregnancy_probabilities {
         double stillbirth = 0.0;
@@ -32,18 +29,33 @@ public:
     using pregnancymap_t =
         std::unordered_map<int, struct pregnancy_probabilities>;
 
-    PregnancyImpl(datamanagement::ModelData &model_data,
-                  const std::string &log_name = "console");
-    ~PregnancyImpl() = default;
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    Pregnancy(const data::Inputs &inputs, const std::string &log)
+        : EventBase("pregnancy", inputs, log),
+          _multiple_delivery_probability(utils::GetDoubleFromConfig(
+              "pregnancy.multiple_delivery_probability", inputs)),
+          _infant_hcv_tested_probability(utils::GetDoubleFromConfig(
+              "pregnancy.infant_hcv_tested_probability", inputs)),
+          _vertical_hcv_transition_probability(utils::GetDoubleFromConfig(
+              "pregnancy.vertical_hcv_transition_probability", inputs)) {}
+    ~Pregnancy() = default;
+    void Execute(model::Person &person, const model::Sampler &sampler) override;
+
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<Pregnancy>(GetInputs(), GetLogName());
+    }
 
 private:
     pregnancymap_t _pregnancy_data;
     const double _multiple_delivery_probability;
     const double _infant_hcv_tested_probability;
     const double _vertical_hcv_transition_probability;
+
+    void LoadData();
 
     void ProgressPostpartum(model::Person &person) const;
 
@@ -75,7 +87,7 @@ private:
     }
 
     inline bool CheckStillbirth(const model::Person &person,
-                                model::Sampler &sampler) {
+                                const model::Sampler &sampler) {
         int age = static_cast<int>(person.GetAge() / 12.0);
         std::vector<double> probs = {_pregnancy_data[age].stillbirth,
                                      1 - _pregnancy_data[age].stillbirth};
@@ -83,7 +95,7 @@ private:
     }
 
     inline int const GetNumberOfBirths(const model::Person &person,
-                                       model::Sampler &sampler) const {
+                                       const model::Sampler &sampler) const {
 
         std::vector<double> result = {_multiple_delivery_probability,
                                       1 - _multiple_delivery_probability};
@@ -91,24 +103,23 @@ private:
         return (sampler.GetDecision(result) == 0) ? 2 : 1;
     }
 
-    inline bool DoChildrenGetTested(model::Sampler &sampler) {
+    inline bool DoChildrenGetTested(const model::Sampler &sampler) {
 
         std::vector<double> result = {_infant_hcv_tested_probability,
                                       1 - _infant_hcv_tested_probability};
         return (sampler.GetDecision(result) == 0) ? true : false;
     }
 
-    inline bool DrawChildInfection(model::Sampler &sampler) {
+    inline bool DrawChildInfection(const model::Sampler &sampler) {
         std::vector<double> result = {_vertical_hcv_transition_probability,
                                       1 - _vertical_hcv_transition_probability};
         return (sampler.GetDecision(result) == 0) ? true : false;
     }
 
-    void AttemptHaveChild(model::Person &person, model::Sampler &sampler);
+    void AttemptHaveChild(model::Person &person, const model::Sampler &sampler);
 
-    data::Child MakeChild(data::HCV hcv, bool test);
+    data::Child MakeChild(const data::HCV &hcv, const bool &test);
 };
-} // namespace behavior
 } // namespace event
 } // namespace hepce
 

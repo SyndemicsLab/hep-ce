@@ -4,25 +4,23 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-29                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_BEHAVIOR_BEHAVIORCHANGES_INTERNALS_HPP_
 #define HEPCE_EVENT_BEHAVIOR_BEHAVIORCHANGES_INTERNALS_HPP_
 
-#include <hepce/event/behavior/behavior_changes.hpp>
+#include "base_event_internals.hpp"
 
 #include <hepce/utils/formatting.hpp>
+#include <hepce/utils/logging.hpp>
 #include <hepce/utils/pair_hashing.hpp>
-
-#include "../../internals/event_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace behavior {
-class BehaviorChangesImpl : public virtual BehaviorChanges, public EventBase {
+class BehaviorChanges : public virtual EventBase {
 public:
     struct behavior_transitions {
         double never = 0.0;
@@ -39,13 +37,32 @@ public:
         std::unordered_map<utils::tuple_2i, data::CostUtil, utils::key_hash_2i,
                            utils::key_equal_2i>;
 
-    BehaviorChangesImpl(datamanagement::ModelData &model_data,
-                        const std::string &log_name = "console");
-    ~BehaviorChangesImpl() = default;
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
 
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+    // Constructor
+    BehaviorChanges(const data::Inputs &inputs, const std::string &log)
+        : EventBase("behavior_changes", inputs, log),
+          _first_year_relapse_rate(utils::GetDoubleFromConfig(
+              "behavior.first_year_relapse_rate", inputs)),
+          _later_years_relapse_rate(utils::GetDoubleFromConfig(
+              "behavior.later_years_relapse_rate", inputs)) {
+        SetCostCategory(model::CostCategory::kBehavior);
+        SetUtilityCategory(model::UtilityCategory::kBehavior);
+        LoadCostData();
+        LoadBehaviorData();
+    }
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    // Destructor
+    ~BehaviorChanges() = default;
+
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<BehaviorChanges>(GetInputs(), GetLogName());
+    }
+
+    void Execute(model::Person &person, const model::Sampler &sampler) override;
 
 private:
     behaviormap_t _behavior_data;
@@ -89,13 +106,11 @@ private:
     std::vector<double>
     GetBehaviorTransitionProbabilities(const model::Person &person) const;
 
-    void LoadCostData(datamanagement::ModelData &model_data);
+    void LoadCostData();
+    void LoadBehaviorData();
 
-    void LoadBehaviorData(datamanagement::ModelData &model_data);
-
-    void CalculateCostAndUtility(model::Person &person);
+    void CalculateCostAndUtility(model::Person &person) const;
 };
-} // namespace behavior
 } // namespace event
 } // namespace hepce
 

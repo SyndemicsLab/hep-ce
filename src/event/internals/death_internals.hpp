@@ -4,28 +4,24 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-16                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_BASE_DEATHINTERNALS_HPP_
 #define HEPCE_EVENT_BASE_DEATHINTERNALS_HPP_
-
-// File Header
-#include <hepce/event/base/death.hpp>
 
 // Library Includes
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/pair_hashing.hpp>
 
 // Local Includes
-#include "../../internals/event_internals.hpp"
+#include "base_event_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace base {
-class DeathImpl : public virtual Death, public EventBase {
+class Death : public virtual EventBase {
 public:
     struct BackgroundSmr {
         double back_mort = 0.0;
@@ -35,13 +31,33 @@ public:
         std::unordered_map<utils::tuple_3i, BackgroundSmr, utils::key_hash_3i,
                            utils::key_equal_3i>;
 
-    DeathImpl(datamanagement::ModelData &model_data,
-              const std::string &log_name = "console");
-    ~DeathImpl() = default;
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
 
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+    // Constructor
+    Death(const data::Inputs &inputs, const std::string &log)
+        : EventBase("death", inputs, log),
+          _f4_infected_probability(
+              utils::GetDoubleFromConfig("mortality.f4_infected", inputs)),
+          _f4_uninfected_probability(
+              utils::GetDoubleFromConfig("mortality.f4_uninfected", inputs)),
+          _decomp_infected_probability(
+              utils::GetDoubleFromConfig("mortality.decomp_infected", inputs)),
+          _decomp_uninfected_probability(utils::GetDoubleFromConfig(
+              "mortality.decomp_uninfected", inputs)) {
+        LoadData();
+    }
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    // Destructor
+    ~Death() = default;
+
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<Death>(GetInputs(), GetLogName());
+    }
+
+    void Execute(model::Person &person, const model::Sampler &sampler) override;
 
 private:
     const double _f4_infected_probability;
@@ -58,6 +74,9 @@ private:
 
     backgroundmap_t _background_data;
 
+    void LoadData();
+    void LoadBackgroundMortality();
+
     inline const std::string BackgroundMortalitySQL() const {
         std::stringstream sql;
         sql << "SELECT bm.age_years, bm.gender, "
@@ -68,24 +87,22 @@ private:
         return sql.str();
     }
 
-    inline void Die(model::Person &person, const data::DeathReason &reason) {
+    inline void Die(model::Person &person,
+                    const data::DeathReason &reason) const {
         person.Die(reason);
     }
 
-    void LoadBackgroundMortality(datamanagement::ModelData &model_data);
+    bool ReachedMaxAge(model::Person &person) const;
 
-    bool ReachedMaxAge(model::Person &person);
+    bool FatalOverdose(model::Person &person, const model::Sampler &sampler);
 
-    bool FatalOverdose(model::Person &person, model::Sampler &sampler);
+    bool HivDeath(model::Person &person, const model::Sampler &sampler) const;
 
-    bool HivDeath(model::Person &person, model::Sampler &sampler);
+    double GetFibrosisMortalityProbability(model::Person &person) const;
 
-    double GetFibrosisMortalityProbability(model::Person &person);
-
-    void GetSMRandBackgroundProb(model::Person &person,
-                                 double &backgroundMortProb, double &smr);
+    void GetSMRandBackgroundProb(model::Person &person, double &background,
+                                 double &smr) const;
 };
-} // namespace base
 } // namespace event
 } // namespace hepce
 

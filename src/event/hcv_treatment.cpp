@@ -1,45 +1,34 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: treatment.cpp                                                        //
+// File: hcv_treatment.cpp                                                    //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-14                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2026-03-20                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
-
-// File Header
-#include <hepce/event/hcv/treatment.hpp>
 
 // Library Includes
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/logging.hpp>
 
 // Local Includes
-#include "internals/treatment_internals.hpp"
+#include "internals/hcv_treatment_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace hcv {
 
 // Factory
-std::unique_ptr<hepce::event::Event>
-Treatment::Create(datamanagement::ModelData &model_data,
-                  const std::string &log_name) {
-    return std::make_unique<TreatmentImpl>(model_data, log_name);
-}
-
-// Constructor
-TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
-                             const std::string &log_name)
-    : TreatmentBase(model_data, log_name) {
-    LoadData(model_data);
+std::unique_ptr<Event> HCVTreatment::Create(const data::Inputs &inputs,
+                                            const std::string &log_name) {
+    return std::make_unique<HCVTreatment>(inputs, log_name);
 }
 
 // Execute
-void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void HCVTreatment::Execute(model::Person &person,
+                           const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -111,11 +100,10 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
-void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
+void HCVTreatment::LoadData() {
     std::any storage = hcvtreatmentmap_t{};
     try {
-        model_data.GetDBSource("inputs").Select(TreatmentSQL(), Callback,
-                                                storage);
+        GetInputs().SelectFromDatabase(TreatmentSQL(), Callback, storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting HCV Treatment Data: " << e.what();
@@ -132,9 +120,9 @@ void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
 
     storage = hcvtreatmentinitmap_t{};
     try {
-        model_data.GetDBSource("inputs").Select(TreatmentInitializationSQL(),
-                                                CallbackTreatmentInitialization,
-                                                storage);
+        GetInputs().SelectFromDatabase(TreatmentInitializationSQL(),
+                                       CallbackTreatmentInitialization, storage,
+                                       {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting HCV Treatment Initialization Data: " << e.what();
@@ -151,8 +139,8 @@ void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
     }
 }
 
-bool TreatmentImpl::InitiateTreatment(model::Person &person,
-                                      model::Sampler &sampler) const {
+bool HCVTreatment::InitiateTreatment(model::Person &person,
+                                     const model::Sampler &sampler) const {
     double treatment_initiation = 0.0;
     try {
         treatment_initiation = _treatment_init_sql_data.at(
@@ -175,6 +163,5 @@ bool TreatmentImpl::InitiateTreatment(model::Person &person,
     return false;
 }
 
-} // namespace hcv
 } // namespace event
 } // namespace hepce

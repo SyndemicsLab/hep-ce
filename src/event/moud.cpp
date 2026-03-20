@@ -4,14 +4,11 @@
 // Created Date: 2025-05-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
-
-// File Header
-#include <hepce/event/behavior/moud.hpp>
 
 #include <hepce/utils/logging.hpp>
 
@@ -19,22 +16,13 @@
 
 namespace hepce {
 namespace event {
-namespace behavior {
 // Factory
-std::unique_ptr<Event> Moud::Create(datamanagement::ModelData &model_data,
+std::unique_ptr<Event> Moud::Create(const data::Inputs &inputs,
                                     const std::string &log_name) {
-    return std::make_unique<MoudImpl>(model_data, log_name);
+    return std::make_unique<Moud>(inputs, log_name);
 }
 
-MoudImpl::MoudImpl(datamanagement::ModelData &model_data,
-                   const std::string &log_name)
-    : EventBase(model_data, log_name) {
-    LoadData(model_data);
-    SetEventCostCategory(model::CostCategory::kMoud);
-    SetEventUtilityCategory(model::UtilityCategory::kMoud);
-}
-
-void MoudImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void Moud::Execute(model::Person &person, const model::Sampler &sampler) {
     if (!ValidExecute(person) || !HistoryOfOud(person)) {
         return;
     }
@@ -59,15 +47,10 @@ void MoudImpl::Execute(model::Person &person, model::Sampler &sampler) {
     CalculateCostAndUtility(person);
 }
 
-void MoudImpl::LoadData(datamanagement::ModelData &model_data) {
-    LoadMOUDData(model_data);
-    LoadCostData(model_data);
-}
-
-void MoudImpl::LoadMOUDData(datamanagement::ModelData &model_data) {
+void Moud::LoadMOUDData() {
     std::any storage = _moud_data;
     try {
-        model_data.GetDBSource("inputs").Select(
+        GetInputs().SelectFromDatabase(
             TransitionSQL(),
             [](std::any &storage, const SQLite::Statement &stmt) {
                 moudmap_t *temp = std::any_cast<moudmap_t>(&storage);
@@ -81,7 +64,7 @@ void MoudImpl::LoadMOUDData(datamanagement::ModelData &model_data) {
 
                 (*temp)[tup] = behavior;
             },
-            storage);
+            storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting MOUD Transition Data: " << e.what();
@@ -98,11 +81,11 @@ void MoudImpl::LoadMOUDData(datamanagement::ModelData &model_data) {
     }
 }
 
-void MoudImpl::LoadCostData(datamanagement::ModelData &model_data) {
+void Moud::LoadCostData() {
     std::any storage = costmap_t{};
 
     try {
-        model_data.GetDBSource("inputs").Select(
+        GetInputs().SelectFromDatabase(
             CostSQL(),
             [](std::any &storage, const SQLite::Statement &stmt) {
                 costmap_t *temp = std::any_cast<costmap_t>(&storage);
@@ -112,7 +95,7 @@ void MoudImpl::LoadCostData(datamanagement::ModelData &model_data) {
                                      stmt.getColumn(3).getDouble()};
                 (*temp)[tup] = cu;
             },
-            storage);
+            storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting cost data in MOUD: " << e.what();
@@ -128,18 +111,18 @@ void MoudImpl::LoadCostData(datamanagement::ModelData &model_data) {
     }
 }
 
-bool MoudImpl::HistoryOfOud(const model::Person &person) const {
+bool Moud::HistoryOfOud(const model::Person &person) const {
     return (person.GetBehaviorDetails().behavior != data::Behavior::kNever);
 }
 
-bool MoudImpl::ActiveOud(const model::Person &person) const {
+bool Moud::ActiveOud(const model::Person &person) const {
     data::Behavior b = person.GetBehaviorDetails().behavior;
     return (b == data::Behavior::kInjection ||
             b == data::Behavior::kNoninjection);
 }
 
 std::vector<double>
-MoudImpl::GetMoudTransitionProbability(const model::Person &person) const {
+Moud::GetMoudTransitionProbability(const model::Person &person) const {
     int age_years = static_cast<int>(person.GetAge() / 12.0);
     int moud = static_cast<int>(person.GetMoudDetails().moud_state);
     int moud_duration = 0;
@@ -170,7 +153,7 @@ MoudImpl::GetMoudTransitionProbability(const model::Person &person) const {
     return probs;
 }
 
-void MoudImpl::CalculateCostAndUtility(model::Person &person) {
+void Moud::CalculateCostAndUtility(model::Person &person) {
     int moud_state = static_cast<int>(person.GetMoudDetails().moud_state);
     int pregnancy =
         static_cast<int>(person.GetPregnancyDetails().pregnancy_state);
@@ -179,6 +162,5 @@ void MoudImpl::CalculateCostAndUtility(model::Person &person) {
     AddEventCost(person, _cost_data[tup].cost);
     AddEventUtility(person, _cost_data[tup].util);
 }
-} // namespace behavior
 } // namespace event
 } // namespace hepce

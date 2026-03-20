@@ -1,17 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: clearance.cpp                                                        //
+// File: hcv_clearance.cpp                                                    //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
-
-// File Header
-#include <hepce/event/hcv/clearance.hpp>
 
 // Library Includes
 #include <hepce/utils/config.hpp>
@@ -19,28 +16,20 @@
 #include <hepce/utils/logging.hpp>
 
 // Local Includes
-#include "internals/clearance_internals.hpp"
+#include "internals/hcv_clearance_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace hcv {
 
 // Factory
-std::unique_ptr<hepce::event::Event>
-Clearance::Create(datamanagement::ModelData &model_data,
-                  const std::string &log_name) {
-    return std::make_unique<ClearanceImpl>(model_data, log_name);
-}
-
-// Constructor
-ClearanceImpl::ClearanceImpl(datamanagement::ModelData &model_data,
-                             const std::string &log_name)
-    : EventBase(model_data, log_name) {
-    LoadData(model_data);
+std::unique_ptr<Event> HCVClearance::Create(const data::Inputs &inputs,
+                                            const std::string &log_name) {
+    return std::make_unique<HCVClearance>(inputs, log_name);
 }
 
 // Execute
-void ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void HCVClearance::Execute(model::Person &person,
+                           const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -57,9 +46,9 @@ void ClearanceImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
-void ClearanceImpl::LoadData(datamanagement::ModelData &model_data) {
+void HCVClearance::LoadData() {
     _probability =
-        utils::GetDoubleFromConfig("infection.clearance_prob", model_data);
+        utils::GetDoubleFromConfig("infection.clearance_prob", GetInputs());
 
     if (_probability == -1) {
         hepce::utils::LogInfo(
@@ -69,6 +58,5 @@ void ClearanceImpl::LoadData(datamanagement::ModelData &model_data) {
             utils::RateToProbability(utils::ProbabilityToRate(0.25, 6));
     }
 }
-} // namespace hcv
 } // namespace event
 } // namespace hepce

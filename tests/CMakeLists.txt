@@ -37,7 +37,6 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
         hepce
         GTest::gmock_main
-        datamanagement::datamanagement
         spdlog::spdlog
 )
 

@@ -1,26 +1,24 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: treatment_internals.hpp                                              //
+// File: hcv_treatment_internals.hpp                                          //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-09                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_HCV_TREATMENTINTERNALS_HPP_
 #define HEPCE_EVENT_HCV_TREATMENTINTERNALS_HPP_
 
-#include <hepce/event/hcv/treatment.hpp>
+#include "base_treatment_internals.hpp"
 
-#include "../../internals/treatment_internals.hpp"
 #include <hepce/utils/pair_hashing.hpp>
 
 namespace hepce {
 namespace event {
-namespace hcv {
-class TreatmentImpl : public virtual Treatment, public TreatmentBase {
+class HCVTreatment : public virtual TreatmentBase {
 public:
     struct TreatmentSQLData {
         int duration = 0;
@@ -36,17 +34,28 @@ public:
 
     using hcvtreatmentinitmap_t = std::unordered_map<int, double>;
 
-    TreatmentImpl(datamanagement::ModelData &model_data,
-                  const std::string &log_name = "console");
-    ~TreatmentImpl() = default;
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
 
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+    HCVTreatment(const data::Inputs &inputs, const std::string &log)
+        : TreatmentBase("hcv_treatment", inputs, log) {
+        LoadData();
+    }
+    ~HCVTreatment() = default;
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<HCVTreatment>(GetInputs(), GetLogName());
+    }
+
+    void Execute(model::Person &person, const model::Sampler &sampler) override;
 
 private:
     hcvtreatmentmap_t _treatment_sql_data;
     hcvtreatmentinitmap_t _treatment_init_sql_data;
+
+    void LoadData();
 
     inline data::InfectionType GetInfectionType() const override {
         return data::InfectionType::kHcv;
@@ -93,10 +102,10 @@ private:
     }
 
     inline void ResetUtility(model::Person &person) const override {
-        person.SetUtility(1.0, GetEventUtilityCategory());
+        person.SetUtility(1.0, GetUtilityCategory());
     }
 
-    bool Withdraws(model::Person &person, model::Sampler &sampler) {
+    bool Withdraws(model::Person &person, const model::Sampler &sampler) {
         if (sampler.GetDecision(
                 {_treatment_sql_data[GetTreatmentThruple(person)]
                      .withdrawal_probability}) == 0) {
@@ -108,7 +117,7 @@ private:
     }
 
     void CheckIfExperienceToxicity(model::Person &person,
-                                   model::Sampler &sampler) {
+                                   const model::Sampler &sampler) {
         if (sampler.GetDecision(
                 {_treatment_sql_data[GetTreatmentThruple(person)]
                      .toxicity_probability}) == 1) {
@@ -120,10 +129,10 @@ private:
     }
 
     bool InitiateTreatment(model::Person &person,
-                           model::Sampler &sampler) const;
+                           const model::Sampler &sampler) const;
 
     inline int DecideIfPersonAchievesSVR(const model::Person &person,
-                                         model::Sampler &sampler) {
+                                         const model::Sampler &sampler) {
         return sampler.GetDecision(
             {_treatment_sql_data[GetTreatmentThruple(person)].svr_probability});
     }
@@ -132,7 +141,6 @@ private:
         return _treatment_sql_data[GetTreatmentThruple(person)].duration;
     }
 };
-} // namespace hcv
 } // namespace event
 } // namespace hepce
 

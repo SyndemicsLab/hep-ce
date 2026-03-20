@@ -4,14 +4,11 @@
 // Created Date: 2025-05-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
-
-// File Header
-#include <hepce/event/behavior/overdose.hpp>
 
 #include <hepce/utils/logging.hpp>
 
@@ -22,20 +19,11 @@ namespace event {
 namespace behavior {
 // Factory
 std::unique_ptr<hepce::event::Event>
-Overdose::Create(datamanagement::ModelData &model_data,
-                 const std::string &log_name) {
-    return std::make_unique<OverdoseImpl>(model_data, log_name);
+Overdose::Create(const data::Inputs &inputs, const std::string &log_name) {
+    return std::make_unique<Overdose>(inputs, log_name);
 }
 
-OverdoseImpl::OverdoseImpl(datamanagement::ModelData &model_data,
-                           const std::string &log_name)
-    : EventBase(model_data, log_name) {
-    LoadData(model_data);
-    SetEventCostCategory(model::CostCategory::kOverdose);
-    SetEventUtilityCategory(model::UtilityCategory::kOverdose);
-}
-
-void OverdoseImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void Overdose::Execute(model::Person &person, const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -52,14 +40,10 @@ void OverdoseImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
-void OverdoseImpl::LoadData(datamanagement::ModelData &model_data) {
-    LoadOverdoseData(model_data);
-}
-
-void OverdoseImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
+void Overdose::LoadOverdoseData() {
     std::any storage = _overdose_data;
     try {
-        model_data.GetDBSource("inputs").Select(
+        GetInputs().SelectFromDatabase(
             OverdoseSQL(),
             [](std::any &storage, const SQLite::Statement &stmt) {
                 utils::tuple_3i tup = std::make_tuple(
@@ -69,7 +53,7 @@ void OverdoseImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
                     stmt.getColumn(3).getDouble(),
                     stmt.getColumn(4).getDouble()};
             },
-            storage);
+            storage, {});
     } catch (std::exception &e) {
         hepce::utils::LogWarning(
             GetLogName(), "No Overdose Table Found in the inputs database...");
@@ -88,7 +72,7 @@ void OverdoseImpl::LoadOverdoseData(datamanagement::ModelData &model_data) {
     }
 }
 
-void OverdoseImpl::CalculateCostAndUtility(model::Person &person) {
+void Overdose::CalculateCostAndUtility(model::Person &person) {
     int pregnancy =
         static_cast<int>(person.GetPregnancyDetails().pregnancy_state);
     int moud = static_cast<int>(person.GetMoudDetails().moud_state);

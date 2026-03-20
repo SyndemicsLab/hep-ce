@@ -4,10 +4,10 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_HIV_LINKINGINTERNALS_HPP_
 #define HEPCE_EVENT_HIV_LINKINGINTERNALS_HPP_
@@ -44,7 +44,7 @@ private:
             return false;
         }
         person.ClearDiagnosis(GetInfectionType());
-        AddFalsePositiveCost(person, GetEventCostCategory());
+        AddFalsePositiveCost(person, GetCostCategory());
         return true;
     }
 };

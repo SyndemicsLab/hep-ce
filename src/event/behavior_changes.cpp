@@ -4,14 +4,13 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-31                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-// File Header
-#include <hepce/event/behavior/behavior_changes.hpp>
+#include <memory>
 
 // Library Includes
 #include <hepce/utils/config.hpp>
@@ -22,31 +21,16 @@
 
 namespace hepce {
 namespace event {
-namespace behavior {
 
 // Factory
-std::unique_ptr<hepce::event::Event>
-BehaviorChanges::Create(datamanagement::ModelData &model_data,
-                        const std::string &log_name) {
-    return std::make_unique<BehaviorChangesImpl>(model_data, log_name);
-}
-
-// Constructor
-BehaviorChangesImpl::BehaviorChangesImpl(datamanagement::ModelData &model_data,
-                                         const std::string &log_name)
-    : EventBase(model_data, log_name),
-      _first_year_relapse_rate(utils::GetDoubleFromConfig(
-          "behavior.first_year_relapse_rate", model_data)),
-      _later_years_relapse_rate(utils::GetDoubleFromConfig(
-          "behavior.later_years_relapse_rate", model_data)) {
-    SetEventCostCategory(model::CostCategory::kBehavior);
-    SetEventUtilityCategory(model::UtilityCategory::kBehavior);
-    LoadData(model_data);
+std::unique_ptr<Event> BehaviorChanges::Create(const data::Inputs &inputs,
+                                               const std::string &log_name) {
+    return std::make_unique<BehaviorChanges>(inputs, log_name);
 }
 
 // Execute
-void BehaviorChangesImpl::Execute(model::Person &person,
-                                  model::Sampler &sampler) {
+void BehaviorChanges::Execute(model::Person &person,
+                              const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -83,13 +67,8 @@ void BehaviorChangesImpl::Execute(model::Person &person,
     CalculateCostAndUtility(person);
 }
 
-void BehaviorChangesImpl::LoadData(datamanagement::ModelData &model_data) {
-    LoadCostData(model_data);
-    LoadBehaviorData(model_data);
-}
-
 // Private Methods
-std::vector<double> BehaviorChangesImpl::GetBehaviorTransitionProbabilities(
+std::vector<double> BehaviorChanges::GetBehaviorTransitionProbabilities(
     const model::Person &person) const {
     int age_years = static_cast<int>(person.GetAge() / 12.0);
     int gender = static_cast<int>(person.GetSex());
@@ -115,11 +94,11 @@ std::vector<double> BehaviorChangesImpl::GetBehaviorTransitionProbabilities(
     return probs;
 }
 
-void BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
+void BehaviorChanges::LoadCostData() {
     std::any storage = costmap_t{};
 
     try {
-        model_data.GetDBSource("inputs").Select(
+        GetInputs().SelectFromDatabase(
             CostSQL(),
             [](std::any &storage, const SQLite::Statement &stmt) {
                 costmap_t *temp = std::any_cast<costmap_t>(&storage);
@@ -129,7 +108,7 @@ void BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
                                      stmt.getColumn(3).getDouble()};
                 (*temp)[tup] = cu;
             },
-            storage);
+            storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting cost data in behavior changes: " << e.what();
@@ -146,11 +125,10 @@ void BehaviorChangesImpl::LoadCostData(datamanagement::ModelData &model_data) {
     }
 }
 
-void BehaviorChangesImpl::LoadBehaviorData(
-    datamanagement::ModelData &model_data) {
+void BehaviorChanges::LoadBehaviorData() {
     std::any storage = _behavior_data;
     try {
-        model_data.GetDBSource("inputs").Select(
+        GetInputs().SelectFromDatabase(
             TransitionSQL(),
             [](std::any &storage, const SQLite::Statement &stmt) {
                 behaviormap_t *temp = std::any_cast<behaviormap_t>(&storage);
@@ -166,7 +144,7 @@ void BehaviorChangesImpl::LoadBehaviorData(
 
                 (*temp)[tup] = behavior;
             },
-            storage);
+            storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting Behavior Transition Data: " << e.what();
@@ -183,7 +161,7 @@ void BehaviorChangesImpl::LoadBehaviorData(
     }
 }
 
-void BehaviorChangesImpl::ApplyDecayToRelapseProbabilities(
+void BehaviorChanges::ApplyDecayToRelapseProbabilities(
     std::vector<double> &probs, double decay_value,
     data::Behavior current_behavior) const {
 
@@ -201,14 +179,14 @@ void BehaviorChangesImpl::ApplyDecayToRelapseProbabilities(
     probs[current_idx] += temp - probs[relapse_idx];
 }
 
-void BehaviorChangesImpl::CalculateCostAndUtility(model::Person &person) {
+void BehaviorChanges::CalculateCostAndUtility(model::Person &person) const {
     int gender = static_cast<int>(person.GetSex());
     int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_2i tup = std::make_tuple(gender, behavior);
 
-    AddEventCost(person, _cost_data[tup].cost);
-    AddEventUtility(person, _cost_data[tup].util);
+    auto cu = _cost_data.at(tup);
+    AddEventCost(person, cu.cost);
+    AddEventUtility(person, cu.util);
 }
-} // namespace behavior
 } // namespace event
 } // namespace hepce

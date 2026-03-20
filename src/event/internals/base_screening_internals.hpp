@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: screening_internals.hpp                                              //
+// File: screening_base_internals.hpp                                         //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-09                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_SCREENINGINTERNALS_HPP_
 #define HEPCE_EVENT_SCREENINGINTERNALS_HPP_
@@ -21,11 +21,11 @@
 #include <hepce/utils/pair_hashing.hpp>
 
 // Local Includes
-#include "event_internals.hpp"
+#include "base_event_internals.hpp"
 
 namespace hepce {
 namespace event {
-class ScreeningBase : public EventBase {
+class ScreeningBase : public virtual EventBase {
 public:
     struct ScreeningData {
         double acute_sensitivity = 0.0;
@@ -43,11 +43,13 @@ public:
         std::unordered_map<utils::tuple_3i, struct ScreeningProbabilities,
                            utils::key_hash_3i, utils::key_equal_3i>;
 
-    ScreeningBase(datamanagement::ModelData &model_data,
-                  const std::string &log_name = "console")
-        : EventBase(model_data, log_name) {}
+    // EventBase Constructors
+    using EventBase::EventBase;
 
-    void Execute(model::Person &person, model::Sampler &sampler) override {
+    virtual ~ScreeningBase() = default;
+
+    void Execute(model::Person &person,
+                 const model::Sampler &sampler) override {
         if (!ValidExecute(person)) {
             return;
         }
@@ -74,11 +76,11 @@ public:
 protected:
     virtual data::InfectionType GetInfectionType() const = 0;
 
-    inline void LoadScreeningData(datamanagement::ModelData &model_data) {
+    inline void LoadScreeningData() {
         std::any storage = screenmap_t{};
         try {
-            model_data.GetDBSource("inputs").Select(ScreenSQL(),
-                                                    CallbackScreening, storage);
+            GetInputs().SelectFromDatabase(ScreenSQL(), CallbackScreening,
+                                           storage, {});
         } catch (std::exception &e) {
             std::stringstream msg;
             msg << "Error getting " << GetInfectionType()
@@ -212,7 +214,7 @@ private:
     }
 
     inline int InterventionScreen(model::Person &person,
-                                  model::Sampler &sampler) {
+                                  const model::Sampler &sampler) {
         double interventionProbability =
             GetScreeningProbability(person, "intervention_screen_probability");
         int decision = sampler.GetDecision({interventionProbability});
@@ -223,7 +225,7 @@ private:
     }
 
     inline int BackgroundScreen(model::Person &person,
-                                model::Sampler &sampler) {
+                                const model::Sampler &sampler) {
         double backgroundProbability =
             GetScreeningProbability(person, "background_screen_probability");
         int decision = sampler.GetDecision({backgroundProbability});
@@ -264,7 +266,7 @@ private:
     inline bool HandleTestResults(model::Person &person,
                                   const data::ScreeningType &type,
                                   const data::ScreeningTest &test,
-                                  model::Sampler &sampler) {
+                                  const model::Sampler &sampler) {
         bool result = RunTest(person, type, test, sampler);
         if (!result && person.GetHCVDetails().hcv != data::HCV::kNone) {
             if (person.GetScreeningDetails(GetInfectionType()).identified) {
@@ -280,7 +282,7 @@ private:
 
     inline bool RunTest(model::Person &person, const data::ScreeningType &type,
                         const data::ScreeningTest &test,
-                        model::Sampler &sampler) {
+                        const model::Sampler &sampler) {
         double probability = GetScreeningTypeSensitivitySpecificity(
             person.GetHCVDetails().hcv, test, type);
         person.Screen(GetInfectionType(), test, type);
@@ -338,7 +340,7 @@ private:
     /// @brief The Intervention Screening Event Undertaken on a Person
     /// @param person The Person undergoing an Intervention Screening
     inline void Screen(data::ScreeningType type, model::Person &person,
-                       model::Sampler &sampler) {
+                       const model::Sampler &sampler) {
         bool identified =
             person.GetScreeningDetails(GetInfectionType()).identified;
 

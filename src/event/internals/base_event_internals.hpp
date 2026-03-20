@@ -16,6 +16,7 @@
 #include <hepce/event/event.hpp>
 
 // Library Includes
+#include <hepce/data/inputs.hpp>
 #include <hepce/data/types.hpp>
 #include <hepce/model/costing.hpp>
 #include <hepce/model/utility.hpp>
@@ -26,47 +27,51 @@ namespace hepce {
 namespace event {
 class EventBase : public virtual Event {
 public:
-    EventBase(const std::string &name, datamanagement::ModelData &model_data,
+    EventBase(const std::string &name, const data::Inputs &inputs,
               const std::string &log_name)
-        : _name(name), _model_data(model_data), _log_name(log_name) {
-        SetEventDiscount(
-            utils::GetDoubleFromConfig("cost.discounting_rate", model_data));
-        SetEventCostCategory(model::CostCategory::kMisc);
-        SetEventUtilityCategory(model::UtilityCategory::kBackground);
+        : _name(name), _inputs(inputs), _log_name(log_name) {
+        SetDiscount(
+            utils::GetDoubleFromConfig("cost.discounting_rate", _inputs));
+        SetCostCategory(model::CostCategory::kMisc);
+        SetUtilityCategory(model::UtilityCategory::kBackground);
     }
-    ~EventBase() = default;
+    virtual ~EventBase() = default;
 
-    bool ValidExecute(model::Person &person) const override {
-        return person.IsAlive();
+    // Getters
+    const std::string &GetName() const { return _name; }
+    const data::Inputs &GetInputs() const { return _inputs; }
+    const std::string &GetLogName() const { return _log_name; }
+    const double &GetDiscount() const { return _discount; }
+    const model::UtilityCategory &GetUtilityCategory() const {
+        return _event_utility_category;
     }
-    void SetEventDiscount(const double &d) { _discount = d; }
-    void SetEventCostCategory(const model::CostCategory &cc) {
+    const model::CostCategory &GetCostCategory() const {
+        return _event_cost_category;
+    }
+
+    // Setters
+    void SetDiscount(const double &d) { _discount = d; }
+    void SetCostCategory(const model::CostCategory &cc) {
         _event_cost_category = cc;
     }
-    void SetEventUtilityCategory(const model::UtilityCategory &uc) {
+    void SetUtilityCategory(const model::UtilityCategory &uc) {
         _event_utility_category = uc;
     }
 
-    double GetEventDiscount() const { return _discount; }
-    model::CostCategory GetEventCostCategory() const {
-        return _event_cost_category;
-    }
-    model::UtilityCategory GetEventUtilityCategory() const {
-        return _event_utility_category;
+    // Common Event Utilities
+    bool ValidExecute(const model::Person &person) const override {
+        return person.IsAlive();
     }
 
-    std::string GetLogName() const { return _log_name; }
-
-    void AddEventCost(model::Person &person, double event_cost,
-                      bool annual = false) const {
-        double discounted_cost =
-            utils::Discount(event_cost, GetEventDiscount(),
-                            person.GetCurrentTimestep(), annual);
-        person.AddCost(event_cost, discounted_cost, GetEventCostCategory());
+    void AddEventCost(model::Person &person, const double &event_cost,
+                      const bool &annual = false) const {
+        double discounted_cost = utils::Discount(
+            event_cost, GetDiscount(), person.GetCurrentTimestep(), annual);
+        person.AddCost(event_cost, discounted_cost, GetCostCategory());
     }
 
     void AddEventUtility(model::Person &person, double event_utility) const {
-        person.SetUtility(event_utility, GetEventUtilityCategory());
+        person.SetUtility(event_utility, GetUtilityCategory());
     }
 
     inline int GetTimeSince(const model::Person &person, int time) const {
@@ -75,7 +80,7 @@ public:
 
 private:
     const std::string _name;
-    datamanagement::ModelData *_model_data;
+    const data::Inputs _inputs;
     const std::string _log_name;
     double _discount = 0.0;
     model::UtilityCategory _event_utility_category =

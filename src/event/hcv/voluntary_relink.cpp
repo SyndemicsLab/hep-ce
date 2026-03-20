@@ -4,10 +4,10 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2026-03-19                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <hepce/event/hcv/voluntary_relink.hpp>
@@ -51,7 +51,7 @@ void VoluntaryRelinkImpl::Execute(model::Person &person,
 }
 
 void VoluntaryRelinkImpl::LoadData(datamanagement::ModelData &model_data) {
-    SetEventCostCategory(model::CostCategory::kScreening);
+    SetCostCategory(model::CostCategory::kScreening);
 
     _relink_probability = utils::GetDoubleFromConfig(
         "linking.voluntary_relinkage_probability", model_data);

@@ -4,10 +4,10 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-10                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 // File Header
@@ -124,12 +124,12 @@ void TreatmentImpl::ResetUtility(model::Person &person) const {
     case data::HIV::kHiSu:
     case data::HIV::kHiUn:
         key = std::make_tuple(0, 1);
-        person.SetUtility(_utility_data.at(key), GetEventUtilityCategory());
+        person.SetUtility(_utility_data.at(key), GetUtilityCategory());
         break;
     case data::HIV::kLoSu:
     case data::HIV::kLoUn:
         key = std::make_tuple(0, 0);
-        person.SetUtility(_utility_data.at(key), GetEventUtilityCategory());
+        person.SetUtility(_utility_data.at(key), GetUtilityCategory());
         break;
     default:
         break;

@@ -4,7 +4,7 @@
 // Created Date: 2025-08-08                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -22,21 +22,14 @@ namespace event {
 namespace fibrosis {
 
 // Factory
-std::unique_ptr<Event>
-Progression::Create(datamanagement::ModelData &model_data,
-                    const std::string &log_name) {
-    return std::make_unique<ProgressionImpl>(model_data, log_name);
-}
-
-// Constructor
-ProgressionImpl::ProgressionImpl(datamanagement::ModelData &model_data,
-                                 const std::string &log_name)
-    : EventBase(model_data, log_name) {
-    LoadData(model_data);
+std::unique_ptr<Event> Progression::Create(const data::Inputs &inputs,
+                                           const std::string &log_name) {
+    return std::make_unique<Progression>(inputs, log_name);
 }
 
 // Execute
-void ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void Progression::Execute(model::Person &person,
+                          const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -60,22 +53,22 @@ void ProgressionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     ResolveLiverCostAndUtility(person);
 }
 
-void ProgressionImpl::LoadData(datamanagement::ModelData &model_data) {
-    SetEventUtilityCategory(model::UtilityCategory::kLiver);
-    SetEventCostCategory(model::CostCategory::kLiver);
+void Progression::LoadData() {
+    SetUtilityCategory(model::UtilityCategory::kLiver);
+    SetCostCategory(model::CostCategory::kLiver);
 
-    _probabilities = {utils::GetDoubleFromConfig("fibrosis.f01", model_data),
-                      utils::GetDoubleFromConfig("fibrosis.f12", model_data),
-                      utils::GetDoubleFromConfig("fibrosis.f23", model_data),
-                      utils::GetDoubleFromConfig("fibrosis.f34", model_data),
-                      utils::GetDoubleFromConfig("fibrosis.f4d", model_data)};
+    _probabilities = {utils::GetDoubleFromConfig("fibrosis.f01", GetInputs()),
+                      utils::GetDoubleFromConfig("fibrosis.f12", GetInputs()),
+                      utils::GetDoubleFromConfig("fibrosis.f23", GetInputs()),
+                      utils::GetDoubleFromConfig("fibrosis.f34", GetInputs()),
+                      utils::GetDoubleFromConfig("fibrosis.f4d", GetInputs())};
 
     _add_if_identified = utils::GetBoolFromConfig(
-        "fibrosis.add_cost_only_if_identified", model_data);
+        "fibrosis.add_cost_only_if_identified", GetInputs());
 
     std::any storage = costutilmap_t{};
     try {
-        model_data.GetDBSource("inputs").Select(
+        GetInputs().SelectFromDatabase(
             ProgressionSQL(),
             [](std::any &storage, const SQLite::Statement &stmt) {
                 costutilmap_t *temp = std::any_cast<costutilmap_t>(&storage);
@@ -84,7 +77,7 @@ void ProgressionImpl::LoadData(datamanagement::ModelData &model_data) {
                 (*temp)[tup] = {stmt.getColumn(2).getDouble(),
                                 stmt.getColumn(3).getDouble()};
             },
-            storage);
+            storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting Fibrosis Progression Data: " << e.what();
@@ -103,7 +96,7 @@ void ProgressionImpl::LoadData(datamanagement::ModelData &model_data) {
 
 // Private Methods
 const std::vector<double>
-ProgressionImpl::GetTransitionProbability(const data::FibrosisState &fs) const {
+Progression::GetTransitionProbability(const data::FibrosisState &fs) const {
     switch (fs) {
     case data::FibrosisState::kF0:
         return {_probabilities.f0_to_1, 1 - _probabilities.f0_to_1};

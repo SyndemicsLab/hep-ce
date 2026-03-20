@@ -30,9 +30,9 @@ public:
     Event &operator=(const Event &) = delete;
     virtual std::unique_ptr<Event> clone() const = 0;
 
-    virtual bool ValidExecute(model::Person &person) const = 0;
-    virtual void Execute(model::Person &person, model::Sampler &sampler) = 0;
-    virtual void LoadData(data::Inputs &inputs) = 0;
+    virtual bool ValidExecute(const model::Person &person) const = 0;
+    virtual void Execute(model::Person &person,
+                         const model::Sampler &sampler) = 0;
 
 protected:
     Event() = default;

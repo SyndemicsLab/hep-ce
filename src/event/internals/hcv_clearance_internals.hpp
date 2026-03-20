@@ -1,41 +1,47 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: clearance_internals.hpp                                              //
+// File: hcv_clearance_internals.hpp                                          //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-02                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_HCV_CLEARANCEINTERNALS_HPP_
 #define HEPCE_EVENT_HCV_CLEARANCEINTERNALS_HPP_
 
-// File Header
-#include <hepce/event/hcv/clearance.hpp>
-
 // Local Includes
-#include "../../internals/event_internals.hpp"
+#include "base_event_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace hcv {
-class ClearanceImpl : public virtual Clearance, public EventBase {
+class HCVClearance : public virtual EventBase {
 public:
-    ClearanceImpl(datamanagement::ModelData &model_data,
-                  const std::string &log_name = "console");
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
 
-    ~ClearanceImpl() = default;
+    HCVClearance(const data::Inputs &inputs, const std::string &log)
+        : EventBase("death", inputs, log) {
+        LoadData();
+    }
 
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+    ~HCVClearance() = default;
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<HCVClearance>(GetInputs(), GetLogName());
+    }
+
+    void Execute(model::Person &person, const model::Sampler &sampler) override;
 
 private:
     double _probability = 0.0;
+
+    void LoadData();
 };
-} // namespace hcv
 } // namespace event
 } // namespace hepce
 

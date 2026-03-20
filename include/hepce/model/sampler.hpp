@@ -29,7 +29,7 @@ public:
     static std::unique_ptr<Sampler>
     Create(const int &seed, const std::string &log_name = "console");
 
-    virtual const int GetDecision(const std::vector<double> &probs) = 0;
+    virtual const int GetDecision(const std::vector<double> &probs) const = 0;
 
 protected:
     Sampler() = default;

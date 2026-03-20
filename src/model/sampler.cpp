@@ -31,7 +31,8 @@ SamplerImpl::SamplerImpl(const int &seed, const std::string &log_name)
     _generator.seed(seed);
 }
 
-const int SamplerImpl::GetDecision(const std::vector<double> &probabilities) {
+const int
+SamplerImpl::GetDecision(const std::vector<double> &probabilities) const {
     if (std::accumulate(probabilities.begin(), probabilities.end(), 0.0) >
         1.00001) {
         hepce::utils::LogError(

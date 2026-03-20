@@ -1,47 +1,34 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: infection.cpp                                                        //
+// File: hcv_infection.cpp                                                    //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
-
-// File Header
-#include <hepce/event/hcv/infection.hpp>
 
 // Library Includes
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/logging.hpp>
 
 // Local Includes
-#include "internals/infection_internals.hpp"
+#include "internals/hcv_infection_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace hcv {
 
 // Factory
-std::unique_ptr<hepce::event::Event>
-Infection::Create(datamanagement::ModelData &model_data,
-                  const std::string &log_name) {
-    return std::make_unique<InfectionImpl>(model_data, log_name);
-}
-
-// Constructor
-InfectionImpl::InfectionImpl(datamanagement::ModelData &model_data,
-                             const std::string &log_name)
-    : EventBase(model_data, log_name),
-      _gt3_prob(utils::GetDoubleFromConfig("infection.genotype_three_prob",
-                                           model_data)) {
-    LoadData(model_data);
+std::unique_ptr<Event> HCVInfection::Create(const data::Inputs &inputs,
+                                            const std::string &log_name) {
+    return std::make_unique<HCVInfection>(inputs, log_name);
 }
 
 // Execute
-void InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void HCVInfection::Execute(model::Person &person,
+                           const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -69,12 +56,12 @@ void InfectionImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
-void InfectionImpl::LoadData(datamanagement::ModelData &model_data) {
+void HCVInfection::LoadData() {
     std::string error;
     std::any storage = incidencemap_t{};
     try {
-        model_data.GetDBSource("inputs").Select(IncidenceSQL(),
-                                                CallbackInfection, storage);
+        GetInputs().SelectFromDatabase(IncidenceSQL(), CallbackInfection,
+                                       storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting HCV Infection Incidence Data: " << e.what();
@@ -92,7 +79,7 @@ void InfectionImpl::LoadData(datamanagement::ModelData &model_data) {
 
 // Private Methods
 std::vector<double>
-InfectionImpl::GetInfectionProbability(const model::Person &person) {
+HCVInfection::GetInfectionProbability(const model::Person &person) {
     if (_infection_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
                                  "Infection Incidence Data is Empty. Returning "
@@ -112,6 +99,5 @@ InfectionImpl::GetInfectionProbability(const model::Person &person) {
     return {incidence};
 }
 
-} // namespace hcv
 } // namespace event
 } // namespace hepce

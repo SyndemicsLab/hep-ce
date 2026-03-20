@@ -4,40 +4,50 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_FIBROSIS_STAGINGINTERNALS_HPP_
 #define HEPCE_EVENT_FIBROSIS_STAGINGINTERNALS_HPP_
-
-// File Header
-#include <hepce/event/fibrosis/staging.hpp>
 
 // Library Includes
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/pair_hashing.hpp>
 
 // Local Includes
-#include "../../internals/event_internals.hpp"
+#include "base_event_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace fibrosis {
-class StagingImpl : public virtual Staging, public EventBase {
+class Staging : public virtual EventBase {
 public:
     using testmap_t =
         std::unordered_map<utils::tuple_2i, double, utils::key_hash_2i,
                            utils::key_equal_2i>;
 
-    StagingImpl(datamanagement::ModelData &model_data,
-                const std::string &log_name = "console");
-    ~StagingImpl() = default;
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
 
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+    Staging(const data::Inputs &inputs, const std::string &log)
+        : EventBase("staging", inputs, log),
+          _test_one(
+              utils::GetStringFromConfig("fibrosis_staging.test_one", inputs)),
+          _test_two(
+              utils::GetStringFromConfig("fibrosis_staging.test_two", inputs)) {
+        LoadData();
+    }
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    ~Staging() = default;
+
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<Staging>(GetInputs(), GetLogName());
+    }
+
+    void Execute(model::Person &person, const model::Sampler &sampler) override;
 
 private:
     const std::string _test_one;
@@ -49,6 +59,8 @@ private:
     std::vector<data::FibrosisState> _testtwo_eligible_fibs;
     testmap_t _test1_data;
     testmap_t _test2_data;
+
+    void LoadData();
 
     static void Callback(std::any &storage, const SQLite::Statement &stmt) {
         testmap_t *temp = std::any_cast<testmap_t>(&storage);
@@ -69,10 +81,9 @@ private:
         AddEventCost(person, cost);
     }
 
-    void LoadTestOneStagingData(datamanagement::ModelData &model_data);
-    void LoadTestTwoStagingData(datamanagement::ModelData &model_data);
+    void LoadTestOneStagingData();
+    void LoadTestTwoStagingData();
 };
-} // namespace fibrosis
 } // namespace event
 } // namespace hepce
 

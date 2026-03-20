@@ -1,18 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: linking_internals.hpp                                                //
+// File: linking_base_internals.hpp                                           //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-05                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2026-03-20                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_LINKINGINTERNALS_HPP_
 #define HEPCE_EVENT_LINKINGINTERNALS_HPP_
-
-#include "event_internals.hpp"
 
 #include <tuple>
 
@@ -21,23 +19,23 @@
 #include <hepce/utils/logging.hpp>
 #include <hepce/utils/pair_hashing.hpp>
 
+#include "base_event_internals.hpp"
+
 namespace hepce {
 namespace event {
-class LinkingBase : public EventBase {
+class LinkingBase : public virtual EventBase {
 public:
     using linkmap_t =
         std::unordered_map<utils::tuple_4i, std::pair<double, double>,
                            utils::key_hash_4i, utils::key_equal_4i>;
 
-    LinkingBase(datamanagement::ModelData &model_data,
-                const std::string &log_name)
-        : EventBase(model_data, log_name) {}
+    // EventBase Constructors
+    using EventBase::EventBase;
 
     virtual ~LinkingBase() = default;
 
-    virtual data::InfectionType GetInfectionType() const = 0;
-
-    void Execute(model::Person &person, model::Sampler &sampler) override {
+    void Execute(model::Person &person,
+                 const model::Sampler &sampler) override {
         if (!ValidExecute(person)) {
             return;
         }
@@ -82,6 +80,7 @@ public:
     }
 
 protected:
+    virtual data::InfectionType GetInfectionType() const = 0;
     inline bool GetLinkingStratifiedByPregnancy() const {
         return _stratify_by_pregnancy;
     }
@@ -98,11 +97,11 @@ protected:
                         stmt.getColumn(5).getDouble()};
     }
 
-    inline void LoadLinkingData(datamanagement::ModelData &model_data) {
+    inline void LoadLinkingData() {
         std::any storage = linkmap_t{};
         try {
-            model_data.GetDBSource("inputs").Select(LinkSQL(), CallbackLink,
-                                                    storage);
+            GetInputs().SelectFromDatabase(LinkSQL(), CallbackLink, storage,
+                                           {});
         } catch (std::exception &e) {
             std::stringstream msg;
             msg << "Error getting " << GetInfectionType()
@@ -198,7 +197,7 @@ protected:
     inline void AddFalsePositiveCost(model::Person &person,
                                      const model::CostCategory &category) {
         double discounted_cost =
-            utils::Discount(GetFalsePositiveCost(), GetEventDiscount(),
+            utils::Discount(GetFalsePositiveCost(), GetDiscount(),
                             person.GetCurrentTimestep(), false);
         person.AddCost(GetFalsePositiveCost(), discounted_cost, category);
     }

@@ -26,33 +26,33 @@ namespace hepce {
 namespace event {
 
 // Factory
-std::unique_ptr<Event> Aging::Create(datamanagement::ModelData &model_data,
+std::unique_ptr<Event> Aging::Create(const data::Inputs &inputs,
                                      const std::string &log_name) {
-    return std::make_unique<Aging>(model_data, log_name);
+    return std::make_unique<Aging>(inputs, log_name);
 }
 
 // Execution
-void AgingImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void Aging::Execute(model::Person &person, const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
     // Set person background utility before accumulating, which makes the first
     // timestep slightly more realistic
     AddBackgroundCostAndUtility(person);
-    person.AccumulateTotalUtility(GetEventDiscount());
+    person.AccumulateTotalUtility(GetDiscount());
     person.Grow();
     person.AddDiscountedLifeSpan(
-        utils::Discount(1, GetEventDiscount(), person.GetCurrentTimestep()));
+        utils::Discount(1, GetDiscount(), person.GetCurrentTimestep()));
 }
 
 // Private Methods
-void AgingImpl::LoadData(datamanagement::ModelData &model_data) {
-    SetEventCostCategory(model::CostCategory::kBackground);
-    SetEventUtilityCategory(model::UtilityCategory::kBackground);
+void Aging::LoadData() {
+    SetCostCategory(model::CostCategory::kBackground);
+    SetUtilityCategory(model::UtilityCategory::kBackground);
     _age_data.clear();
     std::any storage = agemap_t{};
     try {
-        model_data.GetDBSource("inputs").Select(
+        GetInputs().SelectFromDatabase(
             BuildSQL(),
             [](std::any &storage, const SQLite::Statement &stmt) {
                 agemap_t *temp = std::any_cast<agemap_t>(&storage);
@@ -63,7 +63,7 @@ void AgingImpl::LoadData(datamanagement::ModelData &model_data) {
                                      stmt.getColumn(4).getDouble()};
                 (*temp)[tup] = cu;
             },
-            storage);
+            storage, {});
     } catch (std::exception &e) {
         hepce::utils::LogError(GetLogName(), e.what());
 #ifdef EXIT_ON_WARNING
@@ -80,14 +80,14 @@ void AgingImpl::LoadData(datamanagement::ModelData &model_data) {
     }
 }
 
-void AgingImpl::AddBackgroundCostAndUtility(model::Person &person) {
+void Aging::AddBackgroundCostAndUtility(model::Person &person) const {
     int age_years = static_cast<int>(person.GetAge() / 12.0);
     int gender = static_cast<int>(person.GetSex());
     int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_3i tup = std::make_tuple(age_years, gender, behavior);
-
-    AddEventCost(person, _age_data[tup].cost);
-    AddEventUtility(person, _age_data[tup].util);
+    auto cu = _age_data.at(tup);
+    AddEventCost(person, cu.cost);
+    AddEventUtility(person, cu.util);
 }
 } // namespace event
 } // namespace hepce

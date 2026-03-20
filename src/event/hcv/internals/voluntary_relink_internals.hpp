@@ -4,10 +4,10 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-09                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_HCV_VOLUNTARYRELINKINTERNALS_HPP_
 #define HEPCE_EVENT_HCV_VOLUNTARYRELINKINTERNALS_HPP_
@@ -29,7 +29,7 @@ public:
 
     ~VoluntaryRelinkImpl() = default;
 
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, const model::Sampler &sampler) override;
 
     void LoadData(datamanagement::ModelData &model_data) override;
 

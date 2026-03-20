@@ -4,12 +4,11 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-16                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
-#include <hepce/event/base/death.hpp>
 
 #include <hepce/utils/logging.hpp>
 
@@ -17,32 +16,15 @@
 
 namespace hepce {
 namespace event {
-namespace base {
 
 // Factory
-std::unique_ptr<hepce::event::Event>
-Death::Create(datamanagement::ModelData &model_data,
-              const std::string &log_name) {
-    return std::make_unique<DeathImpl>(model_data, log_name);
-}
-
-// Constructor
-DeathImpl::DeathImpl(datamanagement::ModelData &model_data,
-                     const std::string &log_name)
-    : EventBase(model_data, log_name),
-      _f4_infected_probability(
-          utils::GetDoubleFromConfig("mortality.f4_infected", model_data)),
-      _f4_uninfected_probability(
-          utils::GetDoubleFromConfig("mortality.f4_uninfected", model_data)),
-      _decomp_infected_probability(
-          utils::GetDoubleFromConfig("mortality.decomp_infected", model_data)),
-      _decomp_uninfected_probability(utils::GetDoubleFromConfig(
-          "mortality.decomp_uninfected", model_data)) {
-    LoadData(model_data);
+std::unique_ptr<Event> Death::Create(const data::Inputs &inputs,
+                                     const std::string &log_name) {
+    return std::make_unique<Death>(inputs, log_name);
 }
 
 // Execute
-void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void Death::Execute(model::Person &person, const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -83,24 +65,24 @@ void DeathImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
-void DeathImpl::LoadData(datamanagement::ModelData &model_data) {
-    if (utils::FindInEventList("overdose", model_data)) {
+void Death::LoadData() {
+    if (utils::FindInEventList("overdose", GetInputs())) {
         check_overdose = true;
         _probability_of_overdose_fatality = utils::GetDoubleFromConfig(
-            "overdose.probability_of_overdose_fatality", model_data);
+            "overdose.probability_of_overdose_fatality", GetInputs());
         _fatal_overdose_cost = utils::GetDoubleFromConfig(
-            "overdose.fatal_overdose_cost", model_data);
+            "overdose.fatal_overdose_cost", GetInputs());
     }
-    if (utils::FindInEventList("hivinfection", model_data)) {
+    if (utils::FindInEventList("hivinfection", GetInputs())) {
         check_hiv = true;
         _hiv_mortality_probability =
-            utils::GetDoubleFromConfig("mortality.hiv", model_data);
+            utils::GetDoubleFromConfig("mortality.hiv", GetInputs());
     }
-    LoadBackgroundMortality(model_data);
+    LoadBackgroundMortality();
 }
 
 // Private Methods
-bool DeathImpl::ReachedMaxAge(model::Person &person) {
+bool Death::ReachedMaxAge(model::Person &person) const {
     if (person.GetAge() >= 1200) {
         Die(person, data::DeathReason::kAge);
         return true;
@@ -108,12 +90,12 @@ bool DeathImpl::ReachedMaxAge(model::Person &person) {
     return false;
 }
 
-void DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
+void Death::LoadBackgroundMortality() {
     std::string query = BackgroundMortalitySQL();
     std::any storage = _background_data;
 
     try {
-        model_data.GetDBSource("inputs").Select(
+        GetInputs().SelectFromDatabase(
             query,
             [](std::any &storage, const SQLite::Statement &stmt) {
                 backgroundmap_t *temp =
@@ -125,7 +107,7 @@ void DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
                                               stmt.getColumn(4).getDouble()};
                 (*temp)[tup] = bgsmr;
             },
-            storage);
+            storage, {});
     } catch (std::exception &e) {
         std::string msg = "SQL Exception getting Background mortality: " +
                           std::string(e.what());
@@ -143,7 +125,8 @@ void DeathImpl::LoadBackgroundMortality(datamanagement::ModelData &model_data) {
     }
 }
 
-bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
+bool Death::FatalOverdose(model::Person &person,
+                          const model::Sampler &sampler) {
     if (!person.GetCurrentlyOverdosing()) {
         return false;
     }
@@ -151,7 +134,7 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
     if (sampler.GetDecision({_probability_of_overdose_fatality,
                              1 - _probability_of_overdose_fatality}) != 0) {
         person.ToggleOverdose();
-        SetEventCostCategory(model::CostCategory::kOverdose);
+        SetCostCategory(model::CostCategory::kOverdose);
         AddEventCost(person, _fatal_overdose_cost);
         return false;
     }
@@ -159,7 +142,8 @@ bool DeathImpl::FatalOverdose(model::Person &person, model::Sampler &sampler) {
     return true;
 }
 
-bool DeathImpl::HivDeath(model::Person &person, model::Sampler &sampler) {
+bool Death::HivDeath(model::Person &person,
+                     const model::Sampler &sampler) const {
     if (person.GetHIVDetails().hiv == data::HIV::kNone) {
         return false;
     }
@@ -170,7 +154,7 @@ bool DeathImpl::HivDeath(model::Person &person, model::Sampler &sampler) {
     return false;
 }
 
-double DeathImpl::GetFibrosisMortalityProbability(model::Person &person) {
+double Death::GetFibrosisMortalityProbability(model::Person &person) const {
 
     if (person.GetHCVDetails().fibrosis_state == data::FibrosisState::kF4) {
         if (person.GetHCVDetails().hcv == data::HCV::kNone) {
@@ -190,9 +174,8 @@ double DeathImpl::GetFibrosisMortalityProbability(model::Person &person) {
     return 0;
 }
 
-void DeathImpl::GetSMRandBackgroundProb(model::Person &person,
-                                        double &bg_death_probability,
-                                        double &smr) {
+void Death::GetSMRandBackgroundProb(model::Person &person, double &background,
+                                    double &smr) const {
 
     if (_background_data.empty()) {
         hepce::utils::LogWarning(GetLogName(),
@@ -200,7 +183,7 @@ void DeathImpl::GetSMRandBackgroundProb(model::Person &person,
 #ifdef EXIT_ON_WARNING
         std::exit(EXIT_FAILURE);
 #endif
-        bg_death_probability = 0;
+        background = 0;
         smr = 0;
         return;
     }
@@ -209,10 +192,10 @@ void DeathImpl::GetSMRandBackgroundProb(model::Person &person,
     int gender = static_cast<int>(person.GetSex());
     int drug_behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_3i tup = std::make_tuple(age_years, gender, drug_behavior);
-    bg_death_probability = _background_data[tup].back_mort;
-    smr = _background_data[tup].smr;
+    auto temp = _background_data.at(tup);
+    background = temp.back_mort;
+    smr = temp.smr;
 }
 
-} // namespace base
 } // namespace event
 } // namespace hepce

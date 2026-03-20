@@ -37,8 +37,6 @@ private:
     int _duration;
     int _sim_seed;
 
-    const std::string GetLogName() const { return _log_name; }
-
     model::People ReadICPopulation(const int population_size) const;
 
     model::People ReadPopPopulation(const int population_size) const;

@@ -4,10 +4,10 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-08-05                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2026-03-19                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 // File Header
@@ -34,7 +34,7 @@ LinkingImpl::LinkingImpl(datamanagement::ModelData &model_data,
 }
 
 void LinkingImpl::LoadData(datamanagement::ModelData &model_data) {
-    SetEventCostCategory(model::CostCategory::kHiv);
+    SetCostCategory(model::CostCategory::kHiv);
     SetLinkingStratifiedByPregnancy(
         utils::FindInEventList("pregnancy", model_data));
     LoadLinkingData(model_data);

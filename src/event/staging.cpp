@@ -4,42 +4,28 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-09-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2026-03-20                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <hepce/event/fibrosis/staging.hpp>
-
 #include "internals/staging_internals.hpp"
+
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/logging.hpp>
 
 namespace hepce {
 namespace event {
-namespace fibrosis {
 
 // Factory
-std::unique_ptr<hepce::event::Event>
-Staging::Create(datamanagement::ModelData &model_data,
-                const std::string &log_name) {
-    return std::make_unique<StagingImpl>(model_data, log_name);
-}
-
-// Constructor
-StagingImpl::StagingImpl(datamanagement::ModelData &model_data,
-                         const std::string &log_name)
-    : EventBase(model_data, log_name),
-      _test_one(
-          utils::GetStringFromConfig("fibrosis_staging.test_one", model_data)),
-      _test_two(
-          utils::GetStringFromConfig("fibrosis_staging.test_two", model_data)) {
-    LoadData(model_data);
+std::unique_ptr<Event> Staging::Create(const data::Inputs &inputs,
+                                       const std::string &log_name) {
+    return std::make_unique<Staging>(inputs, log_name);
 }
 
 // Execute
-void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void Staging::Execute(model::Person &person, const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -127,32 +113,32 @@ void StagingImpl::Execute(model::Person &person, model::Sampler &sampler) {
     AddStagingCost(person, _test_two_cost);
 }
 
-void StagingImpl::LoadData(datamanagement::ModelData &model_data) {
-    SetEventCostCategory(model::CostCategory::kStaging);
+void Staging::LoadData() {
+    SetCostCategory(model::CostCategory::kStaging);
 
     _staging_period =
-        utils::GetIntFromConfig("fibrosis_staging.period", model_data);
+        utils::GetIntFromConfig("fibrosis_staging.period", GetInputs());
     _test_one_cost = utils::GetDoubleFromConfig(
-        "fibrosis_staging.test_one_cost", model_data);
+        "fibrosis_staging.test_one_cost", GetInputs());
     _test_two_cost = utils::GetDoubleFromConfig(
-        "fibrosis_staging.test_two_cost", model_data);
+        "fibrosis_staging.test_two_cost", GetInputs());
     _testtwo_eligible_fibs = utils::SplitToVecT<data::FibrosisState>(
         utils::GetStringFromConfig("fibrosis_staging.test_two_eligible_stages",
-                                   model_data),
+                                   GetInputs()),
         ',');
     _multitest_result_method = utils::GetStringFromConfig(
-        "fibrosis_staging.multitest_result_method", model_data);
+        "fibrosis_staging.multitest_result_method", GetInputs());
 
-    LoadTestOneStagingData(model_data);
+    LoadTestOneStagingData();
     if (!_test_two.empty()) {
-        LoadTestTwoStagingData(model_data);
+        LoadTestTwoStagingData();
     }
 }
 
 // Private Methods
 const std::vector<double>
-StagingImpl::ProbabilityBuilder(const model::Person &person,
-                                const testmap_t &test) const {
+Staging::ProbabilityBuilder(const model::Person &person,
+                            const testmap_t &test) const {
     int fibrosis_state =
         static_cast<int>(person.GetHCVDetails().fibrosis_state);
     if (fibrosis_state > static_cast<int>(data::FibrosisState::kCount) ||
@@ -193,12 +179,11 @@ StagingImpl::ProbabilityBuilder(const model::Person &person,
     }
     return probs;
 }
-void StagingImpl::LoadTestOneStagingData(
-    datamanagement::ModelData &model_data) {
+void Staging::LoadTestOneStagingData() {
     std::any storage = testmap_t{};
     try {
-        model_data.GetDBSource("inputs").Select(StagingSQL(_test_one), Callback,
-                                                storage);
+        GetInputs().SelectFromDatabase(StagingSQL(_test_one), Callback, storage,
+                                       {});
     } catch (std::exception &e) {
         hepce::utils::LogError(
             GetLogName(),
@@ -208,12 +193,11 @@ void StagingImpl::LoadTestOneStagingData(
     }
     _test1_data = std::any_cast<testmap_t>(storage);
 }
-void StagingImpl::LoadTestTwoStagingData(
-    datamanagement::ModelData &model_data) {
+void Staging::LoadTestTwoStagingData() {
     std::any storage = testmap_t{};
     try {
-        model_data.GetDBSource("inputs").Select(StagingSQL(_test_two), Callback,
-                                                storage);
+        GetInputs().SelectFromDatabase(StagingSQL(_test_two), Callback, storage,
+                                       {});
     } catch (std::exception &e) {
         hepce::utils::LogError(
             GetLogName(),
@@ -224,6 +208,5 @@ void StagingImpl::LoadTestTwoStagingData(
     _test2_data = std::any_cast<testmap_t>(storage);
 }
 
-} // namespace fibrosis
 } // namespace event
 } // namespace hepce

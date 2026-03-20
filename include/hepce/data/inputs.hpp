@@ -46,7 +46,7 @@ public:
             callback,
         std::any &storage,
         const std::unordered_map<int, std::variant<int, double, std::string>>
-            &bindings) {
+            &bindings) const {
         try {
             SQLite::Database db(_database_file,
                                 SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);

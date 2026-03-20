@@ -4,14 +4,11 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
-
-// File Header
-#include <hepce/event/behavior/pregnancy.hpp>
 
 // Library Includes
 #include <hepce/utils/config.hpp>
@@ -27,26 +24,12 @@ namespace behavior {
 
 // Factory
 std::unique_ptr<hepce::event::Event>
-Pregnancy::Create(datamanagement::ModelData &model_data,
-                  const std::string &log_name) {
-    return std::make_unique<PregnancyImpl>(model_data, log_name);
-}
-
-// Constructor
-PregnancyImpl::PregnancyImpl(datamanagement::ModelData &model_data,
-                             const std::string &log_name)
-    : EventBase(model_data, log_name),
-      _multiple_delivery_probability(utils::GetDoubleFromConfig(
-          "pregnancy.multiple_delivery_probability", model_data)),
-      _infant_hcv_tested_probability(utils::GetDoubleFromConfig(
-          "pregnancy.infant_hcv_tested_probability", model_data)),
-      _vertical_hcv_transition_probability(utils::GetDoubleFromConfig(
-          "pregnancy.vertical_hcv_transition_probability", model_data)) {
-    LoadData(model_data);
+Pregnancy::Create(const data::Inputs &inputs, const std::string &log_name) {
+    return std::make_unique<Pregnancy>(inputs, log_name);
 }
 
 // Execute
-void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void Pregnancy::Execute(model::Person &person, const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -74,11 +57,11 @@ void PregnancyImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
-void PregnancyImpl::LoadData(datamanagement::ModelData &model_data) {
+void Pregnancy::LoadData() {
     std::any storage = pregnancymap_t{};
 
     try {
-        model_data.GetDBSource("inputs").Select(
+        GetInputs().SelectFromDatabase(
             PregnancySQL(),
             [](std::any &storage, const SQLite::Statement &stmt) {
                 pregnancymap_t *temp = std::any_cast<pregnancymap_t>(&storage);
@@ -87,7 +70,7 @@ void PregnancyImpl::LoadData(datamanagement::ModelData &model_data) {
                     stmt.getColumn(2).getDouble()};
                 (*temp)[stmt.getColumn(0).getInt()] = d;
             },
-            storage);
+            storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting Pregnancy Data: " << e.what();
@@ -106,7 +89,7 @@ void PregnancyImpl::LoadData(datamanagement::ModelData &model_data) {
 }
 
 // Private Methods
-void PregnancyImpl::ProgressPostpartum(model::Person &person) const {
+void Pregnancy::ProgressPostpartum(model::Person &person) const {
     auto state = person.GetPregnancyDetails().pregnancy_state;
     auto time = person.GetPregnancyDetails().time_of_pregnancy_change;
     switch (state) {
@@ -128,8 +111,8 @@ void PregnancyImpl::ProgressPostpartum(model::Person &person) const {
     }
 }
 
-void PregnancyImpl::AttemptHaveChild(model::Person &person,
-                                     model::Sampler &sampler) {
+void Pregnancy::AttemptHaveChild(model::Person &person,
+                                 const model::Sampler &sampler) {
     if (CheckStillbirth(person, sampler)) {
         person.Stillbirth();
         return;
@@ -151,7 +134,7 @@ void PregnancyImpl::AttemptHaveChild(model::Person &person,
     }
 }
 
-data::Child PregnancyImpl::MakeChild(data::HCV hcv, bool test) {
+data::Child Pregnancy::MakeChild(const data::HCV &hcv, const bool &test) {
     data::Child child = {hcv, test};
     return child;
 }

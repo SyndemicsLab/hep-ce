@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: treatment_internals.hpp                                              //
+// File: base_treatment_internals.hpp                                         //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-30                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_TREATMENTINTERNALS_HPP_
 #define HEPCE_EVENT_TREATMENTINTERNALS_HPP_
@@ -22,7 +22,7 @@
 #include <hepce/utils/logging.hpp>
 
 // Local Includes
-#include "event_internals.hpp"
+#include "base_event_internals.hpp"
 
 namespace hepce {
 namespace event {
@@ -47,26 +47,25 @@ public:
     using ltfu_map_t = std::unordered_map<data::PregnancyState, double>;
     ltfu_map_t _ltfu_probability;
 
-    TreatmentBase(datamanagement::ModelData &model_data,
-                  const std::string &log_name = "console")
-        : EventBase(model_data, log_name) {
-        SetEventCostCategory(model::CostCategory::kTreatment);
-        SetEventUtilityCategory(model::UtilityCategory::kTreatment);
-        LoadEligibilityData(model_data);
-        LoadLostToFollowUpData(model_data);
+    TreatmentBase(const std::string &name, const data::Inputs &inputs,
+                  const std::string &log)
+        : EventBase(name, inputs, log) {
+        SetCostCategory(model::CostCategory::kTreatment);
+        SetUtilityCategory(model::UtilityCategory::kTreatment);
+        LoadEligibilityData();
+        LoadLostToFollowUpData();
         SetTreatmentLimit(
-            utils::GetIntFromConfig("treatment.treatment_limit", model_data));
-
+            utils::GetIntFromConfig("treatment.treatment_limit", inputs));
         _costs.treatment =
-            utils::GetDoubleFromConfig("treatment.treatment_cost", model_data);
-        _utilities.treatment = utils::GetDoubleFromConfig(
-            "treatment.treatment_utility", model_data);
+            utils::GetDoubleFromConfig("treatment.treatment_cost", inputs);
+        _utilities.treatment =
+            utils::GetDoubleFromConfig("treatment.treatment_utility", inputs);
         _costs.salvage =
-            utils::GetDoubleFromConfig("treatment.salvage_cost", model_data);
+            utils::GetDoubleFromConfig("treatment.salvage_cost", inputs);
         _costs.toxicity =
-            utils::GetDoubleFromConfig("treatment.tox_cost", model_data);
+            utils::GetDoubleFromConfig("treatment.tox_cost", inputs);
         _utilities.toxicity =
-            utils::GetDoubleFromConfig("treatment.tox_utility", model_data);
+            utils::GetDoubleFromConfig("treatment.tox_utility", inputs);
     }
 
 protected:
@@ -83,24 +82,24 @@ protected:
     }
     inline TreatmentCosts GetTreatmentCosts() const { return _costs; }
 
-    void LoadEligibilityData(datamanagement::ModelData &model_data) {
-        _eligibilities.behavior_states = LoadEligibilityVectors(
-            "eligibility.ineligible_drug_use", model_data);
-        _eligibilities.fibrosis_states = LoadEligibilityVectors(
-            "eligibility.ineligible_fibrosis_stages", model_data);
-        _eligibilities.pregnancy_states = LoadEligibilityVectors(
-            "eligibility.ineligible_pregnancy_states", model_data);
+    void LoadEligibilityData() {
+        _eligibilities.behavior_states =
+            LoadEligibilityVectors("eligibility.ineligible_drug_use");
+        _eligibilities.fibrosis_states =
+            LoadEligibilityVectors("eligibility.ineligible_fibrosis_stages");
+        _eligibilities.pregnancy_states =
+            LoadEligibilityVectors("eligibility.ineligible_pregnancy_states");
         _eligibilities.time_since_linked = utils::GetIntFromConfig(
-            "eligibility.ineligible_time_since_linked", model_data);
+            "eligibility.ineligible_time_since_linked", GetInputs());
         _eligibilities.time_since_last_use = utils::GetIntFromConfig(
-            "eligibility.ineligible_time_former_threshold", model_data);
+            "eligibility.ineligible_time_former_threshold", GetInputs());
     }
 
-    inline void LoadLostToFollowUpData(datamanagement::ModelData &model_data) {
+    inline void LoadLostToFollowUpData() {
         std::any storage = ltfu_map_t{};
         try {
-            model_data.GetDBSource("inputs").Select(
-                LostToFollowUpSQL(), LostToFollowUpCallback, storage);
+            GetInputs().SelectFromDatabase(LostToFollowUpSQL(),
+                                           LostToFollowUpCallback, storage, {});
         } catch (std::exception &e) {
             std::stringstream msg;
             msg << "Error getting Lost To Follow Up Data: " << e.what();
@@ -134,7 +133,8 @@ protected:
     /// @brief
     /// @param
     /// @return
-    inline bool LostToFollowUp(model::Person &person, model::Sampler &sampler) {
+    inline bool LostToFollowUp(model::Person &person,
+                               const model::Sampler &sampler) {
         if ((sampler.GetDecision({_ltfu_probability[person.GetPregnancyDetails()
                                                         .pregnancy_state]}) ==
              0)) {
@@ -147,9 +147,8 @@ protected:
     /// @param
     /// @return
     inline std::vector<std::string>
-    LoadEligibilityVectors(const std::string &config_key,
-                           datamanagement::ModelData &model_data) {
-        std::string data = utils::GetStringFromConfig(config_key, model_data);
+    LoadEligibilityVectors(const std::string &config_key) {
+        std::string data = utils::GetStringFromConfig(config_key, GetInputs());
         if (data.empty()) {
             hepce::utils::LogWarning(GetLogName(),
                                      "Eligibility Data is Empty for key: " +

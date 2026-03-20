@@ -41,13 +41,13 @@ HepceImpl::HepceImpl(const data::Inputs &inputs, const std::string &log_name)
         msg << "No seed or negative seed provided in `sim.conf`. Using "
                "generated seed value: "
             << _sim_seed << ".";
-        hepce::utils::LogWarning(GetLogName(), msg.str());
+        hepce::utils::LogWarning(_log_name, msg.str());
     }
 }
 
 void HepceImpl::Run(const model::People &people,
                     const event::EventList &discrete_events) {
-    auto sampler = hepce::model::Sampler::Create(GetSeed(), GetLogName());
+    auto sampler = hepce::model::Sampler::Create(GetSeed(), _log_name);
 #pragma omp parallel for
     for (const auto &person : people) {
         for (int i = 0; i < GetDuration(); ++i) {
@@ -95,7 +95,7 @@ model::People HepceImpl::ReadICPopulation(const int population_size) const {
         std::stringstream msg;
         msg << "Error drawing population size " << population_size
             << " from Initial Cohort. Using Default Person Values...";
-        hepce::utils::LogWarning(GetLogName(), msg.str());
+        hepce::utils::LogWarning(_log_name, msg.str());
 #ifdef EXIT_ON_WARNING
         std::exit(EXIT_FAILURE);
 #endif
@@ -104,10 +104,9 @@ model::People HepceImpl::ReadICPopulation(const int population_size) const {
     std::vector<data::PersonSelect> vec =
         std::any_cast<std::vector<data::PersonSelect>>(storage);
     model::People population = {};
-    int start_time =
-        utils::GetIntFromConfig("simulation.start_time", model_data);
+    int start_time = utils::GetIntFromConfig("simulation.start_time", _inputs);
     for (const auto &ps : vec) {
-        auto person = model::Person::Create(GetLogName());
+        auto person = model::Person::Create(_log_name);
         person->SetPersonDetails(ps);
         person->SetStartTime(start_time);
         population.push_back(std::move(person));
@@ -115,12 +114,10 @@ model::People HepceImpl::ReadICPopulation(const int population_size) const {
     return population;
 }
 
-model::People
-HepceImpl::ReadPopPopulation(const int population_size,
-                             datamanagement::ModelData &model_data) const {
+model::People HepceImpl::ReadPopPopulation(const int population_size) const {
     std::stringstream query;
     std::vector<std::string> events = utils::SplitToVecT<std::string>(
-        utils::GetStringFromConfig("simulation.events", model_data), ',');
+        utils::GetStringFromConfig("simulation.events", _inputs), ',');
 
     // this is a stopgap with plans to make Event-scoped CheckFor<X>Event
     // functions that are static / usable throughout the model.
@@ -143,13 +140,12 @@ HepceImpl::ReadPopPopulation(const int population_size,
     std::any storage = std::vector<data::PersonSelect>{};
 
     try {
-        model_data.GetDBSource("inputs").Select(query.str(), PersonVecCallback,
-                                                storage);
+        _inputs.SelectFromDatabase(query.str(), PersonVecCallback, storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting " << population_size
             << " people from Population File. Using Default Person Values...";
-        hepce::utils::LogWarning(GetLogName(), msg.str());
+        hepce::utils::LogWarning(_log_name, msg.str());
 #ifdef EXIT_ON_WARNING
         std::exit(EXIT_FAILURE);
 #endif
@@ -158,10 +154,9 @@ HepceImpl::ReadPopPopulation(const int population_size,
     std::vector<data::PersonSelect> vec =
         std::any_cast<std::vector<data::PersonSelect>>(storage);
     model::People population = {};
-    int start_time =
-        utils::GetIntFromConfig("simulation.start_time", model_data);
+    int start_time = utils::GetIntFromConfig("simulation.start_time", _inputs);
     for (const auto &ps : vec) {
-        auto person = model::Person::Create(GetLogName());
+        auto person = model::Person::Create(_log_name);
         person->SetPersonDetails(ps);
         person->SetStartTime(start_time);
         population.push_back(std::move(person));

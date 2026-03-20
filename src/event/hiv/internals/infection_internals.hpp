@@ -4,10 +4,10 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-06-18                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_HIV_INFECTIONINTERNALS_HPP_
 #define HEPCE_EVENT_HIV_INFECTIONINTERNALS_HPP_
@@ -36,7 +36,7 @@ public:
 
     ~InfectionImpl() = default;
 
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+    void Execute(model::Person &person, const model::Sampler &sampler) override;
 
     void LoadData(datamanagement::ModelData &model_data) override;
 

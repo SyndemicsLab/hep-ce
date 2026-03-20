@@ -4,24 +4,21 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_BEHAVIOR_OVERDOSE_INTERNALS_HPP_
 #define HEPCE_EVENT_BEHAVIOR_OVERDOSE_INTERNALS_HPP_
 
-#include <hepce/event/behavior/overdose.hpp>
-
 #include <hepce/utils/pair_hashing.hpp>
 
-#include "../../internals/event_internals.hpp"
+#include "base_event_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace behavior {
-class OverdoseImpl : public virtual Overdose, public EventBase {
+class Overdose : public virtual EventBase {
 public:
     struct OverdoseData {
         double overdose_probability = 0.0;
@@ -33,13 +30,24 @@ public:
         std::unordered_map<utils::tuple_3i, OverdoseData, utils::key_hash_3i,
                            utils::key_equal_3i>;
 
-    OverdoseImpl(datamanagement::ModelData &model_data,
-                 const std::string &log_name = "console");
-    ~OverdoseImpl() = default;
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
 
-    void Execute(model::Person &person, model::Sampler &sampler) override;
+    Overdose(const data::Inputs &inputs, const std::string &log)
+        : EventBase("overdose", inputs, log) {
+        LoadOverdoseData();
+        SetCostCategory(model::CostCategory::kOverdose);
+        SetUtilityCategory(model::UtilityCategory::kOverdose);
+    }
+    ~Overdose() = default;
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<Overdose>(GetInputs(), GetLogName());
+    }
+
+    void Execute(model::Person &person, const model::Sampler &sampler) override;
 
 private:
     overdosemap_t _overdose_data;
@@ -49,11 +57,10 @@ private:
                "cost, utility FROM overdoses;";
     }
 
-    void LoadOverdoseData(datamanagement::ModelData &model_data);
+    void LoadOverdoseData();
 
     void CalculateCostAndUtility(model::Person &person);
 };
-} // namespace behavior
 } // namespace event
 } // namespace hepce
 
