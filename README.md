@@ -73,7 +73,6 @@ These categories are further broken into discrete events:
 
 ### Dependencies
 
-- [DataManagement](https://github.com/SyndemicsLab/DataManagement)
 - [GoogleTest/`gtest`](https://github.com/google/googletest) (optional, used
   for unit testing)
 - [Ninja](https://ninja-build.org)

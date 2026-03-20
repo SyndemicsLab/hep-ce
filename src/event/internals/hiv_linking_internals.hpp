@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: linking_internals.hpp                                                //
+// File: hiv_linking_internals.hpp                                            //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -12,25 +12,32 @@
 #ifndef HEPCE_EVENT_HIV_LINKINGINTERNALS_HPP_
 #define HEPCE_EVENT_HIV_LINKINGINTERNALS_HPP_
 
-// Header File
-#include <hepce/event/hiv/linking.hpp>
-
 // Local Includes
-#include "../../internals/linking_internals.hpp"
+#include "base_linking_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace hiv {
-class LinkingImpl : public virtual Linking, public LinkingBase {
+class HIVLinking : public virtual LinkingBase {
 public:
-    LinkingImpl(datamanagement::ModelData &model_data,
-                const std::string &log_name = "console");
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
 
-    ~LinkingImpl() = default;
+    HIVLinking(const data::Inputs &inputs, const std::string &log)
+        : EventBase("hiv_infection", inputs, log) {
+        LoadData();
+    }
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    ~HIVLinking() = default;
+
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<HIVLinking>(GetInputs(), GetLogName());
+    }
 
 private:
+    void LoadData();
+
     inline data::InfectionType GetInfectionType() const override {
         return data::InfectionType::kHiv;
     }
@@ -48,7 +55,6 @@ private:
         return true;
     }
 };
-} // namespace hiv
 } // namespace event
 } // namespace hepce
 

@@ -16,7 +16,6 @@
 
 namespace hepce {
 namespace event {
-namespace behavior {
 // Factory
 std::unique_ptr<hepce::event::Event>
 Overdose::Create(const data::Inputs &inputs, const std::string &log_name) {
@@ -82,6 +81,5 @@ void Overdose::CalculateCostAndUtility(model::Person &person) {
     AddEventCost(person, _overdose_data[tup].cost);
     AddEventUtility(person, _overdose_data[tup].utility);
 }
-} // namespace behavior
 } // namespace event
 } // namespace hepce

@@ -1,19 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: screening_internals.hpp                                              //
+// File: hiv_screening_internals.hpp                                          //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-05-06                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_EVENT_HIV_SCREENINGINTERNALS_HPP_
 #define HEPCE_EVENT_HIV_SCREENINGINTERNALS_HPP_
-
-// File Header
-#include <hepce/event/hiv/screening.hpp>
 
 // STL Includes
 #include <functional>
@@ -23,25 +20,34 @@
 #include <hepce/utils/pair_hashing.hpp>
 
 // Local Includes
-#include "../../internals/screening_internals.hpp"
+#include "base_screening_internals.hpp"
 namespace hepce {
 namespace event {
-namespace hiv {
-class ScreeningImpl : public virtual Screening, public ScreeningBase {
+class HIVScreening : public virtual ScreeningBase {
 public:
-    ScreeningImpl(datamanagement::ModelData &model_data,
-                  const std::string &log_name = "console");
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
 
-    ~ScreeningImpl() = default;
+    HIVScreening(const data::Inputs &inputs, const std::string &log)
+        : EventBase("voluntary_relink", inputs, log) {
+        LoadData();
+    }
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    ~HIVScreening() = default;
+
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<HIVScreening>(GetInputs(), GetLogName());
+    }
 
 private:
+    void LoadData();
+
     data::InfectionType GetInfectionType() const override {
         return data::InfectionType::kHiv;
     }
 };
-} // namespace hiv
 } // namespace event
 } // namespace hepce
 

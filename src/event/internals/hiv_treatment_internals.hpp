@@ -1,10 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: treatment_internals.hpp                                              //
+// File: hiv_treatment_internals.hpp                                          //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -12,16 +12,13 @@
 #ifndef HEPCE_EVENT_HIV_TREATMENTINTERNALS_HPP_
 #define HEPCE_EVENT_HIV_TREATMENTINTERNALS_HPP_
 
-#include <hepce/event/hiv/treatment.hpp>
-
 #include <hepce/utils/pair_hashing.hpp>
 
-#include "../../internals/treatment_internals.hpp"
+#include "base_treatment_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace hiv {
-class TreatmentImpl : public virtual Treatment, public TreatmentBase {
+class HIVTreatment : public virtual TreatmentBase {
 public:
     struct HivTreatmentData {
         double course_cost = 0.0;
@@ -37,18 +34,29 @@ public:
         std::unordered_map<utils::tuple_2i, double, utils::key_hash_2i,
                            utils::key_equal_2i>;
 
-    TreatmentImpl(datamanagement::ModelData &model_data,
-                  const std::string &log_name = "console");
-    ~TreatmentImpl() = default;
+    // Factory
+    static std::unique_ptr<Event> Create(const data::Inputs &inputs,
+                                         const std::string &log_name);
+
+    HIVTreatment(const data::Inputs &inputs, const std::string &log)
+        : TreatmentBase("hiv_treatment", inputs, log) {
+        LoadData();
+    }
+    ~HIVTreatment() = default;
 
     void Execute(model::Person &person, const model::Sampler &sampler) override;
 
-    void LoadData(datamanagement::ModelData &model_data) override;
+    // Cloning
+    std::unique_ptr<Event> clone() const override {
+        return std::make_unique<HIVTreatment>(GetInputs(), GetLogName());
+    }
 
 private:
     hivutilitymap_t _utility_data;
     hivtreatmentmap_t _treatment_sql_data;
     std::string _course_name;
+
+    void LoadData();
 
     inline data::InfectionType GetInfectionType() const override {
         return data::InfectionType::kHiv;
@@ -101,12 +109,13 @@ private:
 
     void ResetUtility(model::Person &person) const override;
 
-    bool InitiateTreatment(model::Person &person, model::Sampler &sampler);
+    bool InitiateTreatment(model::Person &person,
+                           const model::Sampler &sampler);
 
-    bool Withdraws(model::Person &person, model::Sampler &sampler);
+    bool Withdraws(model::Person &person, const model::Sampler &sampler);
 
     void CheckIfExperienceToxicity(model::Person &person,
-                                   model::Sampler &sampler);
+                                   const model::Sampler &sampler);
 
     /// @brief Used to set person's HIV utility after engaging with treatment
     /// @param
@@ -120,7 +129,6 @@ private:
 
     void LoseSuppression(model::Person &person);
 };
-} // namespace hiv
 } // namespace event
 } // namespace hepce
 

@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -44,8 +44,7 @@ public:
     Costs &operator=(const Costs &) = delete;
     virtual std::unique_ptr<Costs> clone() const = 0;
 
-    static std::unique_ptr<Costs>
-    Create(const std::string &log_name = "console");
+    static std::unique_ptr<Costs> Create();
 
     virtual std::pair<double, double> GetTotals() const = 0;
 

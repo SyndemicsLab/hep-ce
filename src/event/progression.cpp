@@ -19,7 +19,6 @@
 
 namespace hepce {
 namespace event {
-namespace fibrosis {
 
 // Factory
 std::unique_ptr<Event> Progression::Create(const data::Inputs &inputs,
@@ -112,6 +111,5 @@ Progression::GetTransitionProbability(const data::FibrosisState &fs) const {
         return {0.0, 1.0};
     }
 }
-} // namespace fibrosis
 } // namespace event
 } // namespace hepce

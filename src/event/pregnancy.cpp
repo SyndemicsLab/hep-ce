@@ -20,7 +20,6 @@
 
 namespace hepce {
 namespace event {
-namespace behavior {
 
 // Factory
 std::unique_ptr<hepce::event::Event>
@@ -138,6 +137,5 @@ data::Child Pregnancy::MakeChild(const data::HCV &hcv, const bool &test) {
     data::Child child = {hcv, test};
     return child;
 }
-} // namespace behavior
 } // namespace event
 } // namespace hepce

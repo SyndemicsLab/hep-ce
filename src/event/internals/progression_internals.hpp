@@ -21,7 +21,6 @@
 
 namespace hepce {
 namespace event {
-namespace fibrosis {
 class Progression : public virtual EventBase {
 public:
     struct progression_probabilities {
@@ -105,7 +104,6 @@ private:
         AddProgressionCost(person);
     }
 };
-} // namespace fibrosis
 } // namespace event
 } // namespace hepce
 

@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: DataWriterTest.cpp                                                   //
+// File: writer_test.cpp                                                      //
 // Project: hep-ce                                                            //
 // Created: 2025-03-12                                                        //
-// Author: Dimitri Baptiste                                                   //
+// Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <hepce/data/writer.hpp>

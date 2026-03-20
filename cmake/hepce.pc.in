@@ -8,5 +8,5 @@ Description: Syndemics Modeling Library
 URL: https://github.com/SyndemicsLab
 Version: @HEPCE_VERSION@
 CFlags: -I${includedir} @PKG_CONFIG_DEFINES@
-Libs: -L${libdir} -lspdlog -ldatamanagement
+Libs: -L${libdir} -lspdlog
 Requires: @PKG_CONFIG_REQUIRES@

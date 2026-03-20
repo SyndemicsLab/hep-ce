@@ -81,9 +81,89 @@ endif()
 add_library(hepce_model)
 add_library(hepce::hepce_model ALIAS hepce_model)
 
-file(GLOB_RECURSE HEPCE_HEADERS include/hepce/*.hpp)
-file(GLOB HEPCE_INTERNAL_HEADERS CONFIGURE_DEPENDS src/internals/*.hpp)
-file(GLOB HEPCE_SOURCE_FILES CONFIGURE_DEPENDS src/*.cpp)
+set(HEPCE_HEADERS
+    include/hepce/hepce.hpp
+    include/hepce/version.hpp
+    include/hepce/data/inputs.hpp
+    include/hepce/data/types.hpp
+    include/hepce/data/writer.hpp
+    include/hepce/event/event.hpp
+    include/hepce/event/event_factory.hpp
+    include/hepce/model/costing.hpp
+    include/hepce/model/person.hpp
+    include/hepce/model/sampler.hpp
+    include/hepce/model/simulation.hpp
+    include/hepce/model/utility.hpp
+    include/hepce/utils/config.hpp
+    include/hepce/utils/formatting.hpp
+    include/hepce/utils/logging.hpp
+    include/hepce/utils/math.hpp
+    include/hepce/utils/pair_hashing.hpp
+)
+
+set(HEPCE_INTERNAL_HEADERS
+    src/data/internals/writer_internals.hpp
+    src/event/internals/aging_internals.hpp
+    src/event/internals/all_events.hpp
+    src/event/internals/base_event_internals.hpp
+    src/event/internals/base_linking_internals.hpp
+    src/event/internals/base_screening_internals.hpp
+    src/event/internals/base_treatment_internals.hpp
+    src/event/internals/behavior_changes_internals.hpp
+    src/event/internals/death_internals.hpp
+    src/event/internals/hcc_internals.hpp
+    src/event/internals/hcv_clearance_internals.hpp
+    src/event/internals/hcv_infection_internals.hpp
+    src/event/internals/hcv_linking_internals.hpp
+    src/event/internals/hcv_screening_internals.hpp
+    src/event/internals/hcv_treatment_internals.hpp
+    src/event/internals/hcv_voluntary_relink_internals.hpp
+    src/event/internals/hiv_infection_internals.hpp
+    src/event/internals/hiv_linking_internals.hpp
+    src/event/internals/hiv_screening_internals.hpp
+    src/event/internals/hiv_treatment_internals.hpp
+    src/event/internals/moud_internals.hpp
+    src/event/internals/overdose_internals.hpp
+    src/event/internals/pregnancy_internals.hpp
+    src/event/internals/progression_internals.hpp
+    src/event/internals/staging_internals.hpp
+    src/model/internals/costing_internals.hpp
+    src/model/internals/person_internals.hpp
+    src/model/internals/sampler_internals.hpp
+    src/model/internals/simulation_internals.hpp
+    src/model/internals/utility_internals.hpp
+    src/utils/internals/logging_internals.hpp
+)
+
+set(HEPCE_SOURCE_FILES
+    src/data/types.cpp
+    src/data/writer.cpp
+    src/event/aging.cpp
+    src/event/behavior_changes.cpp
+    src/event/death.cpp
+    src/event/event_factory.cpp
+    src/event/hcv_clearance.cpp
+    src/event/hcv_infection.cpp
+    src/event/hcv_linking.cpp
+    src/event/hcv_screening.cpp
+    src/event/hcv_treatment.cpp
+    src/event/hcv_voluntary_relink.cpp
+    src/event/hiv_infection.cpp
+    src/event/hiv_linking.cpp
+    src/event/hiv_screening.cpp
+    src/event/hiv_treatment.cpp
+    src/event/moud.cpp
+    src/event/overdose.cpp
+    src/event/pregnancy.cpp
+    src/event/progression.cpp
+    src/event/staging.cpp
+    src/model/costing.cpp
+    src/model/person.cpp
+    src/model/sampler.cpp
+    src/model/simulation.cpp
+    src/model/utility.cpp
+    src/utils/logging.cpp
+)
 
 target_sources(hepce_model
     PRIVATE

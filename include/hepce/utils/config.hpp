@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -12,6 +12,7 @@
 #ifndef HEPCE_UTILS_CONFIG_HPP_
 #define HEPCE_UTILS_CONFIG_HPP_
 
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -27,13 +28,13 @@
 namespace hepce {
 namespace utils {
 
-void ThrowPathError(const std::string &key) {
+inline void ThrowPathError(const std::string &key) {
     std::ostringstream msg;
     msg << "Key `" << key << "` not found in config file!";
     throw std::runtime_error(msg.str());
 }
 
-void ThrowDataError(const std::string &key) {
+inline void ThrowDataError(const std::string &key) {
     std::ostringstream msg;
     msg << "Unknown error occurred when attempting to get config value `" << key
         << "`!";
@@ -55,6 +56,7 @@ inline bool GetBoolFromConfig(const std::string &config_key,
     } catch (std::exception &e) {
         ThrowDataError(config_key);
     }
+    return false;
 }
 
 /// @brief
@@ -71,6 +73,7 @@ inline int GetIntFromConfig(const std::string &config_key,
     } catch (std::exception &e) {
         ThrowDataError(config_key);
     }
+    return std::numeric_limits<int>::min();
 }
 
 /// @brief
@@ -91,6 +94,7 @@ inline double GetDoubleFromConfig(const std::string &config_key,
     } catch (std::exception &e) {
         ThrowDataError(config_key);
     }
+    return std::numeric_limits<double>::min();
 }
 
 /// @brief
@@ -108,6 +112,7 @@ inline std::string GetStringFromConfig(const std::string &config_key,
     } catch (std::exception &e) {
         ThrowDataError(config_key);
     }
+    return "";
 }
 
 inline bool FindInEventList(const std::string &event_name,

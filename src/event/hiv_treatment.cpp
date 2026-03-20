@@ -1,43 +1,32 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: treatment.cpp                                                        //
+// File: hiv_treatment.cpp                                                    //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-// File Header
-#include <hepce/event/hiv/treatment.hpp>
-
 // Library Includes
 #include <hepce/utils/config.hpp>
 
 // Local Includes
-#include "internals/treatment_internals.hpp"
+#include "internals/hiv_treatment_internals.hpp"
 
 namespace hepce {
 namespace event {
-namespace hiv {
 // Factory
-std::unique_ptr<hepce::event::Event>
-Treatment::Create(datamanagement::ModelData &model_data,
-                  const std::string &log_name) {
-    return std::make_unique<TreatmentImpl>(model_data, log_name);
-}
-
-// Constructor
-TreatmentImpl::TreatmentImpl(datamanagement::ModelData &model_data,
-                             const std::string &log_name)
-    : TreatmentBase(model_data, log_name) {
-    LoadData(model_data);
+std::unique_ptr<Event> HIVTreatment::Create(const data::Inputs &inputs,
+                                            const std::string &log_name) {
+    return std::make_unique<HIVTreatment>(inputs, log_name);
 }
 
 // Execute
-void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
+void HIVTreatment::Execute(model::Person &person,
+                           const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -87,24 +76,24 @@ void TreatmentImpl::Execute(model::Person &person, model::Sampler &sampler) {
     }
 }
 
-void TreatmentImpl::LoadData(datamanagement::ModelData &model_data) {
+void HIVTreatment::LoadData() {
     _course_name =
-        utils::GetStringFromConfig("hiv_treatment.course", model_data);
+        utils::GetStringFromConfig("hiv_treatment.course", GetInputs());
 
     std::any storage = hivtreatmentmap_t{};
-    model_data.GetDBSource("inputs").Select(HIVTreatmentSQL(),
-                                            CallbackTreatment, storage);
+    GetInputs().SelectFromDatabase(HIVTreatmentSQL(), CallbackTreatment,
+                                   storage, {});
     _treatment_sql_data = std::any_cast<hivtreatmentmap_t>(storage);
 
     storage = hivutilitymap_t{};
-    model_data.GetDBSource("inputs").Select(HIVUtilitySQL(), CallbackUtility,
-                                            storage);
+    GetInputs().SelectFromDatabase(HIVUtilitySQL(), CallbackUtility, storage,
+                                   {});
     _utility_data = std::any_cast<hivutilitymap_t>(storage);
 }
 
 // Private Methods
-bool TreatmentImpl::InitiateTreatment(model::Person &person,
-                                      model::Sampler &sampler) {
+bool HIVTreatment::InitiateTreatment(model::Person &person,
+                                     const model::Sampler &sampler) {
     // do not start treatment if the individual is not eligible
     if (!IsEligible(person)) {
         return false;
@@ -118,7 +107,7 @@ bool TreatmentImpl::InitiateTreatment(model::Person &person,
     return false;
 }
 
-void TreatmentImpl::ResetUtility(model::Person &person) const {
+void HIVTreatment::ResetUtility(model::Person &person) const {
     utils::tuple_2i key;
     switch (person.GetHIVDetails().hiv) {
     case data::HIV::kHiSu:
@@ -136,7 +125,8 @@ void TreatmentImpl::ResetUtility(model::Person &person) const {
     }
 }
 
-bool TreatmentImpl::Withdraws(model::Person &person, model::Sampler &sampler) {
+bool HIVTreatment::Withdraws(model::Person &person,
+                             const model::Sampler &sampler) {
     if (_treatment_sql_data[_course_name].withdrawal_prob == 0) {
         // spdlog::get("main")->warn(
         //     "HIV treatment withdrawal probability is "
@@ -152,8 +142,8 @@ bool TreatmentImpl::Withdraws(model::Person &person, model::Sampler &sampler) {
     return false;
 }
 
-void TreatmentImpl::CheckIfExperienceToxicity(model::Person &person,
-                                              model::Sampler &sampler) {
+void HIVTreatment::CheckIfExperienceToxicity(model::Person &person,
+                                             const model::Sampler &sampler) {
     if (sampler.GetDecision(
             {_treatment_sql_data[_course_name].toxicity_prob}) == 1) {
         return;
@@ -165,7 +155,7 @@ void TreatmentImpl::CheckIfExperienceToxicity(model::Person &person,
 
 /// @brief Used to set person's HIV utility after engaging with treatment
 /// @param
-void TreatmentImpl::SetTreatmentUtility(model::Person &person) {
+void HIVTreatment::SetTreatmentUtility(model::Person &person) {
     utils::tuple_2i key;
     switch (person.GetHIVDetails().hiv) {
     case data::HIV::kHiSu:
@@ -185,7 +175,7 @@ void TreatmentImpl::SetTreatmentUtility(model::Person &person) {
 
 /// @brief Used to reset person's HIV utility after discontinuing treatment
 /// @param
-void TreatmentImpl::ResetUtility(model::Person &person) {
+void HIVTreatment::ResetUtility(model::Person &person) {
     utils::tuple_2i key;
     switch (person.GetHIVDetails().hiv) {
     case data::HIV::kHiSu:
@@ -203,7 +193,7 @@ void TreatmentImpl::ResetUtility(model::Person &person) {
     }
 }
 
-void TreatmentImpl::ApplySuppression(model::Person &person) {
+void HIVTreatment::ApplySuppression(model::Person &person) {
     switch (person.GetHIVDetails().hiv) {
     case data::HIV::kHiUn:
         person.SetHIV(data::HIV::kHiSu);
@@ -216,7 +206,7 @@ void TreatmentImpl::ApplySuppression(model::Person &person) {
     }
 }
 
-void TreatmentImpl::LoseSuppression(model::Person &person) {
+void HIVTreatment::LoseSuppression(model::Person &person) {
     switch (person.GetHIVDetails().hiv) {
     case data::HIV::kHiSu:
         person.SetHIV(data::HIV::kHiUn);
@@ -229,6 +219,5 @@ void TreatmentImpl::LoseSuppression(model::Person &person) {
     }
 }
 
-} // namespace hiv
 } // namespace event
 } // namespace hepce

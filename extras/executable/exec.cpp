@@ -4,10 +4,10 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-09-02                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <filesystem>
@@ -17,6 +17,7 @@
 
 #include <omp.h>
 
+#include <hepce/data/inputs.hpp>
 #include <hepce/data/writer.hpp>
 #include <hepce/event/event.hpp>
 #include <hepce/model/person.hpp>
@@ -83,12 +84,11 @@ int main(int argc, char *argv[]) {
         std::string log_name = "hepce-task-" + std::to_string(i);
         hepce::utils::CreateFileLogger(log_name, log_file);
 
-        auto model_data = datamanagement::ModelData::Create(config, log_name);
-        model_data->AddSource(dbfile);
+        hepce::data::Inputs inputs = hepce::data::Inputs(config, dbfile);
 
-        auto sim = hepce::model::Hepce::Create(*model_data, log_name);
-        auto population = sim->CreatePopulation(*model_data);
-        auto events = sim->CreateEvents(*model_data);
+        auto sim = hepce::model::Hepce::Create(inputs, log_name);
+        auto population = sim->CreatePopulation();
+        auto events = sim->CreateEvents();
         sim->Run(population, events);
 
         auto writer =

@@ -9,38 +9,27 @@ endif()
 
 enable_testing()
 
-add_executable(${PROJECT_NAME}
-    src/event/base/aging_test.cpp
-    src/event/base/death_test.cpp
-    src/event/behavior/behavior_changes_test.cpp
-    src/event/behavior/pregnancy_test.cpp
-    src/event/behavior/overdose_test.cpp
-    src/event/behavior/moud_test.cpp
-    src/event/fibrosis/progression_test.cpp
-    src/event/fibrosis/staging_test.cpp
-    src/event/hcv/clearance_test.cpp
-    src/event/hcv/infection_test.cpp
-    src/event/hcv/linking_test.cpp
-    src/event/hcv/screening_test.cpp
-    src/event/hcv/treatment_test.cpp
-    src/event/hcv/voluntary_relink_test.cpp
-    src/event/hiv/infection_test.cpp
-    src/event/hiv/linking_test.cpp
-    src/event/hiv/screening_test.cpp
-    src/data/writer_test.cpp
-    src/utils/logging_test.cpp
-    src/model/person_test.cpp
-    src/model/simulation_test.cpp
-)
+add_executable(hepce_tests)
 
-target_link_libraries(${PROJECT_NAME}
+file(GLOB HEPCE_TEST_FILES CONFIGURE_DEPENDS src/**/*.cpp)
+file(GLOB HEPCE_TEST_MOCKS CONFIGURE_DEPENDS mocks/*.hpp)
+file(GLOB HEPCE_TEST_CONSTANTS CONFIGURE_DEPENDS constants/*.hpp)
+
+target_sources(hepce_tests
+    PRIVATE
+        ${HEPCE_TEST_MOCKS}
+        ${HEPCE_TEST_CONSTANTS}
+        ${HEPCE_TEST_FILES}
+    )
+
+target_link_libraries(hepce_tests
     PUBLIC
-        hepce
+        hepce_model
         GTest::gmock_main
         spdlog::spdlog
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(hepce_tests
     PRIVATE
         "mocks/"
         "constants/"

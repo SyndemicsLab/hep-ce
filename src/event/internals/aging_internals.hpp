@@ -31,7 +31,7 @@ public:
                                          const std::string &log_name);
 
     // Constructor
-    Aging::Aging(const data::Inputs &inputs, const std::string &log)
+    Aging(const data::Inputs &inputs, const std::string &log)
         : EventBase("aging", inputs, log) {
         LoadData();
     }

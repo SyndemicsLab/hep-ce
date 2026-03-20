@@ -28,6 +28,11 @@ public:
     event::EventList CreateEvents() const override;
     model::People CreatePopulation() const override;
 
+    // Cloning
+    std::unique_ptr<Hepce> clone() const override {
+        return std::make_unique<HepceImpl>(_inputs, _log_name);
+    }
+
     int GetDuration() const override { return _duration; }
     int GetSeed() const override { return _sim_seed; }
 

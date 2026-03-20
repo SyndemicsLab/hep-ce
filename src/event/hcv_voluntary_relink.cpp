@@ -1,41 +1,32 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: voluntary_relink.cpp                                                 //
+// File: hcv_voluntary_relink.cpp                                             //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <hepce/event/hcv/voluntary_relink.hpp>
+#include "internals/hcv_voluntary_relink_internals.hpp"
 
-#include "internals/voluntary_relink_internals.hpp"
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
 
 namespace hepce {
 namespace event {
-namespace hcv {
-// Factory
-std::unique_ptr<hepce::event::Event>
-VoluntaryRelink::Create(datamanagement::ModelData &model_data,
-                        const std::string &log_name) {
-    return std::make_unique<VoluntaryRelinkImpl>(model_data, log_name);
-}
 
-// Constructor
-VoluntaryRelinkImpl::VoluntaryRelinkImpl(datamanagement::ModelData &model_data,
-                                         const std::string &log_name)
-    : EventBase(model_data, log_name) {
-    LoadData(model_data);
+// Factory
+std::unique_ptr<Event> VoluntaryRelink::Create(const data::Inputs &inputs,
+                                               const std::string &log_name) {
+    return std::make_unique<VoluntaryRelink>(inputs, log_name);
 }
 
 // Execute
-void VoluntaryRelinkImpl::Execute(model::Person &person,
-                                  model::Sampler &sampler) {
+void VoluntaryRelink::Execute(model::Person &person,
+                              const model::Sampler &sampler) {
     if (!ValidExecute(person)) {
         return;
     }
@@ -50,19 +41,18 @@ void VoluntaryRelinkImpl::Execute(model::Person &person,
     }
 }
 
-void VoluntaryRelinkImpl::LoadData(datamanagement::ModelData &model_data) {
+void VoluntaryRelink::LoadData() {
     SetCostCategory(model::CostCategory::kScreening);
 
     _relink_probability = utils::GetDoubleFromConfig(
-        "linking.voluntary_relinkage_probability", model_data);
+        "linking.voluntary_relinkage_probability", GetInputs());
 
     _voluntary_relink_duration = utils::GetDoubleFromConfig(
-        "linking.voluntary_relink_duration", model_data);
+        "linking.voluntary_relink_duration", GetInputs());
 
-    _cost =
-        utils::GetDoubleFromConfig("screening_background_rna.cost", model_data);
+    _cost = utils::GetDoubleFromConfig("screening_background_rna.cost",
+                                       GetInputs());
 }
 
-} // namespace hcv
 } // namespace event
 } // namespace hepce
