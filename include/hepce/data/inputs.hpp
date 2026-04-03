@@ -4,7 +4,7 @@
 // Created Date: 2026-03-19                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-04-03                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2026 Syndemics Lab at Boston Medical Center                  //
@@ -76,19 +76,6 @@ public:
     }
 
 private:
-    void ValidateFiles() {
-        if (!std::filesystem::exists(_config_file)) {
-            std::ostringstream msg;
-            msg << "File `" << _config_file << "` not found!";
-            throw std::runtime_error(msg.str());
-        }
-        if (!std::filesystem::exists(_database_file)) {
-            std::ostringstream msg;
-            msg << "File `" << _database_file << "` not found!";
-            throw std::runtime_error(msg.str());
-        }
-    }
-
     const std::filesystem::path _config_file;
     const std::filesystem::path _database_file;
     boost::property_tree::ptree _ptree;

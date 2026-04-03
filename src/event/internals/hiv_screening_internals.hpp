@@ -4,7 +4,7 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-20                                                  //
+// Last Modified: 2026-04-03                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -30,7 +30,7 @@ public:
                                          const std::string &log_name);
 
     HIVScreening(const data::Inputs &inputs, const std::string &log)
-        : EventBase("voluntary_relink", inputs, log) {
+        : EventBase("hiv_screening", inputs, log) {
         LoadData();
     }
 
