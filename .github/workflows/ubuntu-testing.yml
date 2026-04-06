@@ -1,31 +1,62 @@
 name: Ubuntu Unit Tests
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+permissions:
+    contents: write
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Debug
+    # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+    BUILD_TYPE: Debug
 
 jobs:
-  build:
-    name: Build Debug
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Boost
-        uses: MarkusJx/install-boost@v2.4.5
-        id: install-boost
-        with:
-          boost_version: 1.86.0
-          platform_version: 22.04
-      - name: Install SQLiteCpp
-        run: sudo apt-get install libsqlitecpp-dev
-      - name: Build and Test
-        working-directory: ${{ github.workspace }}
-        run: cmake --workflow --preset gcc-debug
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+    build:
+        name: Build Debug
+        runs-on: "ubuntu-latest"
+        steps:
+            - uses: actions/checkout@v4
+            - name: Install SQLiteCpp
+              run: sudo apt-get install libsqlitecpp-dev gcovr
+            - name: Build and Test
+              working-directory: ${{ github.workspace }}
+              run: cmake --workflow --preset gcc-debug
+            - name: Generate Coverage Badge JSON
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  mkdir -p .github/badges
+
+                  gcovr --txt-summary | tee coverage-summary.txt
+                  coverage_pct=$(awk '/^lines:/{print $2}' coverage-summary.txt)
+                  coverage_num=${coverage_pct%%%}
+
+                  color=$(awk -v n="$coverage_num" 'BEGIN {
+                    if (n >= 90) print "brightgreen";
+                    else if (n >= 80) print "green";
+                    else if (n >= 70) print "yellow";
+                    else if (n >= 60) print "orange";
+                    else print "red";
+                  }')
+
+                  cat > .github/badges/coverage.json <<EOF
+                  {
+                    "schemaVersion": 1,
+                    "label": "Testing:",
+                    "message": "${coverage_pct}",
+                    "color": "${color}"
+                  }
+                  EOF
+
+            - name: Publish Coverage Badge JSON
+              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_branch: gh-pages
+                  publish_dir: .github/badges
+                  destination_dir: badges
+                  keep_files: true

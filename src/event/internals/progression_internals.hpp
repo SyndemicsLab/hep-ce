@@ -40,7 +40,9 @@ public:
                                          const std::string &log_name);
 
     Progression(const data::Inputs &inputs, const std::string &log)
-        : EventBase("progression", inputs, log) {}
+        : EventBase("progression", inputs, log) {
+        LoadData();
+    }
     ~Progression() = default;
 
     // Cloning

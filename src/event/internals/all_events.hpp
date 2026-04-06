@@ -25,6 +25,7 @@
 #include "hiv_infection_internals.hpp"
 #include "hiv_linking_internals.hpp"
 #include "hiv_screening_internals.hpp"
+#include "hiv_treatment_internals.hpp"
 #include "moud_internals.hpp"
 #include "overdose_internals.hpp"
 #include "pregnancy_internals.hpp"

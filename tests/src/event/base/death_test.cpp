@@ -11,7 +11,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // Testing File
-#include <hepce/event/base/death.hpp>
+#include <hepce/event/event_factory.hpp>
 
 // STL Includes
 #include <memory>
@@ -19,7 +19,6 @@
 #include <vector>
 
 // 3rd Party Dependencies
-#include <datamanagement/datamanagement.hpp>
 #include <gtest/gtest.h>
 
 // Library Headers
@@ -39,8 +38,6 @@ using ::testing::NiceMock;
 using ::testing::Return;
 
 using namespace hepce::data;
-using namespace hepce::event;
-
 namespace hepce {
 namespace testing {
 
@@ -60,7 +57,7 @@ protected:
                                     0,
                                     0};
 
-    std::unique_ptr<datamanagement::ModelData> model_data;
+    std::unique_ptr<data::Inputs> model_data;
     double discounted_cost;
     double discounted_life;
     data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
@@ -75,8 +72,7 @@ protected:
         BuildSimConf(test_conf);
         discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
         discounted_life = utils::Discount(1, 0.0025, 1, false);
-        model_data = datamanagement::ModelData::Create(test_conf);
-        model_data->AddSource(test_db);
+        model_data = std::make_unique<data::Inputs>(test_conf, test_db);
 
         ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
         ON_CALL(mock_person, GetCurrentlyOverdosing())
@@ -102,7 +98,7 @@ TEST_F(DeathTest, AgeDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kAge)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -118,9 +114,8 @@ TEST_F(DeathTest, FatalOverdoseDR) {
     config["simulation"][2] = OVERDOSE_EVENTS;
     BuildSimConf(test_conf, config);
 
-    std::unique_ptr<datamanagement::ModelData> model_data_alt;
-    model_data_alt = datamanagement::ModelData::Create(test_conf);
-    model_data_alt->AddSource(test_db);
+    std::unique_ptr<data::Inputs> model_data_alt =
+        std::make_unique<data::Inputs>(test_conf, test_db);
 
     data::MOUDDetails moud_details;
     ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
@@ -133,7 +128,8 @@ TEST_F(DeathTest, FatalOverdoseDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kOverdose)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data_alt, LOG_NAME);
+    auto event =
+        event::EventFactory::CreateEvent("Death", *model_data_alt, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -144,9 +140,11 @@ TEST_F(DeathTest, HivDR) {
     const std::string LOG_NAME = "HivDR";
     CreateTestLog(LOG_NAME);
 
-    BuildSimConf(test_conf);
-    std::unique_ptr<datamanagement::ModelData> model_data_alt;
-    model_data_alt = datamanagement::ModelData::Create(test_conf);
+    auto config = DEFAULT_CONFIG;
+    config["simulation"][2] = "events = Aging, hiv_infection, Death";
+    BuildSimConf(test_conf, config);
+    std::unique_ptr<data::Inputs> model_data_alt =
+        std::make_unique<data::Inputs>(test_conf, test_db);
 
     data::HIVDetails hiv_details;
     hiv_details.hiv = HIV::kHiUn;
@@ -158,7 +156,8 @@ TEST_F(DeathTest, HivDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kHiv)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data_alt, LOG_NAME);
+    auto event =
+        event::EventFactory::CreateEvent("Death", *model_data_alt, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -179,7 +178,7 @@ TEST_F(DeathTest, F4_Infected_BackgroundDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -200,7 +199,7 @@ TEST_F(DeathTest, F4_Infected_LiverDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -221,7 +220,7 @@ TEST_F(DeathTest, F4_Uninfected_BackgroundDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -242,7 +241,7 @@ TEST_F(DeathTest, F4_Uninfected_LiverDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -263,7 +262,7 @@ TEST_F(DeathTest, Decomp_Infected_BackgroundDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -284,7 +283,7 @@ TEST_F(DeathTest, Decomp_Infected_LiverDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -305,7 +304,7 @@ TEST_F(DeathTest, Decomp_Uninfected_BackgroundDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kBackground)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -326,7 +325,7 @@ TEST_F(DeathTest, Decomp_Uninfected_LiverDR) {
     EXPECT_CALL(mock_person, Die(data::DeathReason::kLiver)).Times(1);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);
@@ -350,7 +349,7 @@ TEST_F(DeathTest, NoDeath) {
     hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE);
 
     // Running Test
-    auto event = event::base::Death::Create(*model_data, LOG_NAME);
+    auto event = event::EventFactory::CreateEvent("Death", *model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
 
     RemoveTestLog(LOG_NAME);

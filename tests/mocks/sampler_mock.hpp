@@ -23,8 +23,9 @@ namespace hepce {
 namespace testing {
 class MockSampler : public virtual Sampler {
 public:
+    MOCK_METHOD((std::unique_ptr<Sampler>), clone, (), (const, override));
     MOCK_METHOD(const int, GetDecision, (const std::vector<double> &probs),
-                (override));
+                (const, override));
 };
 } // namespace testing
 } // namespace hepce

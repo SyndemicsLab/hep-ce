@@ -1,39 +1,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: infection_test.cpp                                                   //
 // Project: hep-ce                                                            //
-// Created Date: 2025-05-01                                                   //
-// Author: Matthew Carroll                                                    //
-// -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
-// -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-// Testing File
-#include <hepce/event/hiv/infection.hpp>
+#include <hepce/event/event_factory.hpp>
 
-// STL Includes
+#include <filesystem>
 #include <memory>
 #include <string>
-#include <vector>
 
-// 3rd Party Dependencies
-#include <datamanagement/datamanagement.hpp>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-// Library Headers
-#include <hepce/utils/logging.hpp>
-#include <hepce/utils/math.hpp>
-#include <hepce/utils/pair_hashing.hpp>
-
-// Test Includes
 #include <config.hpp>
 #include <inputs_db.hpp>
 #include <person_mock.hpp>
 #include <sampler_mock.hpp>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace hepce {
@@ -41,39 +26,33 @@ namespace testing {
 
 class HIVInfectionTest : public ::testing::Test {
 protected:
-    MockPerson mock_person;
+    NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
+
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
-    std::unique_ptr<datamanagement::ModelData> model_data;
-    double discounted_cost;
-    double discounted_life;
-    data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
-    data::HCVDetails hcv = {data::HCV::kNone,
-                            data::FibrosisState::kF0,
-                            false,
-                            false,
-                            -1,
-                            -1,
-                            0,
-                            0,
-                            0};
-    data::ScreeningDetails screen = {-1, 0, 0, false, false, -1, 0};
+
+    data::HIVDetails hiv = {data::HIV::kNone, -1, 0};
+    data::BehaviorDetails behavior = {data::Behavior::kInjection, 0};
 
     void SetUp() override {
-        ExecuteQueries(
-            test_db, {{"DROP TABLE IF EXISTS hcv_impacts;", CreateHCVImpacts(),
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (0, 0, 230.65, 0.915);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 0, 430.00, 0.8);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 1, 500.00, 0.7);"}});
         BuildSimConf(test_conf);
-        discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
-        discounted_life = utils::Discount(1, 0.0025, 1, false);
-        model_data = datamanagement::ModelData::Create(test_conf);
-        model_data->AddSource(test_db);
+
+        ExecuteQueries(
+            test_db,
+            {"DROP TABLE IF EXISTS hiv_incidence;",
+             "CREATE TABLE hiv_incidence(age_years INTEGER NOT NULL, "
+             "gender INTEGER NOT NULL, drug_behavior INTEGER NOT NULL, "
+             "incidence REAL NOT NULL, PRIMARY KEY(age_years, gender, "
+             "drug_behavior));",
+             "INSERT INTO hiv_incidence VALUES (25, 0, 4, 0.0050);"});
+
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
+        ON_CALL(mock_person, GetHIVDetails()).WillByDefault(Return(hiv));
+        ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+        ON_CALL(mock_person, GetSex()).WillByDefault(Return(data::Sex::kMale));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behavior));
     }
 
     void TearDown() override {
@@ -81,5 +60,66 @@ protected:
         std::filesystem::remove(test_conf);
     }
 };
+
+TEST_F(HIVInfectionTest, ReturnsEarlyWhenPersonIsDead) {
+    ON_CALL(mock_person, IsAlive()).WillByDefault(Return(false));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("HIVInfection", inputs,
+                                                  "HIVInfectionDead");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_person, GetHIVDetails()).Times(0);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+    EXPECT_CALL(mock_person, InfectHIV()).Times(0);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(HIVInfectionTest, ReturnsEarlyWhenAlreadyInfected) {
+    hiv.hiv = data::HIV::kHiUn;
+    ON_CALL(mock_person, GetHIVDetails()).WillByDefault(Return(hiv));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("HIVInfection", inputs,
+                                                  "HIVInfectionAlready");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+    EXPECT_CALL(mock_person, InfectHIV()).Times(0);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(HIVInfectionTest, InfectsWhenSampled) {
+    hiv.hiv = data::HIV::kNone;
+    ON_CALL(mock_person, GetHIVDetails()).WillByDefault(Return(hiv));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("HIVInfection", inputs,
+                                                  "HIVInfectionExec");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, InfectHIV()).Times(1);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(HIVInfectionTest, DoesNotInfectWhenNotSampled) {
+    hiv.hiv = data::HIV::kNone;
+    ON_CALL(mock_person, GetHIVDetails()).WillByDefault(Return(hiv));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("HIVInfection", inputs,
+                                                  "HIVInfectionNoExec");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+    EXPECT_CALL(mock_person, InfectHIV()).Times(0);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
 } // namespace testing
 } // namespace hepce

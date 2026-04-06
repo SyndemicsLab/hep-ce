@@ -184,7 +184,11 @@ void BehaviorChanges::CalculateCostAndUtility(model::Person &person) const {
     int behavior = static_cast<int>(person.GetBehaviorDetails().behavior);
     utils::tuple_2i tup = std::make_tuple(gender, behavior);
 
-    auto cu = _cost_data.at(tup);
+    data::CostUtil cu = {};
+    auto it = _cost_data.find(tup);
+    if (it != _cost_data.end()) {
+        cu = it->second;
+    }
     AddEventCost(person, cu.cost);
     AddEventUtility(person, cu.util);
 }

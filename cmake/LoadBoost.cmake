@@ -7,7 +7,7 @@ set(BOOST_ENABLE_CMAKE ON)
 FetchContent_Declare(
     Boost
     GIT_REPOSITORY https://github.com/boostorg/boost.git
-    GIT_TAG 460b20ab28ccb347804e5a5cc7ff5ada07028496 # v1.90.0
+    GIT_TAG 1bed2b0712b2119f20d66c5053def9173c8462a5 # v1.90.0
     GIT_SHALLOW TRUE
 )
 list(POP_BACK CMAKE_MESSAGE_INDENT)

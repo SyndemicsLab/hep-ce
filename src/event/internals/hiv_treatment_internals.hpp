@@ -73,7 +73,7 @@ private:
 
     static void CallbackTreatment(std::any &storage,
                                   const SQLite::Statement &stmt) {
-        std::any_cast<hivtreatmentmap_t>(
+        std::any_cast<hivtreatmentmap_t &>(
             storage)[stmt.getColumn(0).getText()] = {
             stmt.getColumn(1).getDouble(), stmt.getColumn(2).getDouble(),
             stmt.getColumn(3).getDouble(), stmt.getColumn(4).getInt(),
@@ -82,12 +82,14 @@ private:
 
     static void CallbackUtility(std::any &storage,
                                 const SQLite::Statement &stmt) {
+        const std::string hiv_treatment_text = stmt.getColumn(0).getString();
+        const std::string cd4_count_text = stmt.getColumn(1).getString();
         // either ON or OFF treatment
-        int hiv_treatment = (stmt.getColumn(0).getText() == "ON") ? 1 : 0;
+        int hiv_treatment = (hiv_treatment_text == "ON") ? 1 : 0;
         // either high or low CD4 count
-        int cd4_count = (stmt.getColumn(1).getText() == "high") ? 1 : 0;
+        int cd4_count = (cd4_count_text == "high") ? 1 : 0;
         utils::tuple_2i key = std::make_tuple(hiv_treatment, cd4_count);
-        std::any_cast<hivutilitymap_t>(storage)[key] =
+        std::any_cast<hivutilitymap_t &>(storage)[key] =
             stmt.getColumn(2).getDouble();
     }
 

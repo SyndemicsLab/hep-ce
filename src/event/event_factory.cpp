@@ -60,6 +60,9 @@ std::unique_ptr<Event> EventFactory::CreateEvent(const std::string &name,
     if (name == "HIVScreening") {
         return HIVScreening::Create(inputs, log_name);
     }
+    if (name == "HIVTreatment") {
+        return HIVTreatment::Create(inputs, log_name);
+    }
     if (name == "Overdose") {
         return Overdose::Create(inputs, log_name);
     }

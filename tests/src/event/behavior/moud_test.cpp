@@ -1,40 +1,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: moud_test.cpp                                                        //
 // Project: hep-ce                                                            //
-// Created Date: 2025-05-01                                                   //
-// Author: Matthew Carroll                                                    //
-// -----                                                                      //
-// Last Modified: 2025-10-10                                                  //
-// Modified By: Matthew Carroll                                               //
-// -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-// Testing File
-#include <hepce/event/behavior/moud.hpp>
+#include <hepce/event/event_factory.hpp>
 
-// STL Includes
+#include <filesystem>
 #include <memory>
 #include <string>
-#include <vector>
 
-// 3rd Party Dependencies
-#include <datamanagement/datamanagement.hpp>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-// Library Headers
-#include <hepce/utils/logging.hpp>
-#include <hepce/utils/math.hpp>
-#include <hepce/utils/pair_hashing.hpp>
-
-// Test Includes
 #include <config.hpp>
 #include <inputs_db.hpp>
 #include <person_mock.hpp>
 #include <sampler_mock.hpp>
-#include <utility.hpp>
 
 using ::testing::_;
+using ::testing::DoubleEq;
+using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -45,34 +30,46 @@ class MoudTest : public ::testing::Test {
 protected:
     NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
+
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
-    std::unique_ptr<datamanagement::ModelData> model_data;
-    data::HCVDetails hcv = {data::HCV::kNone,
-                            data::FibrosisState::kF0,
-                            false,
-                            false,
-                            -1,
-                            -1,
-                            0,
-                            0,
-                            0};
-    data::ScreeningDetails screen = {-1, 0, 0, false, false, -1, 0};
+
+    data::BehaviorDetails behavior = {data::Behavior::kInjection, 0};
+    data::MOUDDetails moud = {data::MOUD::kNone, -1, 0, 0};
+    data::PregnancyDetails pregnancy = {
+        data::PregnancyState::kNa, -1, 0, 0, 0, 0, 0, 0, {}};
 
     void SetUp() override {
-        ExecuteQueries(test_db, {{"DROP TABLE IF EXISTS moud_transitions;",
-                                  CreateMoudTransitions(),
-                                  "INSERT INTO moud_transitions VALUES (25, 1, "
-                                  "4, -1, 0.0, 1.0, 0.0);"
-                                  "INSERT INTO moud_transitions VALUES (25, 1, "
-                                  "8, -1, 0.0, 0.0, 1.0);",
-                                  "INSERT INTO moud_transitions VALUES (25, 0, "
-                                  "0, -1, 1.0, 0.0, 0.0);",
-                                  "INSERT INTO moud_transitions VALUES (30, 0, "
-                                  "0, -1, 0.0, 1.0, 0.0);"}});
         BuildSimConf(test_conf);
-        model_data = datamanagement::ModelData::Create(test_conf);
-        model_data->AddSource(test_db);
+
+        ExecuteQueries(
+            test_db,
+            {"DROP TABLE IF EXISTS moud_transitions;", CreateMoudTransitions(),
+             "INSERT INTO moud_transitions VALUES (25, 0, 0, -1, 1.0, 0.0, "
+             "0.0);",
+             "INSERT INTO moud_transitions VALUES (25, 1, 4, -1, 0.0, 0.0, "
+             "1.0);",
+             "INSERT INTO moud_transitions VALUES (25, 2, 0, -1, 1.0, 0.0, "
+             "0.0);"});
+
+        ExecuteQueries(
+            test_db,
+            {"DROP TABLE IF EXISTS moud_costs;",
+             "CREATE TABLE moud_costs(moud INTEGER NOT NULL, pregnancy INTEGER "
+             "NOT NULL, cost REAL NOT NULL, utility REAL NOT NULL, PRIMARY "
+             "KEY(moud, pregnancy));",
+             "INSERT INTO moud_costs VALUES (0, -1, 1.0, 0.99);",
+             "INSERT INTO moud_costs VALUES (1, -1, 2.0, 0.95);",
+             "INSERT INTO moud_costs VALUES (2, -1, 3.0, 0.90);"});
+
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
+        ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behavior));
+        ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud));
+        ON_CALL(mock_person, GetPregnancyDetails())
+            .WillByDefault(Return(pregnancy));
+        ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
     }
 
     void TearDown() override {
@@ -81,166 +78,179 @@ protected:
     }
 };
 
-TEST_F(MoudTest, PersonIsDead) {
-    // Setup
-    const std::string LOG_NAME = "PersonIsDead";
-    CreateTestLog(LOG_NAME);
-    data::BehaviorDetails behavior_current;
+TEST_F(MoudTest, ReturnsEarlyWhenNoHistoryOfOud) {
+    behavior.behavior = data::Behavior::kNever;
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behavior));
 
-    // Expectations
-    EXPECT_CALL(mock_person, IsAlive()).WillOnce(Return(false));
-    EXPECT_CALL(mock_person, GetBehaviorDetails()).Times(0);
-    EXPECT_CALL(mock_person, GetMoudDetails()).Times(0);
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("MOUD", inputs, "MoudNoHistory");
+    ASSERT_NE(event, nullptr);
 
-    // Run test
-    auto event = event::behavior::Moud::Create(*model_data, LOG_NAME);
-    event->Execute(mock_person, mock_sampler);
-
-    RemoveTestLog(LOG_NAME);
-}
-
-TEST_F(MoudTest, NoHistoryOfOUD) {
-    // Setup
-    const std::string LOG_NAME = "NoHistoryOfOUD";
-    CreateTestLog(LOG_NAME);
-    data::BehaviorDetails behavior_current;
-
-    ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
-    ON_CALL(mock_person, GetBehaviorDetails())
-        .WillByDefault(Return(behavior_current));
-
-    // Expectations
-    EXPECT_CALL(mock_person, GetMoudDetails()).Times(0);
-
-    // Run test
-    auto event = event::behavior::Moud::Create(*model_data, LOG_NAME);
-    event->Execute(mock_person, mock_sampler);
-
-    RemoveTestLog(LOG_NAME);
-}
-
-TEST_F(MoudTest, PostTreatment) {
-    // Setup
-    const std::string LOG_NAME = "PostTreatment";
-    CreateTestLog(LOG_NAME);
-    data::BehaviorDetails behavior_current = {data::Behavior::kInjection, 0};
-    data::MOUDDetails moud_details = {data::MOUD::kPost, -1, 1, 1};
-
-    ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
-    ON_CALL(mock_person, GetBehaviorDetails())
-        .WillByDefault(Return(behavior_current));
-    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
-
-    // Expectations
-    EXPECT_CALL(mock_person, TransitionMOUD()).Times(1);
-
-    // Run test
-    auto event = event::behavior::Moud::Create(*model_data, LOG_NAME);
-    event->Execute(mock_person, mock_sampler);
-
-    RemoveTestLog(LOG_NAME);
-}
-
-TEST_F(MoudTest, StayOnTreatment) {
-    // Setup
-    const std::string LOG_NAME = "StayOnTreatment";
-    CreateTestLog(LOG_NAME);
-    data::BehaviorDetails behavior_current = {data::Behavior::kInjection, 0};
-    data::MOUDDetails moud_details = {data::MOUD::kCurrent, 0, 4, 4};
-
-    std::vector<double> expected_probs = {0.0, 1.0, 0.0};
-
-    ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
-    ON_CALL(mock_person, GetBehaviorDetails())
-        .WillByDefault(Return(behavior_current));
-    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
-    ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
-
-    // Expectations
-    EXPECT_CALL(mock_sampler, GetDecision(expected_probs)).WillOnce(Return(1));
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
     EXPECT_CALL(mock_person, TransitionMOUD()).Times(0);
+    EXPECT_CALL(mock_person, AddCost(_, _, _)).Times(0);
+    EXPECT_CALL(mock_person, SetUtility(_, _)).Times(0);
 
-    // Run test
-    auto event = event::behavior::Moud::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-
-    RemoveTestLog(LOG_NAME);
 }
 
-TEST_F(MoudTest, StopTreatment) {
-    // Setup
-    const std::string LOG_NAME = "StopTreatment";
-    CreateTestLog(LOG_NAME);
-    data::BehaviorDetails behavior_current = {data::Behavior::kInjection, 0};
-    data::MOUDDetails moud_details = {data::MOUD::kCurrent, 0, 8, 8};
+TEST_F(MoudTest, PostTreatmentTransitionsImmediately) {
+    behavior.behavior = data::Behavior::kInjection;
+    moud.moud_state = data::MOUD::kPost;
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behavior));
+    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud));
 
-    std::vector<double> expected_probs = {0.0, 0.0, 1.0};
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("MOUD", inputs, "MoudPost");
+    ASSERT_NE(event, nullptr);
 
-    ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
-    ON_CALL(mock_person, GetBehaviorDetails())
-        .WillByDefault(Return(behavior_current));
-    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
-    ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
-
-    // Expectations
-    EXPECT_CALL(mock_sampler, GetDecision(expected_probs)).WillOnce(Return(2));
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
     EXPECT_CALL(mock_person, TransitionMOUD()).Times(1);
+    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kMoud))
+        .Times(1);
+    EXPECT_CALL(mock_person, SetUtility(_, model::UtilityCategory::kMoud))
+        .Times(1);
 
-    // Run test
-    auto event = event::behavior::Moud::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
-
-    RemoveTestLog(LOG_NAME);
 }
 
-TEST_F(MoudTest, StartTreatment) {
-    // Setup
-    const std::string LOG_NAME = "StartTreatment";
-    CreateTestLog(LOG_NAME);
-    data::BehaviorDetails behavior_current = {data::Behavior::kInjection, 0};
-    data::MOUDDetails moud_details = {data::MOUD::kNone, 0, 0, 0};
+TEST_F(MoudTest, CurrentTreatmentCanTransitionToPostViaSampling) {
+    behavior.behavior = data::Behavior::kInjection;
+    moud.moud_state = data::MOUD::kCurrent;
+    moud.current_state_concurrent_months = 4;
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behavior));
+    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud));
 
-    std::vector<double> expected_probs = {0.0, 1.0, 0.0};
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("MOUD", inputs, "MoudCurrent");
+    ASSERT_NE(event, nullptr);
 
-    ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
-    ON_CALL(mock_person, GetBehaviorDetails())
-        .WillByDefault(Return(behavior_current));
-    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
-    ON_CALL(mock_person, GetAge()).WillByDefault(Return(360));
-
-    // Expectations
-    EXPECT_CALL(mock_sampler, GetDecision(expected_probs)).WillOnce(Return(1));
-    EXPECT_CALL(mock_person, TransitionMOUD()).Times(1);
-
-    // Run test
-    auto event = event::behavior::Moud::Create(*model_data, LOG_NAME);
-    event->Execute(mock_person, mock_sampler);
-
-    RemoveTestLog(LOG_NAME);
-}
-
-TEST_F(MoudTest, StayOffTreatment) {
-    // Setup
-    const std::string LOG_NAME = "StayOffTreatment";
-    CreateTestLog(LOG_NAME);
-    data::BehaviorDetails behavior_current = {data::Behavior::kInjection, 0};
-    data::MOUDDetails moud_details = {data::MOUD::kNone, 0, 4, 2};
-
-    ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
-    ON_CALL(mock_person, GetBehaviorDetails())
-        .WillByDefault(Return(behavior_current));
-    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud_details));
-    ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
-
-    // Expectations
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(2));
-    EXPECT_CALL(mock_person, TransitionMOUD()).Times(0);
+    EXPECT_CALL(mock_person, TransitionMOUD()).Times(1);
+    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kMoud))
+        .Times(1);
+    EXPECT_CALL(mock_person, SetUtility(_, model::UtilityCategory::kMoud))
+        .Times(1);
 
-    // Run test
-    auto event = event::behavior::Moud::Create(*model_data, LOG_NAME);
     event->Execute(mock_person, mock_sampler);
+}
 
-    RemoveTestLog(LOG_NAME);
+TEST_F(MoudTest, NoneStateCanTransitionToCurrentViaSampling) {
+    behavior.behavior = data::Behavior::kInjection;
+    moud.moud_state = data::MOUD::kNone;
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behavior));
+    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("MOUD", inputs, "MoudNone");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+    EXPECT_CALL(mock_person, TransitionMOUD()).Times(1);
+    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kMoud))
+        .Times(1);
+    EXPECT_CALL(mock_person, SetUtility(_, model::UtilityCategory::kMoud))
+        .Times(1);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(MoudTest, MissingTransitionTupleFallsBackToGuaranteedPostProbability) {
+    behavior.behavior = data::Behavior::kInjection;
+    moud.moud_state = data::MOUD::kNone;
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(312));
+    ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behavior));
+    ON_CALL(mock_person, GetMoudDetails()).WillByDefault(Return(moud));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("MOUD", inputs, "MoudFallback");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(ElementsAre(
+                                  DoubleEq(0.0), DoubleEq(0.0), DoubleEq(1.0))))
+        .WillOnce(Return(2));
+    EXPECT_CALL(mock_person, TransitionMOUD()).Times(0);
+    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kMoud))
+        .Times(1);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(MoudTest, MissingTransitionTableStillExecutesWithFallbackTransition) {
+    ExecuteQueries(test_db, {"DROP TABLE IF EXISTS moud_transitions;"});
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("MOUD", inputs,
+                                                  "MoudNoTransitionsTable");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(ElementsAre(
+                                  DoubleEq(0.0), DoubleEq(0.0), DoubleEq(1.0))))
+        .WillOnce(Return(2));
+    EXPECT_CALL(mock_person, TransitionMOUD()).Times(0);
+    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kMoud))
+        .Times(1);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(MoudTest, EmptyTransitionTableStillExecutesWithFallbackTransition) {
+    ExecuteQueries(test_db, {"DELETE FROM moud_transitions;"});
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("MOUD", inputs,
+                                                  "MoudEmptyTransitions");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(ElementsAre(
+                                  DoubleEq(0.0), DoubleEq(0.0), DoubleEq(1.0))))
+        .WillOnce(Return(2));
+    EXPECT_CALL(mock_person, TransitionMOUD()).Times(0);
+    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kMoud))
+        .Times(1);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(MoudTest, MissingCostTableFallsBackToDefaultCostAndUtility) {
+    ExecuteQueries(test_db, {"DROP TABLE IF EXISTS moud_costs;"});
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("MOUD", inputs, "MoudNoCostTable");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, AddCost(DoubleEq(0.0), DoubleEq(0.0),
+                                     model::CostCategory::kMoud))
+        .Times(1);
+    EXPECT_CALL(mock_person,
+                SetUtility(DoubleEq(0.0), model::UtilityCategory::kMoud))
+        .Times(1);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(MoudTest, EmptyCostTableFallsBackToDefaultCostAndUtility) {
+    ExecuteQueries(test_db, {"DELETE FROM moud_costs;"});
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("MOUD", inputs, "MoudEmptyCost");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, AddCost(DoubleEq(0.0), DoubleEq(0.0),
+                                     model::CostCategory::kMoud))
+        .Times(1);
+    EXPECT_CALL(mock_person,
+                SetUtility(DoubleEq(0.0), model::UtilityCategory::kMoud))
+        .Times(1);
+
+    event->Execute(mock_person, mock_sampler);
 }
 
 } // namespace testing

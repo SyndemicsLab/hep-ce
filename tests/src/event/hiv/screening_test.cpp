@@ -1,39 +1,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: screening_test.cpp                                                   //
 // Project: hep-ce                                                            //
-// Created Date: 2025-05-01                                                   //
-// Author: Matthew Carroll                                                    //
-// -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
-// -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-// Testing File
-#include <hepce/event/hiv/screening.hpp>
+#include <hepce/event/event_factory.hpp>
 
-// STL Includes
-#include <memory>
+#include <filesystem>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
-// 3rd Party Dependencies
-#include <datamanagement/datamanagement.hpp>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-// Library Headers
-#include <hepce/utils/logging.hpp>
-#include <hepce/utils/math.hpp>
-#include <hepce/utils/pair_hashing.hpp>
-
-// Test Includes
 #include <config.hpp>
 #include <inputs_db.hpp>
 #include <person_mock.hpp>
 #include <sampler_mock.hpp>
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 namespace hepce {
@@ -41,14 +27,15 @@ namespace testing {
 
 class HIVScreeningTest : public ::testing::Test {
 protected:
-    MockPerson mock_person;
+    NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
+
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
-    std::unique_ptr<datamanagement::ModelData> model_data;
-    double discounted_cost;
-    double discounted_life;
-    data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
+
+    data::LinkageDetails linkage = {data::LinkageState::kUnlinked, -1, 0};
+    data::ScreeningDetails screening = {-1, 0, 0, false, false, -1, 0,
+                                        data::ScreeningType::kNa, 0, 0};
     data::HCVDetails hcv = {data::HCV::kNone,
                             data::FibrosisState::kF0,
                             false,
@@ -58,22 +45,36 @@ protected:
                             0,
                             0,
                             0};
-    data::ScreeningDetails screen = {-1, 0, 0, false, false, -1, 0};
+    data::BehaviorDetails behavior = {data::Behavior::kInjection, -1};
 
     void SetUp() override {
-        ExecuteQueries(
-            test_db, {{"DROP TABLE IF EXISTS hcv_impacts;", CreateHCVImpacts(),
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (0, 0, 230.65, 0.915);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 0, 430.00, 0.8);",
-                       "INSERT INTO hcv_impacts "
-                       "VALUES (1, 1, 500.00, 0.7);"}});
-        BuildSimConf(test_conf);
-        discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
-        discounted_life = utils::Discount(1, 0.0025, 1, false);
-        model_data = datamanagement::ModelData::Create(test_conf);
-        model_data->AddSource(test_db);
+        std::unordered_map<std::string, std::vector<std::string>> config =
+            DEFAULT_CONFIG;
+        config["hiv_screening"] = {
+            "intervention_type = periodic",
+            "period = 12"};
+        BuildSimConf(test_conf, config);
+
+        ExecuteQueries(test_db,
+                       {"DROP TABLE IF EXISTS screening_and_linkage;",
+                        CreateScreeningAndLinkage(),
+                        "INSERT INTO screening_and_linkage VALUES "
+                        "(25,0,4,-1,1.0,1.0,1.0,1.0);",
+                        "DROP TABLE IF EXISTS antibody_testing;",
+                        CreateAntibodyTesting(),
+                        "INSERT INTO antibody_testing VALUES (25,4,1.0);"});
+
+        ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
+        ON_CALL(mock_person, IsBoomer()).WillByDefault(Return(false));
+        ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+        ON_CALL(mock_person, GetSex()).WillByDefault(Return(data::Sex::kMale));
+        ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behavior));
+        ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
+        ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+        ON_CALL(mock_person, GetLinkageDetails(data::InfectionType::kHiv))
+            .WillByDefault(Return(linkage));
+        ON_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHiv))
+            .WillByDefault(Return(screening));
     }
 
     void TearDown() override {
@@ -81,5 +82,52 @@ protected:
         std::filesystem::remove(test_conf);
     }
 };
+
+TEST_F(HIVScreeningTest, PeriodicInterventionPathRunsAtFirstTimestep) {
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("HIVScreening", inputs, "HIVScrPeriodic");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_))
+        .WillOnce(Return(0))
+        .WillOnce(Return(0))
+        .WillOnce(Return(0));
+    EXPECT_CALL(mock_person,
+                Screen(data::InfectionType::kHiv, data::ScreeningTest::kAb,
+                       data::ScreeningType::kIntervention))
+        .Times(1);
+    EXPECT_CALL(mock_person,
+                Screen(data::InfectionType::kHiv, data::ScreeningTest::kRna,
+                       data::ScreeningType::kIntervention))
+        .Times(1);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(HIVScreeningTest, PeriodicBackgroundPathWhenNotFirstAndPeriodNotReached) {
+    screening.time_of_last_screening = 10;
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(12));
+    ON_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHiv))
+        .WillByDefault(Return(screening));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("HIVScreening", inputs,
+                                                  "HIVScrBackground");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_))
+        .WillOnce(Return(0))
+        .WillOnce(Return(1));
+    EXPECT_CALL(mock_person,
+                Screen(data::InfectionType::kHiv, data::ScreeningTest::kAb,
+                       data::ScreeningType::kBackground))
+        .Times(1);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
 } // namespace testing
 } // namespace hepce
