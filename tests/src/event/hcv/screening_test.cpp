@@ -33,8 +33,8 @@ protected:
     std::string test_conf = "sim.conf";
 
     data::LinkageDetails linkage = {data::LinkageState::kUnlinked, -1, 0};
-    data::ScreeningDetails screening = {-1, 0, 0, false, false, -1, 0,
-                                        data::ScreeningType::kNa, 0, 0};
+    data::ScreeningDetails screening = {
+        -1, 0, 0, false, false, -1, 0, data::ScreeningType::kNa, 0, 0};
     data::HCVDetails hcv = {data::HCV::kChronic,
                             data::FibrosisState::kF0,
                             false,
@@ -62,7 +62,8 @@ protected:
         ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
         ON_CALL(mock_person, GetSex()).WillByDefault(Return(data::Sex::kMale));
         ON_CALL(mock_person, IsBoomer()).WillByDefault(Return(false));
-        ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behavior));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behavior));
         ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
         ON_CALL(mock_person, GetLinkageDetails(data::InfectionType::kHcv))
             .WillByDefault(Return(linkage));
@@ -83,8 +84,8 @@ TEST_F(HCVScreeningTest, ReturnsEarlyWhenAlreadyLinked) {
         .WillByDefault(Return(linkage));
 
     data::Inputs inputs(test_conf, test_db);
-    auto event =
-        event::EventFactory::CreateEvent("HCVScreening", inputs, "HCVScrLinked");
+    auto event = event::EventFactory::CreateEvent("HCVScreening", inputs,
+                                                  "HCVScrLinked");
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
@@ -97,8 +98,8 @@ TEST_F(HCVScreeningTest, OneTimeInterventionDiagnosesOnPositiveAbAndRna) {
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
 
     data::Inputs inputs(test_conf, test_db);
-    auto event =
-        event::EventFactory::CreateEvent("HCVScreening", inputs, "HCVScrInterv");
+    auto event = event::EventFactory::CreateEvent("HCVScreening", inputs,
+                                                  "HCVScrInterv");
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
@@ -148,11 +149,16 @@ TEST_F(HCVScreeningTest, BackgroundFalseNegativeClearsDiagnosisWhenInfected) {
         event::EventFactory::CreateEvent("HCVScreening", inputs, "HCVScrFN");
     ASSERT_NE(event, nullptr);
 
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0)).WillOnce(Return(1));
-    EXPECT_CALL(mock_person, AddFalseNegative(data::InfectionType::kHcv)).Times(1);
-    EXPECT_CALL(mock_person, AddIdentificationsCleared(data::InfectionType::kHcv))
+    EXPECT_CALL(mock_sampler, GetDecision(_))
+        .WillOnce(Return(0))
+        .WillOnce(Return(1));
+    EXPECT_CALL(mock_person, AddFalseNegative(data::InfectionType::kHcv))
         .Times(1);
-    EXPECT_CALL(mock_person, ClearDiagnosis(data::InfectionType::kHcv)).Times(1);
+    EXPECT_CALL(mock_person,
+                AddIdentificationsCleared(data::InfectionType::kHcv))
+        .Times(1);
+    EXPECT_CALL(mock_person, ClearDiagnosis(data::InfectionType::kHcv))
+        .Times(1);
 
     event->Execute(mock_person, mock_sampler);
 }
@@ -164,11 +170,13 @@ TEST_F(HCVScreeningTest, BackgroundRnaPathWhenAntibodyAlreadyPositive) {
         .WillByDefault(Return(screening));
 
     data::Inputs inputs(test_conf, test_db);
-    auto event =
-        event::EventFactory::CreateEvent("HCVScreening", inputs, "HCVScrRnaOnly");
+    auto event = event::EventFactory::CreateEvent("HCVScreening", inputs,
+                                                  "HCVScrRnaOnly");
     ASSERT_NE(event, nullptr);
 
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0)).WillOnce(Return(0));
+    EXPECT_CALL(mock_sampler, GetDecision(_))
+        .WillOnce(Return(0))
+        .WillOnce(Return(0));
     EXPECT_CALL(mock_person,
                 Screen(data::InfectionType::kHcv, data::ScreeningTest::kAb,
                        data::ScreeningType::kBackground))
@@ -182,13 +190,12 @@ TEST_F(HCVScreeningTest, BackgroundRnaPathWhenAntibodyAlreadyPositive) {
 }
 
 TEST_F(HCVScreeningTest, MissingScreeningTablesFallsBackToZeroProbability) {
-    ExecuteQueries(test_db,
-                   {"DROP TABLE IF EXISTS screening_and_linkage;",
-                    "DROP TABLE IF EXISTS antibody_testing;"});
+    ExecuteQueries(test_db, {"DROP TABLE IF EXISTS screening_and_linkage;",
+                             "DROP TABLE IF EXISTS antibody_testing;"});
 
     data::Inputs inputs(test_conf, test_db);
-    auto event =
-        event::EventFactory::CreateEvent("HCVScreening", inputs, "HCVScrNoTables");
+    auto event = event::EventFactory::CreateEvent("HCVScreening", inputs,
+                                                  "HCVScrNoTables");
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));

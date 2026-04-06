@@ -35,9 +35,8 @@ protected:
     std::string test_conf = "sim.conf";
 
     data::LinkageDetails linkage = {data::LinkageState::kUnlinked, 0, 0};
-    data::ScreeningDetails screening = {-1, 0, 0, false, true, -1, 0,
-                                        data::ScreeningType::kBackground, 0,
-                                        0};
+    data::ScreeningDetails screening = {
+        -1, 0, 0, false, true, -1, 0, data::ScreeningType::kBackground, 0, 0};
     data::HCVDetails hcv = {data::HCV::kChronic,
                             data::FibrosisState::kF0,
                             false,
@@ -54,18 +53,19 @@ protected:
     void SetUp() override {
         BuildSimConf(test_conf);
 
-        ExecuteQueries(test_db,
-                       {"DROP TABLE IF EXISTS screening_and_linkage;",
-                        CreateScreeningAndLinkage(),
-                        "INSERT INTO screening_and_linkage VALUES "
-                        "(25,0,4,-1,0.5,0.6,0.5,1.0);"});
+        ExecuteQueries(test_db, {"DROP TABLE IF EXISTS screening_and_linkage;",
+                                 CreateScreeningAndLinkage(),
+                                 "INSERT INTO screening_and_linkage VALUES "
+                                 "(25,0,4,-1,0.5,0.6,0.5,1.0);"});
 
         ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
         ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
         ON_CALL(mock_person, GetSex()).WillByDefault(Return(data::Sex::kMale));
         ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
-        ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behavior));
-        ON_CALL(mock_person, GetPregnancyDetails()).WillByDefault(Return(pregnancy));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behavior));
+        ON_CALL(mock_person, GetPregnancyDetails())
+            .WillByDefault(Return(pregnancy));
         ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
         ON_CALL(mock_person, GetLinkageDetails(data::InfectionType::kHcv))
             .WillByDefault(Return(linkage));
@@ -170,11 +170,10 @@ TEST_F(HCVLinkingTest, MultiplierScalingPathExecutesForRecentScreen) {
 TEST_F(HCVLinkingTest, ExponentialScalingPathExecutes) {
     std::unordered_map<std::string, std::vector<std::string>> config =
         DEFAULT_CONFIG;
-    config["linking"] = {"intervention_cost = 0",
-                         "false_positive_test_cost = 442.39",
-                         "scaling_type = exponential",
-                         "scaling_coefficient = 1.1",
-                         "recent_screen_cutoff = 0"};
+    config["linking"] = {
+        "intervention_cost = 0", "false_positive_test_cost = 442.39",
+        "scaling_type = exponential", "scaling_coefficient = 1.1",
+        "recent_screen_cutoff = 0"};
     BuildSimConf(test_conf, config);
 
     screening.screen_type = data::ScreeningType::kBackground;
@@ -197,11 +196,10 @@ TEST_F(HCVLinkingTest, ExponentialScalingPathExecutes) {
 TEST_F(HCVLinkingTest, SigmoidalScalingPathExecutes) {
     std::unordered_map<std::string, std::vector<std::string>> config =
         DEFAULT_CONFIG;
-    config["linking"] = {"intervention_cost = 0",
-                         "false_positive_test_cost = 442.39",
-                         "scaling_type = sigmoidal",
-                         "scaling_coefficient = 1.1",
-                         "recent_screen_cutoff = -1"};
+    config["linking"] = {
+        "intervention_cost = 0", "false_positive_test_cost = 442.39",
+        "scaling_type = sigmoidal", "scaling_coefficient = 1.1",
+        "recent_screen_cutoff = -1"};
     BuildSimConf(test_conf, config);
 
     screening.screen_type = data::ScreeningType::kBackground;

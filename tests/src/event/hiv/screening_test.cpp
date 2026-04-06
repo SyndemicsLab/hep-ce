@@ -34,8 +34,8 @@ protected:
     std::string test_conf = "sim.conf";
 
     data::LinkageDetails linkage = {data::LinkageState::kUnlinked, -1, 0};
-    data::ScreeningDetails screening = {-1, 0, 0, false, false, -1, 0,
-                                        data::ScreeningType::kNa, 0, 0};
+    data::ScreeningDetails screening = {
+        -1, 0, 0, false, false, -1, 0, data::ScreeningType::kNa, 0, 0};
     data::HCVDetails hcv = {data::HCV::kNone,
                             data::FibrosisState::kF0,
                             false,
@@ -50,9 +50,8 @@ protected:
     void SetUp() override {
         std::unordered_map<std::string, std::vector<std::string>> config =
             DEFAULT_CONFIG;
-        config["hiv_screening"] = {
-            "intervention_type = periodic",
-            "period = 12"};
+        config["hiv_screening"] = {"intervention_type = periodic",
+                                   "period = 12"};
         BuildSimConf(test_conf, config);
 
         ExecuteQueries(test_db,
@@ -68,7 +67,8 @@ protected:
         ON_CALL(mock_person, IsBoomer()).WillByDefault(Return(false));
         ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
         ON_CALL(mock_person, GetSex()).WillByDefault(Return(data::Sex::kMale));
-        ON_CALL(mock_person, GetBehaviorDetails()).WillByDefault(Return(behavior));
+        ON_CALL(mock_person, GetBehaviorDetails())
+            .WillByDefault(Return(behavior));
         ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
         ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
         ON_CALL(mock_person, GetLinkageDetails(data::InfectionType::kHiv))
@@ -87,8 +87,8 @@ TEST_F(HIVScreeningTest, PeriodicInterventionPathRunsAtFirstTimestep) {
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
 
     data::Inputs inputs(test_conf, test_db);
-    auto event =
-        event::EventFactory::CreateEvent("HIVScreening", inputs, "HIVScrPeriodic");
+    auto event = event::EventFactory::CreateEvent("HIVScreening", inputs,
+                                                  "HIVScrPeriodic");
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
@@ -107,7 +107,8 @@ TEST_F(HIVScreeningTest, PeriodicInterventionPathRunsAtFirstTimestep) {
     event->Execute(mock_person, mock_sampler);
 }
 
-TEST_F(HIVScreeningTest, PeriodicBackgroundPathWhenNotFirstAndPeriodNotReached) {
+TEST_F(HIVScreeningTest,
+       PeriodicBackgroundPathWhenNotFirstAndPeriodNotReached) {
     screening.time_of_last_screening = 10;
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(12));
     ON_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHiv))

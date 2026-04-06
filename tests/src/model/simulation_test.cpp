@@ -234,9 +234,9 @@ TEST_F(SimulationTest, DeepPopulationTableSuccessExecutesPopulationCallback) {
     }
     insert_row << ");";
 
-    hepce::testing::ExecuteQueries(test_db, {"DROP TABLE IF EXISTS population;",
-                                             create_table.str(),
-                                             insert_row.str()});
+    hepce::testing::ExecuteQueries(test_db,
+                                   {"DROP TABLE IF EXISTS population;",
+                                    create_table.str(), insert_row.str()});
 
     auto sim = hepce::model::Hepce::Create(inputs, "DeepPopTableSuccess");
     auto population = sim->CreatePopulation();
