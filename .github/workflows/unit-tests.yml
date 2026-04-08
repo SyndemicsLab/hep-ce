@@ -1,4 +1,4 @@
-name: Ubuntu Unit Tests
+name: Unit Tests
 
 on:
     push:
@@ -15,16 +15,58 @@ env:
 
 jobs:
     build:
-        name: Build Debug
-        runs-on: "ubuntu-latest"
+        name: Build (${{ matrix.os_name }})
+        runs-on: ${{ matrix.runs_on }}
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - os_name: ubuntu
+                      runs_on: ubuntu-latest
+                    - os_name: windows
+                      runs_on: windows-latest
         steps:
             - uses: actions/checkout@v4
-            - name: Install SQLiteCpp
+
+            - name: Install SQLiteCpp (Ubuntu)
+              if: matrix.os_name == 'ubuntu'
               run: sudo apt-get install libsqlitecpp-dev gcovr
-            - name: Build and Test
+
+            - name: Build and Test (Ubuntu)
+              if: matrix.os_name == 'ubuntu'
               working-directory: ${{ github.workspace }}
               run: cmake --workflow --preset gcc-debug
+
+            - name: Install SQLiteCpp (Windows vcpkg)
+              if: matrix.os_name == 'windows'
+              uses: lukka/run-vcpkg@v11
+              with:
+                  runVcpkgInstall: true
+                  vcpkgArguments: sqlitecpp:x64-windows
+
+            - name: Configure (Windows)
+              if: matrix.os_name == 'windows'
+              run: >
+                  cmake -S . -B build/windows
+                  -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
+                  -DHEPCE_BUILD_TESTS=ON
+                  -DHEPCE_CALCULATE_COVERAGE=OFF
+                  -DHEPCE_BUILD_PYBINDINGS=OFF
+                  -DHEPCE_BUILD_BENCH=OFF
+                  -DHEPCE_BUILD_WARNINGS=OFF
+                  -DHEPCE_INSTALL=OFF
+                  -DHEPCE_RUN_OMP=OFF
+
+            - name: Build (Windows)
+              if: matrix.os_name == 'windows'
+              run: cmake --build build/windows --config Debug
+
+            - name: Test (Windows)
+              if: matrix.os_name == 'windows'
+              run: ctest --test-dir build/windows -C Debug --output-on-failure
+
             - name: Generate Coverage Badge JSON
+              if: matrix.os_name == 'ubuntu'
               shell: bash
               run: |
                   set -euo pipefail
@@ -52,7 +94,7 @@ jobs:
                   EOF
 
             - name: Publish Coverage Badge JSON
-              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+              if: matrix.os_name == 'ubuntu' && github.event_name == 'push' && github.ref == 'refs/heads/main'
               uses: peaceiris/actions-gh-pages@v4
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
