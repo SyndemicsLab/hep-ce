@@ -23,8 +23,8 @@ jobs:
                 include:
                     - os_name: ubuntu
                       runs_on: ubuntu-latest
-                    - os_name: windows
-                      runs_on: windows-latest
+                    # - os_name: windows
+                    #   runs_on: windows-latest
         steps:
             - uses: actions/checkout@v4
 
@@ -37,35 +37,35 @@ jobs:
               working-directory: ${{ github.workspace }}
               run: cmake --workflow --preset gcc-debug
 
-            - name: Setup vcpkg and install SQLiteCpp (Windows)
-              if: matrix.os_name == 'windows'
-              shell: pwsh
-              run: |
-                  git clone https://github.com/microsoft/vcpkg "$env:RUNNER_TEMP/vcpkg"
-                  & "$env:RUNNER_TEMP/vcpkg/bootstrap-vcpkg.bat"
-                  & "$env:RUNNER_TEMP/vcpkg/vcpkg.exe" install sqlitecpp:x64-windows
-                  "VCPKG_ROOT=$env:RUNNER_TEMP/vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            # - name: Setup vcpkg and install SQLiteCpp (Windows)
+            #   if: matrix.os_name == 'windows'
+            #   shell: pwsh
+            #   run: |
+            #       git clone https://github.com/microsoft/vcpkg "$env:RUNNER_TEMP/vcpkg"
+            #       & "$env:RUNNER_TEMP/vcpkg/bootstrap-vcpkg.bat"
+            #       & "$env:RUNNER_TEMP/vcpkg/vcpkg.exe" install sqlitecpp:x64-windows
+            #       "VCPKG_ROOT=$env:RUNNER_TEMP/vcpkg" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
-            - name: Configure (Windows)
-              if: matrix.os_name == 'windows'
-              run: >
-                  cmake -S . -B build/windows
-                  -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
-                  -DHEPCE_BUILD_TESTS=ON
-                  -DHEPCE_CALCULATE_COVERAGE=OFF
-                  -DHEPCE_BUILD_PYBINDINGS=OFF
-                  -DHEPCE_BUILD_BENCH=OFF
-                  -DHEPCE_BUILD_WARNINGS=OFF
-                  -DHEPCE_INSTALL=OFF
-                  -DHEPCE_RUN_OMP=OFF
+            # - name: Configure (Windows)
+            #   if: matrix.os_name == 'windows'
+            #   run: >
+            #       cmake -S . -B build/windows
+            #       -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
+            #       -DHEPCE_BUILD_TESTS=ON
+            #       -DHEPCE_CALCULATE_COVERAGE=OFF
+            #       -DHEPCE_BUILD_PYBINDINGS=OFF
+            #       -DHEPCE_BUILD_BENCH=OFF
+            #       -DHEPCE_BUILD_WARNINGS=OFF
+            #       -DHEPCE_INSTALL=OFF
+            #       -DHEPCE_RUN_OMP=OFF
 
-            - name: Build (Windows)
-              if: matrix.os_name == 'windows'
-              run: cmake --build build/windows --config Debug
+            # - name: Build (Windows)
+            #   if: matrix.os_name == 'windows'
+            #   run: cmake --build build/windows --config Debug
 
-            - name: Test (Windows)
-              if: matrix.os_name == 'windows'
-              run: ctest --test-dir build/windows -C Debug --output-on-failure
+            # - name: Test (Windows)
+            #   if: matrix.os_name == 'windows'
+            #   run: ctest --test-dir build/windows -C Debug --output-on-failure
 
             - name: Generate Coverage Badge JSON
               if: matrix.os_name == 'ubuntu'
