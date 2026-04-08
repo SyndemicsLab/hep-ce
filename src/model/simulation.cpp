@@ -4,7 +4,7 @@
 // Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-04-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -47,9 +47,12 @@ HepceImpl::HepceImpl(const data::Inputs &inputs, const std::string &log_name)
 
 void HepceImpl::Run(const model::People &people,
                     const event::EventList &discrete_events) {
-    auto sampler = hepce::model::Sampler::Create(GetSeed(), _log_name);
 #pragma omp parallel for
-    for (const auto &person : people) {
+    for (int person_idx = 0; person_idx < static_cast<int>(people.size());
+         ++person_idx) {
+        auto sampler =
+            hepce::model::Sampler::Create(GetSeed() + person_idx, _log_name);
+        const auto &person = people[person_idx];
         for (int i = 0; i < GetDuration(); ++i) {
             for (const auto &event : discrete_events) {
                 event->Execute(*person, *sampler);

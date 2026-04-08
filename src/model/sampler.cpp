@@ -13,6 +13,7 @@
 #include <hepce/model/sampler.hpp>
 
 #include <algorithm>
+#include <numeric>
 #include <random>
 #include <sstream>
 
