@@ -82,9 +82,10 @@ int main(int argc, char *argv[]) {
 
         std::filesystem::path log_file = output_dir / "hepce.log";
         std::string log_name = "hepce-task-" + std::to_string(i);
-        hepce::utils::CreateFileLogger(log_name, log_file);
+        hepce::utils::CreateFileLogger(log_name, log_file.string());
 
-        hepce::data::Inputs inputs = hepce::data::Inputs(config, dbfile);
+        hepce::data::Inputs inputs =
+            hepce::data::Inputs(config.string(), dbfile.string());
 
         auto sim = hepce::model::Hepce::Create(inputs, log_name);
         auto population = sim->CreatePopulation();

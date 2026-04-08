@@ -48,7 +48,7 @@ public:
         const std::unordered_map<int, std::variant<int, double, std::string>>
             &bindings) const {
         try {
-            SQLite::Database db(_database_file,
+            SQLite::Database db(_database_file.string(),
                                 SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
             SQLite::Statement stmt(db, query);
 
