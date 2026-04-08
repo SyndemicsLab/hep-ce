@@ -41,8 +41,13 @@ jobs:
               if: matrix.os_name == 'windows'
               uses: lukka/run-vcpkg@v11
               with:
-                  runVcpkgInstall: true
-                  vcpkgArguments: sqlitecpp:x64-windows
+                  runVcpkgInstall: false
+
+            - name: Install SQLiteCpp (Windows)
+              if: matrix.os_name == 'windows'
+              shell: pwsh
+              run: |
+                  & "$env:VCPKG_ROOT/vcpkg.exe" install sqlitecpp:x64-windows
 
             - name: Configure (Windows)
               if: matrix.os_name == 'windows'
