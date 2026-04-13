@@ -1,39 +1,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 // File: pregnancy_test.cpp                                                   //
 // Project: hep-ce                                                            //
-// Created: 2025-01-06                                                        //
-// Author: Matthew Carroll                                                    //
-// -----                                                                      //
-// Last Modified: 2025-06-12                                                  //
-// Modified By: Matthew Carroll                                               //
-// -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
 ////////////////////////////////////////////////////////////////////////////////
 
-// Testing File
-#include <hepce/event/behavior/pregnancy.hpp>
+#include <hepce/event/event_factory.hpp>
 
-// STL Includes
+#include <filesystem>
 #include <memory>
 #include <string>
-#include <vector>
 
-// 3rd Party Dependencies
-#include <datamanagement/datamanagement.hpp>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-// Library Headers
-#include <hepce/utils/logging.hpp>
-#include <hepce/utils/math.hpp>
-#include <hepce/utils/pair_hashing.hpp>
-
-// Test Includes
 #include <config.hpp>
 #include <inputs_db.hpp>
 #include <person_mock.hpp>
 #include <sampler_mock.hpp>
 
 using ::testing::_;
+using ::testing::DoubleEq;
+using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -44,30 +30,37 @@ class PregnancyTest : public ::testing::Test {
 protected:
     NiceMock<MockPerson> mock_person;
     MockSampler mock_sampler;
+
     std::string test_db = "inputs.db";
     std::string test_conf = "sim.conf";
-    std::unique_ptr<datamanagement::ModelData> model_data;
-    double discounted_cost;
-    double discounted_life;
-    data::BehaviorDetails behaviors = {data::Behavior::kInjection, 0};
+
     data::PregnancyDetails pregnancy = {
-        data::PregnancyState::kNa, -1, 0, 0, 0, 0, 0, 0, {}};
+        data::PregnancyState::kNone, -1, 0, 0, 0, 0, 0, 0, {}};
+    data::HCVDetails hcv = {data::HCV::kNone,
+                            data::FibrosisState::kF0,
+                            false,
+                            false,
+                            -1,
+                            -1,
+                            0,
+                            0,
+                            0};
 
     void SetUp() override {
-        ExecuteQueries(test_db,
-                       {{"DROP TABLE IF EXISTS pregnancy;", CreatePregnancy(),
-                         "INSERT INTO pregnancy "
-                         "VALUES (25, 0.008, 0.0005);"}});
         BuildSimConf(test_conf);
-        discounted_cost = utils::Discount(370.75, 0.0025, 1, false);
-        discounted_life = utils::Discount(1, 0.0025, 1, false);
-        model_data = datamanagement::ModelData::Create(test_conf);
-        model_data->AddSource(test_db);
+
+        ExecuteQueries(test_db,
+                       {"DROP TABLE IF EXISTS pregnancy;", CreatePregnancy(),
+                        "INSERT INTO pregnancy VALUES (25, 0.008, 0.2);"});
 
         ON_CALL(mock_person, IsAlive()).WillByDefault(Return(true));
         ON_CALL(mock_person, GetSex())
             .WillByDefault(Return(data::Sex::kFemale));
         ON_CALL(mock_person, GetAge()).WillByDefault(Return(300));
+        ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(10));
+        ON_CALL(mock_person, GetPregnancyDetails())
+            .WillByDefault(Return(pregnancy));
+        ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
     }
 
     void TearDown() override {
@@ -76,287 +69,238 @@ protected:
     }
 };
 
-TEST_F(PregnancyTest, Males) {
-    EXPECT_CALL(mock_person, GetSex()).WillOnce(Return(data::Sex::kMale));
-    EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
+TEST_F(PregnancyTest, ReturnsEarlyWhenPersonIsDead) {
+    ON_CALL(mock_person, IsAlive()).WillByDefault(Return(false));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregDead");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
     EXPECT_CALL(mock_person, Impregnate()).Times(0);
-    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+    EXPECT_CALL(mock_person, Birth(_)).Times(0);
 
-    auto event = event::behavior::Pregnancy::Create(*model_data);
     event->Execute(mock_person, mock_sampler);
 }
 
-TEST_F(PregnancyTest, TooYoung) {
-    EXPECT_CALL(mock_person, GetAge()).Times(1).WillRepeatedly(Return(5));
-    EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
+TEST_F(PregnancyTest, ReturnsEarlyForMale) {
+    ON_CALL(mock_person, GetSex()).WillByDefault(Return(data::Sex::kMale));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregMale");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
     EXPECT_CALL(mock_person, Impregnate()).Times(0);
-    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
 
-    auto event = event::behavior::Pregnancy::Create(*model_data);
     event->Execute(mock_person, mock_sampler);
 }
 
-TEST_F(PregnancyTest, TooOld) {
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(600));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(1)
-        .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+TEST_F(PregnancyTest, ImpregnatesWhenSampled) {
+    pregnancy.pregnancy_state = data::PregnancyState::kNone;
+    ON_CALL(mock_person, GetPregnancyDetails())
+        .WillByDefault(Return(pregnancy));
 
-    auto event = event::behavior::Pregnancy::Create(*model_data);
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregImp");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+    EXPECT_CALL(mock_person, Impregnate()).Times(1);
+
     event->Execute(mock_person, mock_sampler);
 }
 
-TEST_F(PregnancyTest, TooOldPregnant) {
+TEST_F(PregnancyTest, PregnantPathTriggersStillbirthWhenSampled) {
     pregnancy.pregnancy_state = data::PregnancyState::kPregnant;
     pregnancy.time_of_pregnancy_change = 0;
-    ON_CALL(mock_person, GetAge()).WillByDefault(Return(541));
-    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(1));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(7)
-        .WillRepeatedly(Return(pregnancy));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(10));
+    ON_CALL(mock_person, GetPregnancyDetails())
+        .WillByDefault(Return(pregnancy));
 
-    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregStill");
+    ASSERT_NE(event, nullptr);
 
-    auto event = event::behavior::Pregnancy::Create(*model_data);
-    event->Execute(mock_person, mock_sampler);
-}
-
-TEST_F(PregnancyTest, TooOldPostpartum) {
-    pregnancy.pregnancy_state = data::PregnancyState::kRestrictedPostpartum;
-    pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetAge()).Times(2).WillRepeatedly(Return(541));
-    EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(1));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(3)
-        .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
-    EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
-
-    auto event = event::behavior::Pregnancy::Create(*model_data);
-    event->Execute(mock_person, mock_sampler);
-}
-
-TEST_F(PregnancyTest, TooShortPostpartum) {
-    pregnancy.pregnancy_state = data::PregnancyState::kRestrictedPostpartum;
-    pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(1));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(3)
-        .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
-    EXPECT_CALL(mock_person, Impregnate()).Times(0);
-    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
-
-    auto event = event::behavior::Pregnancy::Create(*model_data);
-    event->Execute(mock_person, mock_sampler);
-}
-
-TEST_F(PregnancyTest, ProgressYearOnePostpartum) {
-    pregnancy.pregnancy_state = data::PregnancyState::kRestrictedPostpartum;
-    pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(3));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(6)
-        .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_person,
-                SetPregnancyState(data::PregnancyState::kYearOnePostpartum))
-        .Times(1);
-    EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
-    EXPECT_CALL(mock_person, Impregnate()).Times(0);
+    EXPECT_CALL(mock_person, Stillbirth()).Times(1);
+    EXPECT_CALL(mock_person, Birth(_)).Times(0);
 
-    auto event = event::behavior::Pregnancy::Create(*model_data);
     event->Execute(mock_person, mock_sampler);
 }
 
-TEST_F(PregnancyTest, ProgressYearTwoPostpartum) {
+TEST_F(PregnancyTest, ProgressesPostpartumToYearTwoWhenThresholdMet) {
     pregnancy.pregnancy_state = data::PregnancyState::kYearOnePostpartum;
     pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(2)
-        .WillRepeatedly(Return(12));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(6)
-        .WillRepeatedly(Return(pregnancy));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(12));
+    ON_CALL(mock_person, GetPregnancyDetails())
+        .WillByDefault(Return(pregnancy));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregPost");
+    ASSERT_NE(event, nullptr);
+
     EXPECT_CALL(mock_person,
                 SetPregnancyState(data::PregnancyState::kYearTwoPostpartum))
         .Times(1);
-    EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Impregnate()).Times(0);
 
-    auto event = event::behavior::Pregnancy::Create(*model_data);
     event->Execute(mock_person, mock_sampler);
 }
 
-TEST_F(PregnancyTest, EndPostpartum) {
+TEST_F(PregnancyTest, ReturnsEarlyWhenUnderMinimumAge) {
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(179));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregTooYoung");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+    EXPECT_CALL(mock_person, Impregnate()).Times(0);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(PregnancyTest, ReturnsEarlyWhenOldAgeAndNotPregnantOrPostpartum) {
+    pregnancy.pregnancy_state = data::PregnancyState::kNone;
+    ON_CALL(mock_person, GetPregnancyDetails())
+        .WillByDefault(Return(pregnancy));
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(541));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregTooOldNone");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+    EXPECT_CALL(mock_person, Impregnate()).Times(0);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(PregnancyTest, RestrictedPostpartumProgressesToYearOneAfterWindow) {
+    pregnancy.pregnancy_state = data::PregnancyState::kRestrictedPostpartum;
+    pregnancy.time_of_pregnancy_change = 0;
+    ON_CALL(mock_person, GetPregnancyDetails())
+        .WillByDefault(Return(pregnancy));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(3));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregToYear1");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_person,
+                SetPregnancyState(data::PregnancyState::kYearOnePostpartum))
+        .Times(1);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
+    EXPECT_CALL(mock_person, Impregnate()).Times(0);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(PregnancyTest, YearTwoPostpartumEndsAtTwoYears) {
     pregnancy.pregnancy_state = data::PregnancyState::kYearTwoPostpartum;
     pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(2)
-        .WillRepeatedly(Return(24));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(6)
-        .WillRepeatedly(Return(pregnancy));
+    ON_CALL(mock_person, GetPregnancyDetails())
+        .WillByDefault(Return(pregnancy));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(24));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregEndPost");
+    ASSERT_NE(event, nullptr);
+
     EXPECT_CALL(mock_person, EndPostpartum()).Times(1);
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Impregnate()).Times(0);
 
-    auto event = event::behavior::Pregnancy::Create(*model_data);
     event->Execute(mock_person, mock_sampler);
 }
 
-TEST_F(PregnancyTest, Impregnate) {
-    pregnancy.pregnancy_state = data::PregnancyState::kNone;
-    pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep()).WillOnce(Return(15));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(6)
-        .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_person, EndPostpartum()).Times(0);
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
-    EXPECT_CALL(mock_person, Impregnate()).Times(1);
+TEST_F(PregnancyTest, PregnantBeforeNineMonthsReturnsWithoutDeliveryAttempt) {
+    pregnancy.pregnancy_state = data::PregnancyState::kPregnant;
+    pregnancy.time_of_pregnancy_change = 5;
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(10));
+    ON_CALL(mock_person, GetPregnancyDetails())
+        .WillByDefault(Return(pregnancy));
 
-    auto event = event::behavior::Pregnancy::Create(*model_data);
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregTooEarly");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+    EXPECT_CALL(mock_person, Stillbirth()).Times(0);
+    EXPECT_CALL(mock_person, Birth(_)).Times(0);
+
     event->Execute(mock_person, mock_sampler);
 }
 
-TEST_F(PregnancyTest, HaveSingleChild) {
-    data::HCVDetails hcv = {data::HCV::kNone,
-                            data::FibrosisState::kNone,
-                            false,
-                            false,
-                            -1,
-                            -1,
-                            0,
-                            0,
-                            0};
-
+TEST_F(PregnancyTest, ChronicMotherTwinBirthAddsExposuresAndBirths) {
     pregnancy.pregnancy_state = data::PregnancyState::kPregnant;
     pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(2)
-        .WillRepeatedly(Return(9));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(7)
-        .WillRepeatedly(Return(pregnancy));
+    hcv.hcv = data::HCV::kChronic;
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(10));
+    ON_CALL(mock_person, GetPregnancyDetails())
+        .WillByDefault(Return(pregnancy));
+    ON_CALL(mock_person, GetHCVDetails()).WillByDefault(Return(hcv));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregTwinBirth");
+    ASSERT_NE(event, nullptr);
+
     EXPECT_CALL(mock_sampler, GetDecision(_))
-        .Times(2)
-        .WillRepeatedly(Return(1));
-    EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
-    EXPECT_CALL(mock_person, Birth(_)).Times(1);
-
-    auto event = event::behavior::Pregnancy::Create(*model_data);
-    event->Execute(mock_person, mock_sampler);
-}
-
-TEST_F(PregnancyTest, Stillbirth) {
-    pregnancy.pregnancy_state = data::PregnancyState::kPregnant;
-    pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(2)
-        .WillRepeatedly(Return(9));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(7)
-        .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
-    EXPECT_CALL(mock_person, Stillbirth()).Times(1);
-
-    auto event = event::behavior::Pregnancy::Create(*model_data);
-    event->Execute(mock_person, mock_sampler);
-}
-
-TEST_F(PregnancyTest, HaveMultipleChildren) {
-    data::HCVDetails hcv = {data::HCV::kNone,
-                            data::FibrosisState::kNone,
-                            false,
-                            false,
-                            -1,
-                            -1,
-                            0,
-                            0,
-                            0};
-
-    pregnancy.pregnancy_state = data::PregnancyState::kPregnant;
-    pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(2)
-        .WillRepeatedly(Return(9));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(7)
-        .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_sampler, GetDecision(_))
-        .WillOnce(Return(1))
-        .WillOnce(Return(0));
-    EXPECT_CALL(mock_person, GetHCVDetails())
-        .Times(2)
-        .WillRepeatedly(Return(hcv));
-    EXPECT_CALL(mock_person, Birth(_)).Times(2);
-
-    auto event = event::behavior::Pregnancy::Create(*model_data);
-    event->Execute(mock_person, mock_sampler);
-}
-
-TEST_F(PregnancyTest, HaveChronicHCVChild_NotTested) {
-    data::HCVDetails hcv = {data::HCV::kChronic,
-                            data::FibrosisState::kNone,
-                            false,
-                            false,
-                            -1,
-                            -1,
-                            0,
-                            0,
-                            0};
-
-    pregnancy.pregnancy_state = data::PregnancyState::kPregnant;
-    pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(2)
-        .WillRepeatedly(Return(9));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(7)
-        .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_sampler, GetDecision(_))
-        .Times(4)
-        .WillRepeatedly(Return(1));
-    EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
-    EXPECT_CALL(mock_person, AddInfantExposure()).Times(1);
-    EXPECT_CALL(mock_person, Birth(_)).Times(1);
-
-    auto event = event::behavior::Pregnancy::Create(*model_data);
-    event->Execute(mock_person, mock_sampler);
-}
-
-TEST_F(PregnancyTest, HaveChronicHCVChild_Tested) {
-    data::HCVDetails hcv = {data::HCV::kChronic,
-                            data::FibrosisState::kNone,
-                            false,
-                            false,
-                            -1,
-                            -1,
-                            0,
-                            0,
-                            0};
-
-    pregnancy.pregnancy_state = data::PregnancyState::kPregnant;
-    pregnancy.time_of_pregnancy_change = 0;
-    EXPECT_CALL(mock_person, GetCurrentTimestep())
-        .Times(2)
-        .WillRepeatedly(Return(9));
-    EXPECT_CALL(mock_person, GetPregnancyDetails())
-        .Times(7)
-        .WillRepeatedly(Return(pregnancy));
-    EXPECT_CALL(mock_sampler, GetDecision(_))
-        .WillOnce(Return(1))
         .WillOnce(Return(1))
         .WillOnce(Return(0))
-        .WillOnce(Return(0));
-    EXPECT_CALL(mock_person, GetHCVDetails()).WillOnce(Return(hcv));
-    EXPECT_CALL(mock_person, AddInfantExposure()).Times(1);
-    EXPECT_CALL(mock_person, Birth(_)).Times(1);
+        .WillOnce(Return(0))
+        .WillOnce(Return(0))
+        .WillOnce(Return(1))
+        .WillOnce(Return(1));
+    EXPECT_CALL(mock_person, AddInfantExposure()).Times(2);
+    EXPECT_CALL(mock_person, Birth(_)).Times(2);
+    EXPECT_CALL(mock_person, Stillbirth()).Times(0);
 
-    auto event = event::behavior::Pregnancy::Create(*model_data);
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(PregnancyTest, MissingPregnancyTableFallsBackToZeroProbability) {
+    ExecuteQueries(test_db, {"DROP TABLE IF EXISTS pregnancy;"});
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregNoTable");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler,
+                GetDecision(ElementsAre(DoubleEq(1.0), DoubleEq(0.0))))
+        .WillOnce(Return(0));
+    EXPECT_CALL(mock_person, Impregnate()).Times(0);
+
+    event->Execute(mock_person, mock_sampler);
+}
+
+TEST_F(PregnancyTest, EmptyPregnancyTableFallsBackToZeroProbability) {
+    ExecuteQueries(test_db, {"DELETE FROM pregnancy;"});
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event =
+        event::EventFactory::CreateEvent("Pregnancy", inputs, "PregEmpty");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler,
+                GetDecision(ElementsAre(DoubleEq(1.0), DoubleEq(0.0))))
+        .WillOnce(Return(0));
+    EXPECT_CALL(mock_person, Impregnate()).Times(0);
+
     event->Execute(mock_person, mock_sampler);
 }
 

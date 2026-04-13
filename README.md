@@ -8,6 +8,9 @@
     />
 </a>
 
+[![DOI](https://zenodo.org/badge/673786151.svg)](https://doi.org/10.5281/zenodo.18903353)
+[![Testing Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/SyndemicsLab/hep-ce/gh-pages/badges/coverage.json)](https://github.com/SyndemicsLab/hep-ce/actions/workflows/ubuntu-testing.yml)
+
 The `HEP-CE` (**Hep**atitis C **C**ost **E**ffectiveness) model is a Markov
 chain Monte Carlo health state-transition model which simulates the spread and
 treatment of Hepatitis C Virus (HCV). `HEP-CE` is used to model the efficacy and
@@ -71,7 +74,6 @@ These categories are further broken into discrete events:
 
 ### Dependencies
 
-- [DataManagement](https://github.com/SyndemicsLab/DataManagement)
 - [GoogleTest/`gtest`](https://github.com/google/googletest) (optional, used
   for unit testing)
 - [Ninja](https://ninja-build.org)
@@ -89,5 +91,8 @@ cd hep-ce
 cmake --workflow --preset gcc-release
 ```
 
+```sh
+gcovr --config gcovr.cfg
+```
 
 [docs]: https://syndemicslab.github.io/hep-ce

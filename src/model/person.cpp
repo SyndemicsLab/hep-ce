@@ -4,13 +4,14 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 // File Header
+#include <hepce/model/costing.hpp>
 #include <hepce/model/person.hpp>
 
 // Local Includes
@@ -25,7 +26,7 @@ std::unique_ptr<Person> Person::Create(const std::string &log_name) {
 
 // Constructor
 PersonImpl::PersonImpl(const std::string &log_name) : _log_name(log_name) {
-    _costs = Costs::Create(log_name);
+    _costs = Costs::Create();
     SetInfectionDefaults(data::InfectionType::kHcv);
     SetInfectionDefaults(data::InfectionType::kHiv);
 

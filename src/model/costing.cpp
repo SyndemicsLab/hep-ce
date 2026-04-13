@@ -4,10 +4,10 @@
 // Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-14                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <hepce/model/costing.hpp>
@@ -18,11 +18,9 @@
 
 namespace hepce {
 namespace model {
-std::unique_ptr<Costs> Costs::Create(const std::string &log_name) {
-    return std::make_unique<CostsImpl>(log_name);
-}
+std::unique_ptr<Costs> Costs::Create() { return std::make_unique<CostsImpl>(); }
 
-CostsImpl::CostsImpl(const std::string &log_name) {
+CostsImpl::CostsImpl() {
     for (int i = 0; i != static_cast<int>(CostCategory::kCount); ++i) {
         _costs[static_cast<CostCategory>(i)] = {0.0, 0.0};
     }

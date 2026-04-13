@@ -17,11 +17,8 @@ If you want or need to see all build options, these can be found in the
 
 Assuming you have the required building tools (i.e. [GNU Compiler Collection (GCC)][gcc], [CMake][cmake], [Ninja][ninja]), you still need:
 
-- [DataManagement](https://github.com/SyndemicsLab/DataManagement)
 - [spdlog](https://github.com/gabime/spdlog)
 - [GoogleTest][gtest] (optional, only used when building tests)
-
-**Note:** DataManagement is a Syndemics Lab library and under heavy development. It is *NOT* recommended to attempt to install a separate version.
 
 If you build from source, missing dependencies are installed via CMake's
 [FetchContent][fetchcontent]. You will need to install these packages for
