@@ -184,6 +184,7 @@ include(${PRIVATE_MODULE_PATH}/MakeDependenciesAvailable.cmake)
 
 find_package(SQLiteCpp REQUIRED)
 find_package(OpenMP REQUIRED)
+find_package(Boost REQUIRED)
 
 set(private_deps spdlog::spdlog OpenMP::OpenMP_CXX)
 if (HEPCE_CALCULATE_COVERAGE)
@@ -192,7 +193,7 @@ endif()
 
 target_link_libraries(hepce_model
 PUBLIC
-    Boost::property_tree
+    Boost::boost
     SQLiteCpp
 PRIVATE
     ${private_deps}
@@ -210,6 +211,6 @@ include(${PRIVATE_MODULE_PATH}/BuildBinaries.cmake)
 #-------------------------------------------------------------------------------
 include(GNUInstallDirs)
 if(HEPCE_INSTALL)
-    include(${PRIVATE_MODULE_PATH}/InstallHEPCE.cmake)
+    include(${PRIVATE_MODULE_PATH}/InstallHepce.cmake)
 endif()
 

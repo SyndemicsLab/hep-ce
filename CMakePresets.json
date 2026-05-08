@@ -73,7 +73,7 @@
                 "HEPCE_BUILD_EXECUTABLE": "ON",
                 "HEPCE_BUILD_TESTS": "OFF",
                 "HEPCE_CALCULATE_COVERAGE": "OFF",
-                "HEPCE_BUILD_PYBINDINGS": "ON",
+                "HEPCE_BUILD_PYBINDINGS": "OFF",
                 "HEPCE_BUILD_BENCH": "OFF",
                 "HEPCE_BUILD_SHARED_LIBS": "OFF",
                 "HEPCE_BUILD_WARNINGS": "OFF",
