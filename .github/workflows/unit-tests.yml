@@ -26,6 +26,12 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            - name: Build Boost
+              uses: egor-tensin/build-boost@v2.0.1
+              with:
+                  version: 1.84.0
+                  libraries: property_tree
+
             - name: Install SQLiteCpp (Ubuntu)
               if: matrix.os_name == 'ubuntu'
               run: sudo apt-get install libsqlitecpp-dev gcovr
