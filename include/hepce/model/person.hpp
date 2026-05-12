@@ -4,10 +4,10 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-11-12                                                  //
+// Last Modified: 2026-03-19                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_MODEL_PERSON_HPP_
 #define HEPCE_MODEL_PERSON_HPP_
@@ -15,8 +15,6 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-
-#include <datamanagement/datamanagement.hpp>
 
 #include <hepce/data/types.hpp>
 #include <hepce/model/costing.hpp>
@@ -26,6 +24,18 @@ namespace hepce {
 namespace model {
 class Person {
 public:
+    // Default Destructor
+    virtual ~Person() = default;
+
+    // Clone
+    Person(const Person &) = delete;
+    Person &operator=(const Person &) = delete;
+    virtual std::unique_ptr<Person> clone() const = 0;
+
+    // Factory
+    static std::unique_ptr<Person>
+    Create(const std::string &log_name = "console");
+
     // Functionality
     virtual void Grow() = 0;
     virtual void
@@ -137,9 +147,12 @@ public:
     // Person Output
     virtual std::string MakePopulationRow() const = 0;
 
-    static std::unique_ptr<Person>
-    Create(const std::string &log_name = "console");
+protected:
+    // default constructor. Do not want public access, but need for subclasses.
+    Person() = default;
 };
+
+using People = std::vector<std::unique_ptr<Person>>;
 } // namespace model
 } // namespace hepce
 

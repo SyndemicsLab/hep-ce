@@ -15,6 +15,7 @@
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <stdexcept>
 #include <thread>
 
 #include <gtest/gtest.h>
@@ -95,4 +96,62 @@ TEST_F(LoggingTest, LogDebug) {
 
     ASSERT_TRUE(line.find(expected) != std::string::npos);
     std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(LoggingTest, CreateFileLoggerReturnsExistsWhenLoggerAlreadyRegistered) {
+    const std::string LOG_NAME = "exists_case";
+    const std::string LOG_FILE = "exists_case.log";
+
+    ASSERT_EQ(hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE),
+              hepce::utils::CreationStatus::kSuccess);
+    ASSERT_EQ(hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE),
+              hepce::utils::CreationStatus::kExists);
+
+    hepce::utils::DropLogger(LOG_NAME);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(LoggingTest, DropLoggerAllowsRecreateWithSameName) {
+    const std::string LOG_NAME = "drop_recreate";
+    const std::string LOG_FILE = "drop_recreate.log";
+
+    ASSERT_EQ(hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE),
+              hepce::utils::CreationStatus::kSuccess);
+    hepce::utils::DropLogger(LOG_NAME);
+    ASSERT_EQ(hepce::utils::CreateFileLogger(LOG_NAME, LOG_FILE),
+              hepce::utils::CreationStatus::kSuccess);
+
+    hepce::utils::DropLogger(LOG_NAME);
+    std::filesystem::remove(LOG_FILE);
+}
+
+TEST_F(LoggingTest, LogInfoCreatesDefaultLogFileWhenLoggerMissing) {
+    const std::string LOG_NAME = "implicit_logger_creation";
+    const std::string DEFAULT_LOG_FILE = "log.txt";
+    const std::string expected = "auto-created message";
+    std::string line;
+
+    std::filesystem::remove(DEFAULT_LOG_FILE);
+    hepce::utils::DropLogger(LOG_NAME);
+
+    hepce::utils::LogInfo(LOG_NAME, expected);
+
+    std::ifstream f(DEFAULT_LOG_FILE);
+    ASSERT_TRUE(f.is_open());
+    std::getline(f, line);
+    f.close();
+
+    ASSERT_TRUE(line.find(expected) != std::string::npos);
+
+    hepce::utils::DropLogger(LOG_NAME);
+    std::filesystem::remove(DEFAULT_LOG_FILE);
+}
+
+TEST_F(LoggingTest, ConstructMessageConcatenatesPrefixAndExceptionText) {
+    const std::runtime_error err("boom");
+
+    const std::string msg =
+        hepce::utils::ConstructMessage(err, "while loading inputs");
+
+    ASSERT_EQ(msg, "while loading inputs: boom");
 }

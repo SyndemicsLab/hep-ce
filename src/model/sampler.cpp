@@ -4,17 +4,20 @@
 // Created Date: 2025-05-02                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-23                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2026-03-20                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <hepce/model/sampler.hpp>
 
 #include <algorithm>
-#include <hepce/utils/logging.hpp>
+#include <numeric>
+#include <random>
 #include <sstream>
+
+#include <hepce/utils/logging.hpp>
 
 #include "internals/sampler_internals.hpp"
 
@@ -30,7 +33,8 @@ SamplerImpl::SamplerImpl(const int &seed, const std::string &log_name)
     _generator.seed(seed);
 }
 
-const int SamplerImpl::GetDecision(const std::vector<double> &probabilities) {
+const int
+SamplerImpl::GetDecision(const std::vector<double> &probabilities) const {
     if (std::accumulate(probabilities.begin(), probabilities.end(), 0.0) >
         1.00001) {
         hepce::utils::LogError(

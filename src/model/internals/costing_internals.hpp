@@ -1,13 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////
-// File: cost_internals.hpp                                                   //
+// File: costing_internals.hpp                                                //
 // Project: hep-ce                                                            //
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-04-30                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_MODEL_COSTINTERNALS_HPP_
 #define HEPCE_MODEL_COSTINTERNALS_HPP_
@@ -18,8 +18,13 @@ namespace hepce {
 namespace model {
 class CostsImpl : public virtual Costs {
 public:
-    CostsImpl(const std::string &log_name);
+    CostsImpl();
     ~CostsImpl() = default;
+
+    // Cloning
+    std::unique_ptr<Costs> clone() const override {
+        return std::make_unique<CostsImpl>();
+    }
 
     std::pair<double, double> GetTotals() const override;
 

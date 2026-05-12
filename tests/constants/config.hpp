@@ -4,10 +4,10 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-24                                                  //
+// Last Modified: 2026-05-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_TESTS_CONSTANTS_CONFIG_HPP_
 #define HEPCE_TESTS_CONSTANTS_CONFIG_HPP_
@@ -54,6 +54,7 @@ static std::unordered_map<std::string, std::vector<std::string>>
     {"eligibility", {
             "ineligible_drug_use =",
             "ineligible_fibrosis_stages =",
+            "ineligible_pregnancy_states =",
             "ineligible_time_former_threshold =",
             "ineligible_time_since_linked ="
         }},
@@ -76,6 +77,7 @@ static std::unordered_map<std::string, std::vector<std::string>>
         }},
     {"screening", {
             "intervention_type = one-time",
+            "seropositivity_multiplier_boomer = 1.0",
             "period = 12"
         }},
     {"screening_background_ab", {
@@ -166,12 +168,77 @@ static const std::string PREGNANCY_EVENTS =
     "FibrosisProgression,HCVInfection, HCVScreening, HCVLinking, HCVTreatment,"
     "HIVInfection, HIVScreening, HIVLinking, Death";
 
+inline std::string GetKeyName(const std::string &line) {
+    auto pos = line.find('=');
+    std::string k = (pos == std::string::npos) ? line : line.substr(0, pos);
+    auto start = k.find_first_not_of(" \t");
+    auto end = k.find_last_not_of(" \t");
+    if (start == std::string::npos || end == std::string::npos) {
+        return std::string();
+    }
+    return k.substr(start, end - start + 1);
+};
+
+inline void MergeKeys(std::vector<std::string> &base,
+                      const std::vector<std::string> &overrides) {
+    // First dedupe existing keys in base, keeping the last value.
+    std::vector<std::string> deduped;
+    for (const auto &line : base) {
+        std::string k = GetKeyName(line);
+        bool replaced = false;
+        for (auto &existing : deduped) {
+            if (GetKeyName(existing) == k) {
+                existing = line;
+                replaced = true;
+                break;
+            }
+        }
+        if (!replaced) {
+            deduped.push_back(line);
+        }
+    }
+    base = deduped;
+
+    // Then apply overrides by key name.
+    for (const auto &line : overrides) {
+        std::string k = GetKeyName(line);
+        bool replaced = false;
+        for (auto &existing : base) {
+            if (GetKeyName(existing) == k) {
+                existing = line;
+                replaced = true;
+                break;
+            }
+        }
+        if (!replaced) {
+            base.push_back(line);
+        }
+    }
+};
+
 inline void
 BuildSimConf(const std::string &name,
              std::unordered_map<std::string, std::vector<std::string>> config =
                  DEFAULT_CONFIG) {
+
+    std::unordered_map<std::string, std::vector<std::string>> merged =
+        DEFAULT_CONFIG;
+    for (const auto &[section, keys] : config) {
+        std::string target_section = section;
+        if (section == "hcv_linking") {
+            target_section = "linking";
+        }
+        if (section == "hcv_screening") {
+            target_section = "screening";
+        }
+        if (merged.find(target_section) == merged.end()) {
+            merged[target_section] = {};
+        }
+        MergeKeys(merged[target_section], keys);
+    }
+
     std::stringstream ss;
-    for (auto &[section, keys] : config) {
+    for (auto &[section, keys] : merged) {
         ss << '[' << section << ']' << std::endl;
         for (auto &k : keys) {
             ss << k << std::endl;

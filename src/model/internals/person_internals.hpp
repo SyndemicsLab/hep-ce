@@ -4,10 +4,10 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-11-12                                                  //
+// Last Modified: 2026-03-20                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_MODEL_PERSONINTERNALS_HPP_
 #define HEPCE_MODEL_PERSONINTERNALS_HPP_
@@ -29,8 +29,37 @@ namespace hepce {
 namespace model {
 class PersonImpl : public Person {
 public:
-    PersonImpl(const std::string &log_name = "console");
+    PersonImpl(const std::string &log_name);
     ~PersonImpl() = default;
+
+    // Cloning
+    std::unique_ptr<Person> clone() const override {
+        auto cloned = std::make_unique<PersonImpl>(_log_name);
+        cloned->_sex = _sex;
+        cloned->_current_time = _current_time;
+        cloned->_age = _age;
+        cloned->_is_alive = _is_alive;
+        cloned->_boomer_classification = _boomer_classification;
+        cloned->_death_reason = _death_reason;
+        cloned->_behavior_details = _behavior_details;
+        cloned->_hcv_details = _hcv_details;
+        cloned->_hiv_details = _hiv_details;
+        cloned->_hcc_details = _hcc_details;
+        cloned->_currently_overdosing = _currently_overdosing;
+        cloned->_num_overdoses = _num_overdoses;
+        cloned->_moud_details = _moud_details;
+        cloned->_pregnancy_details = _pregnancy_details;
+        cloned->_staging_details = _staging_details;
+        cloned->_linkage_details = _linkage_details;
+        cloned->_screening_details = _screening_details;
+        cloned->_treatment_details = _treatment_details;
+        cloned->_utilities = _utilities;
+        cloned->_life_utilities = _life_utilities;
+        cloned->_life_span = _life_span;
+        cloned->_discounted_life_span = _discounted_life_span;
+        cloned->_costs = _costs->clone();
+        return cloned;
+    }
 
     // Implementation Separated Functions
     void InfectHCV() override;

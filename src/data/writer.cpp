@@ -4,10 +4,10 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-07-29                                                  //
-// Modified By: Andrew Clark                                                  //
+// Last Modified: 2026-03-19                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "internals/writer_internals.hpp"
@@ -36,10 +36,10 @@ WriterImpl::WriterImpl(const std::string &directory,
     }
 }
 
-std::string WriterImpl::WritePopulation(
-    const std::vector<std::unique_ptr<model::Person>> &population,
-    const std::string &filename, const OutputType output_type,
-    std::vector<int> ids) {
+std::string WriterImpl::WritePopulation(const model::People &population,
+                                        const std::string &filename,
+                                        const OutputType output_type,
+                                        std::vector<int> ids) {
     if (ids.empty()) {
         ids.resize(population.size());
         std::iota(ids.begin(), ids.end(), 1);
@@ -62,10 +62,10 @@ std::string WriterImpl::WritePopulation(
     return "success";
 }
 
-std::string WriterImpl::WriteCostsByCategory(
-    const std::vector<std::unique_ptr<model::Person>> &population,
-    const std::string &filename, const OutputType output_type,
-    std::vector<int> ids) {
+std::string WriterImpl::WriteCostsByCategory(const model::People &population,
+                                             const std::string &filename,
+                                             const OutputType output_type,
+                                             std::vector<int> ids) {
     if (ids.empty()) {
         ids.resize(population.size());
         std::iota(ids.begin(), ids.end(), 1);

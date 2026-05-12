@@ -4,15 +4,16 @@
 // Created Date: 2025-04-22                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-11-12                                                  //
+// Last Modified: 2026-04-08                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <hepce/model/simulation.hpp>
 
-#include <hepce/event/all_events.hpp>
+#include <hepce/data/inputs.hpp>
+#include <hepce/event/event_factory.hpp>
 #include <hepce/utils/config.hpp>
 #include <hepce/utils/formatting.hpp>
 #include <hepce/utils/logging.hpp>
@@ -24,83 +25,80 @@ namespace hepce {
 namespace model {
 
 //Factory
-std::unique_ptr<Hepce> Hepce::Create(datamanagement::ModelData &model_data,
+std::unique_ptr<Hepce> Hepce::Create(const data::Inputs &inputs,
                                      const std::string &log_name) {
-    return std::make_unique<HepceImpl>(model_data, log_name);
+    return std::make_unique<HepceImpl>(inputs, log_name);
 }
 
 // Constructor
-HepceImpl::HepceImpl(datamanagement::ModelData &model_data,
-                     const std::string &log_name)
-    : _log_name(log_name) {
-    _duration = utils::GetIntFromConfig("simulation.duration", model_data);
-    _sim_seed = utils::GetIntFromConfig("simulation.seed", model_data);
+HepceImpl::HepceImpl(const data::Inputs &inputs, const std::string &log_name)
+    : _inputs(inputs), _log_name(log_name) {
+    _duration = utils::GetIntFromConfig("simulation.duration", inputs);
+    _sim_seed = utils::GetIntFromConfig("simulation.seed", inputs);
     if (_sim_seed < 0) {
         _sim_seed = utils::GetCurrentTimeInMilliseconds();
         std::stringstream msg;
         msg << "No seed or negative seed provided in `sim.conf`. Using "
                "generated seed value: "
             << _sim_seed << ".";
-        hepce::utils::LogWarning(GetLogName(), msg.str());
+        hepce::utils::LogWarning(_log_name, msg.str());
     }
 }
 
-void HepceImpl::Run(
-    std::vector<std::unique_ptr<model::Person>> &people,
-    const std::vector<std::unique_ptr<event::Event>> &discrete_events) {
-    auto sampler = hepce::model::Sampler::Create(GetSeed(), GetLogName());
+void HepceImpl::Run(const model::People &people,
+                    const event::EventList &discrete_events) {
 #pragma omp parallel for
-    for (auto &&person : people) {
+    for (int person_idx = 0; person_idx < static_cast<int>(people.size());
+         ++person_idx) {
+        auto sampler =
+            hepce::model::Sampler::Create(GetSeed() + person_idx, _log_name);
+        const auto &person = people[person_idx];
         for (int i = 0; i < GetDuration(); ++i) {
-            for (auto &&event : discrete_events) {
+            for (const auto &event : discrete_events) {
                 event->Execute(*person, *sampler);
             }
         }
     }
 }
 
-std::vector<std::unique_ptr<event::Event>>
-HepceImpl::CreateEvents(datamanagement::ModelData &model_data) const {
-    std::vector<std::unique_ptr<event::Event>> events;
+event::EventList HepceImpl::CreateEvents() const {
+    event::EventList events;
     auto event_strings = utils::SplitToVecT<std::string>(
-        utils::GetStringFromConfig("simulation.events", model_data), ',');
+        utils::GetStringFromConfig("simulation.events", _inputs), ',');
     for (std::string e : event_strings) {
-        events.push_back(CreateEvent(e, model_data));
+        auto event = event::EventFactory::CreateEvent(e, _inputs, _log_name);
+        events.push_back(std::move(event));
     }
     return events;
 }
 
-std::vector<std::unique_ptr<model::Person>>
-HepceImpl::CreatePopulation(datamanagement::ModelData &model_data) const {
+model::People HepceImpl::CreatePopulation() const {
     int population_size =
-        utils::GetIntFromConfig("simulation.population_size", model_data);
+        utils::GetIntFromConfig("simulation.population_size", _inputs);
 
     bool use_population_table =
-        utils::GetBoolFromConfig("simulation.use_population_table", model_data);
+        utils::GetBoolFromConfig("simulation.use_population_table", _inputs);
 
-    if (!use_population_table) {
-        return ReadICPopulation(population_size, model_data);
-    }
-    return ReadPopPopulation(population_size, model_data);
+    return (!use_population_table) ? ReadICPopulation(population_size)
+                                   : ReadPopPopulation(population_size);
 }
 
 [[deprecated(
     "The Initial Cohort Table is deprecated. Please use the Population Table "
     "instead as it provides more flexibility and control of the data.")]]
-std::vector<std::unique_ptr<model::Person>>
-HepceImpl::ReadICPopulation(const int population_size,
-                            datamanagement::ModelData &model_data) const {
+model::People HepceImpl::ReadICPopulation(const int population_size) const {
 
     std::any storage = std::vector<data::PersonSelect>{};
 
     try {
-        model_data.GetDBSource("inputs").Select(
-            InitialCohortSQL(population_size), InitCohortVecCallback, storage);
+        _inputs.SelectFromDatabase(InitialCohortSQL(population_size),
+                                   InitCohortVecCallback, storage, {});
+
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error drawing population size " << population_size
             << " from Initial Cohort. Using Default Person Values...";
-        hepce::utils::LogWarning(GetLogName(), msg.str());
+        hepce::utils::LogWarning(_log_name, msg.str());
 #ifdef EXIT_ON_WARNING
         std::exit(EXIT_FAILURE);
 #endif
@@ -108,11 +106,10 @@ HepceImpl::ReadICPopulation(const int population_size,
     }
     std::vector<data::PersonSelect> vec =
         std::any_cast<std::vector<data::PersonSelect>>(storage);
-    std::vector<std::unique_ptr<model::Person>> population = {};
-    int start_time =
-        utils::GetIntFromConfig("simulation.start_time", model_data);
+    model::People population = {};
+    int start_time = utils::GetIntFromConfig("simulation.start_time", _inputs);
     for (const auto &ps : vec) {
-        auto person = model::Person::Create(GetLogName());
+        auto person = model::Person::Create(_log_name);
         person->SetPersonDetails(ps);
         person->SetStartTime(start_time);
         population.push_back(std::move(person));
@@ -120,12 +117,10 @@ HepceImpl::ReadICPopulation(const int population_size,
     return population;
 }
 
-std::vector<std::unique_ptr<model::Person>>
-HepceImpl::ReadPopPopulation(const int population_size,
-                             datamanagement::ModelData &model_data) const {
+model::People HepceImpl::ReadPopPopulation(const int population_size) const {
     std::stringstream query;
     std::vector<std::string> events = utils::SplitToVecT<std::string>(
-        utils::GetStringFromConfig("simulation.events", model_data), ',');
+        utils::GetStringFromConfig("simulation.events", _inputs), ',');
 
     // this is a stopgap with plans to make Event-scoped CheckFor<X>Event
     // functions that are static / usable throughout the model.
@@ -148,13 +143,12 @@ HepceImpl::ReadPopPopulation(const int population_size,
     std::any storage = std::vector<data::PersonSelect>{};
 
     try {
-        model_data.GetDBSource("inputs").Select(query.str(), PersonVecCallback,
-                                                storage);
+        _inputs.SelectFromDatabase(query.str(), PersonVecCallback, storage, {});
     } catch (std::exception &e) {
         std::stringstream msg;
         msg << "Error getting " << population_size
             << " people from Population File. Using Default Person Values...";
-        hepce::utils::LogWarning(GetLogName(), msg.str());
+        hepce::utils::LogWarning(_log_name, msg.str());
 #ifdef EXIT_ON_WARNING
         std::exit(EXIT_FAILURE);
 #endif
@@ -162,82 +156,15 @@ HepceImpl::ReadPopPopulation(const int population_size,
     }
     std::vector<data::PersonSelect> vec =
         std::any_cast<std::vector<data::PersonSelect>>(storage);
-    std::vector<std::unique_ptr<model::Person>> population = {};
-    int start_time =
-        utils::GetIntFromConfig("simulation.start_time", model_data);
+    model::People population = {};
+    int start_time = utils::GetIntFromConfig("simulation.start_time", _inputs);
     for (const auto &ps : vec) {
-        auto person = model::Person::Create(GetLogName());
+        auto person = model::Person::Create(_log_name);
         person->SetPersonDetails(ps);
         person->SetStartTime(start_time);
         population.push_back(std::move(person));
     }
     return population;
-}
-
-std::unique_ptr<event::Event>
-HepceImpl::CreateEvent(std::string event_name,
-                       datamanagement::ModelData &model_data) const {
-    if (event_name == "Aging") {
-        return hepce::event::base::Aging::Create(model_data, GetLogName());
-    }
-    if (event_name == "BehaviorChanges") {
-        return hepce::event::behavior::BehaviorChanges::Create(model_data,
-                                                               GetLogName());
-    }
-    if (event_name == "Clearance") {
-        return hepce::event::hcv::Clearance::Create(model_data, GetLogName());
-    }
-    if (event_name == "Death") {
-        return hepce::event::base::Death::Create(model_data, GetLogName());
-    }
-    if (event_name == "FibrosisProgression") {
-        return hepce::event::fibrosis::Progression::Create(model_data,
-                                                           GetLogName());
-    }
-    if (event_name == "FibrosisStaging") {
-        return hepce::event::fibrosis::Staging::Create(model_data,
-                                                       GetLogName());
-    }
-    if (event_name == "HCVInfection") {
-        return hepce::event::hcv::Infection::Create(model_data, GetLogName());
-    }
-    if (event_name == "HCVLinking") {
-        return hepce::event::hcv::Linking::Create(model_data, GetLogName());
-    }
-    if (event_name == "HCVScreening") {
-        return hepce::event::hcv::Screening::Create(model_data, GetLogName());
-    }
-    if (event_name == "HCVTreatment") {
-        return hepce::event::hcv::Treatment::Create(model_data, GetLogName());
-    }
-    if (event_name == "HIVInfection") {
-        return hepce::event::hiv::Infection::Create(model_data, GetLogName());
-    }
-    if (event_name == "HIVLinking") {
-        return hepce::event::hiv::Linking::Create(model_data, GetLogName());
-    }
-    if (event_name == "HIVScreening") {
-        return hepce::event::hiv::Screening::Create(model_data, GetLogName());
-    }
-    if (event_name == "Overdose") {
-        return hepce::event::behavior::Overdose::Create(model_data,
-                                                        GetLogName());
-    }
-    if (event_name == "VoluntaryRelinking") {
-        return hepce::event::hcv::VoluntaryRelink::Create(model_data,
-                                                          GetLogName());
-    }
-    if (event_name == "Pregnancy") {
-        return hepce::event::behavior::Pregnancy::Create(model_data,
-                                                         GetLogName());
-    }
-    if (event_name == "MOUD") {
-        return hepce::event::behavior::Moud::Create(model_data, GetLogName());
-    }
-    std::string message =
-        "Unknown Event `" + event_name + "` provided in `sim.conf`! Exiting...";
-    hepce::utils::LogError(GetLogName(), message);
-    exit(-1);
 }
 } // namespace model
 } // namespace hepce

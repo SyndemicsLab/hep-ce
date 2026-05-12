@@ -151,6 +151,9 @@ public:
 
     // Person Output
     MOCK_METHOD(std::string, MakePopulationRow, (), (const, override));
+
+    // Cloning
+    MOCK_METHOD((std::unique_ptr<Person>), clone, (), (const, override));
 };
 } // namespace testing
 } // namespace hepce

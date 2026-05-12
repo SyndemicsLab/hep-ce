@@ -267,7 +267,7 @@ LinkageState &operator<<(LinkageState &inst, const std::string &str) {
     } else if (temp_string == "unlinked") {
         inst = LinkageState::kUnlinked;
     } else {
-        inst == LinkageState::kNever;
+        inst = LinkageState::kNever;
     }
     return inst;
 }
