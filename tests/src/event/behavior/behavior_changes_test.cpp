@@ -18,6 +18,7 @@
 
 using ::testing::_;
 using ::testing::DoubleEq;
+using ::testing::DoubleNear;
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -131,7 +132,11 @@ TEST_F(BehaviorChangesTest, FormerInjectionAppliesDecayAndTransitions) {
                                                   "BehChangeDecay");
     ASSERT_NE(event, nullptr);
 
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(4));
+    EXPECT_CALL(mock_sampler, GetDecision(ElementsAre(
+                                  DoubleNear(0.0, 0.01), DoubleNear(0.0, 0.01),
+                                  DoubleNear(0.99, 0.01), DoubleNear(0.0, 0.01),
+                                  DoubleNear(0.00, 0.01))))
+        .WillOnce(Return(4));
     EXPECT_CALL(mock_person, SetBehavior(data::Behavior::kInjection)).Times(1);
     EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kBehavior))
         .Times(1);

@@ -91,6 +91,8 @@ cd hep-ce
 cmake --workflow --preset gcc-release
 ```
 
+If you wish to generate a code coverage report, run the following command:
+
 ```sh
 gcovr --config gcovr.cfg
 ```

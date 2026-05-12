@@ -4,10 +4,10 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2025-10-24                                                  //
+// Last Modified: 2026-05-12                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
-// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //
+// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
 #ifndef HEPCE_TESTS_CONSTANTS_CONFIG_HPP_
 #define HEPCE_TESTS_CONSTANTS_CONFIG_HPP_
@@ -168,57 +168,58 @@ static const std::string PREGNANCY_EVENTS =
     "FibrosisProgression,HCVInfection, HCVScreening, HCVLinking, HCVTreatment,"
     "HIVInfection, HIVScreening, HIVLinking, Death";
 
+inline std::string GetKeyName(const std::string &line) {
+    auto pos = line.find('=');
+    std::string k = (pos == std::string::npos) ? line : line.substr(0, pos);
+    auto start = k.find_first_not_of(" \t");
+    auto end = k.find_last_not_of(" \t");
+    if (start == std::string::npos || end == std::string::npos) {
+        return std::string();
+    }
+    return k.substr(start, end - start + 1);
+};
+
+inline void MergeKeys(std::vector<std::string> &base,
+                      const std::vector<std::string> &overrides) {
+    // First dedupe existing keys in base, keeping the last value.
+    std::vector<std::string> deduped;
+    for (const auto &line : base) {
+        std::string k = GetKeyName(line);
+        bool replaced = false;
+        for (auto &existing : deduped) {
+            if (GetKeyName(existing) == k) {
+                existing = line;
+                replaced = true;
+                break;
+            }
+        }
+        if (!replaced) {
+            deduped.push_back(line);
+        }
+    }
+    base = deduped;
+
+    // Then apply overrides by key name.
+    for (const auto &line : overrides) {
+        std::string k = GetKeyName(line);
+        bool replaced = false;
+        for (auto &existing : base) {
+            if (GetKeyName(existing) == k) {
+                existing = line;
+                replaced = true;
+                break;
+            }
+        }
+        if (!replaced) {
+            base.push_back(line);
+        }
+    }
+};
+
 inline void
 BuildSimConf(const std::string &name,
              std::unordered_map<std::string, std::vector<std::string>> config =
                  DEFAULT_CONFIG) {
-    auto key_name = [](const std::string &line) {
-        auto pos = line.find('=');
-        std::string k = (pos == std::string::npos) ? line : line.substr(0, pos);
-        auto start = k.find_first_not_of(" \t");
-        auto end = k.find_last_not_of(" \t");
-        if (start == std::string::npos || end == std::string::npos) {
-            return std::string();
-        }
-        return k.substr(start, end - start + 1);
-    };
-
-    auto merge_keys = [&](std::vector<std::string> &base,
-                          const std::vector<std::string> &overrides) {
-        // First dedupe existing keys in base, keeping the last value.
-        std::vector<std::string> deduped;
-        for (const auto &line : base) {
-            std::string k = key_name(line);
-            bool replaced = false;
-            for (auto &existing : deduped) {
-                if (key_name(existing) == k) {
-                    existing = line;
-                    replaced = true;
-                    break;
-                }
-            }
-            if (!replaced) {
-                deduped.push_back(line);
-            }
-        }
-        base = deduped;
-
-        // Then apply overrides by key name.
-        for (const auto &line : overrides) {
-            std::string k = key_name(line);
-            bool replaced = false;
-            for (auto &existing : base) {
-                if (key_name(existing) == k) {
-                    existing = line;
-                    replaced = true;
-                    break;
-                }
-            }
-            if (!replaced) {
-                base.push_back(line);
-            }
-        }
-    };
 
     std::unordered_map<std::string, std::vector<std::string>> merged =
         DEFAULT_CONFIG;
@@ -233,7 +234,7 @@ BuildSimConf(const std::string &name,
         if (merged.find(target_section) == merged.end()) {
             merged[target_section] = {};
         }
-        merge_keys(merged[target_section], keys);
+        MergeKeys(merged[target_section], keys);
     }
 
     std::stringstream ss;

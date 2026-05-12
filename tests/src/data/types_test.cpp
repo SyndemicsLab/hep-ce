@@ -4,7 +4,7 @@
 // Created Date: 2026-04-06                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-04-06                                                  //
+// Last Modified: 2026-05-11                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2026 Syndemics Lab at Boston Medical Center                  //
@@ -100,9 +100,15 @@ TEST(TypesTest, PopulationHeadersReflectFeatureFlags) {
     EXPECT_NE(baseline.find("NULL,-1,0,"), std::string::npos);
     EXPECT_NE(baseline.find("false,0,"), std::string::npos);
 
-    EXPECT_NE(all_features.find("hiv,time_hiv_changed,low_cd4_months_count,"),
+    EXPECT_NE(all_features.find(
+                  "pregnancy_state,time_of_pregnancy_change,pregnancy_count,"
+                  "num_infants,num_stillbirths,num_infant_hcv_exposures,num_"
+                  "infant_hcv_infections,num_infant_hcv_tests,"),
               std::string::npos);
+    EXPECT_NE(all_features.find("hcc_state,hcc_diagnosed,"), std::string::npos);
     EXPECT_NE(all_features.find("currently_overdosing,num_overdoses,"),
+              std::string::npos);
+    EXPECT_NE(all_features.find("hiv,time_hiv_changed,low_cd4_months_count,"),
               std::string::npos);
     EXPECT_NE(all_features.find("moud_state,time_started_moud,"),
               std::string::npos);

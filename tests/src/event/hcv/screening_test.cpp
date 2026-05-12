@@ -103,9 +103,9 @@ TEST_F(HCVScreeningTest, OneTimeInterventionDiagnosesOnPositiveAbAndRna) {
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
-        .WillOnce(Return(0))
-        .WillOnce(Return(0))
-        .WillOnce(Return(0));
+        .WillOnce(Return(0))  // decide to screen
+        .WillOnce(Return(0))  // AB test result true
+        .WillOnce(Return(0)); // RNA test result true
     EXPECT_CALL(mock_person,
                 Screen(data::InfectionType::kHcv, data::ScreeningTest::kAb,
                        data::ScreeningType::kIntervention))
@@ -139,7 +139,7 @@ TEST_F(HCVScreeningTest, InterventionSkipsWhenAlreadyIdentified) {
 
 TEST_F(HCVScreeningTest, BackgroundFalseNegativeClearsDiagnosisWhenInfected) {
     screening.identified = true;
-    screening.ab_positive = false;
+    screening.ab_positive = true;
     ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(2));
     ON_CALL(mock_person, GetScreeningDetails(data::InfectionType::kHcv))
         .WillByDefault(Return(screening));

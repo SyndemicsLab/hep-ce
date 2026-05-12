@@ -20,6 +20,8 @@
 
 using ::testing::_;
 using ::testing::AtLeast;
+using ::testing::DoubleNear;
+using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -122,7 +124,7 @@ TEST_F(HCVLinkingTest, FalsePositiveWhenUninfectedAddsFalsePositiveCost) {
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
     EXPECT_CALL(mock_person, FalsePositive(data::InfectionType::kHcv)).Times(1);
-    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kLinking))
+    EXPECT_CALL(mock_person, AddCost(442.39, _, model::CostCategory::kLinking))
         .Times(1);
     EXPECT_CALL(mock_person, Link(_)).Times(0);
 
@@ -143,7 +145,7 @@ TEST_F(HCVLinkingTest, InterventionLinkSuccessAddsInterventionCost) {
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Link(data::InfectionType::kHcv)).Times(1);
-    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kLinking))
+    EXPECT_CALL(mock_person, AddCost(0.0, _, model::CostCategory::kLinking))
         .Times(1);
 
     event->Execute(mock_person, mock_sampler);
@@ -187,7 +189,9 @@ TEST_F(HCVLinkingTest, ExponentialScalingPathExecutes) {
         event::EventFactory::CreateEvent("HCVLinking", inputs, "HCVExp");
     ASSERT_NE(event, nullptr);
 
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+    auto temp = ElementsAre(DoubleNear(0.116626, 0.01));
+
+    EXPECT_CALL(mock_sampler, GetDecision(temp)).WillOnce(Return(1));
     EXPECT_CALL(mock_person, Link(_)).Times(0);
 
     event->Execute(mock_person, mock_sampler);
@@ -213,7 +217,9 @@ TEST_F(HCVLinkingTest, SigmoidalScalingPathExecutes) {
         event::EventFactory::CreateEvent("HCVLinking", inputs, "HCVSig");
     ASSERT_NE(event, nullptr);
 
-    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(1));
+    auto temp = ElementsAre(DoubleNear(0.497146, 0.01));
+
+    EXPECT_CALL(mock_sampler, GetDecision(temp)).WillOnce(Return(1));
 
     event->Execute(mock_person, mock_sampler);
 }

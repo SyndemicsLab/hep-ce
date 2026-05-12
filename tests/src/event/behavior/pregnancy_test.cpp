@@ -259,12 +259,12 @@ TEST_F(PregnancyTest, ChronicMotherTwinBirthAddsExposuresAndBirths) {
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
-        .WillOnce(Return(1))
-        .WillOnce(Return(0))
-        .WillOnce(Return(0))
-        .WillOnce(Return(0))
-        .WillOnce(Return(1))
-        .WillOnce(Return(1));
+        .WillOnce(Return(1))  // not a stilbirth
+        .WillOnce(Return(0))  // multiple births
+        .WillOnce(Return(0))  // test child 1
+        .WillOnce(Return(0))  // draw child infection 1
+        .WillOnce(Return(1))  // test child 2
+        .WillOnce(Return(1)); // draw child infection 2
     EXPECT_CALL(mock_person, AddInfantExposure()).Times(2);
     EXPECT_CALL(mock_person, Birth(_)).Times(2);
     EXPECT_CALL(mock_person, Stillbirth()).Times(0);

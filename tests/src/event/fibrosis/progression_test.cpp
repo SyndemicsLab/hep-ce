@@ -244,9 +244,9 @@ TEST_F(ProgressionTest, HandlesMissingImpactTableAndUsesDefaultCostUtility) {
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
-    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kLiver))
+    EXPECT_CALL(mock_person, AddCost(0.0, 0.0, model::CostCategory::kLiver))
         .Times(1);
-    EXPECT_CALL(mock_person, SetUtility(_, model::UtilityCategory::kLiver))
+    EXPECT_CALL(mock_person, SetUtility(0.0, model::UtilityCategory::kLiver))
         .Times(1);
 
     event->Execute(mock_person, mock_sampler);
@@ -264,9 +264,9 @@ TEST_F(ProgressionTest, HandlesEmptyImpactTableAndUsesDefaultCostUtility) {
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
-    EXPECT_CALL(mock_person, AddCost(_, _, model::CostCategory::kLiver))
+    EXPECT_CALL(mock_person, AddCost(0.0, 0.0, model::CostCategory::kLiver))
         .Times(1);
-    EXPECT_CALL(mock_person, SetUtility(_, model::UtilityCategory::kLiver))
+    EXPECT_CALL(mock_person, SetUtility(0.0, model::UtilityCategory::kLiver))
         .Times(1);
 
     event->Execute(mock_person, mock_sampler);

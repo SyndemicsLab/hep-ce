@@ -92,9 +92,9 @@ TEST_F(HIVScreeningTest, PeriodicInterventionPathRunsAtFirstTimestep) {
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
-        .WillOnce(Return(0))
-        .WillOnce(Return(0))
-        .WillOnce(Return(0));
+        .WillOnce(Return(0))  // decide to screen
+        .WillOnce(Return(0))  // AB test result true
+        .WillOnce(Return(0)); // RNA test result true
     EXPECT_CALL(mock_person,
                 Screen(data::InfectionType::kHiv, data::ScreeningTest::kAb,
                        data::ScreeningType::kIntervention))
@@ -120,8 +120,8 @@ TEST_F(HIVScreeningTest,
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_sampler, GetDecision(_))
-        .WillOnce(Return(0))
-        .WillOnce(Return(1));
+        .WillOnce(Return(0))  // decide to screen
+        .WillOnce(Return(1)); // AB test result false
     EXPECT_CALL(mock_person,
                 Screen(data::InfectionType::kHiv, data::ScreeningTest::kAb,
                        data::ScreeningType::kBackground))
