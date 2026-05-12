@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['infection_0',['Infection',['../classhepce_1_1event_1_1hcv_1_1Infection.html',1,'hepce::event::hcv::Infection'],['../classhepce_1_1event_1_1hiv_1_1Infection.html',1,'hepce::event::hiv::Infection']]]
+  ['lifetimeutility_0',['LifetimeUtility',['../structhepce_1_1data_1_1LifetimeUtility.html',1,'hepce::data']]],
+  ['linkagedetails_1',['LinkageDetails',['../structhepce_1_1data_1_1LinkageDetails.html',1,'hepce::data']]]
 ];

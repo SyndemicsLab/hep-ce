@@ -131,6 +131,7 @@ $(document).ready(function(){initNavTree('classhepce_1_1model_1_1Hepce.html','')
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classhepce_1_1model_1_1Hepce-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">hepce::model::Hepce Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
@@ -142,12 +143,18 @@ $(document).ready(function(){initNavTree('classhepce_1_1model_1_1Hepce.html','')
 Public Member Functions</h2></td></tr>
 <tr class="memitem:afa852043eae3a7ec4f5ea3c99b67afeb"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#afa852043eae3a7ec4f5ea3c99b67afeb">~Hepce</a> ()=default</td></tr>
 <tr class="separator:afa852043eae3a7ec4f5ea3c99b67afeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7211c2c88ae4eab5a056d42e0211a3c1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#a7211c2c88ae4eab5a056d42e0211a3c1">Run</a> (std::vector&lt; std::unique_ptr&lt; <a class="el" href="classhepce_1_1model_1_1Person.html">model::Person</a> &gt; &gt; &amp;people, const std::vector&lt; std::unique_ptr&lt; <a class="el" href="classhepce_1_1event_1_1Event.html">event::Event</a> &gt; &gt; &amp;discrete_events)=0</td></tr>
-<tr class="separator:a7211c2c88ae4eab5a056d42e0211a3c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa361647e779cba4b419afa3946e7a641"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::unique_ptr&lt; <a class="el" href="classhepce_1_1event_1_1Event.html">event::Event</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#aa361647e779cba4b419afa3946e7a641">CreateEvents</a> (datamanagement::ModelData &amp;model_data) const =0</td></tr>
-<tr class="separator:aa361647e779cba4b419afa3946e7a641"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9866ffbe2ff0f91a23311546b5b325f0"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; std::unique_ptr&lt; <a class="el" href="classhepce_1_1model_1_1Person.html">model::Person</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#a9866ffbe2ff0f91a23311546b5b325f0">CreatePopulation</a> (datamanagement::ModelData &amp;model_data) const =0</td></tr>
-<tr class="separator:a9866ffbe2ff0f91a23311546b5b325f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8335d7b68209e08794557d676e468cc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#ac8335d7b68209e08794557d676e468cc">Hepce</a> (const <a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &amp;)=delete</td></tr>
+<tr class="separator:ac8335d7b68209e08794557d676e468cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0a85fc3d0443ce088a01bd868357317"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#ac0a85fc3d0443ce088a01bd868357317">operator=</a> (const <a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &amp;)=delete</td></tr>
+<tr class="separator:ac0a85fc3d0443ce088a01bd868357317"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a484b5c3918bf51c32ed69ab9914f3c5d"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#a484b5c3918bf51c32ed69ab9914f3c5d">clone</a> () const =0</td></tr>
+<tr class="separator:a484b5c3918bf51c32ed69ab9914f3c5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad52f6a83ce9d24700494159d52a5e51b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#ad52f6a83ce9d24700494159d52a5e51b">Run</a> (const <a class="el" href="namespacehepce_1_1model.html#a4cfb0918fc4bd758612b511588a7de9a">model::People</a> &amp;people, const <a class="el" href="namespacehepce_1_1event.html#ae4f3ba318046d6ce7034b4cb356f631d">event::EventList</a> &amp;discrete_events)=0</td></tr>
+<tr class="separator:ad52f6a83ce9d24700494159d52a5e51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4120b582dd1250048cdd9436c706a254"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacehepce_1_1event.html#ae4f3ba318046d6ce7034b4cb356f631d">event::EventList</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#a4120b582dd1250048cdd9436c706a254">CreateEvents</a> () const =0</td></tr>
+<tr class="separator:a4120b582dd1250048cdd9436c706a254"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5128a59304574110c86d8cdf532fd3d2"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacehepce_1_1model.html#a4cfb0918fc4bd758612b511588a7de9a">model::People</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#a5128a59304574110c86d8cdf532fd3d2">CreatePopulation</a> () const =0</td></tr>
+<tr class="separator:a5128a59304574110c86d8cdf532fd3d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a452d7fffc8fbfedaa0773cdec28ded7d"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#a452d7fffc8fbfedaa0773cdec28ded7d">GetDuration</a> () const =0</td></tr>
 <tr class="separator:a452d7fffc8fbfedaa0773cdec28ded7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8666e913198ff2a7be797cf7f5cea385"><td class="memItemLeft" align="right" valign="top">virtual int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#a8666e913198ff2a7be797cf7f5cea385">GetSeed</a> () const =0</td></tr>
@@ -155,8 +162,13 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:af3b21fdd5d53b006d0e35ab47a4ea135"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#af3b21fdd5d53b006d0e35ab47a4ea135">Create</a> (datamanagement::ModelData &amp;model_data, const std::string &amp;log_name=&quot;console&quot;)</td></tr>
-<tr class="separator:af3b21fdd5d53b006d0e35ab47a4ea135"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b5769c0fcbaacfa3d241afc32a3be0e"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#a8b5769c0fcbaacfa3d241afc32a3be0e">Create</a> (const <a class="el" href="classhepce_1_1data_1_1Inputs.html">data::Inputs</a> &amp;inputs, const std::string &amp;log_name)</td></tr>
+<tr class="separator:a8b5769c0fcbaacfa3d241afc32a3be0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a64a1a7ab9ee3d0e6e661e00755586670"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classhepce_1_1model_1_1Hepce.html#a64a1a7ab9ee3d0e6e661e00755586670">Hepce</a> ()=default</td></tr>
+<tr class="separator:a64a1a7ab9ee3d0e6e661e00755586670"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="afa852043eae3a7ec4f5ea3c99b67afeb" name="afa852043eae3a7ec4f5ea3c99b67afeb"></a>
@@ -184,9 +196,85 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ac8335d7b68209e08794557d676e468cc" name="ac8335d7b68209e08794557d676e468cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8335d7b68209e08794557d676e468cc">&#9670;&#160;</a></span>Hepce() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">hepce::model::Hepce::Hepce </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a64a1a7ab9ee3d0e6e661e00755586670" name="a64a1a7ab9ee3d0e6e661e00755586670"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64a1a7ab9ee3d0e6e661e00755586670">&#9670;&#160;</a></span>Hepce() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">hepce::model::Hepce::Hepce </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="af3b21fdd5d53b006d0e35ab47a4ea135" name="af3b21fdd5d53b006d0e35ab47a4ea135"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af3b21fdd5d53b006d0e35ab47a4ea135">&#9670;&#160;</a></span>Create()</h2>
+<a id="a484b5c3918bf51c32ed69ab9914f3c5d" name="a484b5c3918bf51c32ed69ab9914f3c5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a484b5c3918bf51c32ed69ab9914f3c5d">&#9670;&#160;</a></span>clone()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::unique_ptr&lt; <a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &gt; hepce::model::Hepce::clone </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8b5769c0fcbaacfa3d241afc32a3be0e" name="a8b5769c0fcbaacfa3d241afc32a3be0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b5769c0fcbaacfa3d241afc32a3be0e">&#9670;&#160;</a></span>Create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -197,14 +285,14 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">static std::unique_ptr&lt; <a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &gt; hepce::model::Hepce::Create </td>
           <td>(</td>
-          <td class="paramtype">datamanagement::ModelData &amp;&#160;</td>
-          <td class="paramname"><em>model_data</em>, </td>
+          <td class="paramtype">const <a class="el" href="classhepce_1_1data_1_1Inputs.html">data::Inputs</a> &amp;&#160;</td>
+          <td class="paramname"><em>inputs</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>log_name</em> = <code>&quot;console&quot;</code>&#160;</td>
+          <td class="paramname"><em>log_name</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -221,8 +309,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa361647e779cba4b419afa3946e7a641" name="aa361647e779cba4b419afa3946e7a641"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa361647e779cba4b419afa3946e7a641">&#9670;&#160;</a></span>CreateEvents()</h2>
+<a id="a4120b582dd1250048cdd9436c706a254" name="a4120b582dd1250048cdd9436c706a254"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4120b582dd1250048cdd9436c706a254">&#9670;&#160;</a></span>CreateEvents()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -231,10 +319,9 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::vector&lt; std::unique_ptr&lt; <a class="el" href="classhepce_1_1event_1_1Event.html">event::Event</a> &gt; &gt; hepce::model::Hepce::CreateEvents </td>
+          <td class="memname">virtual <a class="el" href="namespacehepce_1_1event.html#ae4f3ba318046d6ce7034b4cb356f631d">event::EventList</a> hepce::model::Hepce::CreateEvents </td>
           <td>(</td>
-          <td class="paramtype">datamanagement::ModelData &amp;&#160;</td>
-          <td class="paramname"><em>model_data</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -247,8 +334,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a9866ffbe2ff0f91a23311546b5b325f0" name="a9866ffbe2ff0f91a23311546b5b325f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9866ffbe2ff0f91a23311546b5b325f0">&#9670;&#160;</a></span>CreatePopulation()</h2>
+<a id="a5128a59304574110c86d8cdf532fd3d2" name="a5128a59304574110c86d8cdf532fd3d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5128a59304574110c86d8cdf532fd3d2">&#9670;&#160;</a></span>CreatePopulation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -257,10 +344,9 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual std::vector&lt; std::unique_ptr&lt; <a class="el" href="classhepce_1_1model_1_1Person.html">model::Person</a> &gt; &gt; hepce::model::Hepce::CreatePopulation </td>
+          <td class="memname">virtual <a class="el" href="namespacehepce_1_1model.html#a4cfb0918fc4bd758612b511588a7de9a">model::People</a> hepce::model::Hepce::CreatePopulation </td>
           <td>(</td>
-          <td class="paramtype">datamanagement::ModelData &amp;&#160;</td>
-          <td class="paramname"><em>model_data</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -323,8 +409,34 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a7211c2c88ae4eab5a056d42e0211a3c1" name="a7211c2c88ae4eab5a056d42e0211a3c1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7211c2c88ae4eab5a056d42e0211a3c1">&#9670;&#160;</a></span>Run()</h2>
+<a id="ac0a85fc3d0443ce088a01bd868357317" name="ac0a85fc3d0443ce088a01bd868357317"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0a85fc3d0443ce088a01bd868357317">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &amp; hepce::model::Hepce::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad52f6a83ce9d24700494159d52a5e51b" name="ad52f6a83ce9d24700494159d52a5e51b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad52f6a83ce9d24700494159d52a5e51b">&#9670;&#160;</a></span>Run()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -335,13 +447,13 @@ Static Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">virtual void hepce::model::Hepce::Run </td>
           <td>(</td>
-          <td class="paramtype">std::vector&lt; std::unique_ptr&lt; <a class="el" href="classhepce_1_1model_1_1Person.html">model::Person</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacehepce_1_1model.html#a4cfb0918fc4bd758612b511588a7de9a">model::People</a> &amp;&#160;</td>
           <td class="paramname"><em>people</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; std::unique_ptr&lt; <a class="el" href="classhepce_1_1event_1_1Event.html">event::Event</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacehepce_1_1event.html#ae4f3ba318046d6ce7034b4cb356f631d">event::EventList</a> &amp;&#160;</td>
           <td class="paramname"><em>discrete_events</em>&#160;</td>
         </tr>
         <tr>
@@ -368,7 +480,7 @@ Static Public Member Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespacehepce.html">hepce</a></li><li class="navelem"><a class="el" href="namespacehepce_1_1model.html">model</a></li><li class="navelem"><a class="el" href="classhepce_1_1model_1_1Hepce.html">Hepce</a></li>
-    <li class="footer">Generated on Tue Feb 17 2026 14:47:44 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Tue May 12 2026 16:02:32 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

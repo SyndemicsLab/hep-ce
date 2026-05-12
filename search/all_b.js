@@ -1,15 +1,19 @@
 var searchData=
 [
-  ['makepopulationrow_0',['MakePopulationRow',['../classhepce_1_1model_1_1Person.html#ac7ba7cf1924513542045465870b92d5c',1,'hepce::model::Person']]],
-  ['math_2ehpp_1',['math.hpp',['../math_8hpp.html',1,'']]],
-  ['measured_5ffibrosis_5fstate_2',['measured_fibrosis_state',['../structhepce_1_1data_1_1StagingDetails.html#a635681c234bacd987d092e6d06a0dc8c',1,'hepce::data::StagingDetails::measured_fibrosis_state()'],['../structhepce_1_1data_1_1PersonSelect.html#a53f1d43fb54b725d87b05b3a9c4e76d9',1,'hepce::data::PersonSelect::measured_fibrosis_state()']]],
-  ['measuredfibrosisstate_3',['MeasuredFibrosisState',['../namespacehepce_1_1data.html#ac44909bb121100c3695530ffbcf77237',1,'hepce::data']]],
-  ['min_5futil_4',['min_util',['../structhepce_1_1data_1_1LifetimeUtility.html#ac4dcf4239fe1e43d3ac2d75c9000efb4',1,'hepce::data::LifetimeUtility']]],
-  ['moud_5',['Moud',['../classhepce_1_1event_1_1behavior_1_1Moud.html',1,'hepce::event::behavior']]],
-  ['moud_6',['MOUD',['../namespacehepce_1_1data.html#a5cd60c185e15d27341d7389766d3812f',1,'hepce::data']]],
-  ['moud_2ehpp_7',['moud.hpp',['../moud_8hpp.html',1,'']]],
-  ['moud_5fstate_8',['moud_state',['../structhepce_1_1data_1_1MOUDDetails.html#a714a08fb7a5b98bbdb1a22910d968162',1,'hepce::data::MOUDDetails::moud_state()'],['../structhepce_1_1data_1_1PersonSelect.html#aaeaeb75ebf09e586a95e54b8b9259e60',1,'hepce::data::PersonSelect::moud_state()']]],
-  ['moud_5futility_9',['moud_utility',['../structhepce_1_1data_1_1PersonSelect.html#a54da3c5d4e3b5995f7bcf4df5aace10e',1,'hepce::data::PersonSelect']]],
-  ['mouddetails_10',['MOUDDetails',['../structhepce_1_1data_1_1MOUDDetails.html',1,'hepce::data']]],
-  ['mult_5futil_11',['mult_util',['../structhepce_1_1data_1_1LifetimeUtility.html#a5dc3f45f8502e70ab0d9f7558ac9a150',1,'hepce::data::LifetimeUtility']]]
+  ['lifetimeutility_0',['LifetimeUtility',['../structhepce_1_1data_1_1LifetimeUtility.html',1,'hepce::data']]],
+  ['limitations_1',['Limitations',['../md_docs_src_limitations.html',1,'']]],
+  ['limitations_2emd_2',['limitations.md',['../limitations_8md.html',1,'']]],
+  ['link_3',['Link',['../classhepce_1_1model_1_1Person.html#aaa94f37fce9200843116a67bb3a4b6d6',1,'hepce::model::Person']]],
+  ['link_5fcount_4',['link_count',['../structhepce_1_1data_1_1LinkageDetails.html#a0248cc55ae0638ed1a9e918f4cf1b8ac',1,'hepce::data::LinkageDetails']]],
+  ['link_5fstate_5',['link_state',['../structhepce_1_1data_1_1LinkageDetails.html#af476c8b36d0dd7cdb16b362be0ac0295',1,'hepce::data::LinkageDetails']]],
+  ['linkagedetails_6',['LinkageDetails',['../structhepce_1_1data_1_1LinkageDetails.html',1,'hepce::data']]],
+  ['linkagestate_7',['LinkageState',['../namespacehepce_1_1data.html#a19e35ff7983e89e690ccab8a97d8ab71',1,'hepce::data']]],
+  ['liver_5futility_8',['liver_utility',['../structhepce_1_1data_1_1PersonSelect.html#a2fa2fee3fb0ae6c5123888363fc9bf29',1,'hepce::data::PersonSelect']]],
+  ['logdebug_9',['LogDebug',['../namespacehepce_1_1utils.html#abd89686fadbfff4dcaf747028efaef3e',1,'hepce::utils']]],
+  ['logerror_10',['LogError',['../namespacehepce_1_1utils.html#aff98025fe741e312c0561642db5ac6a0',1,'hepce::utils']]],
+  ['logging_2ehpp_11',['logging.hpp',['../logging_8hpp.html',1,'']]],
+  ['loginfo_12',['LogInfo',['../namespacehepce_1_1utils.html#a05a3d19fc14f7b6a7b01f72f47be24e2',1,'hepce::utils']]],
+  ['logtype_13',['LogType',['../namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2',1,'hepce::utils']]],
+  ['logwarning_14',['LogWarning',['../namespacehepce_1_1utils.html#a90e1a3f19260ebddf42aaa39dde80857',1,'hepce::utils']]],
+  ['low_5fcd4_5fmonths_5fcount_15',['low_cd4_months_count',['../structhepce_1_1data_1_1HIVDetails.html#a707725998bb08ecc9ff2bec71b9a0449',1,'hepce::data::HIVDetails::low_cd4_months_count()'],['../structhepce_1_1data_1_1PersonSelect.html#a3c2ad276c723b537e4c897f0b78b2578',1,'hepce::data::PersonSelect::low_cd4_months_count()']]]
 ];

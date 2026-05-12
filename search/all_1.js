@@ -1,16 +1,15 @@
 var searchData=
 [
-  ['background_5futility_0',['background_utility',['../structhepce_1_1data_1_1PersonSelect.html#a0aa379c52b5af8efd614892c623ff062',1,'hepce::data::PersonSelect']]],
-  ['base_5fevents_2ehpp_1',['base_events.hpp',['../base__events_8hpp.html',1,'']]],
-  ['behavior_2',['behavior',['../structhepce_1_1data_1_1BehaviorDetails.html#a15778fc479cb479698db26099e80d1b9',1,'hepce::data::BehaviorDetails']]],
-  ['behavior_3',['Behavior',['../namespacehepce_1_1data.html#ac65d23d2b329267f2fb910257ae8a945',1,'hepce::data']]],
-  ['behavior_5fchanges_2ehpp_4',['behavior_changes.hpp',['../behavior__changes_8hpp.html',1,'']]],
-  ['behavior_5fevents_2ehpp_5',['behavior_events.hpp',['../behavior__events_8hpp.html',1,'']]],
-  ['behavior_5futility_6',['behavior_utility',['../structhepce_1_1data_1_1PersonSelect.html#a6402b70f800073d408234f59b8cd797b',1,'hepce::data::PersonSelect']]],
-  ['behaviorchanges_7',['BehaviorChanges',['../classhepce_1_1event_1_1behavior_1_1BehaviorChanges.html',1,'hepce::event::behavior']]],
-  ['behaviordetails_8',['BehaviorDetails',['../structhepce_1_1data_1_1BehaviorDetails.html',1,'hepce::data']]],
-  ['birth_9',['Birth',['../classhepce_1_1model_1_1Person.html#ada91d776ed21e663464d499a40b9c77a',1,'hepce::model::Person']]],
-  ['booltostring_10',['BoolToString',['../namespacehepce_1_1utils.html#ae847015d1decdbbddb7d1542ffa72c21',1,'hepce::utils']]],
-  ['boomer_5fclassification_11',['boomer_classification',['../structhepce_1_1data_1_1PersonSelect.html#a7d80aaed25191e8b84db072c475cf8e6',1,'hepce::data::PersonSelect']]],
-  ['building_20_26_20installation_12',['Building &amp; Installation',['../md_docs_src_installation.html',1,'']]]
+  ['ab_5fpositive_0',['ab_positive',['../structhepce_1_1data_1_1ScreeningDetails.html#a0840b7c028c5740ad27a5828de3228a7',1,'hepce::data::ScreeningDetails']]],
+  ['accumulatetotalutility_1',['AccumulateTotalUtility',['../classhepce_1_1model_1_1Person.html#a15a8f3c398b439df159b935edda76c89',1,'hepce::model::Person']]],
+  ['addcompletedtreatment_2',['AddCompletedTreatment',['../classhepce_1_1model_1_1Person.html#a9931bd0d8914ae6059e541b478ca7216',1,'hepce::model::Person']]],
+  ['addcost_3',['AddCost',['../classhepce_1_1model_1_1Person.html#abc7b20aa607f2b807c1c37aaa9006991',1,'hepce::model::Person']]],
+  ['adddiscountedlifespan_4',['AddDiscountedLifeSpan',['../classhepce_1_1model_1_1Person.html#a28a1c3ee3cfb8dbdccdd66e9a6155472',1,'hepce::model::Person']]],
+  ['addfalsenegative_5',['AddFalseNegative',['../classhepce_1_1model_1_1Person.html#a05922d174d3003afcedde727d104060c',1,'hepce::model::Person']]],
+  ['addidentificationscleared_6',['AddIdentificationsCleared',['../classhepce_1_1model_1_1Person.html#a6b77e144191af3180c3a555f02bcc824',1,'hepce::model::Person']]],
+  ['addinfantexposure_7',['AddInfantExposure',['../classhepce_1_1model_1_1Person.html#a391bb531daf06489011bc542a1dba87a',1,'hepce::model::Person']]],
+  ['addsvr_8',['AddSVR',['../classhepce_1_1model_1_1Person.html#abc5af6c7e9d4b2e855e987c6ba84cfc6',1,'hepce::model::Person']]],
+  ['addtoxicreaction_9',['AddToxicReaction',['../classhepce_1_1model_1_1Person.html#a8f551625016e7c01f36b664d3861ce7a',1,'hepce::model::Person']]],
+  ['addwithdrawal_10',['AddWithdrawal',['../classhepce_1_1model_1_1Person.html#ae1a166ebb762d0eeaa02cde4dfeedbc3',1,'hepce::model::Person']]],
+  ['age_11',['age',['../structhepce_1_1data_1_1PersonSelect.html#a85835526c601ba764f9b12c71fc004ae',1,'hepce::data::PersonSelect']]]
 ];

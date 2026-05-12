@@ -3,6 +3,7 @@ var namespacehepce_1_1model =
     [ "Hepce", "classhepce_1_1model_1_1Hepce.html", "classhepce_1_1model_1_1Hepce" ],
     [ "Person", "classhepce_1_1model_1_1Person.html", "classhepce_1_1model_1_1Person" ],
     [ "Sampler", "classhepce_1_1model_1_1Sampler.html", "classhepce_1_1model_1_1Sampler" ],
+    [ "People", "namespacehepce_1_1model.html#a4cfb0918fc4bd758612b511588a7de9a", null ],
     [ "UtilityCategory", "namespacehepce_1_1model.html#ad49db0118936481584a7e3a8f9d262c4", [
       [ "kBehavior", "namespacehepce_1_1model.html#ad49db0118936481584a7e3a8f9d262c4a0b60e5a1cba3d1be1032cbdf9ea34518", null ],
       [ "kLiver", "namespacehepce_1_1model.html#ad49db0118936481584a7e3a8f9d262c4af44803932b2e37ce114dc5064285019e", null ],

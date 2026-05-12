@@ -1,5 +1,8 @@
 var classhepce_1_1model_1_1Person =
 [
+    [ "~Person", "classhepce_1_1model_1_1Person.html#af5de0ea68f31690076c2662aa7ed099b", null ],
+    [ "Person", "classhepce_1_1model_1_1Person.html#a13d09b2f76f0259ee7143242000aa7cd", null ],
+    [ "Person", "classhepce_1_1model_1_1Person.html#acaef5b97106d396bf05b7ba44732b462", null ],
     [ "AccumulateTotalUtility", "classhepce_1_1model_1_1Person.html#a15a8f3c398b439df159b935edda76c89", null ],
     [ "AddCompletedTreatment", "classhepce_1_1model_1_1Person.html#a9931bd0d8914ae6059e541b478ca7216", null ],
     [ "AddCost", "classhepce_1_1model_1_1Person.html#abc7b20aa607f2b807c1c37aaa9006991", null ],
@@ -13,6 +16,7 @@ var classhepce_1_1model_1_1Person =
     [ "Birth", "classhepce_1_1model_1_1Person.html#ada91d776ed21e663464d499a40b9c77a", null ],
     [ "ClearDiagnosis", "classhepce_1_1model_1_1Person.html#a6bd86910e07bf5926cd690858d62801a", null ],
     [ "ClearHCV", "classhepce_1_1model_1_1Person.html#a8a790bd680f5de9e404de156b8e23e54", null ],
+    [ "clone", "classhepce_1_1model_1_1Person.html#a1e90544263866d64a1c250c81d198368", null ],
     [ "DevelopHCC", "classhepce_1_1model_1_1Person.html#aa9e12668d24bc9a754f8a81efd60550b", null ],
     [ "Diagnose", "classhepce_1_1model_1_1Person.html#a6d0cd927f796b247eba329625f46a6de", null ],
     [ "DiagnoseFibrosis", "classhepce_1_1model_1_1Person.html#a37879c5fa0dd639d1a5cb9e32dda52c0", null ],
@@ -54,6 +58,7 @@ var classhepce_1_1model_1_1Person =
     [ "IsCirrhotic", "classhepce_1_1model_1_1Person.html#aa854e8dc11333c2fca1e008d1146e860", null ],
     [ "Link", "classhepce_1_1model_1_1Person.html#aaa94f37fce9200843116a67bb3a4b6d6", null ],
     [ "MakePopulationRow", "classhepce_1_1model_1_1Person.html#ac7ba7cf1924513542045465870b92d5c", null ],
+    [ "operator=", "classhepce_1_1model_1_1Person.html#ac6ac44080e1a34dd1c8c5001ff6b9b5c", null ],
     [ "Screen", "classhepce_1_1model_1_1Person.html#a937a0a31030b9b4eb3ec49c6a842ce1b", null ],
     [ "SetBehavior", "classhepce_1_1model_1_1Person.html#a3f924fdf849d89330c7ebeb25fcbe3d4", null ],
     [ "SetDeathReason", "classhepce_1_1model_1_1Person.html#a0ac9f96a4e848e4d92a9c1c9d0a7420f", null ],

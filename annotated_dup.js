@@ -8,6 +8,7 @@ var annotated_dup =
         [ "HCCDetails", "structhepce_1_1data_1_1HCCDetails.html", "structhepce_1_1data_1_1HCCDetails" ],
         [ "HCVDetails", "structhepce_1_1data_1_1HCVDetails.html", "structhepce_1_1data_1_1HCVDetails" ],
         [ "HIVDetails", "structhepce_1_1data_1_1HIVDetails.html", "structhepce_1_1data_1_1HIVDetails" ],
+        [ "Inputs", "classhepce_1_1data_1_1Inputs.html", "classhepce_1_1data_1_1Inputs" ],
         [ "LifetimeUtility", "structhepce_1_1data_1_1LifetimeUtility.html", "structhepce_1_1data_1_1LifetimeUtility" ],
         [ "LinkageDetails", "structhepce_1_1data_1_1LinkageDetails.html", "structhepce_1_1data_1_1LinkageDetails" ],
         [ "MOUDDetails", "structhepce_1_1data_1_1MOUDDetails.html", "structhepce_1_1data_1_1MOUDDetails" ],
@@ -19,36 +20,8 @@ var annotated_dup =
         [ "Writer", "classhepce_1_1data_1_1Writer.html", "classhepce_1_1data_1_1Writer" ]
       ] ],
       [ "event", "namespacehepce_1_1event.html", [
-        [ "base", "namespacehepce_1_1event_1_1base.html", [
-          [ "Aging", "classhepce_1_1event_1_1base_1_1Aging.html", "classhepce_1_1event_1_1base_1_1Aging" ],
-          [ "Death", "classhepce_1_1event_1_1base_1_1Death.html", "classhepce_1_1event_1_1base_1_1Death" ]
-        ] ],
-        [ "behavior", "namespacehepce_1_1event_1_1behavior.html", [
-          [ "BehaviorChanges", "classhepce_1_1event_1_1behavior_1_1BehaviorChanges.html", "classhepce_1_1event_1_1behavior_1_1BehaviorChanges" ],
-          [ "Moud", "classhepce_1_1event_1_1behavior_1_1Moud.html", "classhepce_1_1event_1_1behavior_1_1Moud" ],
-          [ "Overdose", "classhepce_1_1event_1_1behavior_1_1Overdose.html", "classhepce_1_1event_1_1behavior_1_1Overdose" ],
-          [ "Pregnancy", "classhepce_1_1event_1_1behavior_1_1Pregnancy.html", "classhepce_1_1event_1_1behavior_1_1Pregnancy" ]
-        ] ],
-        [ "fibrosis", "namespacehepce_1_1event_1_1fibrosis.html", [
-          [ "Hcc", "classhepce_1_1event_1_1fibrosis_1_1Hcc.html", "classhepce_1_1event_1_1fibrosis_1_1Hcc" ],
-          [ "Progression", "classhepce_1_1event_1_1fibrosis_1_1Progression.html", "classhepce_1_1event_1_1fibrosis_1_1Progression" ],
-          [ "Staging", "classhepce_1_1event_1_1fibrosis_1_1Staging.html", "classhepce_1_1event_1_1fibrosis_1_1Staging" ]
-        ] ],
-        [ "hcv", "namespacehepce_1_1event_1_1hcv.html", [
-          [ "Clearance", "classhepce_1_1event_1_1hcv_1_1Clearance.html", "classhepce_1_1event_1_1hcv_1_1Clearance" ],
-          [ "Infection", "classhepce_1_1event_1_1hcv_1_1Infection.html", "classhepce_1_1event_1_1hcv_1_1Infection" ],
-          [ "Linking", "classhepce_1_1event_1_1hcv_1_1Linking.html", "classhepce_1_1event_1_1hcv_1_1Linking" ],
-          [ "Screening", "classhepce_1_1event_1_1hcv_1_1Screening.html", "classhepce_1_1event_1_1hcv_1_1Screening" ],
-          [ "Treatment", "classhepce_1_1event_1_1hcv_1_1Treatment.html", "classhepce_1_1event_1_1hcv_1_1Treatment" ],
-          [ "VoluntaryRelink", "classhepce_1_1event_1_1hcv_1_1VoluntaryRelink.html", "classhepce_1_1event_1_1hcv_1_1VoluntaryRelink" ]
-        ] ],
-        [ "hiv", "namespacehepce_1_1event_1_1hiv.html", [
-          [ "Infection", "classhepce_1_1event_1_1hiv_1_1Infection.html", "classhepce_1_1event_1_1hiv_1_1Infection" ],
-          [ "Linking", "classhepce_1_1event_1_1hiv_1_1Linking.html", "classhepce_1_1event_1_1hiv_1_1Linking" ],
-          [ "Screening", "classhepce_1_1event_1_1hiv_1_1Screening.html", "classhepce_1_1event_1_1hiv_1_1Screening" ],
-          [ "Treatment", "classhepce_1_1event_1_1hiv_1_1Treatment.html", "classhepce_1_1event_1_1hiv_1_1Treatment" ]
-        ] ],
-        [ "Event", "classhepce_1_1event_1_1Event.html", "classhepce_1_1event_1_1Event" ]
+        [ "Event", "classhepce_1_1event_1_1Event.html", "classhepce_1_1event_1_1Event" ],
+        [ "EventFactory", "classhepce_1_1event_1_1EventFactory.html", null ]
       ] ],
       [ "model", "namespacehepce_1_1model.html", [
         [ "Hepce", "classhepce_1_1model_1_1Hepce.html", "classhepce_1_1model_1_1Hepce" ],

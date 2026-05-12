@@ -137,17 +137,53 @@ $(document).ready(function(){initNavTree('hepce_8hpp_source.html',''); initResiz
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// Created Date: 2025-04-17                                                   //</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Author: Matthew Carroll                                                    //</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// -----                                                                      //</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-04-30                                                  //</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2026-05-08                                                  //</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// Modified By: Matthew Carroll                                               //</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// -----                                                                      //</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"></span><span class="preprocessor">#ifndef HEPCE_HEPCE_HPP_</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#define HEPCE_HEPCE_HPP_</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;<a class="code" href="costing_8hpp.html">hepce/model/costing.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;<a class="code" href="person_8hpp.html">hepce/model/person.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;<a class="code" href="sampler_8hpp.html">hepce/model/sampler.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;<a class="code" href="utility_8hpp.html">hepce/model/utility.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;<a class="code" href="event_8hpp.html">hepce/event/event.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;<a class="code" href="event__factory_8hpp.html">hepce/event/event_factory.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;<a class="code" href="inputs_8hpp.html">hepce/data/inputs.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;<a class="code" href="types_8hpp.html">hepce/data/types.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;<a class="code" href="writer_8hpp.html">hepce/data/writer.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &lt;<a class="code" href="config_8hpp.html">hepce/utils/config.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;<a class="code" href="formatting_8hpp.html">hepce/utils/formatting.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;<a class="code" href="logging_8hpp.html">hepce/utils/logging.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &lt;<a class="code" href="math_8hpp.html">hepce/utils/math.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &lt;<a class="code" href="pair__hashing_8hpp.html">hepce/utils/pair_hashing.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#endif </span><span class="comment">// HEPCE_HEPCE_HPP_</span></div>
+<div class="ttc" id="aconfig_8hpp_html"><div class="ttname"><a href="config_8hpp.html">config.hpp</a></div></div>
+<div class="ttc" id="acosting_8hpp_html"><div class="ttname"><a href="costing_8hpp.html">costing.hpp</a></div></div>
+<div class="ttc" id="aevent_8hpp_html"><div class="ttname"><a href="event_8hpp.html">event.hpp</a></div></div>
+<div class="ttc" id="aevent__factory_8hpp_html"><div class="ttname"><a href="event__factory_8hpp.html">event_factory.hpp</a></div></div>
+<div class="ttc" id="aformatting_8hpp_html"><div class="ttname"><a href="formatting_8hpp.html">formatting.hpp</a></div></div>
+<div class="ttc" id="ainputs_8hpp_html"><div class="ttname"><a href="inputs_8hpp.html">inputs.hpp</a></div></div>
+<div class="ttc" id="alogging_8hpp_html"><div class="ttname"><a href="logging_8hpp.html">logging.hpp</a></div></div>
+<div class="ttc" id="amath_8hpp_html"><div class="ttname"><a href="math_8hpp.html">math.hpp</a></div></div>
+<div class="ttc" id="apair__hashing_8hpp_html"><div class="ttname"><a href="pair__hashing_8hpp.html">pair_hashing.hpp</a></div></div>
+<div class="ttc" id="aperson_8hpp_html"><div class="ttname"><a href="person_8hpp.html">person.hpp</a></div></div>
+<div class="ttc" id="asampler_8hpp_html"><div class="ttname"><a href="sampler_8hpp.html">sampler.hpp</a></div></div>
+<div class="ttc" id="atypes_8hpp_html"><div class="ttname"><a href="types_8hpp.html">types.hpp</a></div></div>
+<div class="ttc" id="autility_8hpp_html"><div class="ttname"><a href="utility_8hpp.html">utility.hpp</a></div></div>
+<div class="ttc" id="awriter_8hpp_html"><div class="ttname"><a href="writer_8hpp.html">writer.hpp</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_05c933d59f351fefb8caab5fd9b918a4.html">hepce</a></li><li class="navelem"><a class="el" href="hepce_8hpp.html">hepce.hpp</a></li>
-    <li class="footer">Generated on Tue Feb 17 2026 14:47:44 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Tue May 12 2026 16:02:32 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

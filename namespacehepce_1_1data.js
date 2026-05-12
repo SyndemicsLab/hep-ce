@@ -6,6 +6,7 @@ var namespacehepce_1_1data =
     [ "HCCDetails", "structhepce_1_1data_1_1HCCDetails.html", "structhepce_1_1data_1_1HCCDetails" ],
     [ "HCVDetails", "structhepce_1_1data_1_1HCVDetails.html", "structhepce_1_1data_1_1HCVDetails" ],
     [ "HIVDetails", "structhepce_1_1data_1_1HIVDetails.html", "structhepce_1_1data_1_1HIVDetails" ],
+    [ "Inputs", "classhepce_1_1data_1_1Inputs.html", "classhepce_1_1data_1_1Inputs" ],
     [ "LifetimeUtility", "structhepce_1_1data_1_1LifetimeUtility.html", "structhepce_1_1data_1_1LifetimeUtility" ],
     [ "LinkageDetails", "structhepce_1_1data_1_1LinkageDetails.html", "structhepce_1_1data_1_1LinkageDetails" ],
     [ "MOUDDetails", "structhepce_1_1data_1_1MOUDDetails.html", "structhepce_1_1data_1_1MOUDDetails" ],

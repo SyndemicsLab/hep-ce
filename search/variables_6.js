@@ -1,12 +1,20 @@
 var searchData=
 [
-  ['identifications_5fcleared_0',['identifications_cleared',['../structhepce_1_1data_1_1ScreeningDetails.html#a3142bf2638eb392a5e22e77ad264a95b',1,'hepce::data::ScreeningDetails']]],
-  ['identified_1',['identified',['../structhepce_1_1data_1_1ScreeningDetails.html#aa1b5aa4a8577946c9e1342a80edb1cc8',1,'hepce::data::ScreeningDetails']]],
-  ['in_5fhcv_5fsalvage_2',['in_hcv_salvage',['../structhepce_1_1data_1_1PersonSelect.html#a1e902f2a43b3eef6b8a71dfe617cbd3c',1,'hepce::data::PersonSelect']]],
-  ['in_5fsalvage_5ftreatment_3',['in_salvage_treatment',['../structhepce_1_1data_1_1TreatmentDetails.html#a44bbfa43f97e0199ab57975d3685018a',1,'hepce::data::TreatmentDetails']]],
-  ['initiated_5fhcv_5ftreatment_4',['initiated_hcv_treatment',['../structhepce_1_1data_1_1PersonSelect.html#a695883f55f4a9f4eb09632d6125c9d2b',1,'hepce::data::PersonSelect']]],
-  ['initiated_5fhiv_5ftreatment_5',['initiated_hiv_treatment',['../structhepce_1_1data_1_1PersonSelect.html#ac1e7708547a87b62f7cbecaf6ada8139',1,'hepce::data::PersonSelect']]],
-  ['initiated_5ftreatment_6',['initiated_treatment',['../structhepce_1_1data_1_1TreatmentDetails.html#aaabd03c9b16e8349728817429fe69062',1,'hepce::data::TreatmentDetails']]],
-  ['is_5falive_7',['is_alive',['../structhepce_1_1data_1_1PersonSelect.html#a822c132dc96713c108a748549aa493b3',1,'hepce::data::PersonSelect']]],
-  ['is_5fgenotype_5fthree_8',['is_genotype_three',['../structhepce_1_1data_1_1HCVDetails.html#aa26842ea3bd05d0c3b591673b9346cc6',1,'hepce::data::HCVDetails::is_genotype_three()'],['../structhepce_1_1data_1_1PersonSelect.html#a55c09e5ede1cfc4e2cd035727020e6b8',1,'hepce::data::PersonSelect::is_genotype_three()']]]
+  ['had_5fsecond_5ftest_0',['had_second_test',['../structhepce_1_1data_1_1PersonSelect.html#af5827734670b32e06cf1609e9fe8d681',1,'hepce::data::PersonSelect::had_second_test()'],['../structhepce_1_1data_1_1StagingDetails.html#a90815708f2af3a9d7af056aabfc54e89',1,'hepce::data::StagingDetails::had_second_test()']]],
+  ['hcc_5fdiagnosed_1',['hcc_diagnosed',['../structhepce_1_1data_1_1HCCDetails.html#ac6b49aa66bd5d78dac2949e99f37147b',1,'hepce::data::HCCDetails::hcc_diagnosed()'],['../structhepce_1_1data_1_1PersonSelect.html#a7f6ac8acf3c28b6e44532d012eb0154f',1,'hepce::data::PersonSelect::hcc_diagnosed()']]],
+  ['hcc_5fstate_2',['hcc_state',['../structhepce_1_1data_1_1HCCDetails.html#a0a2e0d3b1de429ba18858230ba59f71b',1,'hepce::data::HCCDetails::hcc_state()'],['../structhepce_1_1data_1_1PersonSelect.html#aff3f64f1052b4cc2f628be92ce2f5770',1,'hepce::data::PersonSelect::hcc_state()']]],
+  ['hcv_3',['hcv',['../structhepce_1_1data_1_1HCVDetails.html#ab96609ca5205d8088ed5fc2793f93bbb',1,'hepce::data::HCVDetails::hcv()'],['../structhepce_1_1data_1_1Child.html#a1b558d65497a999bd0ef1a7ab3596b23',1,'hepce::data::Child::hcv()'],['../structhepce_1_1data_1_1PersonSelect.html#a820d90f8b5a4b8d1a6eaf2f3aecc7831',1,'hepce::data::PersonSelect::hcv()']]],
+  ['hcv_5fantibody_5fpositive_4',['hcv_antibody_positive',['../structhepce_1_1data_1_1PersonSelect.html#aeae27609d2bb2c541ef8b9e3521a5a14',1,'hepce::data::PersonSelect']]],
+  ['hcv_5fidentifications_5fcleared_5',['hcv_identifications_cleared',['../structhepce_1_1data_1_1PersonSelect.html#ae7f4079a262c9c5645aea26ab242feb6',1,'hepce::data::PersonSelect']]],
+  ['hcv_5fidentified_6',['hcv_identified',['../structhepce_1_1data_1_1PersonSelect.html#aaf0c48652df53b1972af5b68da159461',1,'hepce::data::PersonSelect']]],
+  ['hcv_5flink_5fcount_7',['hcv_link_count',['../structhepce_1_1data_1_1PersonSelect.html#a0f226503cfc45160f407635aa6eab222',1,'hepce::data::PersonSelect']]],
+  ['hcv_5flink_5fstate_8',['hcv_link_state',['../structhepce_1_1data_1_1PersonSelect.html#a005e5c12e344eb7026edc3b8e2d64853',1,'hepce::data::PersonSelect']]],
+  ['hcv_5flink_5ftype_9',['hcv_link_type',['../structhepce_1_1data_1_1PersonSelect.html#a1536ccb17f6feaae46ac1e81f7c7da62',1,'hepce::data::PersonSelect']]],
+  ['hiv_10',['hiv',['../structhepce_1_1data_1_1HIVDetails.html#a6d105a2c4b6533fe18bd5f5be1805956',1,'hepce::data::HIVDetails::hiv()'],['../structhepce_1_1data_1_1PersonSelect.html#a5f3f936b5d91d8c6dd976f4cb450bf59',1,'hepce::data::PersonSelect::hiv()']]],
+  ['hiv_5fantibody_5fpositive_11',['hiv_antibody_positive',['../structhepce_1_1data_1_1PersonSelect.html#a33e37a9d2cc8d2166b298d5bdb4b875f',1,'hepce::data::PersonSelect']]],
+  ['hiv_5fidentified_12',['hiv_identified',['../structhepce_1_1data_1_1PersonSelect.html#a17ad03a38b2ba884ad307395c96afbf9',1,'hepce::data::PersonSelect']]],
+  ['hiv_5flink_5fcount_13',['hiv_link_count',['../structhepce_1_1data_1_1PersonSelect.html#add18f63962578d59e30c44ea3ca596aa',1,'hepce::data::PersonSelect']]],
+  ['hiv_5flink_5fstate_14',['hiv_link_state',['../structhepce_1_1data_1_1PersonSelect.html#a9172e4d434ac0d6011bcb26ef80ab9f9',1,'hepce::data::PersonSelect']]],
+  ['hiv_5flink_5ftype_15',['hiv_link_type',['../structhepce_1_1data_1_1PersonSelect.html#afef9cb2851b565848927e53c16f6f964',1,'hepce::data::PersonSelect']]],
+  ['hiv_5futility_16',['hiv_utility',['../structhepce_1_1data_1_1PersonSelect.html#a8092692cd1e67cf3987b0ef1a4f5ef39',1,'hepce::data::PersonSelect']]]
 ];

@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['measured_5ffibrosis_5fstate_0',['measured_fibrosis_state',['../structhepce_1_1data_1_1StagingDetails.html#a635681c234bacd987d092e6d06a0dc8c',1,'hepce::data::StagingDetails::measured_fibrosis_state()'],['../structhepce_1_1data_1_1PersonSelect.html#a53f1d43fb54b725d87b05b3a9c4e76d9',1,'hepce::data::PersonSelect::measured_fibrosis_state()']]],
-  ['min_5futil_1',['min_util',['../structhepce_1_1data_1_1LifetimeUtility.html#ac4dcf4239fe1e43d3ac2d75c9000efb4',1,'hepce::data::LifetimeUtility']]],
-  ['moud_5fstate_2',['moud_state',['../structhepce_1_1data_1_1MOUDDetails.html#a714a08fb7a5b98bbdb1a22910d968162',1,'hepce::data::MOUDDetails::moud_state()'],['../structhepce_1_1data_1_1PersonSelect.html#aaeaeb75ebf09e586a95e54b8b9259e60',1,'hepce::data::PersonSelect::moud_state()']]],
-  ['moud_5futility_3',['moud_utility',['../structhepce_1_1data_1_1PersonSelect.html#a54da3c5d4e3b5995f7bcf4df5aace10e',1,'hepce::data::PersonSelect']]],
-  ['mult_5futil_4',['mult_util',['../structhepce_1_1data_1_1LifetimeUtility.html#a5dc3f45f8502e70ab0d9f7558ac9a150',1,'hepce::data::LifetimeUtility']]]
+  ['link_5fcount_0',['link_count',['../structhepce_1_1data_1_1LinkageDetails.html#a0248cc55ae0638ed1a9e918f4cf1b8ac',1,'hepce::data::LinkageDetails']]],
+  ['link_5fstate_1',['link_state',['../structhepce_1_1data_1_1LinkageDetails.html#af476c8b36d0dd7cdb16b362be0ac0295',1,'hepce::data::LinkageDetails']]],
+  ['liver_5futility_2',['liver_utility',['../structhepce_1_1data_1_1PersonSelect.html#a2fa2fee3fb0ae6c5123888363fc9bf29',1,'hepce::data::PersonSelect']]],
+  ['low_5fcd4_5fmonths_5fcount_3',['low_cd4_months_count',['../structhepce_1_1data_1_1HIVDetails.html#a707725998bb08ecc9ff2bec71b9a0449',1,'hepce::data::HIVDetails::low_cd4_months_count()'],['../structhepce_1_1data_1_1PersonSelect.html#a3c2ad276c723b537e4c897f0b78b2578',1,'hepce::data::PersonSelect::low_cd4_months_count()']]]
 ];

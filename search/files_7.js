@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['index_2emd_0',['index.md',['../index_8md.html',1,'']]],
-  ['installation_2emd_1',['installation.md',['../installation_8md.html',1,'']]]
+  ['math_2ehpp_0',['math.hpp',['../math_8hpp.html',1,'']]]
 ];

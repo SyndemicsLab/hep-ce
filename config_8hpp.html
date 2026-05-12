@@ -134,10 +134,12 @@ $(document).ready(function(){initNavTree('config_8hpp.html',''); initResizable()
   <div class="headertitle"><div class="title">config.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;memory&gt;</code><br />
+<div class="textblock"><code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
-<code>#include &lt;datamanagement/datamanagement.hpp&gt;</code><br />
+<code>#include &lt;<a class="el" href="inputs_8hpp_source.html">hepce/data/inputs.hpp</a>&gt;</code><br />
 <code>#include &lt;spdlog/spdlog.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="formatting_8hpp_source.html">formatting.hpp</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -145,16 +147,33 @@ Include dependency graph for config.hpp:</div>
 <div class="dyncontent">
 <div class="center"><img src="config_8hpp__incl.png" border="0" usemap="#aconfig_8hpp" alt=""/></div>
 <map name="aconfig_8hpp" id="aconfig_8hpp">
-<area shape="rect" title=" " alt="" coords="174,5,263,31"/>
-<area shape="rect" title=" " alt="" coords="5,79,83,104"/>
-<area shape="rect" title=" " alt="" coords="44,152,119,177"/>
-<area shape="rect" title=" " alt="" coords="143,152,201,177"/>
-<area shape="rect" title=" " alt="" coords="351,79,638,104"/>
-<area shape="rect" title=" " alt="" coords="662,79,786,104"/>
-<area shape="rect" href="formatting_8hpp.html" title=" " alt="" coords="209,79,327,104"/>
-<area shape="rect" title=" " alt="" coords="225,152,311,177"/>
-<area shape="rect" title=" " alt="" coords="335,152,422,177"/>
-<area shape="rect" title=" " alt="" coords="446,152,509,177"/>
+<area shape="rect" title=" " alt="" coords="319,5,409,31"/>
+<area shape="rect" title=" " alt="" coords="21,79,80,104"/>
+<area shape="rect" title=" " alt="" coords="104,79,181,104"/>
+<area shape="rect" title=" " alt="" coords="203,159,277,185"/>
+<area shape="rect" title=" " alt="" coords="302,159,389,185"/>
+<area shape="rect" title=" " alt="" coords="413,159,472,185"/>
+<area shape="rect" href="inputs_8hpp.html" title=" " alt="" coords="547,79,714,104"/>
+<area shape="rect" title=" " alt="" coords="738,79,862,104"/>
+<area shape="rect" href="formatting_8hpp.html" title=" " alt="" coords="257,79,375,104"/>
+<area shape="rect" title=" " alt="" coords="1359,159,1406,185"/>
+<area shape="rect" title=" " alt="" coords="496,159,587,185"/>
+<area shape="rect" title=" " alt="" coords="611,159,698,185"/>
+<area shape="rect" title=" " alt="" coords="722,159,790,185"/>
+<area shape="rect" title=" " alt="" coords="814,159,986,185"/>
+<area shape="rect" title=" " alt="" coords="1010,152,1161,192"/>
+<area shape="rect" title=" " alt="" coords="1185,152,1335,192"/>
+<area shape="rect" title=" " alt="" coords="5,159,91,185"/>
+<area shape="rect" title=" " alt="" coords="115,159,178,185"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="config_8hpp__dep__incl.png" border="0" usemap="#aconfig_8hppdep" alt=""/></div>
+<map name="aconfig_8hppdep" id="aconfig_8hppdep">
+<area shape="rect" title=" " alt="" coords="5,5,95,31"/>
+<area shape="rect" href="hepce_8hpp.html" title=" " alt="" coords="5,79,95,104"/>
 </map>
 </div>
 </div>
@@ -170,16 +189,20 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad4be61c0337bdeddf64823195bec94b6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#ad4be61c0337bdeddf64823195bec94b6">hepce::utils::GetBoolFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data, bool def_val=false)</td></tr>
-<tr class="separator:ad4be61c0337bdeddf64823195bec94b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0b2b7f5525f3d20c23f972136a8e9646"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a0b2b7f5525f3d20c23f972136a8e9646">hepce::utils::GetIntFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data, int def_val=-1)</td></tr>
-<tr class="separator:a0b2b7f5525f3d20c23f972136a8e9646"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada3bd82681aec94f27c2423e30df3437"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#ada3bd82681aec94f27c2423e30df3437">hepce::utils::GetDoubleFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data, bool positive=true, double def_val=-1.0)</td></tr>
-<tr class="separator:ada3bd82681aec94f27c2423e30df3437"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a364afb8fb44ea191d84b23ce229c128c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a364afb8fb44ea191d84b23ce229c128c">hepce::utils::GetStringFromConfig</a> (std::string config_key, datamanagement::ModelData &amp;model_data, std::string def_val=&quot;&quot;)</td></tr>
-<tr class="separator:a364afb8fb44ea191d84b23ce229c128c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80358a13181a67c272308be2b28c7e06"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a80358a13181a67c272308be2b28c7e06">hepce::utils::FindInEventList</a> (std::string event_name, datamanagement::ModelData &amp;model_data)</td></tr>
-<tr class="separator:a80358a13181a67c272308be2b28c7e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79271c7f612518bd5af2731e6be8aab4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a79271c7f612518bd5af2731e6be8aab4">hepce::utils::ThrowPathError</a> (const std::string &amp;key)</td></tr>
+<tr class="separator:a79271c7f612518bd5af2731e6be8aab4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9df090cfec947314474001f4c64f3a05"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a9df090cfec947314474001f4c64f3a05">hepce::utils::ThrowDataError</a> (const std::string &amp;key)</td></tr>
+<tr class="separator:a9df090cfec947314474001f4c64f3a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac72d57518ad7cc8ee9baf33a2c310258"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#ac72d57518ad7cc8ee9baf33a2c310258">hepce::utils::GetBoolFromConfig</a> (const std::string &amp;config_key, const data::Inputs &amp;inputs, bool def_val=false)</td></tr>
+<tr class="separator:ac72d57518ad7cc8ee9baf33a2c310258"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab78eab63693189dc3ee84f12a3a5d3b0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#ab78eab63693189dc3ee84f12a3a5d3b0">hepce::utils::GetIntFromConfig</a> (const std::string &amp;config_key, const data::Inputs &amp;inputs, int def_val=-1)</td></tr>
+<tr class="separator:ab78eab63693189dc3ee84f12a3a5d3b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef7c2af035c3f170688dfa523579b4f8"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#aef7c2af035c3f170688dfa523579b4f8">hepce::utils::GetDoubleFromConfig</a> (const std::string &amp;config_key, const data::Inputs &amp;inputs, bool positive=true, double def_val=-1.0)</td></tr>
+<tr class="separator:aef7c2af035c3f170688dfa523579b4f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06bef28e9e93c31a678ce29389d85435"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a06bef28e9e93c31a678ce29389d85435">hepce::utils::GetStringFromConfig</a> (const std::string &amp;config_key, const data::Inputs &amp;inputs, std::string def_val=&quot;&quot;)</td></tr>
+<tr class="separator:a06bef28e9e93c31a678ce29389d85435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ce04e2a874f4684f5e45f763f017536"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a2ce04e2a874f4684f5e45f763f017536">hepce::utils::FindInEventList</a> (const std::string &amp;event_name, const data::Inputs &amp;inputs)</td></tr>
+<tr class="separator:a2ce04e2a874f4684f5e45f763f017536"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -187,7 +210,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_05c933d59f351fefb8caab5fd9b918a4.html">hepce</a></li><li class="navelem"><a class="el" href="dir_e28addd3979671bd06dbb695f19b84f3.html">utils</a></li><li class="navelem"><a class="el" href="config_8hpp.html">config.hpp</a></li>
-    <li class="footer">Generated on Tue Feb 17 2026 14:47:44 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Tue May 12 2026 16:02:32 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

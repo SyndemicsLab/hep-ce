@@ -137,10 +137,10 @@ $(document).ready(function(){initNavTree('costing_8hpp_source.html',''); initRes
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// Created Date: 2025-04-17                                                   //</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Author: Matthew Carroll                                                    //</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// -----                                                                      //</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2025-10-14                                                  //</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// Last Modified: 2026-03-20                                                  //</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// Modified By: Matthew Carroll                                               //</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// -----                                                                      //</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Copyright (c) 2025 Syndemics Lab at Boston Medical Center                  //</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"></span><span class="preprocessor">#ifndef HEPCE_MODEL_COST_HPP_</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#define HEPCE_MODEL_COST_HPP_</span></div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
@@ -171,22 +171,29 @@ $(document).ready(function(){initNavTree('costing_8hpp_source.html',''); initRes
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">class </span>Costs {</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">virtual</span> ~Costs() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">virtual</span> std::pair&lt;double, double&gt; GetTotals() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">virtual</span> std::unordered_map&lt;CostCategory, std::pair&lt;double, double&gt;&gt;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    GetCosts() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    Costs(<span class="keyword">const</span> Costs &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    Costs &amp;operator=(<span class="keyword">const</span> Costs &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">virtual</span> std::unique_ptr&lt;Costs&gt; clone() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">static</span> std::unique_ptr&lt;Costs&gt; Create();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keyword">virtual</span> std::pair&lt;double, double&gt; GetTotals() <span class="keyword">const</span> = 0;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> AddCost(<span class="keywordtype">double</span> base_cost, <span class="keywordtype">double</span> discount_cost,</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                         CostCategory category) = 0;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">static</span> std::unique_ptr&lt;Costs&gt;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    Create(<span class="keyword">const</span> std::string &amp;log_name = <span class="stringliteral">&quot;console&quot;</span>);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>};</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>} <span class="comment">// namespace model</span></div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>} <span class="comment">// namespace hepce</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keyword">virtual</span> std::unordered_map&lt;CostCategory, std::pair&lt;double, double&gt;&gt;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    GetCosts() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> AddCost(<span class="keywordtype">double</span> base_cost, <span class="keywordtype">double</span> discount_cost,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                         CostCategory category) = 0;</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="preprocessor">#endif </span><span class="comment">// HEPCE_MODEL_COST_HPP_</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    Costs() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>} <span class="comment">// namespace model</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>} <span class="comment">// namespace hepce</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="preprocessor">#endif </span><span class="comment">// HEPCE_MODEL_COST_HPP_</span></div>
 <div class="ttc" id="anamespacehepce_1_1model_html_ab920c91f55586b1536649d3be81c79a5"><div class="ttname"><a href="namespacehepce_1_1model.html#ab920c91f55586b1536649d3be81c79a5">hepce::model::operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, const UtilityCategory &amp;uc)</div></div>
 <div class="ttc" id="anamespacehepce_1_1model_html_ad49db0118936481584a7e3a8f9d262c4a0b60e5a1cba3d1be1032cbdf9ea34518"><div class="ttname"><a href="namespacehepce_1_1model.html#ad49db0118936481584a7e3a8f9d262c4a0b60e5a1cba3d1be1032cbdf9ea34518">hepce::model::UtilityCategory::kBehavior</a></div><div class="ttdeci">@ kBehavior</div></div>
 <div class="ttc" id="anamespacehepce_1_1model_html_ad49db0118936481584a7e3a8f9d262c4a5a162d352f3b3603e03fc9b2f043fb40"><div class="ttname"><a href="namespacehepce_1_1model.html#ad49db0118936481584a7e3a8f9d262c4a5a162d352f3b3603e03fc9b2f043fb40">hepce::model::UtilityCategory::kCount</a></div><div class="ttdeci">@ kCount</div></div>
@@ -196,14 +203,14 @@ $(document).ready(function(){initNavTree('costing_8hpp_source.html',''); initRes
 <div class="ttc" id="anamespacehepce_1_1model_html_ad49db0118936481584a7e3a8f9d262c4adcf82eb60fbcf015f9bb3265dd3b6cfc"><div class="ttname"><a href="namespacehepce_1_1model.html#ad49db0118936481584a7e3a8f9d262c4adcf82eb60fbcf015f9bb3265dd3b6cfc">hepce::model::UtilityCategory::kTreatment</a></div><div class="ttdeci">@ kTreatment</div></div>
 <div class="ttc" id="anamespacehepce_1_1model_html_ad49db0118936481584a7e3a8f9d262c4adf90dcc2777830505319858ec110e0c7"><div class="ttname"><a href="namespacehepce_1_1model.html#ad49db0118936481584a7e3a8f9d262c4adf90dcc2777830505319858ec110e0c7">hepce::model::UtilityCategory::kHiv</a></div><div class="ttdeci">@ kHiv</div></div>
 <div class="ttc" id="anamespacehepce_1_1model_html_ad49db0118936481584a7e3a8f9d262c4af44803932b2e37ce114dc5064285019e"><div class="ttname"><a href="namespacehepce_1_1model.html#ad49db0118936481584a7e3a8f9d262c4af44803932b2e37ce114dc5064285019e">hepce::model::UtilityCategory::kLiver</a></div><div class="ttdeci">@ kLiver</div></div>
-<div class="ttc" id="anamespacehepce_html"><div class="ttname"><a href="namespacehepce.html">hepce</a></div><div class="ttdoc">Namespace containing Utility Helper Functions.</div><div class="ttdef"><b>Definition:</b> types.hpp:20</div></div>
+<div class="ttc" id="anamespacehepce_html"><div class="ttname"><a href="namespacehepce.html">hepce</a></div><div class="ttdoc">Namespace containing Utility Helper Functions.</div><div class="ttdef"><b>Definition:</b> inputs.hpp:27</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_05c933d59f351fefb8caab5fd9b918a4.html">hepce</a></li><li class="navelem"><a class="el" href="dir_054eb75b16ee0b5caeaba25184ae69ab.html">model</a></li><li class="navelem"><a class="el" href="costing_8hpp.html">costing.hpp</a></li>
-    <li class="footer">Generated on Tue Feb 17 2026 14:47:44 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Tue May 12 2026 16:02:32 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

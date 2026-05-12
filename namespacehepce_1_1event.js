@@ -1,9 +1,6 @@
 var namespacehepce_1_1event =
 [
-    [ "base", "namespacehepce_1_1event_1_1base.html", "namespacehepce_1_1event_1_1base" ],
-    [ "behavior", "namespacehepce_1_1event_1_1behavior.html", "namespacehepce_1_1event_1_1behavior" ],
-    [ "fibrosis", "namespacehepce_1_1event_1_1fibrosis.html", "namespacehepce_1_1event_1_1fibrosis" ],
-    [ "hcv", "namespacehepce_1_1event_1_1hcv.html", "namespacehepce_1_1event_1_1hcv" ],
-    [ "hiv", "namespacehepce_1_1event_1_1hiv.html", "namespacehepce_1_1event_1_1hiv" ],
-    [ "Event", "classhepce_1_1event_1_1Event.html", "classhepce_1_1event_1_1Event" ]
+    [ "Event", "classhepce_1_1event_1_1Event.html", "classhepce_1_1event_1_1Event" ],
+    [ "EventFactory", "classhepce_1_1event_1_1EventFactory.html", null ],
+    [ "EventList", "namespacehepce_1_1event.html#ae4f3ba318046d6ce7034b4cb356f631d", null ]
 ];

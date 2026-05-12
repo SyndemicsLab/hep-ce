@@ -1,10 +1,18 @@
 var searchData=
 [
-  ['endpostpartum_0',['EndPostpartum',['../classhepce_1_1model_1_1Person.html#a220fb31e4d7b235eb5f2449a12688f82',1,'hepce::model::Person']]],
-  ['endtreatment_1',['EndTreatment',['../classhepce_1_1model_1_1Person.html#aa0568de199fc3634a0b42e3d9c697d90',1,'hepce::model::Person']]],
-  ['event_2',['Event',['../classhepce_1_1event_1_1Event.html',1,'hepce::event']]],
-  ['event_2ehpp_3',['event.hpp',['../event_8hpp.html',1,'']]],
-  ['events_4',['Events',['../md_docs_src_events.html',1,'']]],
-  ['events_2emd_5',['events.md',['../events_8md.html',1,'']]],
-  ['execute_6',['Execute',['../classhepce_1_1event_1_1Event.html#ab786da4a7e6de425e0d85f49b4ba315d',1,'hepce::event::Event']]]
+  ['data_2emd_0',['data.md',['../data_8md.html',1,'']]],
+  ['death_5freason_1',['death_reason',['../structhepce_1_1data_1_1PersonSelect.html#ae42b5c4ed14861814e1b4020902e0c96',1,'hepce::data::PersonSelect']]],
+  ['deathreason_2',['DeathReason',['../namespacehepce_1_1data.html#a505936e8feff5cc6c4e9eef9fd31df87',1,'hepce::data']]],
+  ['develophcc_3',['DevelopHCC',['../classhepce_1_1model_1_1Person.html#aa9e12668d24bc9a754f8a81efd60550b',1,'hepce::model::Person']]],
+  ['diagnose_4',['Diagnose',['../classhepce_1_1model_1_1Person.html#a6d0cd927f796b247eba329625f46a6de',1,'hepce::model::Person']]],
+  ['diagnosefibrosis_5',['DiagnoseFibrosis',['../classhepce_1_1model_1_1Person.html#a37879c5fa0dd639d1a5cb9e32dda52c0',1,'hepce::model::Person']]],
+  ['diagnosehcc_6',['DiagnoseHCC',['../classhepce_1_1model_1_1Person.html#a4ebbe083dae63c7c4dbe9dd07c633069',1,'hepce::model::Person']]],
+  ['die_7',['Die',['../classhepce_1_1model_1_1Person.html#a9e8b0aebed9d39e633ba9ad35b4af7c2',1,'hepce::model::Person']]],
+  ['differences_20from_20hep_2dcev1_8',['Differences from HEP-CEv1',['../md_docs_src_differences.html',1,'']]],
+  ['differences_2emd_9',['differences.md',['../differences_8md.html',1,'']]],
+  ['discount_10',['Discount',['../namespacehepce_1_1utils.html#a78e6fb9715bd35a1f996a78e258d9f88',1,'hepce::utils']]],
+  ['discount_5fmin_5futil_11',['discount_min_util',['../structhepce_1_1data_1_1LifetimeUtility.html#ad6019d33d20329d104c8e486d325160f',1,'hepce::data::LifetimeUtility']]],
+  ['discount_5fmult_5futil_12',['discount_mult_util',['../structhepce_1_1data_1_1LifetimeUtility.html#a14645ce30352d3f1b1240b69c88dc544',1,'hepce::data::LifetimeUtility']]],
+  ['droplogger_13',['DropLogger',['../namespacehepce_1_1utils.html#a42bf6284cdb9e87a23654fb81b2fc8fc',1,'hepce::utils']]],
+  ['drug_5fbehavior_14',['drug_behavior',['../structhepce_1_1data_1_1PersonSelect.html#ab51ed86e2ea68d2e3c64ec6446eca7bb',1,'hepce::data::PersonSelect']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['event_0',['Event',['../classhepce_1_1event_1_1Event.html',1,'hepce::event']]]
+  ['inputs_0',['Inputs',['../classhepce_1_1data_1_1Inputs.html',1,'hepce::data']]]
 ];
