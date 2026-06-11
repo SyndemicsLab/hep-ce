@@ -148,6 +148,7 @@ TEST_F(PregnancyTest, ProgressesPostpartumToYearTwoWhenThresholdMet) {
     EXPECT_CALL(mock_person,
                 SetPregnancyState(data::PregnancyState::kYearTwoPostpartum))
         .Times(1);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Impregnate()).Times(0);
 
     event->Execute(mock_person, mock_sampler);
@@ -199,6 +200,7 @@ TEST_F(PregnancyTest, RestrictedPostpartumProgressesToYearOneAfterWindow) {
     EXPECT_CALL(mock_person,
                 SetPregnancyState(data::PregnancyState::kYearOnePostpartum))
         .Times(1);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Impregnate()).Times(0);
 
     event->Execute(mock_person, mock_sampler);
@@ -217,6 +219,7 @@ TEST_F(PregnancyTest, YearTwoPostpartumEndsAtTwoYears) {
     ASSERT_NE(event, nullptr);
 
     EXPECT_CALL(mock_person, EndPostpartum()).Times(1);
+    EXPECT_CALL(mock_sampler, GetDecision(_)).WillOnce(Return(0));
     EXPECT_CALL(mock_person, Impregnate()).Times(0);
 
     event->Execute(mock_person, mock_sampler);
@@ -269,7 +272,8 @@ TEST_F(PregnancyTest, ChronicMotherTwinBirthAddsExposuresAndBirths) {
     event->Execute(mock_person, mock_sampler);
 }
 
-TEST_F(PregnancyTest, PostpartumDoesNotRollImpregnation) {
+TEST_F(PregnancyTest, OldAgePostpartumDoesNotRollImpregnation) {
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(541));
     pregnancy.pregnancy_state = data::PregnancyState::kYearOnePostpartum;
     pregnancy.time_of_pregnancy_change = 2;
     ON_CALL(mock_person, GetPregnancyDetails())
@@ -280,6 +284,7 @@ TEST_F(PregnancyTest, PostpartumDoesNotRollImpregnation) {
                                                   "PostpartumNoImpregnation");
     ASSERT_NE(event, nullptr);
 
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
     EXPECT_CALL(mock_person, Impregnate()).Times(0);
 
     event->Execute(mock_person, mock_sampler);

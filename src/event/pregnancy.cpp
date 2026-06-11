@@ -39,10 +39,8 @@ void Pregnancy::Execute(model::Person &person, const model::Sampler &sampler) {
 
     ProgressPostpartum(person);
 
-    // person's current pregnancy state
-    data::PregnancyState ps = person.GetPregnancyDetails().pregnancy_state;
-
-    if (ps == data::PregnancyState::kPregnant) {
+    if (person.GetPregnancyDetails().pregnancy_state ==
+        data::PregnancyState::kPregnant) {
         if (GetTimeSince(
                 person,
                 person.GetPregnancyDetails().time_of_pregnancy_change) >= 9) {
@@ -51,9 +49,9 @@ void Pregnancy::Execute(model::Person &person, const model::Sampler &sampler) {
         return;
     }
 
-    if ((ps == data::PregnancyState::kRestrictedPostpartum) ||
-        (ps == data::PregnancyState::kYearOnePostpartum) ||
-        (ps == data::PregnancyState::kYearTwoPostpartum)) {
+    // filter out people who are postpartum past age 45 because they cannot
+    // get pregnant anymore (according to the model)
+    if (person.GetAge() > 540) {
         return;
     };
 
