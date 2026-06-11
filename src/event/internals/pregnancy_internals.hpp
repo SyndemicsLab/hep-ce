@@ -4,8 +4,8 @@
 // Created Date: 2025-04-18                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-04-03                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2026-06-10                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ private:
             (ps == data::PregnancyState::kRestrictedPostpartum) ||
             (ps == data::PregnancyState::kYearOnePostpartum) ||
             (ps == data::PregnancyState::kYearTwoPostpartum);
-        ;
+
         return (too_old && (!pregnant && !rpostpartum));
     }
 

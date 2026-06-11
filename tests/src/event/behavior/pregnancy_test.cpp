@@ -272,6 +272,24 @@ TEST_F(PregnancyTest, ChronicMotherTwinBirthAddsExposuresAndBirths) {
     event->Execute(mock_person, mock_sampler);
 }
 
+TEST_F(PregnancyTest, OldAgePostpartumDoesNotRollImpregnation) {
+    ON_CALL(mock_person, GetAge()).WillByDefault(Return(541));
+    pregnancy.pregnancy_state = data::PregnancyState::kYearOnePostpartum;
+    pregnancy.time_of_pregnancy_change = 2;
+    ON_CALL(mock_person, GetPregnancyDetails())
+        .WillByDefault(Return(pregnancy));
+
+    data::Inputs inputs(test_conf, test_db);
+    auto event = event::EventFactory::CreateEvent("Pregnancy", inputs,
+                                                  "PostpartumNoImpregnation");
+    ASSERT_NE(event, nullptr);
+
+    EXPECT_CALL(mock_sampler, GetDecision(_)).Times(0);
+    EXPECT_CALL(mock_person, Impregnate()).Times(0);
+
+    event->Execute(mock_person, mock_sampler);
+};
+
 TEST_F(PregnancyTest, MissingPregnancyTableFallsBackToZeroProbability) {
     ExecuteQueries(test_db, {"DROP TABLE IF EXISTS pregnancy;"});
 

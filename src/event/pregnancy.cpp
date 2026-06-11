@@ -4,8 +4,8 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-20                                                  //
-// Modified By: Matthew Carroll                                               //
+// Last Modified: 2026-06-11                                                  //
+// Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +48,12 @@ void Pregnancy::Execute(model::Person &person, const model::Sampler &sampler) {
         }
         return;
     }
+
+    // filter out people who are postpartum past age 45 because they cannot
+    // get pregnant anymore (according to the model)
+    if (person.GetAge() > 540) {
+        return;
+    };
 
     double prob =
         _pregnancy_data[static_cast<int>(person.GetAge() / 12.0)].pregnant;

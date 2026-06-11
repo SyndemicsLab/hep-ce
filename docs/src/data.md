@@ -112,6 +112,7 @@ are named as follows:
 - `link_states`
 - `lost_to_follow_up`
 - `moud`
+- `population`
 - `pregnancy`
 - `pregnancy_states`
 - `screening_and_linkage`
