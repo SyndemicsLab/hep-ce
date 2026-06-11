@@ -4,7 +4,7 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-06-10                                                  //
+// Last Modified: 2026-06-11                                                  //
 // Modified By: Dimitri Baptiste                                              //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -39,8 +39,10 @@ void Pregnancy::Execute(model::Person &person, const model::Sampler &sampler) {
 
     ProgressPostpartum(person);
 
-    if (person.GetPregnancyDetails().pregnancy_state ==
-        data::PregnancyState::kPregnant) {
+    // person's current pregnancy state
+    data::PregnancyState ps = person.GetPregnancyDetails().pregnancy_state;
+
+    if (ps == data::PregnancyState::kPregnant) {
         if (GetTimeSince(
                 person,
                 person.GetPregnancyDetails().time_of_pregnancy_change) >= 9) {
