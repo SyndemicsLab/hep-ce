@@ -478,4 +478,4 @@ TEST_F(LoggingTest, MixedFileAndSharedLoggers) {
 
     FlushAllLoggers();
 }
-}
+} // namespace hepce::utils::testing
