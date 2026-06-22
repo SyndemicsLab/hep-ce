@@ -2,9 +2,9 @@
 
 include(CMakeFindDependencyMacro)
 
-find_dependency(spdlog REQUIRED)
-find_dependency(SQLiteCpp REQUIRED)
 find_dependency(Boost REQUIRED)
+find_dependency(SQLiteCpp REQUIRED)
+find_dependency(spdlog REQUIRED)
 
 if(@HEPCE_BUILD_TESTS@)
     find_depenency(GTest REQUIRED)

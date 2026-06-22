@@ -1,0 +1,31 @@
+name: HEP-CE Unit Tests
+# Schema: https://json.schemastore.org/github-action.json
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    unit-testing:
+        name: Testing ${{ matrix.os }} ${{matrix.build-variant}} build
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest] # macos-latest
+                build-variant: [shared, static]
+        steps:
+            - name: Checkout HEP-CE
+              uses: actions/checkout@v6
+
+            - name: Install MinGW
+              if: matrix.os == 'windows-latest'
+              uses: msys2/setup-msys2@v2
+              with:
+                  msystem: MINGW64
+
+            - name: Run Testing Workflow
+              run: cmake --workflow --preset debug-${{matrix.build-variant}}
+              timeout-minutes: 10
+              shell: bash

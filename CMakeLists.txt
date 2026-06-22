@@ -182,18 +182,23 @@ target_sources(hepce_model
 #-------------------------------------------------------------------------------
 include(${PRIVATE_MODULE_PATH}/MakeDependenciesAvailable.cmake)
 
-find_package(SQLiteCpp REQUIRED)
+# find_package(Boost REQUIRED)
+# find_package(SQLiteCpp REQUIRED)
 find_package(OpenMP REQUIRED)
-find_package(Boost REQUIRED)
+
 
 set(private_deps spdlog::spdlog OpenMP::OpenMP_CXX)
 if (HEPCE_CALCULATE_COVERAGE)
     list(APPEND private_deps gcov)
 endif()
 
+target_include_directories(hepce_model
+PUBLIC
+    ${BOOST_INCLUDE_DIRS}
+)
+
 target_link_libraries(hepce_model
 PUBLIC
-    Boost::boost
     SQLiteCpp
 PRIVATE
     ${private_deps}

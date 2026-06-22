@@ -8,23 +8,9 @@
     "include": [],
     "configurePresets": [
         {
-            "name": "configuration-common",
-            "description": "General Configuration Settings for All Configs",
+            "name": "base",
             "hidden": true,
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build",
-            "installDir": "${sourceDir}/install"
-        },
-        {
-            "name": "configuration-common-linux",
-            "description": "Linux Configuration Settings for GCC and Clang",
-            "hidden": true,
-            "inherits": "configuration-common",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Linux"
-            },
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
@@ -34,86 +20,188 @@
                 "strategy": "external"
             },
             "cacheVariables": {
-                "HEPCE_BUILD_PIC": "ON"
-            }
-        },
-        {
-            "name": "gcc-debug",
-            "displayName": "gcc Debug",
-            "description": "Target Linux with the GCC compiler, debug build type",
-            "inherits": "configuration-common-linux",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "HEPCE_BUILD_EXECUTABLE": "ON",
-                "HEPCE_BUILD_TESTS": "ON",
-                "HEPCE_CALCULATE_COVERAGE": "ON",
-                "HEPCE_BUILD_PYBINDINGS": "OFF",
+                "HEPCE_BUILD_PIC": "ON",
                 "HEPCE_BUILD_BENCH": "OFF",
-                "HEPCE_BUILD_SHARED_LIBS": "OFF",
                 "HEPCE_BUILD_WARNINGS": "ON",
                 "HEPCE_SYSTEM_INCLUDES": "OFF",
-                "HEPCE_INSTALL": "OFF",
-                "HEPCE_NO_EXCEPTIONS": "OFF"
+                "HEPCE_NO_EXCEPTIONS": "OFF",
+                "HEPCE_BUILD_EXECUTABLE": "ON"
             }
         },
         {
-            "name": "gcc-debug-cluster",
-            "inherits": "gcc-debug",
+            "name": "shared",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/shared",
             "cacheVariables": {
-                "CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
+                "BUILD_SHARED_LIBS": "ON"
             }
         },
         {
-            "name": "gcc-release",
-            "displayName": "gcc Release",
-            "description": "Target Linux with the GCC compiler, release build type",
-            "inherits": "configuration-common-linux",
+            "name": "static",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/static",
+            "cacheVariables": {
+                "BUILD_SHARED_LIBS": "OFF"
+            }
+        },
+        {
+            "name": "debug",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "HEPCE_BUILD_TESTS": "ON",
+                "HEPCE_INSTALL": "OFF",
+                "HEPCE_CALCULATE_COVERAGE": "ON"
+            }
+        },
+        {
+            "name": "release",
+            "hidden": true,
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
-                "HEPCE_BUILD_EXECUTABLE": "ON",
                 "HEPCE_BUILD_TESTS": "OFF",
-                "HEPCE_CALCULATE_COVERAGE": "OFF",
-                "HEPCE_BUILD_PYBINDINGS": "OFF",
-                "HEPCE_BUILD_BENCH": "OFF",
-                "HEPCE_BUILD_SHARED_LIBS": "OFF",
-                "HEPCE_BUILD_WARNINGS": "OFF",
-                "HEPCE_SYSTEM_INCLUDES": "OFF",
                 "HEPCE_INSTALL": "ON",
-                "HEPCE_NO_EXCEPTIONS": "OFF",
-                "HEPCE_RUN_OMP": "ON"
-            },
-            "warnings": {
-                "dev": false
+                "HEPCE_BUILD_DOCS": "ON",
+                "HEPCE_CALCULATE_COVERAGE": "OFF"
             }
         },
         {
-            "name": "gcc-release-strict",
-            "displayName": "gcc Release Strict",
-            "description": "Target Linux with the GCC compiler, release build type with strict exits on warnings",
-            "inherits": "gcc-release",
+            "name": "strict",
+            "hidden": true,
             "cacheVariables": {
                 "HEPCE_STOP_ON_WARNINGS": "ON"
             }
         },
         {
-            "name": "gcc-release-cluster",
-            "inherits": "gcc-release",
-            "cacheVariables": {
-                "CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
-            }
+            "name": "debug-shared",
+            "displayName": "Configure a Debug Shared Library",
+            "description": "Target a linux distro to create a debuggable shared library",
+            "inherits": [
+                "base",
+                "debug",
+                "shared"
+            ]
         },
         {
-            "name": "gcc-release-strict-cluster",
-            "inherits": "gcc-release-strict",
+            "name": "debug-static",
+            "displayName": "Configure a Debug Static Library",
+            "description": "Target a linux distro to create a debuggable static library",
+            "inherits": [
+                "base",
+                "debug",
+                "static"
+            ]
+        },
+        {
+            "name": "release-shared",
+            "displayName": "Configure a Release Shared Library (Non-Strict)",
+            "description": "Target a linux distro to create a release shared library",
+            "inherits": [
+                "base",
+                "release",
+                "shared"
+            ]
+        },
+        {
+            "name": "release-static",
+            "displayName": "Configure a Release Static Library (Non-Strict)",
+            "description": "Target a linux distro to create a release static library",
+            "inherits": [
+                "base",
+                "release",
+                "static"
+            ]
+        },
+        {
+            "name": "release-shared-strict",
+            "displayName": "Configure a Release Shared Library (Strict)",
+            "description": "Target a linux distro to create a release shared library",
+            "inherits": [
+                "base",
+                "release",
+                "strict",
+                "shared"
+            ]
+        },
+        {
+            "name": "release-static-strict",
+            "displayName": "Configure a Release Static Library (Strict)",
+            "description": "Target a linux distro to create a release static library",
+            "inherits": [
+                "base",
+                "release",
+                "strict",
+                "static"
+            ]
+        },
+        {
+            "name": "benchmark-static",
+            "displayName": "Configure a Benchmarking Executable",
+            "description": "Target a linux distro to build release benchmark artifacts",
+            "inherits": [
+                "base",
+                "release",
+                "static"
+            ],
             "cacheVariables": {
-                "CMAKE_PREFIX_PATH": "${fileDir}/lib/sqlitecpp"
+                "HEPCE_BUILD_BENCH": "ON",
+                "HEPCE_BUILD_DOCS": "OFF",
+                "HEPCE_INSTALL": "OFF"
             }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "jobs": 4
+        },
+        {
+            "name": "release-shared",
+            "displayName": "Shared Release Build (Non-Strict)",
+            "inherits": "base",
+            "configurePreset": "release-shared"
+        },
+        {
+            "name": "release-static",
+            "displayName": "Static Release Build (Non-Strict)",
+            "inherits": "base",
+            "configurePreset": "release-static"
+        },
+        {
+            "name": "release-shared-strict",
+            "description": "Shared Release Build (Strict)",
+            "inherits": "base",
+            "configurePreset": "release-shared-strict"
+        },
+        {
+            "name": "release-static-strict",
+            "description": "Static Release Build (Strict)",
+            "inherits": "base",
+            "configurePreset": "release-static-strict"
+        },
+        {
+            "name": "debug-shared",
+            "displayName": "Shared Release Build",
+            "inherits": "base",
+            "configurePreset": "debug-shared"
+        },
+        {
+            "name": "debug-static",
+            "displayName": "Static Release Build",
+            "inherits": "base",
+            "configurePreset": "debug-static"
+        },
+        {
+            "name": "benchmark",
+            "displayName": "Benchmark Build",
+            "inherits": "base",
+            "configurePreset": "benchmark-static"
         }
     ],
     "testPresets": [
         {
-            "name": "test-common",
-            "description": "Settings for all tests",
+            "name": "base",
             "hidden": true,
             "output": {
                 "verbosity": "verbose",
@@ -122,185 +210,181 @@
             "execution": {
                 "noTestsAction": "error",
                 "stopOnFailure": true
+            },
+            "filter": {
+                "include": {
+                    "name": "hepce_*"
+                }
             }
         },
         {
-            "name": "gcc-debug",
-            "displayName": "Strict",
+            "name": "debug-shared",
+            "displayName": "Test the Debug Shared Library",
             "description": "Enable output and stop on failure",
-            "inherits": "test-common",
-            "configurePreset": "gcc-debug"
+            "inherits": "base",
+            "configurePreset": "debug-shared"
         },
         {
-            "name": "gcc-release",
-            "displayName": "Strict",
+            "name": "debug-static",
+            "displayName": "Test the Debug Static Library",
             "description": "Enable output and stop on failure",
-            "inherits": "test-common",
-            "configurePreset": "gcc-release"
-        },
-        {
-            "name": "gcc-debug-cluster",
-            "displayName": "Strict",
-            "description": "Enable output and stop on failure",
-            "inherits": "test-common",
-            "configurePreset": "gcc-debug-cluster"
-        },
-        {
-            "name": "gcc-release-cluster",
-            "displayName": "Strict",
-            "description": "Enable output and stop on failure",
-            "inherits": "test-common",
-            "configurePreset": "gcc-release-cluster"
-        }
-    ],
-    "buildPresets": [
-        {
-            "name": "build-common",
-            "hidden": true,
-            "jobs": 8
-        },
-        {
-            "name": "gcc-release",
-            "inherits": "build-common",
-            "configurePreset": "gcc-release"
-        },
-        {
-            "name": "gcc-release-strict",
-            "inherits": "build-common",
-            "configurePreset": "gcc-release-strict"
-        },
-        {
-            "name": "gcc-release-cluster",
-            "inherits": "build-common",
-            "configurePreset": "gcc-release-cluster"
-        },
-        {
-            "name": "gcc-release-strict-cluster",
-            "inherits": "build-common",
-            "configurePreset": "gcc-release-strict-cluster"
-        },
-        {
-            "name": "gcc-debug",
-            "inherits": "build-common",
-            "configurePreset": "gcc-debug"
-        },
-        {
-            "name": "gcc-debug-cluster",
-            "inherits": "build-common",
-            "configurePreset": "gcc-debug-cluster"
-        },
-        {
-            "name": "gcc-install",
-            "inherits": "build-common",
-            "configurePreset": "gcc-release",
-            "targets": [
-                "install"
-            ]
+            "inherits": "base",
+            "configurePreset": "debug-static"
         }
     ],
     "packagePresets": [
         {
-            "name": "gcc-release",
-            "configurePreset": "gcc-release",
+            "name": "zip",
+            "hidden": true,
             "generators": [
                 "TGZ"
             ]
+        },
+        {
+            "name": "debian",
+            "inherits": "zip",
+            "hidden": true,
+            "generators": [
+                "DEB"
+            ]
+        },
+        {
+            "name": "rpm",
+            "inherits": "zip",
+            "hidden": true,
+            "generators": [
+                "RPM"
+            ]
+        },
+        {
+            "name": "nsis",
+            "inherits": "zip",
+            "hidden": true,
+            "generators": [
+                "NSIS"
+            ]
+        },
+        {
+            "name": "release-shared-debian",
+            "displayName": "Package a Release Shared Library for Debian",
+            "inherits": "debian",
+            "configurePreset": "release-shared"
+        },
+        {
+            "name": "release-static-debian",
+            "displayName": "Package a Release Static Library for Debian",
+            "inherits": "debian",
+            "configurePreset": "release-static"
+        },
+        {
+            "name": "release-shared-rpm",
+            "displayName": "Package a Release Shared Library for RPM",
+            "inherits": "rpm",
+            "configurePreset": "release-shared"
+        },
+        {
+            "name": "release-static-rpm",
+            "displayName": "Package a Release Static Library for RPM",
+            "inherits": "rpm",
+            "configurePreset": "release-static"
+        },
+        {
+            "name": "release-shared-nsis",
+            "displayName": "Package a Release Shared Library for NSIS",
+            "inherits": "nsis",
+            "configurePreset": "release-shared"
+        },
+        {
+            "name": "release-static-nsis",
+            "displayName": "Package a Release Static Library for NSIS",
+            "inherits": "nsis",
+            "configurePreset": "release-static"
+        },
+        {
+            "name": "release-shared-strict-debian",
+            "displayName": "Package a Shared Release for Debian (Strict)",
+            "inherits": "debian",
+            "configurePreset": "release-shared-strict"
+        },
+        {
+            "name": "release-static-strict-debian",
+            "displayName": "Package a Static Release for Debian (Strict)",
+            "inherits": "debian",
+            "configurePreset": "release-static-strict"
+        },
+        {
+            "name": "release-shared-strict-rpm",
+            "displayName": "Package a Shared Release for RPM (Strict)",
+            "inherits": "rpm",
+            "configurePreset": "release-shared-strict"
+        },
+        {
+            "name": "release-static-strict-rpm",
+            "displayName": "Package a Static Release for RPM (Strict)",
+            "inherits": "rpm",
+            "configurePreset": "release-static-strict"
+        },
+        {
+            "name": "release-shared-strict-nsis",
+            "displayName": "Package a Shared Release for NSIS (Strict)",
+            "inherits": "nsis",
+            "configurePreset": "release-shared-strict"
+        },
+        {
+            "name": "release-static-strict-nsis",
+            "displayName": "Package a Static Release for NSIS (Strict)",
+            "inherits": "nsis",
+            "configurePreset": "release-static-strict"
         }
     ],
     "workflowPresets": [
         {
-            "description": "Developer Debugging workflow without installation",
-            "name": "gcc-debug",
+            "name": "debug-shared",
+            "displayName": "Build and Test a Shared Library in Debugging Mode",
             "steps": [
                 {
                     "type": "configure",
-                    "name": "gcc-debug"
+                    "name": "debug-shared"
                 },
                 {
                     "type": "build",
-                    "name": "gcc-debug"
+                    "name": "debug-shared"
                 },
                 {
                     "type": "test",
-                    "name": "gcc-debug"
+                    "name": "debug-shared"
                 }
             ]
         },
         {
-            "description": "Release workflow without tests",
-            "name": "gcc-release",
+            "name": "debug-static",
+            "displayName": "Build and Test a Static Library in Debugging Mode",
             "steps": [
                 {
                     "type": "configure",
-                    "name": "gcc-release"
+                    "name": "debug-shared"
                 },
                 {
                     "type": "build",
-                    "name": "gcc-release"
-                },
-                {
-                    "type": "package",
-                    "name": "gcc-release"
-                }
-            ]
-        },
-        {
-            "description": "Developer Debugging workflow without installation for the SCC",
-            "name": "gcc-debug-cluster",
-            "steps": [
-                {
-                    "type": "configure",
-                    "name": "gcc-debug-cluster"
-                },
-                {
-                    "type": "build",
-                    "name": "gcc-debug-cluster"
+                    "name": "debug-shared"
                 },
                 {
                     "type": "test",
-                    "name": "gcc-debug-cluster"
+                    "name": "debug-shared"
                 }
             ]
         },
         {
-            "description": "Release workflow without tests and stopping on warnings",
-            "name": "gcc-release-strict",
+            "name": "benchmark",
+            "displayName": "Build and Run HEP-CE Benchmarking",
             "steps": [
                 {
                     "type": "configure",
-                    "name": "gcc-release-strict"
+                    "name": "benchmark-static"
                 },
                 {
                     "type": "build",
-                    "name": "gcc-release-strict"
-                }
-            ]
-        },
-        {
-            "description": "Release workflow without tests for the SCC",
-            "name": "gcc-release-cluster",
-            "steps": [
-                {
-                    "type": "configure",
-                    "name": "gcc-release-cluster"
-                },
-                {
-                    "type": "build",
-                    "name": "gcc-release-cluster"
-                }
-            ]
-        },
-        {
-            "description": "Release workflow without tests for the SCC - stops on warnings",
-            "name": "gcc-release-strict-cluster",
-            "steps": [
-                {
-                    "type": "configure",
-                    "name": "gcc-release-strict-cluster"
-                },
-                {
-                    "type": "build",
-                    "name": "gcc-release-strict-cluster"
+                    "name": "benchmark"
                 }
             ]
         }

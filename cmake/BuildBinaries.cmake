@@ -1,9 +1,3 @@
-if(HEPCE_BUILD_PYBINDINGS OR HEPCE_BUILD_ALL)
-    message(STATUS "Generating Python Bindings")
-    # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-    add_subdirectory(extras/hepcepy)
-endif()
-
 if(HEPCE_BUILD_EXECUTABLE OR HEPCE_BUILD_ALL)
     message(STATUS "Building Executable")
     add_subdirectory(extras/executable)
@@ -26,4 +20,9 @@ endif()
 
 if(HEPCE_RUN_OMP)
     message(STATUS "Running with OMP")
+endif()
+
+if(HEPCE_BUILD_DOCS OR HEPCE_BUILD_ALL)
+    message(STATUS "Generating documentation")
+    include(${PRIVATE_MODULE_PATH}/LoadDoxygenIsAwesome.cmake)
 endif()
