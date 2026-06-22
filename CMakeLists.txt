@@ -191,11 +191,6 @@ if (HEPCE_CALCULATE_COVERAGE)
     list(APPEND private_deps gcov)
 endif()
 
-target_include_directories(hepce_model
-PUBLIC
-    ${Boost_INCLUDE_DIRS}
-)
-
 target_link_libraries(hepce_model
 PUBLIC
     Boost::headers
