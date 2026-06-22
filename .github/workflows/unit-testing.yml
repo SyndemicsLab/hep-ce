@@ -25,7 +25,7 @@ jobs:
               with:
                   msystem: UCRT64
                   update: true
-                  install: mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-boost
+                  install: mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-boost mingw-w64-x86_64-sqlite3
 
             - name: Install Boost In Linux
               if: matrix.os == 'ubuntu-latest'
