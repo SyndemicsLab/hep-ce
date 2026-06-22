@@ -197,6 +197,7 @@ PUBLIC
 
 target_link_libraries(hepce_model
 PUBLIC
+    Boost::headers
     SQLiteCpp
 PRIVATE
     ${private_deps}

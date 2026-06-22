@@ -47,6 +47,7 @@ target_include_directories(hepce_tests
 target_link_libraries(hepce_tests
     PUBLIC
         hepce_model
+        Boost::headers
         GTest::gmock_main
         spdlog::spdlog
 )

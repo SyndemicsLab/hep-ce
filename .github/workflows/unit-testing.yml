@@ -39,7 +39,7 @@ jobs:
               if: matrix.os == 'windows-latest'
               run: choco install sqlite
             - if: matrix.os == 'ubuntu-latest'
-              run: sudo apt-get install -y libsqlite3-dev
+              run: sudo apt-get install -y libsqlite3-dev libboost-dev
 
             - name: Run Testing Workflow
               run: cmake --workflow --preset debug-${{matrix.build-variant}}
