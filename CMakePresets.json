@@ -362,15 +362,15 @@
             "steps": [
                 {
                     "type": "configure",
-                    "name": "debug-shared"
+                    "name": "debug-static"
                 },
                 {
                     "type": "build",
-                    "name": "debug-shared"
+                    "name": "debug-static"
                 },
                 {
                     "type": "test",
-                    "name": "debug-shared"
+                    "name": "debug-static"
                 }
             ]
         },
