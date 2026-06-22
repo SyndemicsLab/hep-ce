@@ -183,6 +183,7 @@ target_sources(hepce_model
 include(${PRIVATE_MODULE_PATH}/MakeDependenciesAvailable.cmake)
 
 find_package(OpenMP REQUIRED)
+find_package(Boost REQUIRED)
 
 
 set(private_deps spdlog::spdlog OpenMP::OpenMP_CXX)

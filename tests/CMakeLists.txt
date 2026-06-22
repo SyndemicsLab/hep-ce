@@ -21,6 +21,7 @@ if(PROJECT_IS_TOP_LEVEL OR NOT HEPCE_BUILD_TESTS)
     return()
 endif()
 
+find_package(Boost REQUIRED)
 
 file(GLOB HEPCE_TEST_MOCKS CONFIGURE_DEPENDS mocks/*.hpp)
 file(GLOB HEPCE_TEST_CONSTANTS CONFIGURE_DEPENDS constants/*.hpp)
