@@ -194,7 +194,7 @@ endif()
 
 target_include_directories(hepce_model
 PUBLIC
-    ${BOOST_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
 )
 
 target_link_libraries(hepce_model
