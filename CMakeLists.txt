@@ -182,8 +182,6 @@ target_sources(hepce_model
 #-------------------------------------------------------------------------------
 include(${PRIVATE_MODULE_PATH}/MakeDependenciesAvailable.cmake)
 
-# find_package(Boost REQUIRED)
-# find_package(SQLiteCpp REQUIRED)
 find_package(OpenMP REQUIRED)
 
 
