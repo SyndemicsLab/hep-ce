@@ -7,8 +7,6 @@ FetchContent_Declare(
         GIT_TAG         d66a92a53dc4c333e8491584a8ca452dc058c977 
         OVERRIDE_FIND_PACKAGE
 )
-# Find your own dependencies
-# set(SQLITECPP_INTERNAL_SQLITE OFF)
 # Dependency, I'm not checking for style
 set(SQLITECPP_RUN_CPPLINT OFF)
 # Dependency, not checking for static analysis
