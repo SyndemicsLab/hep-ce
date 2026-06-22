@@ -19,11 +19,17 @@ jobs:
             - name: Checkout HEP-CE
               uses: actions/checkout@v6
 
-            - name: Install MinGW
+            - name: Install Windows Dependencies
               if: matrix.os == 'windows-latest'
               uses: msys2/setup-msys2@v2
               with:
-                  msystem: MINGW64
+                  msystem: UCRT64
+                  update: true
+                  install: mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-boost
+
+            - name: Install Boost In Linux
+              if: matrix.os == 'ubuntu-latest'
+              run: sudo apt-get install -y libboost-dev
 
             - name: Run Testing Workflow
               run: cmake --workflow --preset debug-${{matrix.build-variant}}

@@ -1,7 +1,6 @@
 message(CHECK_START "Fetching Boost...")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
-set(BOOST_INCLUDE_LIBRARIES property_tree)
 set(BOOST_ENABLE_CMAKE ON)
 
 FetchContent_Declare(

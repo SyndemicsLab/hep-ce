@@ -38,9 +38,8 @@ target_sources(hepce_tests
     )
 
 target_include_directories(hepce_tests
-    PUBLIC
-        ${Boost_INCLUDE_DIRS}
     PRIVATE
+        ${Boost_INCLUDE_DIRS}
         "mocks/"
         "constants/"
 )
