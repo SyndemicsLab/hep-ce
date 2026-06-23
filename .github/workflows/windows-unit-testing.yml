@@ -31,8 +31,6 @@ jobs:
                   toolset: mingw
 
             - name: Run Testing Workflow
-              continue-on-error: true
-              shell: pwsh
               env:
                   BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
               run: |
