@@ -19,6 +19,13 @@ jobs:
               with:
                   submodules: "true"
 
+            - name: Install Boost
+              uses: MarkusJx/install-boost@v2
+              id: install-boost
+              with:
+                  boost_version: 1.84.0
+                  toolset: gcc
+
             - name: Install dependencies
               run: sudo apt-get update && sudo apt-get install -y wget graphviz rsync
               shell: bash
@@ -33,6 +40,8 @@ jobs:
 
             - name: Configure Project
               run: cmake --preset docs
+              env:
+                  BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 
             - name: Generate Doxygen Documentation
               run: doxygen Doxyfile
