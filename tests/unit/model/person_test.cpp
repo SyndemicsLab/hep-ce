@@ -4,7 +4,7 @@
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-20                                                  //
+// Last Modified: 2026-06-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -49,13 +49,13 @@ protected:
     static void TearDownTestSuite() {
         const std::string log_name = "PersonTest";
         const std::string log_file = log_name + ".log";
-        
+
         // Release any open file handles held by the logger before deleting.
         if (auto logger = spdlog::get(log_name); logger) {
             logger->flush();
             spdlog::drop(log_name);
         }
-        
+
         std::error_code ec;
         for (int attempt = 0; attempt < 10; ++attempt) {
             std::filesystem::remove(log_file, ec);
