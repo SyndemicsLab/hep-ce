@@ -16,6 +16,13 @@ jobs:
             - name: Checkout Respond Repository
               uses: actions/checkout@v6
 
+            - name: Install Boost
+              uses: MarkusJx/install-boost@v2
+              id: install-boost
+              with:
+                  boost_version: 1.84.0
+                  toolset: gcc
+
             - name: Install gcovr
               run: pip install gcovr
 
