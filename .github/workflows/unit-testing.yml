@@ -41,7 +41,23 @@ jobs:
               env:
                   BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
               timeout-minutes: 10
-            - name: Print DLL Locations
-              if: matrix.os == 'windows-latest'
+
+            - name: Print PATH as seen by bash
+              run: echo "$PATH" | tr ';' '\n'
+            - name: Check MinGW runtime files exist at expected location
               run: |
-                  where libstdc++.6.dll; where libgcc_s_seh-1.dll; where libwinpthread-1.dll; where libgomp-1.dll
+                  ls -l /c/mingw64/bin/libstdc++-6.dll;
+                  ls -l /c/mingw64/bin/libgcc_s_seh-1.dll;
+                  ls -l /c/mingw64/bin/libwinpthread-1.dll;
+                  ls -l /c/mingw64/bin/libgomp-1.dll;
+            - name: Check what Windows PATH resolution sees
+              run: |
+                  where.exe libstdc++-6.dll;
+                  where.exe libgcc_s_seh-1.dll;
+                  where.exe libwinpthread-1.dll;
+                  where.exe libgomp-1.dll;
+            - name: Inspect what the test exe imports
+              run: |
+                  objdump -p build/${{matrix.build-variant}}/bin/hepce_tests.exe | grep "DLL Name"
+            - name: Directly run discovery command manually to capture stderr
+              run: build/static/bin/hepce_tests.exe --gtest_list_tests
