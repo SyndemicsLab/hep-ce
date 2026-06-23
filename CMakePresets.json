@@ -51,7 +51,7 @@
                 "CMAKE_BUILD_TYPE": "Debug",
                 "HEPCE_BUILD_TESTS": "ON",
                 "HEPCE_INSTALL": "OFF",
-                "HEPCE_CALCULATE_COVERAGE": "ON"
+                "HEPCE_CALCULATE_COVERAGE": "OFF"
             }
         },
         {

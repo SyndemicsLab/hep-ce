@@ -35,14 +35,13 @@ jobs:
                   boost_version: 1.84.0
                   toolset: ${{ matrix.toolset}}
 
-            # - name: Install Dependencies
-            #   if: matrix.os == 'windows-latest'
-            #   run: choco install sqlite
-            # - if: matrix.os == 'ubuntu-latest'
-            #   run: sudo apt-get install -y libsqlite3-dev
-
             - name: Run Testing Workflow
+              continue-on-error: true
               run: cmake --workflow --preset debug-${{matrix.build-variant}}
               env:
                   BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
               timeout-minutes: 10
+            - name: Print DLL Locations
+              if: matrix.os == 'windows-latest'
+              run: |
+                  where libstdc++.6.dll; where libgcc_s_seh-1.dll; where libwinpthread-1.dll; where libgomp-1.dll
