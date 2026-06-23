@@ -63,7 +63,7 @@ MathJax.Hub.Config({
                             <td id="projectlogo"><img alt="Logo" src="syndemics-logo.png" /></td>
                             <td id="projectalign">
                                 <div id="projectname">HEP-CE<span
-                                        id="projectnumber">&#160;2.0.1</span>
+                                        id="projectnumber">&#160;2.1.0</span>
                                 </div>
                                 <div id="projectbrief">Hepatitis-C Cost Effectiveness Simulation</div>
                             </td>
@@ -170,14 +170,15 @@ Namespaces</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:a633ed499ab3f9f1778139b6c0c4583d2"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2">hepce::utils::LogType</a> : int { <br />
-&#160;&#160;<a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2a176a473e63c17ccdac91640c67f149bf">hepce::utils::kInfo</a>
-, <a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2a61a920eb4a24199ec6a36dd90f2a30b7">hepce::utils::kWarn</a>
-, <a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2ae3587c730cc1aa530fa4ddc9c4204e97">hepce::utils::kError</a>
-, <a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2abb53ce21b7c0b7c8a8f7860a41901d29">hepce::utils::kDebug</a>
+&#160;&#160;<a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2a176a473e63c17ccdac91640c67f149bf">hepce::utils::kInfo</a> = 0
+, <a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2a61a920eb4a24199ec6a36dd90f2a30b7">hepce::utils::kWarn</a> = 1
+, <a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2ae3587c730cc1aa530fa4ddc9c4204e97">hepce::utils::kError</a> = 2
+, <a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2abb53ce21b7c0b7c8a8f7860a41901d29">hepce::utils::kDebug</a> = 3
 , <br />
-&#160;&#160;<a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2a5a162d352f3b3603e03fc9b2f043fb40">hepce::utils::kCount</a>
+&#160;&#160;<a class="el" href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2a5a162d352f3b3603e03fc9b2f043fb40">hepce::utils::kCount</a> = 4
 <br />
  }</td></tr>
+<tr class="memdesc:a633ed499ab3f9f1778139b6c0c4583d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logging levels for the logger.  <a href="namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2">More...</a><br /></td></tr>
 <tr class="separator:a633ed499ab3f9f1778139b6c0c4583d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a474adb1fe1bfd8d01326bd6ecfc46542"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a474adb1fe1bfd8d01326bd6ecfc46542">hepce::utils::CreationStatus</a> : int { <br />
 &#160;&#160;<a class="el" href="namespacehepce_1_1utils.html#a474adb1fe1bfd8d01326bd6ecfc46542ae3587c730cc1aa530fa4ddc9c4204e97">hepce::utils::kError</a> = -1
@@ -188,23 +189,62 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="namespacehepce_1_1utils.html#a474adb1fe1bfd8d01326bd6ecfc46542a5a162d352f3b3603e03fc9b2f043fb40">hepce::utils::kCount</a> = 4
 <br />
  }</td></tr>
+<tr class="memdesc:a474adb1fe1bfd8d01326bd6ecfc46542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creation status of the logger.  <a href="namespacehepce_1_1utils.html#a474adb1fe1bfd8d01326bd6ecfc46542">More...</a><br /></td></tr>
 <tr class="separator:a474adb1fe1bfd8d01326bd6ecfc46542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38e06624598f36a3ad6fde4f5bbe3900"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a38e06624598f36a3ad6fde4f5bbe3900">hepce::utils::LogPattern</a> : int { <a class="el" href="namespacehepce_1_1utils.html#a38e06624598f36a3ad6fde4f5bbe3900a08f306bda256f33e3518fc92e71ab1d5">hepce::utils::kSimple</a> = 0
+, <a class="el" href="namespacehepce_1_1utils.html#a38e06624598f36a3ad6fde4f5bbe3900a821da62632c491ea619ead7b31c094bf">hepce::utils::kStandard</a> = 1
+, <a class="el" href="namespacehepce_1_1utils.html#a38e06624598f36a3ad6fde4f5bbe3900ade970de858c5ffbaccdc0250e117ea9c">hepce::utils::kDetailed</a> = 2
+, <a class="el" href="namespacehepce_1_1utils.html#a38e06624598f36a3ad6fde4f5bbe3900a6577bf4a4ae8c12ae3870e35ba7cd19a">hepce::utils::kThreadSafe</a>
+ }</td></tr>
+<tr class="memdesc:a38e06624598f36a3ad6fde4f5bbe3900"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log pattern templates for different output styles.  <a href="namespacehepce_1_1utils.html#a38e06624598f36a3ad6fde4f5bbe3900">More...</a><br /></td></tr>
+<tr class="separator:a38e06624598f36a3ad6fde4f5bbe3900"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a865f8022b02dec37fc9717481b4eecee"><td class="memItemLeft" align="right" valign="top">CreationStatus&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a865f8022b02dec37fc9717481b4eecee">hepce::utils::CreateFileLogger</a> (const std::string &amp;logger_name, const std::string &amp;filepath)</td></tr>
+<tr class="memdesc:a865f8022b02dec37fc9717481b4eecee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a logger with the specified name and file path. Thread-safe for use in parallel execution contexts.  <br /></td></tr>
 <tr class="separator:a865f8022b02dec37fc9717481b4eecee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42bf6284cdb9e87a23654fb81b2fc8fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a42bf6284cdb9e87a23654fb81b2fc8fc">hepce::utils::DropLogger</a> (const std::string &amp;logger_name)</td></tr>
-<tr class="separator:a42bf6284cdb9e87a23654fb81b2fc8fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18eee7eb61fcce1b4a7c0509c86dd277"><td class="memItemLeft" align="right" valign="top">CreationStatus&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a18eee7eb61fcce1b4a7c0509c86dd277">hepce::utils::CreateSharedFileSink</a> (const std::string &amp;filepath)</td></tr>
+<tr class="memdesc:a18eee7eb61fcce1b4a7c0509c86dd277"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a shared file sink that multiple loggers can write to. This enables thread-safe concurrent logging from multiple models/threads to the same output file. Use with <a class="el" href="namespacehepce_1_1utils.html#a869f1d355145d44139a83ca7405549e5" title="Create a logger that writes to the shared file sink. Multiple loggers can be created with different n...">CreateSharedLogger()</a>.  <br /></td></tr>
+<tr class="separator:a18eee7eb61fcce1b4a7c0509c86dd277"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a869f1d355145d44139a83ca7405549e5"><td class="memItemLeft" align="right" valign="top">CreationStatus&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a869f1d355145d44139a83ca7405549e5">hepce::utils::CreateSharedLogger</a> (const std::string &amp;logger_name)</td></tr>
+<tr class="memdesc:a869f1d355145d44139a83ca7405549e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a logger that writes to the shared file sink. Multiple loggers can be created with different names but write to the same file through the shared sink. Essential for parallel execution.  <br /></td></tr>
+<tr class="separator:a869f1d355145d44139a83ca7405549e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a978d2a7cc1f2b2085160465519b324a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a978d2a7cc1f2b2085160465519b324a8">hepce::utils::SetLogPattern</a> (LogPattern pattern)</td></tr>
+<tr class="memdesc:a978d2a7cc1f2b2085160465519b324a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the logging pattern template for all subsequent logger creations.  <br /></td></tr>
+<tr class="separator:a978d2a7cc1f2b2085160465519b324a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3340565083882229d0bbdeefc716198"><td class="memItemLeft" align="right" valign="top">LogPattern&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#af3340565083882229d0bbdeefc716198">hepce::utils::GetLogPattern</a> ()</td></tr>
+<tr class="memdesc:af3340565083882229d0bbdeefc716198"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the current logging pattern template.  <br /></td></tr>
+<tr class="separator:af3340565083882229d0bbdeefc716198"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ff02f97ce72e01d09b81616daa6c9eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a6ff02f97ce72e01d09b81616daa6c9eb">hepce::utils::SetFlushInterval</a> (int seconds)</td></tr>
+<tr class="memdesc:a6ff02f97ce72e01d09b81616daa6c9eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the global flush interval for automatic buffer flushing.  <br /></td></tr>
+<tr class="separator:a6ff02f97ce72e01d09b81616daa6c9eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa6bf497bfc89bb302f14b762b138a27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#afa6bf497bfc89bb302f14b762b138a27">hepce::utils::FlushAllLoggers</a> ()</td></tr>
+<tr class="memdesc:afa6bf497bfc89bb302f14b762b138a27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flushes all active loggers, ensuring buffered output is written. Useful when terminating parallel execution or before critical operations.  <br /></td></tr>
+<tr class="separator:afa6bf497bfc89bb302f14b762b138a27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05a3d19fc14f7b6a7b01f72f47be24e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a05a3d19fc14f7b6a7b01f72f47be24e2">hepce::utils::LogInfo</a> (const std::string &amp;logger_name, const std::string &amp;message)</td></tr>
+<tr class="memdesc:a05a3d19fc14f7b6a7b01f72f47be24e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log a message as information level. Thread-safe for concurrent calls from multiple threads.  <br /></td></tr>
 <tr class="separator:a05a3d19fc14f7b6a7b01f72f47be24e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90e1a3f19260ebddf42aaa39dde80857"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a90e1a3f19260ebddf42aaa39dde80857">hepce::utils::LogWarning</a> (const std::string &amp;logger_name, const std::string &amp;message)</td></tr>
+<tr class="memdesc:a90e1a3f19260ebddf42aaa39dde80857"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log a message as warning level. Thread-safe for concurrent calls from multiple threads.  <br /></td></tr>
 <tr class="separator:a90e1a3f19260ebddf42aaa39dde80857"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff98025fe741e312c0561642db5ac6a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#aff98025fe741e312c0561642db5ac6a0">hepce::utils::LogError</a> (const std::string &amp;logger_name, const std::string &amp;message)</td></tr>
+<tr class="memdesc:aff98025fe741e312c0561642db5ac6a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log a message as error level. Thread-safe for concurrent calls from multiple threads.  <br /></td></tr>
 <tr class="separator:aff98025fe741e312c0561642db5ac6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd89686fadbfff4dcaf747028efaef3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#abd89686fadbfff4dcaf747028efaef3e">hepce::utils::LogDebug</a> (const std::string &amp;logger_name, const std::string &amp;message)</td></tr>
+<tr class="memdesc:abd89686fadbfff4dcaf747028efaef3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log a message as debug level. Thread-safe for concurrent calls from multiple threads.  <br /></td></tr>
 <tr class="separator:abd89686fadbfff4dcaf747028efaef3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa6310bed6539818a3e8e8cad5282dac"><td class="memItemLeft" align="right" valign="top">CreationStatus&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#aaa6310bed6539818a3e8e8cad5282dac">hepce::utils::CheckLoggerExists</a> (const std::string &amp;logger_name)</td></tr>
+<tr class="memdesc:aaa6310bed6539818a3e8e8cad5282dac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if a logger with the given name exists.  <br /></td></tr>
+<tr class="separator:aaa6310bed6539818a3e8e8cad5282dac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1cb79cd64f522cec33d7cef19cdcefc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#ad1cb79cd64f522cec33d7cef19cdcefc">hepce::utils::GetLoggerInfo</a> (const std::string &amp;logger_name)</td></tr>
+<tr class="memdesc:ad1cb79cd64f522cec33d7cef19cdcefc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve detailed information about a logger.  <br /></td></tr>
+<tr class="separator:ad1cb79cd64f522cec33d7cef19cdcefc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbc5e51bd39ca7a304cca0278095b2ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#afbc5e51bd39ca7a304cca0278095b2ef">hepce::utils::SetLoggerLevel</a> (const std::string &amp;logger_name, int level)</td></tr>
+<tr class="memdesc:afbc5e51bd39ca7a304cca0278095b2ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the logging level for a specific logger.  <br /></td></tr>
+<tr class="separator:afbc5e51bd39ca7a304cca0278095b2ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40550243e7d45dd4557945907209ea52"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacehepce_1_1utils.html#a40550243e7d45dd4557945907209ea52">hepce::utils::ConstructMessage</a> (const std::exception &amp;error, std::string message)</td></tr>
+<tr class="memdesc:a40550243e7d45dd4557945907209ea52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility function to build a string message corresponding to the exception.  <br /></td></tr>
 <tr class="separator:a40550243e7d45dd4557945907209ea52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
@@ -213,7 +253,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_05c933d59f351fefb8caab5fd9b918a4.html">hepce</a></li><li class="navelem"><a class="el" href="dir_e28addd3979671bd06dbb695f19b84f3.html">utils</a></li><li class="navelem"><a class="el" href="logging_8hpp.html">logging.hpp</a></li>
-    <li class="footer">Generated on Thu Jun 11 2026 18:05:36 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
+    <li class="footer">Generated on Tue Jun 23 2026 19:23:14 for HEP-CE by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.6 </li>
   </ul>
 </div>
 </body>

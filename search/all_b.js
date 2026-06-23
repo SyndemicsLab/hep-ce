@@ -13,7 +13,8 @@ var searchData=
   ['logerror_10',['LogError',['../namespacehepce_1_1utils.html#aff98025fe741e312c0561642db5ac6a0',1,'hepce::utils']]],
   ['logging_2ehpp_11',['logging.hpp',['../logging_8hpp.html',1,'']]],
   ['loginfo_12',['LogInfo',['../namespacehepce_1_1utils.html#a05a3d19fc14f7b6a7b01f72f47be24e2',1,'hepce::utils']]],
-  ['logtype_13',['LogType',['../namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2',1,'hepce::utils']]],
-  ['logwarning_14',['LogWarning',['../namespacehepce_1_1utils.html#a90e1a3f19260ebddf42aaa39dde80857',1,'hepce::utils']]],
-  ['low_5fcd4_5fmonths_5fcount_15',['low_cd4_months_count',['../structhepce_1_1data_1_1HIVDetails.html#a707725998bb08ecc9ff2bec71b9a0449',1,'hepce::data::HIVDetails::low_cd4_months_count()'],['../structhepce_1_1data_1_1PersonSelect.html#a3c2ad276c723b537e4c897f0b78b2578',1,'hepce::data::PersonSelect::low_cd4_months_count()']]]
+  ['logpattern_13',['LogPattern',['../namespacehepce_1_1utils.html#a38e06624598f36a3ad6fde4f5bbe3900',1,'hepce::utils']]],
+  ['logtype_14',['LogType',['../namespacehepce_1_1utils.html#a633ed499ab3f9f1778139b6c0c4583d2',1,'hepce::utils']]],
+  ['logwarning_15',['LogWarning',['../namespacehepce_1_1utils.html#a90e1a3f19260ebddf42aaa39dde80857',1,'hepce::utils']]],
+  ['low_5fcd4_5fmonths_5fcount_16',['low_cd4_months_count',['../structhepce_1_1data_1_1HIVDetails.html#a707725998bb08ecc9ff2bec71b9a0449',1,'hepce::data::HIVDetails::low_cd4_months_count()'],['../structhepce_1_1data_1_1PersonSelect.html#a3c2ad276c723b537e4c897f0b78b2578',1,'hepce::data::PersonSelect::low_cd4_months_count()']]]
 ];

@@ -7,5 +7,6 @@ var searchData=
   ['fibrosisstate_4',['FibrosisState',['../namespacehepce_1_1data.html#a6f4e9751efaea52f6cb9751d329303fa',1,'hepce::data']]],
   ['findineventlist_5',['FindInEventList',['../namespacehepce_1_1utils.html#a2ce04e2a874f4684f5e45f763f017536',1,'hepce::utils']]],
   ['findinvector_6',['FindInVector',['../namespacehepce_1_1utils.html#acbe6fba3ebcedfa258bfe55b84523ba0',1,'hepce::utils']]],
-  ['formatting_2ehpp_7',['formatting.hpp',['../formatting_8hpp.html',1,'']]]
+  ['flushallloggers_7',['FlushAllLoggers',['../namespacehepce_1_1utils.html#afa6bf497bfc89bb302f14b762b138a27',1,'hepce::utils']]],
+  ['formatting_2ehpp_8',['formatting.hpp',['../formatting_8hpp.html',1,'']]]
 ];
