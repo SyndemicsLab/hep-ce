@@ -4,7 +4,7 @@
 // Created Date: 2025-05-09                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-20                                                  //
+// Last Modified: 2026-06-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -14,10 +14,14 @@
 #include <hepce/model/person.hpp>
 
 // STL Libraries
+#include <chrono>
 #include <filesystem>
+#include <stdexcept>
+#include <thread>
 
 // 3rd Party Dependencies
 #include <gtest/gtest.h>
+#include <spdlog/spdlog.h>
 
 // Library Includes
 #include <hepce/data/types.hpp>
@@ -43,7 +47,23 @@ protected:
     }
 
     static void TearDownTestSuite() {
-        std::filesystem::remove("PersonTest.log");
+        const std::string log_name = "PersonTest";
+        const std::string log_file = log_name + ".log";
+
+        // Release any open file handles held by the logger before deleting.
+        if (auto logger = spdlog::get(log_name); logger) {
+            logger->flush();
+            spdlog::drop(log_name);
+        }
+
+        std::error_code ec;
+        for (int attempt = 0; attempt < 10; ++attempt) {
+            std::filesystem::remove(log_file, ec);
+            if (!ec || !std::filesystem::exists(log_file)) {
+                return;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        }
     }
 
     // Creating the Person object and growing to set the Current Time to 3

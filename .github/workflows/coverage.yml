@@ -1,0 +1,53 @@
+---
+name: HEP-CE Code Coverage
+# Schema: https://json.schemastore.org/github-action.json
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    build:
+        name: Calculate Code Coverage
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Respond Repository
+              uses: actions/checkout@v6
+
+            - name: Install Boost
+              uses: MarkusJx/install-boost@v2
+              id: install-boost
+              with:
+                  boost_version: 1.84.0
+                  toolset: gcc
+
+            - name: Install gcovr
+              run: pip install gcovr
+
+            - name: Build and Test Project
+              run: >
+                  cmake --preset coverage && cmake --build --preset coverage && ctest --preset coverage
+              env:
+                  BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+
+            - name: Generate gcovr report HTML
+              run: |
+                  gcovr -r . --filter src --html coverage.html
+
+            - name: Generate gcovr report XML
+              run: |
+                  gcovr -r . --filter src --xml-pretty -o coverage.xml
+
+            - name: Upload Code Coverage Report
+              uses: actions/upload-artifact@v7
+              with:
+                  name: code-coverage-report
+                  path: coverage.*
+
+            - name: Generate Coverage Badge
+              uses: GaelGirodon/ci-badges-action@v1
+              with:
+                  gist-id: 10e746e28df5d23e91689b01493435a0
+                  token: ${{secrets.GIST_BADGE_TOKEN}}

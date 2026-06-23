@@ -4,12 +4,6 @@ set(export_dest_dir "${CMAKE_INSTALL_LIBDIR}/hepce")
 set(export_cmake_dir "${CMAKE_INSTALL_LIBDIR}/cmake/hepce")
 set(version_config_file "${CMAKE_CURRENT_BINARY_DIR}/hepceConfigVersion.cmake")
 
-set(project_config_in "${CMAKE_CURRENT_LIST_DIR}/hepceConfig.cmake.in")
-set(project_config_out "${CMAKE_CURRENT_BINARY_DIR}/hepceConfig.cmake")
-set(config_targets_file "hepceConfigTargets.cmake")
-set(pkgconfig_install_dir "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
-set(pkg_config "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
-
 # ------------------------------------------------------------------------------
 # Include files
 # ------------------------------------------------------------------------------

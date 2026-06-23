@@ -1,0 +1,39 @@
+name: Windows HEP-CE Unit Tests
+# Schema: https://json.schemastore.org/github-action.json
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    unit-testing:
+        name: Testing ${{ matrix.os }} ${{matrix.build-variant}} build
+        runs-on: ${{ matrix.os }}
+        defaults:
+            run:
+                shell: pwsh
+
+        strategy:
+            matrix:
+                os: [windows-latest] # macos-latest
+                build-variant: [shared, static]
+        steps:
+            - name: Checkout HEP-CE
+              uses: actions/checkout@v6
+
+            - name: Install Boost
+              uses: MarkusJx/install-boost@v2
+              id: install-boost
+              with:
+                  boost_version: 1.84.0
+                  toolset: mingw
+
+            - name: Run Testing Workflow
+              env:
+                  BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+              run: |
+                  $env:Path = "C:\mingw64\bin;$env:Path"
+                  cmake --workflow --preset test-debug-${{ matrix.build-variant }}
+              timeout-minutes: 10

@@ -1,4 +1,5 @@
 *.log
+Doxyfile
 
 CMakeLists.txt.user
 CMakeCache.txt
