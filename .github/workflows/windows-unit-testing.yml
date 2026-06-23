@@ -1,4 +1,4 @@
-name: HEP-CE Unit Tests
+name: Windows HEP-CE Unit Tests
 # Schema: https://json.schemastore.org/github-action.json
 
 on:
@@ -13,17 +13,12 @@ jobs:
         runs-on: ${{ matrix.os }}
         defaults:
             run:
-                shell: bash
+                shell: pwsh
 
         strategy:
             matrix:
-                os: [ubuntu-latest, windows-latest] # macos-latest
+                os: [windows-latest] # macos-latest
                 build-variant: [shared, static]
-                include:
-                    - os: ubuntu-latest
-                      toolset: gcc
-                    - os: windows-latest
-                      toolset: mingw
         steps:
             - name: Checkout HEP-CE
               uses: actions/checkout@v6
@@ -33,17 +28,16 @@ jobs:
               id: install-boost
               with:
                   boost_version: 1.84.0
-                  toolset: ${{ matrix.toolset}}
-
-            - name: Force mingw to be in the PATH
-              if: matrix.os == 'windows-latest'
-              run: echo "C:\mingw64\bin" >> $GITHUB_PATH
+                  toolset: mingw
 
             - name: Run Testing Workflow
               continue-on-error: true
-              run: cmake --workflow --preset debug-${{matrix.build-variant}}
+              shell: pwsh
               env:
                   BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+              run: |
+                  $env:Path = "C:\mingw64\bin;$env:Path"
+                  cmake --workflow --preset debug-${{ matrix.build-variant }}
               timeout-minutes: 10
 
             - name: Print PATH as seen by bash
