@@ -1,0 +1,50 @@
+%%{init: {
+	"theme": "base",
+	"themeVariables": {
+		"background": "#000000",
+		"primaryColor": "#4299e1",
+		"primaryTextColor": "#ffffff",
+		"primaryBorderColor": "#1a365d",
+		"lineColor": "#4299e1",
+		"secondaryColor": "#4299e1",
+		"tertiaryColor": "#4299e1",
+		"edgeLabelBackground": "#000000",
+		"edgeLabelColor": "#4299e1"
+	}
+}}%%
+flowchart TD
+%% linkStyle default stroke:#4299e1,stroke-width:3px
+	start([Pregnancy::Execute]) ==> alive{"Is person alive, female, and older than 180 months?"}
+	alive == "No" ==> return([Return])
+	alive == "Yes" ==> old_age{"Is person older than 540 months and not pregnant/postpartum?"}
+	old_age == "Yes" ==> return_old_age([Return])
+	old_age == "No" ==> restricted_window{"Is person in a restricted postpartum (e.g. < 3 months since birth)?"}
+	restricted_window == "Yes" ==> return_restricted([Return])
+	restricted_window == "No" ==> pregnant{"Is person pregnant?"}
+	pregnant == "Yes" ==> gestation{"At least 9 months since conception?"}
+	gestation == "No" ==> return_gestation([Return])
+	gestation == "Yes" ==> stillbirth{"Is pregnancy a stillbirth?"}
+
+	stillbirth == "Yes" ==> stillbirth_action["Stillbirth: increment stillbirths; set restricted postpartum"]
+	stillbirth_action ==> return_stillbirth([Return])
+	stillbirth == "No" ==> delivery["Sample number of births: one or two"]
+	delivery ==> child_loop["For each child"]
+	child_loop ==> chronic_hcv{"Mother has chronic HCV?"}
+	chronic_hcv == "No" ==> make_child["Make child: no HCV, not tested"]
+	chronic_hcv == "Yes" ==> exposure["Add infant HCV exposure"]
+	exposure ==> tested{"Infant is tested?"}
+	tested == "Yes" ==> infection["Sample vertical HCV infection; make tested child"]
+	tested == "No" ==> no_test_infection["Sample vertical HCV infection; make untested child"]
+	make_child ==> birth["Birth: record child; state becomes restricted postpartum"]
+	infection ==> birth
+	no_test_infection ==> birth
+	birth ==> another_child{"More children?"}
+	another_child == "Yes" ==> child_loop
+	another_child == "No" ==> return_birth([Return])
+
+	pregnant == "No" ==> age_limit{"Age > 540 months?"}
+	age_limit == "Yes" ==> return_age([Return])
+	age_limit == "No" ==>  conception{"Is person impregnated?"}
+	conception == "No" ==> return_no_conception([Return])
+	conception == "Yes" ==> impregnate["Impregnate: increment pregnancy count; set pregnant"]
+	impregnate ==> return_conception([Return])
