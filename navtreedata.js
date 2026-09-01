@@ -53,20 +53,21 @@ var NAVTREE =
       [ "Voluntary Relinking", "md_docs_src_events.html#autotoc_md28", null ],
       [ "Fibrosis Staging", "md_docs_src_events.html#autotoc_md29", null ],
       [ "HCV Treatment", "md_docs_src_events.html#autotoc_md30", null ],
-      [ "Overdose", "md_docs_src_events.html#autotoc_md31", null ],
-      [ "Death", "md_docs_src_events.html#autotoc_md32", null ]
+      [ "Pregnancy", "md_docs_src_events.html#autotoc_md31", null ],
+      [ "Overdose", "md_docs_src_events.html#autotoc_md32", null ],
+      [ "Death", "md_docs_src_events.html#autotoc_md33", null ]
     ] ],
     [ "Running the Model", "md_docs_src_run.html", [
-      [ "Using the Executable", "md_docs_src_run.html#autotoc_md34", null ],
-      [ "Arguments", "md_docs_src_run.html#autotoc_md35", null ]
+      [ "Using the Executable", "md_docs_src_run.html#autotoc_md35", null ],
+      [ "Arguments", "md_docs_src_run.html#autotoc_md36", null ]
     ] ],
     [ "Limitations", "md_docs_src_limitations.html", [
-      [ "Library", "md_docs_src_limitations.html#autotoc_md37", null ],
-      [ "Data", "md_docs_src_limitations.html#autotoc_md38", null ]
+      [ "Library", "md_docs_src_limitations.html#autotoc_md38", null ],
+      [ "Data", "md_docs_src_limitations.html#autotoc_md39", null ]
     ] ],
     [ "FAQs", "md_docs_src_faq.html", null ],
     [ "Differences from HEP-CEv1", "md_docs_src_differences.html", [
-      [ "HCV Screening", "md_docs_src_differences.html#autotoc_md41", null ]
+      [ "HCV Screening", "md_docs_src_differences.html#autotoc_md42", null ]
     ] ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -99,9 +100,9 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "event_8hpp.html",
-"namespacehepce_1_1data.html#ad76be03efa1c5c277815884bf7096a0f",
-"structhepce_1_1data_1_1PersonSelect.html#a5d9c88f6f4e100115e8a2b026055bc21",
-"types_8hpp.html#a6f4e9751efaea52f6cb9751d329303faa3504cd76b393e254fceed30ae1839bee"
+"namespacehepce_1_1data.html#ad715b3b798cd1fe3f2e96901bea7dbac",
+"structhepce_1_1data_1_1PersonSelect.html#a55fb8635e87c4266895e19aa6ac6d30b",
+"types_8hpp.html#a6f4e9751efaea52f6cb9751d329303fa"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
