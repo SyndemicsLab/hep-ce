@@ -97,7 +97,7 @@ CREATE TABLE "population" (
     FOREIGN KEY("death_reasons") REFERENCES "death_reasons"("id"),
     FOREIGN KEY("drug_behavior") REFERENCES "drug_behaviors"("id"),
     FOREIGN KEY("hcv") REFERENCES "hcv_states"("id"),
-    FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_diagnosis_states"("id"),
+    FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_states"("id"),
     FOREIGN KEY("moud_state") REFERENCES "moud"("id"),
     FOREIGN KEY("pregnancy_state") REFERENCES "pregnancy_states"("id"),
     FOREIGN KEY("measured_fibrosis_state") REFERENCES "fibrosis_diagnosis_states"("id"),
@@ -200,7 +200,7 @@ CREATE TABLE "fibrosis" (
 	"fib4"	REAL NOT NULL,
 	PRIMARY KEY("fibrosis_state","diagnosed_fibrosis"),
 	FOREIGN KEY("diagnosed_fibrosis") REFERENCES "fibrosis_diagnosis_states"("id"),
-	FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_real_states"("id")
+	FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_states"("id")
 );
 DROP TABLE IF EXISTS "fibrosis_diagnosis_states";
 CREATE TABLE "fibrosis_diagnosis_states" (
@@ -208,8 +208,8 @@ CREATE TABLE "fibrosis_diagnosis_states" (
 	"state"	TEXT NOT NULL,
 	PRIMARY KEY("id")
 );
-DROP TABLE IF EXISTS "fibrosis_real_states";
-CREATE TABLE "fibrosis_real_states" (
+DROP TABLE IF EXISTS "fibrosis_states";
+CREATE TABLE "fibrosis_states" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"state"	TEXT NOT NULL,
 	PRIMARY KEY("id")
@@ -221,7 +221,7 @@ CREATE TABLE "hcv_impacts" (
 	"cost"	REAL NOT NULL DEFAULT 0.0,
 	"utility"	REAL NOT NULL,
 	PRIMARY KEY("hcv_status","fibrosis_state"),
-	FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_real_states"("id"),
+	FOREIGN KEY("fibrosis_state") REFERENCES "fibrosis_states"("id"),
 	FOREIGN KEY("hcv_status") REFERENCES "bool_lookup"("id")
 );
 DROP TABLE IF EXISTS "hcv_states";
@@ -252,7 +252,8 @@ CREATE TABLE "init_cohort" (
 	"fibrosis_state"	INT,
 	"identified_as_hcv_positive"	INT,
 	"link_state"	INT,
-	"hcv_status"	INT
+	"hcv_status"	INT,
+    "pregnancy_state" INT
 );
 DROP TABLE IF EXISTS "link_states";
 CREATE TABLE "link_states" (
@@ -288,14 +289,18 @@ CREATE TABLE "pregnancy_states" (
 );
 DROP TABLE IF EXISTS "screening_and_linkage";
 CREATE TABLE "screening_and_linkage" (
-	"age_years"	INT,
-	"gender"	INT,
-	"drug_behavior"	INT,
-	"pregnancy"	INT,
-	"background_screen_probability"	REAL,
-	"background_link_probability"	REAL,
-	"intervention_screen_probability"	REAL,
-	"intervention_link_probability"	REAL
+	"age_years"	INT NOT NULL,
+	"gender"	INT NOT NULL,
+	"drug_behavior"	INT NOT NULL,
+	"pregnancy"	INT NOT NULL,
+	"background_screen_probability"	REAL NOT NULL,
+	"background_link_probability"	REAL NOT NULL,
+	"intervention_screen_probability"	REAL NOT NULL,
+	"intervention_link_probability"	REAL NOT NULL,
+    PRIMARY KEY("age_years", "gender", "drug_behavior", "pregnancy")
+    FOREIGN KEY("drug_behavior") REFERENCES "drug_behaviors"("id"),
+	FOREIGN KEY("gender") REFERENCES "sex"("id"),
+	FOREIGN KEY("pregnancy") REFERENCES "pregnancy_states"("id")
 );
 DROP TABLE IF EXISTS "sex";
 CREATE TABLE "sex" (
@@ -321,16 +326,15 @@ CREATE TABLE "treatment_initiations" (
 );
 DROP TABLE IF EXISTS "treatments";
 CREATE TABLE "treatments" (
-	"salvage"	INT,
-	"genotype_three"	INT,
-	"cirrhotic"	INT,
-	"course"	NUMERIC,
-	"duration"	INT,
-	"cost"	REAL,
-	"svr_prob_if_completed"	REAL,
-	"toxicity_prob_if_withdrawal"	REAL,
-	"withdrawal"	REAL,
-	"toxicity_prob"	REAL
+	"salvage" INT NOT NULL,
+	"genotype_three" INT NOT NULL,
+	"cirrhotic"	INT NOT NULL,
+	"course"	NUMERIC NOT NULL,
+	"duration"	INT NOT NULL,
+	"cost"	REAL NOT NULL,
+	"svr_prob_if_completed"	REAL NOT NULL,
+	"toxicity_prob_if_withdrawal"	REAL NOT NULL,
+	"withdrawal"	REAL NOT NULL
 );
 CREATE TABLE IF NOT EXISTS "moud_transitions" (
   "age_years" INTEGER NOT NULL,

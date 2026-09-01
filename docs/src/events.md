@@ -117,6 +117,15 @@ HCV treatment focuses on actually treating patients for HCV. As such, it deals w
     src="hcv-treatment.png"
 />
 
+## Pregnancy
+
+Pregnancy is a new state to the original HEP-CE model. It accounts for confounding pregnancy details including pregnancy, post-partum, and infant HCV diagnoses.
+
+<img
+    class="flowchart"
+    src="pregnancy.png"
+/>
+
 ## Overdose
 
 Overdose focuses on all type overdoses for patients. We delegate the fatality functionality to the Death event, but instead focus exclusively on the impacts of all overdoses in this event. The primary function of this event loads data from the `overdose` table and then samples a decision based on the provided probability. If overdose occurs, then cost and utility is updated, if not nothing occurs.
