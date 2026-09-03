@@ -4,7 +4,7 @@
 // Created Date: 2025-04-21                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-20                                                  //
+// Last Modified: 2026-09-03                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -252,6 +252,7 @@ void PersonImpl::Birth(const data::Child &child) {
     }
     _pregnancy_details.children.push_back(child);
     _pregnancy_details.num_infants++;
+    _pregnancy_details.time_of_pregnancy_change = _current_time;
     _pregnancy_details.pregnancy_state =
         data::PregnancyState::kRestrictedPostpartum;
 }
