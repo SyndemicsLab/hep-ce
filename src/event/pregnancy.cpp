@@ -41,10 +41,9 @@ void Pregnancy::Execute(model::Person &person, const model::Sampler &sampler) {
 
     if (person.GetPregnancyDetails().pregnancy_state ==
         data::PregnancyState::kPregnant) {
-        int time = person.GetCurrentTimestep();
-        int temp = GetTimeSince(
-            person, person.GetPregnancyDetails().time_of_pregnancy_change);
-        if (temp >= 9) {
+        if (GetTimeSince(
+                person,
+                person.GetPregnancyDetails().time_of_pregnancy_change) >= 9) {
             AttemptHaveChild(person, sampler);
         }
         return;
@@ -98,7 +97,6 @@ void Pregnancy::LoadData() {
 void Pregnancy::ProgressPostpartum(model::Person &person) const {
     auto state = person.GetPregnancyDetails().pregnancy_state;
     auto time = person.GetPregnancyDetails().time_of_pregnancy_change;
-    int c_time = person.GetCurrentTimestep();
     switch (state) {
     case data::PregnancyState::kRestrictedPostpartum:
         if (GetTimeSince(person, time) >= 4) {
