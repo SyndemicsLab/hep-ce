@@ -190,7 +190,7 @@ TEST_F(PregnancyTest, RestrictedPostpartumProgressesToYearOneAfterWindow) {
     pregnancy.time_of_pregnancy_change = 0;
     ON_CALL(mock_person, GetPregnancyDetails())
         .WillByDefault(Return(pregnancy));
-    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(3));
+    ON_CALL(mock_person, GetCurrentTimestep()).WillByDefault(Return(4));
 
     data::Inputs inputs(test_conf, test_db);
     auto event =

@@ -4,8 +4,8 @@
 // Created Date: 2025-04-23                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-06-11                                                  //
-// Modified By: Dimitri Baptiste                                              //
+// Last Modified: 2026-09-03                                                  //
+// Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +99,9 @@ void Pregnancy::ProgressPostpartum(model::Person &person) const {
     auto time = person.GetPregnancyDetails().time_of_pregnancy_change;
     switch (state) {
     case data::PregnancyState::kRestrictedPostpartum:
-        person.SetPregnancyState(data::PregnancyState::kYearOnePostpartum);
+        if (GetTimeSince(person, time) >= 4) {
+            person.SetPregnancyState(data::PregnancyState::kYearOnePostpartum);
+        }
         break;
     case data::PregnancyState::kYearOnePostpartum:
         if (GetTimeSince(person, time) >= 12) {
