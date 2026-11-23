@@ -24,9 +24,8 @@ jobs:
                   PROJECT="${{ github.repository }}"
                   PROJECT_NAME="${PROJECT#*/}"
                   PROJECT_ROOT="/home/runner/work/${PROJECT_NAME}/${PROJECT_NAME}"
-                  ls "${PROJECT_ROOT}"
                   # Doxygen
-                  DOXYGEN_VERSION=$(awk '/^PROJECT_NUMBER/{print $NF}' "${PROJECT_ROOT}/Doxygen.in")
+                  DOXYGEN_VERSION=$(awk '/^PROJECT_NUMBER/{print $NF}' "${PROJECT_ROOT}/Doxyfile.in")
                   # C++ header
                   CPP_VERSION=$(awk '/HEPCE_VER[^S]/{print $NF}' ${PROJECT_ROOT}/include/hepce/version.hpp | paste -ds.)
                   echo "${DOXYGEN_VERSION}"
