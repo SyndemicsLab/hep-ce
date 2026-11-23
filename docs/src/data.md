@@ -123,7 +123,7 @@ are named as follows:
 
 ## Outputs
 
-TODO
+@todo Document the generated output formats.
 
 <div class="section_buttons">
 

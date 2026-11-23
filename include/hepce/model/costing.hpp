@@ -56,8 +56,9 @@ public:
     GetCosts() const = 0;
 
     /// @brief Add a cost to the tracker
-    /// @param cost The \c Cost item to be added
-    /// @param timestep The timestep during which this cost is added
+    /// @param base_cost The undiscounted cost to be added
+    /// @param discount_cost The discounted cost to be added
+    /// @param category The category to which the cost belongs
     virtual void AddCost(double base_cost, double discount_cost,
                          CostCategory category) = 0;
 

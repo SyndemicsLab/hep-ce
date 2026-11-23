@@ -16,6 +16,7 @@
 
 namespace hepce {
 namespace model {
+/// Categories used to group utility values.
 enum class UtilityCategory : int {
     kBehavior = 0,
     kLiver = 1,
@@ -26,6 +27,7 @@ enum class UtilityCategory : int {
     kOverdose = 6,
     kCount = 7
 };
+/// Writes a utility category to a stream.
 std::ostream &operator<<(std::ostream &os, const UtilityCategory &uc);
 } // namespace model
 } // namespace hepce

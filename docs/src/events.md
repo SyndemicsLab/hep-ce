@@ -98,7 +98,7 @@ HCV linking focuses on the connecting of patients to care for the hepatitis-C vi
 
 ## Voluntary Relinking
 
-Voluntary relinking attempts to model the idea that a patient can relink after being treated. This means they previously have been screened, linked, and started treatment but for whatever reason they fell out of treatment without completeing the course. As such, they have all the resources available to them for a certain time and can voluntarily relink to the healthcare system without being re-screened and linked. This is a carry over event from v1 and likely not meant to be included in most modeling efforts as delayed linking is achieved through the HCV Linking event.
+Voluntary relinking attempts to model the idea that a patient can relink after being treated. This means they previously have been screened, linked, and started treatment but for whatever reason they fell out of treatment without completing the course. As such, they have all the resources available to them for a certain time and can voluntarily relink to the healthcare system without being re-screened and linked. This is a carry-over event from v1 and likely not meant to be included in most modeling efforts as delayed linking is achieved through the HCV Linking event.
 
 ## Fibrosis Staging
 
@@ -111,7 +111,7 @@ Fibrosis staging attempts to organize and assign a measurement to the progressio
 
 ## HCV Treatment
 
-HCV treatment focuses on actually treating patients for HCV. As such, it deals with the various costs and complications that come with treatment, and handles a salvage follow up strategy for those that do not achieve clearance of their condition (SVR). As mentioned in the [Clearance](#clearance) event, we know the SVRs are a slight overcount due to the fact that people cannot accute clear while in treatment.
+HCV treatment focuses on actually treating patients for HCV. As such, it deals with the various costs and complications that come with treatment, and handles a salvage follow-up strategy for those that do not achieve clearance of their condition (SVR). As mentioned in the [Clearance](#clearance) event, we know the SVRs are a slight overcount due to the fact that people cannot acutely clear while in treatment.
 
 <img
     class="flowchart"

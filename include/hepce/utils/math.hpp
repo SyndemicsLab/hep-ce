@@ -19,7 +19,7 @@
 namespace hepce {
 namespace utils {
 /// @brief Convert Probability to Rate
-/// @param prob Probability to Convert
+/// @param probability Probability to Convert
 /// @return Converted Rate
 inline double ProbabilityToRate(double probability, int time = 1) {
     if (probability < 0 || probability >= 1) {
@@ -42,7 +42,6 @@ inline double RateToProbability(double rate, int time = 1) {
 /// @param value Value that the Discount will be applied to
 /// @param discount_rate The Discount Rate
 /// @param timestep The Timestep to Discount During
-/// @return
 inline double Discount(double value, double discount_rate, double timestep,
                        bool annual = false) {
     if (discount_rate < 0 || timestep < 0) {
@@ -65,7 +64,8 @@ inline int GetCurrentTimeInMilliseconds() {
 }
 
 /// @brief Sigmoidal Decay Function
-/// @param timestep The timestep to adjust for
+/// @param value The value to adjust
+/// @param time The timestep to adjust for
 /// @param cutoff The timestep at which decay is steepest
 /// @param scaling_coeff Determines the steepness of the decay
 /// @return Decayed value

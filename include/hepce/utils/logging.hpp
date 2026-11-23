@@ -152,8 +152,6 @@ std::string GetLoggerInfo(const std::string &logger_name);
 /// @param logger_name Logger identifier to configure.
 /// @param level Log level: 0=trace, 1=debug, 2=info, 3=warn, 4=error,
 /// 5=critical.
-/// @return CreationStatus::kSuccess if level was set, kNotCreated if logger
-/// doesn't exist.
 void SetLoggerLevel(const std::string &logger_name, int level);
 
 /// @brief Utility function to build a string message corresponding to the

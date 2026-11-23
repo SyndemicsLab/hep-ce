@@ -176,7 +176,14 @@ WARN_LOGFILE           =
 
 # Inclusion
 
-INPUT                  = docs/src \
+INPUT                  = docs/src/index.md \
+                         docs/src/installation.md \
+                         docs/src/data.md \
+                         docs/src/events.md \
+                         docs/src/run.md \
+                         docs/src/limitations.md \
+                         docs/src/faq.md \
+                         docs/src/differences.md \
                          include
 INPUT_ENCODING         = UTF-8
 INPUT_FILE_ENCODING    =
@@ -252,6 +259,7 @@ HTML_DYNAMIC_SECTIONS  = NO
 HTML_INDEX_NUM_ENTRIES = 100
 DISABLE_INDEX          = NO
 GENERATE_TREEVIEW      = YES
+PAGE_OUTLINE_PANEL     = NO
 FULL_SIDEBAR           = NO
 ENUM_VALUES_PER_LINE   = 4
 TREEVIEW_WIDTH         = 250

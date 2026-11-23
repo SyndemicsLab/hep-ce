@@ -19,6 +19,13 @@
 
 namespace hepce {
 namespace data {
+/// Builds the CSV header used for population output.
+/// @param pregnancy Include pregnancy columns.
+/// @param hcc Include HCC columns.
+/// @param overdose Include overdose columns.
+/// @param hiv Include HIV columns.
+/// @param moud Include MOUD columns.
+/// @return A comma-separated population header.
 inline static const std::string
 POPULATION_HEADERS(bool pregnancy = false, bool hcc = false,
                    bool overdose = false, bool hiv = false, bool moud = false) {
@@ -111,8 +118,11 @@ enum class InfectionType : int {
     kHiv = 1,  ///< Human Immunodeficiency Virus
     kCount = 2 ///< Count of `InfectionType` Enum
 };
+/// Writes an infection type to a stream.
 std::ostream &operator<<(std::ostream &os, const InfectionType &inst);
+/// Parses an infection type from a string.
 InfectionType &operator<<(InfectionType &inst, const std::string &str);
+/// Advances an infection type to its next enumerator.
 InfectionType &operator++(InfectionType &inst);
 
 /// @brief HEP-C Infection States
@@ -122,7 +132,9 @@ enum class HCV : int {
     kChronic = 2, ///< Long-term HCV infection
     kCount = 3    ///< Count of `HCV` Enum
 };
+/// Writes an HCV state to a stream.
 std::ostream &operator<<(std::ostream &os, const HCV &inst);
+/// Parses an HCV state from a string.
 HCV &operator<<(HCV &inst, const std::string &str);
 
 /// @brief HIV Infection States
@@ -134,7 +146,9 @@ enum class HIV : int {
     kLoSu = 4, ///< Low CD4 count, suppressed
     kCount = 5 ///< Count of `HIV` Enum
 };
+/// Writes an HIV state to a stream.
 std::ostream &operator<<(std::ostream &os, const HIV &inst);
+/// Parses an HIV state from a string.
 HIV &operator<<(HIV &inst, const std::string &str);
 
 /// @brief Reason a Person Dies
@@ -148,7 +162,9 @@ enum class DeathReason : int {
     kHiv = 5,        ///< Died of HIV Infection Effects
     kCount = 6       ///< Count of `DeathReason` Enum
 };
+/// Writes a death reason to a stream.
 std::ostream &operator<<(std::ostream &os, const DeathReason &inst);
+/// Parses a death reason from a string.
 DeathReason &operator<<(DeathReason &inst, const std::string &str);
 
 /// @brief Opioid Usage Behavior Classification
@@ -161,7 +177,9 @@ enum class Behavior {
     kInjection = 4,          ///< Injection opioid use
     kCount = 5               ///< Count of `Behavior` Enum
 };
+/// Writes a behavior classification to a stream.
 std::ostream &operator<<(std::ostream &os, const Behavior &inst);
+/// Parses a behavior classification from a string.
 Behavior &operator<<(Behavior &inst, const std::string &str);
 
 /// @brief Screening type that led to linkage
@@ -171,7 +189,9 @@ enum class ScreeningType {
     kIntervention = 1, ///< Intervention Fibrosis Screening
     kCount = 2         ///< Count of `ScreeningType` Enum
 };
+/// Writes a screening type to a stream.
 std::ostream &operator<<(std::ostream &os, const ScreeningType &inst);
+/// Parses a screening type from a string.
 ScreeningType &operator<<(ScreeningType &inst, const std::string &str);
 
 /// @brief Screening type that led to linkage
@@ -181,7 +201,9 @@ enum class ScreeningTest : int {
     kRna = 1,  ///< RNA Screening Test
     kCount = 2 ///< Count of `ScreeningTest` Enum
 };
+/// Writes a screening test to a stream.
 std::ostream &operator<<(std::ostream &os, const ScreeningTest &inst);
+/// Parses a screening test from a string.
 ScreeningTest &operator<<(ScreeningTest &inst, const std::string &str);
 
 /// @brief Status of Linkage
@@ -191,7 +213,9 @@ enum class LinkageState {
     kUnlinked = 2, ///< Person was previously linked to care, but not currently
     kCount = 3     ///< Count of `LinkageState` Enum
 };
+/// Writes a linkage state to a stream.
 std::ostream &operator<<(std::ostream &os, const LinkageState &inst);
+/// Parses a linkage state from a string.
 LinkageState &operator<<(LinkageState &inst, const std::string &str);
 
 /// @brief Classification of Liver Fibrosis Stage
@@ -210,9 +234,13 @@ enum class FibrosisState {
     kDecomp = 5, ///< Symptomatic cirrhosis; over complications
     kCount = 6   ///< Count of `FibrosisState` Enum
 };
+/// Writes a fibrosis state to a stream.
 std::ostream &operator<<(std::ostream &os, const FibrosisState &inst);
+/// Parses a fibrosis state from a string.
 FibrosisState &operator<<(FibrosisState &inst, const std::string &str);
+/// Advances a fibrosis state to its next enumerator.
 FibrosisState &operator++(FibrosisState &inst);
+/// Returns the previous fibrosis state before incrementing it.
 FibrosisState operator++(FibrosisState &inst, int);
 
 /// @brief Classification of hepatocellular carcinoma (HCC) state
@@ -227,7 +255,9 @@ enum class HCCState {
     kLate = 2,  ///< Late-stage hepatocellular carcinoma
     kCount = 3  ///< Count of `HCCState` Enum
 };
+/// Writes an HCC state to a stream.
 std::ostream &operator<<(std::ostream &os, const HCCState &inst);
+/// Parses an HCC state from a string.
 HCCState &operator<<(HCCState &inst, const std::string &str);
 
 /// @brief Clinically staged liver fibrosis stage
@@ -239,10 +269,14 @@ enum class MeasuredFibrosisState {
     kNone = 4,   ///< Person has never been staged before
     kCount = 5   ///< Count of `MeasuredFibrosisState` Enum
 };
+/// Writes a measured fibrosis state to a stream.
 std::ostream &operator<<(std::ostream &os, const MeasuredFibrosisState &inst);
+/// Parses a measured fibrosis state from a string.
 MeasuredFibrosisState &operator<<(MeasuredFibrosisState &inst,
                                   const std::string &str);
+/// Advances a measured fibrosis state to its next enumerator.
 MeasuredFibrosisState &operator++(MeasuredFibrosisState &inst);
+/// Returns the previous measured fibrosis state before incrementing it.
 MeasuredFibrosisState operator++(MeasuredFibrosisState &inst, int);
 
 /// @brief Opioid Use Disorder Treatment States (MOUDs)
@@ -252,7 +286,9 @@ enum class MOUD {
     kPost = 2,    ///< Recently dropped out of MOUD
     kCount = 3    ///< Count of `MOUD` Enum
 };
+/// Writes a MOUD state to a stream.
 std::ostream &operator<<(std::ostream &os, const MOUD &inst);
+/// Parses a MOUD state from a string.
 MOUD &operator<<(MOUD &inst, const std::string &str);
 
 /// @brief Biological Sex
@@ -261,7 +297,9 @@ enum class Sex {
     kFemale = 1, ///< Assigned female at birth
     kCount = 2   ///< Count of `Sex` Enum
 };
+/// Writes a biological sex to a stream.
 std::ostream &operator<<(std::ostream &os, const Sex &inst);
+/// Parses a biological sex from a string.
 Sex &operator<<(Sex &inst, const std::string &str);
 
 /// @brief Pregnancy Classification
@@ -275,7 +313,9 @@ enum class PregnancyState {
     kYearTwoPostpartum = 4,    ///< Year 2 Postpartum
     kCount = 5                 ///< Count of `PregnancyState` Enum
 };
+/// Writes a pregnancy state to a stream.
 std::ostream &operator<<(std::ostream &os, const PregnancyState &inst);
+/// Parses a pregnancy state from a string.
 PregnancyState &operator<<(PregnancyState &inst, const std::string &str);
 
 enum class UtilityType : int {
@@ -299,6 +339,7 @@ struct HCVDetails {
     int times_acute_cleared = 0;
     int svrs = 0;
 };
+/// Writes HCV details to a stream.
 std::ostream &operator<<(std::ostream &os, const HCVDetails &inst);
 
 struct HIVDetails {
@@ -306,12 +347,14 @@ struct HIVDetails {
     int time_changed = -1;
     int low_cd4_months_count = 0;
 };
+/// Writes HIV details to a stream.
 std::ostream &operator<<(std::ostream &os, const HIVDetails &inst);
 
 struct HCCDetails {
     HCCState hcc_state = HCCState::kNone;
     bool hcc_diagnosed = false;
 };
+/// Writes HCC details to a stream.
 std::ostream &operator<<(std::ostream &os, const HCCDetails &inst);
 
 /// @brief Attributes describing drug use behavior
@@ -319,6 +362,7 @@ struct BehaviorDetails {
     Behavior behavior = Behavior::kNever;
     int time_last_active = -1;
 };
+/// Writes behavior details to a stream.
 std::ostream &operator<<(std::ostream &os, BehaviorDetails const &behav);
 
 /// @brief Attributes describing Linkage
@@ -327,6 +371,7 @@ struct LinkageDetails {
     int time_link_change = -1;
     int link_count = 0;
 };
+/// Writes linkage details to a stream.
 std::ostream &operator<<(std::ostream &os, LinkageDetails const &ldet);
 
 /// @brief Attributes describing MOUD status
@@ -336,6 +381,7 @@ struct MOUDDetails {
     int current_state_concurrent_months = 0;
     int total_moud_months = 0;
 };
+/// Writes MOUD details to a stream.
 std::ostream &operator<<(std::ostream &os, MOUDDetails const &mdet);
 
 /// @brief Attributes describing pregnancy
@@ -343,6 +389,7 @@ struct Child {
     HCV hcv = HCV::kNone;
     bool tested = false;
 };
+/// Writes child details to a stream.
 std::ostream &operator<<(std::ostream &os, Child const &inst);
 struct PregnancyDetails {
     PregnancyState pregnancy_state = PregnancyState::kNa;
@@ -355,6 +402,7 @@ struct PregnancyDetails {
     int num_hcv_tests = 0;
     std::vector<Child> children = {};
 };
+/// Writes pregnancy details to a stream.
 std::ostream &operator<<(std::ostream &os, PregnancyDetails const &pdet);
 
 /// @brief Person attributes describing clinically assessed liver stage
@@ -364,6 +412,7 @@ struct StagingDetails {
     bool had_second_test = false;
     int time_of_last_staging = -1;
 };
+/// Writes staging details to a stream.
 std::ostream &operator<<(std::ostream &os, StagingDetails const &sdet);
 
 /// @brief Attributes describing screening status
@@ -380,6 +429,7 @@ struct ScreeningDetails {
     int num_false_negatives = 0;
     int identifications_cleared = 0;
 };
+/// Writes screening details to a stream.
 std::ostream &operator<<(std::ostream &os, ScreeningDetails const &sdet);
 
 /// @brief Attributes describing treatment state
@@ -393,6 +443,7 @@ struct TreatmentDetails {
     int num_salvages = 0;
     bool in_salvage_treatment = false;
 };
+/// Writes treatment details to a stream.
 std::ostream &operator<<(std::ostream &os, TreatmentDetails const &tdet);
 
 /// @brief Attributes describing a person's quality of life across the
@@ -403,7 +454,9 @@ struct LifetimeUtility {
     double discount_min_util = 0.0;
     double discount_mult_util = 0.0;
 };
+/// Writes lifetime utility details to a stream.
 std::ostream &operator<<(std::ostream &os, LifetimeUtility const &lu);
+/// Compares two lifetime utility values.
 bool operator==(LifetimeUtility const &lhs, LifetimeUtility const &rhs);
 
 /// @brief Attributes for an associated cost and utility
@@ -411,7 +464,9 @@ struct CostUtil {
     double cost = 0.0;
     double util = 0.0;
 };
+/// Writes cost and utility details to a stream.
 std::ostream &operator<<(std::ostream &os, CostUtil const &lu);
+/// Compares two cost and utility values.
 bool operator==(CostUtil const &lhs, CostUtil const &rhs);
 
 struct PersonSelect {

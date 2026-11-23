@@ -18,17 +18,27 @@
 
 namespace hepce {
 namespace model {
+/// Base interface for random decisions used by simulation events.
 class Sampler {
 public:
+    /// Destroys the sampler.
     virtual ~Sampler() = default;
 
     Sampler(const Sampler &) = delete;
     Sampler &operator=(const Sampler &) = delete;
+    /// Creates an independent copy of the sampler.
     virtual std::unique_ptr<Sampler> clone() const = 0;
 
+    /// Creates a sampler with a deterministic seed.
+    /// @param seed Random-number generator seed.
+    /// @param log_name Logger name used by the sampler.
+    /// @return A new sampler instance.
     static std::unique_ptr<Sampler>
     Create(const int &seed, const std::string &log_name = "console");
 
+    /// Selects an index according to the supplied probability weights.
+    /// @param probs Probability weights for each decision.
+    /// @return The selected decision index.
     virtual const int GetDecision(const std::vector<double> &probs) const = 0;
 
 protected:
