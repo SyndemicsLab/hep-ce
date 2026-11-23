@@ -1,7 +1,8 @@
 name: Check Version Match
 
 on:
-    pull_request: ["main"]
+    pull_request:
+        branches: ["main"]
 
 jobs:
     check-version:
