@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-20                                                  //
+// Last Modified: 2026-11-23                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -49,14 +49,14 @@ public:
     virtual std::pair<double, double> GetTotals() const = 0;
 
     /// @brief Get the vector of costs as-is
-    /// @return Vector of vectors of \code{Cost} objects, each element
+    /// @return Vector of vectors of \c Cost objects, each element
     /// of the top-level vector representing the timestep during which
     /// the cost was accrued
     virtual std::unordered_map<CostCategory, std::pair<double, double>>
     GetCosts() const = 0;
 
     /// @brief Add a cost to the tracker
-    /// @param cost The \code{Cost} item to be added
+    /// @param cost The \c Cost item to be added
     /// @param timestep The timestep during which this cost is added
     virtual void AddCost(double base_cost, double discount_cost,
                          CostCategory category) = 0;

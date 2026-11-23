@@ -34,6 +34,7 @@ People are free to transition back and forth between them over each timestep, bu
 />
 
 ## Clearance
+\anchor clearance
 
 Clearance focuses on the ability of a person to acutely clear their hepatitis-C infection. This is a phenomena seen in the study of hepatitis and generally estimated to be a 25% clearance rate over 6 months. Because we don't want to attribute accute clearances to treatment, we do not allow users in treatment to clear their HCV infection. This naturally results in an overcount of treatment clearances and an undercount in acute clearances, but the impacts are believed to be negligible.
 
