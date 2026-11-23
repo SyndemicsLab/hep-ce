@@ -26,7 +26,8 @@ jobs:
                   PROJECT_ROOT="/home/runner/work/${PROJECT_NAME}/${PROJECT_NAME}"
                   # Doxygen
                   DOXYGEN_VERSION=$(awk '/^PROJECT_NUMBER/{print $NF}' "${PROJECT_ROOT}/Doxyfile.in")
-                  # C++ header
+                  # C++ header (include/*/version.hpp)
                   CPP_VERSION=$(awk '/#define HEPCE_VER[^S]/{print $NF}' ${PROJECT_ROOT}/include/hepce/version.hpp | paste -sd.)
-                  echo "${DOXYGEN_VERSION}"
-                  echo "${CPP_VERSION}"
+                  # CITATIONS.cff
+                  CITATIONS_VERSION=$(awk '/^version/{print $NF}')
+                  if [[ "$DOXYGEN_VERSION" = "$CPP_VERSION" ]] && [[ "$CPP_VERSION" = "$CITATIONS_VERSION" ]]; then exit 0; else exit 1; fi
