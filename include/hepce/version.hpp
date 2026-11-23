@@ -13,7 +13,7 @@
 #define HEPCE_VERSION_HPP_
 
 #define HEPCE_VER_MAJOR 2
-#define HEPCE_VER_MINOR 1
+#define HEPCE_VER_MINOR 4
 #define HEPCE_VER_PATCH 0
 
 #define HEPCE_TO_VERSION(major, minor, patch)                                  \

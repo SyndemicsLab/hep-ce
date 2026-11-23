@@ -1,0 +1,33 @@
+name: Check Version Match
+
+on:
+    pull_request:
+        branches: ["main"]
+
+jobs:
+    check-version:
+        name: Check ${{ github.repository }} version matches
+        runs-on: ubuntu-latest
+        steps:
+            - name: Clone ${{ github.repository }}
+              # checkout v7.0.1
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+              with:
+                  sparse-checkout: |
+                      Doxyfile.in
+                      CITATION.cff
+                      include/*/version.hpp
+                  sparse-checkout-cone-mode: false
+
+            - name: Capture versions
+              run: |
+                  PROJECT="${{ github.repository }}"
+                  PROJECT_NAME="${PROJECT#*/}"
+                  PROJECT_ROOT="/home/runner/work/${PROJECT_NAME}/${PROJECT_NAME}"
+                  # Doxygen
+                  DOXYGEN_VERSION=$(awk '/^PROJECT_NUMBER/{print $NF}' "${PROJECT_ROOT}/Doxyfile.in")
+                  # C++ header (include/*/version.hpp)
+                  CPP_VERSION=$(awk '/#define HEPCE_VER[^S]/{print $NF}' "${PROJECT_ROOT}/include/hepce/version.hpp" | paste -sd.)
+                  # CITATION.cff
+                  CITATION_VERSION=$(awk '/^version/{print $NF}' "$PROJECT_ROOT/CITATION.cff")
+                  if [[ "$DOXYGEN_VERSION" = "$CPP_VERSION" ]] && [[ "$CPP_VERSION" = "$CITATION_VERSION" ]]; then echo "$CPP_VERSION" && exit 0; else echo -n "Doxygen Version: $DOXYGEN_VERSION\nHeader Version: $CPP_VERSION\nCITATION Version: $CITATION_VERSION" && exit 1; fi
