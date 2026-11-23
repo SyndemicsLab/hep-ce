@@ -1,0 +1,27 @@
+name: Check Version Match
+
+on:
+    pull_request: ["main"]
+
+jobs:
+    check-version:
+        name: Check ${{ GITHUB_REPOSITORY }} version matches
+        steps:
+            - name: Clone ${{ GITHUB_REPOSITORY }}
+              # checkout v7.0.1
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+              with:
+                  sparse-checkout: Doxyfile.in CITATION.cff include/*/version.hpp
+                  sparse-checkout-cone-mode: false
+
+            - name: Capture versions
+              run: |
+                  PROJECT="${{ GITHUB_REPOSITORY }}"
+                  PROJECT_NAME="${PROJECT#*/}"
+                  PROJECT_ROOT="/home/runner/work/${PROJECT_NAME}/${PROJECT_NAME}"
+                  # Doxygen
+                  DOXYGEN_VERSION=$(awk '/^PROJECT_NUMBER/{print $NF}' "${PROJECT_ROOT}/Doxygen.in")
+                  # C++ header
+                  CPP_VERSION=$(awk '/HEPCE_VER[^S]/{print $NF}' ${PROJECT_ROOT}/include/hepce/version.hpp | paste -ds.)
+                  echo "${DOXYGEN_VERSION}"
+                  echo "${CPP_VERSION}"
