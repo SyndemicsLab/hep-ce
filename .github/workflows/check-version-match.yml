@@ -27,6 +27,6 @@ jobs:
                   # Doxygen
                   DOXYGEN_VERSION=$(awk '/^PROJECT_NUMBER/{print $NF}' "${PROJECT_ROOT}/Doxyfile.in")
                   # C++ header
-                  CPP_VERSION=$(awk '/#define HEPCE_VER[^S]/{print $NF}' ${PROJECT_ROOT}/include/hepce/version.hpp | paste -ds.)
+                  CPP_VERSION=$(awk '/#define HEPCE_VER[^S]/{print $NF}' ${PROJECT_ROOT}/include/hepce/version.hpp | paste -sd.)
                   echo "${DOXYGEN_VERSION}"
                   echo "${CPP_VERSION}"
