@@ -30,4 +30,4 @@ jobs:
                   CPP_VERSION=$(awk '/#define HEPCE_VER[^S]/{print $NF}' ${PROJECT_ROOT}/include/hepce/version.hpp | paste -sd.)
                   # CITATIONS.cff
                   CITATIONS_VERSION=$(awk '/^version/{print $NF}')
-                  if [[ "$DOXYGEN_VERSION" = "$CPP_VERSION" ]] && [[ "$CPP_VERSION" = "$CITATIONS_VERSION" ]]; then exit 0; else exit 1; fi
+                  if [[ "$DOXYGEN_VERSION" = "$CPP_VERSION" ]] && [[ "$CPP_VERSION" = "$CITATIONS_VERSION" ]]; then exit 0; else echo "Doxygen Version: $DOXYGEN_VERSION\nHeader Version: $CPP_VERSION\nCITATIONS Version: $CITATIONS_VERSION" && exit 1; fi
