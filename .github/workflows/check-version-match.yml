@@ -7,6 +7,7 @@ on:
 jobs:
     check-version:
         name: Check ${{ github.repository }} version matches
+        runs-on: ubuntu-latest
         steps:
             - name: Clone ${{ github.repository }}
               # checkout v7.0.1
