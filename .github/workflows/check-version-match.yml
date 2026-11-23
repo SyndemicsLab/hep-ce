@@ -5,9 +5,9 @@ on:
 
 jobs:
     check-version:
-        name: Check ${{ GITHUB_REPOSITORY }} version matches
+        name: Check ${{ env.GITHUB_REPOSITORY }} version matches
         steps:
-            - name: Clone ${{ GITHUB_REPOSITORY }}
+            - name: Clone ${{ env.GITHUB_REPOSITORY }}
               # checkout v7.0.1
               uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
               with:
@@ -16,7 +16,7 @@ jobs:
 
             - name: Capture versions
               run: |
-                  PROJECT="${{ GITHUB_REPOSITORY }}"
+                  PROJECT="${{ env.GITHUB_REPOSITORY }}"
                   PROJECT_NAME="${PROJECT#*/}"
                   PROJECT_ROOT="/home/runner/work/${PROJECT_NAME}/${PROJECT_NAME}"
                   # Doxygen
