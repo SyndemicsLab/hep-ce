@@ -1,0 +1,121 @@
+{
+  "version": 7,
+  "include": [
+    "configure.json"
+  ],
+  "testPresets": [
+    {
+      "name": "default-test",
+      "description": "Settings for all tests",
+      "hidden": true,
+      "output": {
+        "verbosity": "verbose",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": true
+      },
+      "filter": {
+        "include": {
+          "name": "hepce_*"
+        }
+      }
+    },
+    {
+      "name": "test-debug",
+      "displayName": "Test Debuggable Build",
+      "description": "Test the debuggable build of the shared library.",
+      "inherits": "default-test",
+      "configurePreset": "test-debug"
+    },
+    {
+      "name": "test-release",
+      "displayName": "Test Release Build",
+      "description": "Test the release build of the shared library.",
+      "inherits": "default-test",
+      "configurePreset": "test-release"
+    },
+    {
+      "name": "test-debug-static",
+      "displayName": "Test Debuggable Static Build",
+      "description": "Test the debuggable build of the static library.",
+      "inherits": "default-test",
+      "configurePreset": "test-debug-static"
+    },
+    {
+      "name": "test-release-static",
+      "displayName": "Test Release Static Build",
+      "description": "Test the release build of the static library.",
+      "inherits": "default-test",
+      "configurePreset": "test-release-static"
+    },
+    {
+      "name": "coverage",
+      "displayName": "Coverage Build",
+      "description": "Test the debuggable build of the shared library with coverage.",
+      "inherits": "default-test",
+      "configurePreset": "coverage"
+    },
+    {
+      "name": "test-debug-static-native",
+      "inherits": "default-test",
+      "configurePreset": "test-debug-static-native"
+    },
+    {
+      "name": "test-debug-shared-native",
+      "inherits": "default-test",
+      "configurePreset": "test-debug-shared-native"
+    },
+    {
+      "name": "test-release-static-native",
+      "inherits": "default-test",
+      "configurePreset": "test-release-static-native"
+    },
+    {
+      "name": "test-release-shared-native",
+      "inherits": "default-test",
+      "configurePreset": "test-release-shared-native"
+    },
+    {
+      "name": "test-debug-static-strict-bundle",
+      "inherits": "default-test",
+      "configurePreset": "test-debug-static-strict-bundle"
+    },
+    {
+      "name": "test-debug-static-strict-native",
+      "inherits": "default-test",
+      "configurePreset": "test-debug-static-strict-native"
+    },
+    {
+      "name": "test-debug-shared-strict-bundle",
+      "inherits": "default-test",
+      "configurePreset": "test-debug-shared-strict-bundle"
+    },
+    {
+      "name": "test-debug-shared-strict-native",
+      "inherits": "default-test",
+      "configurePreset": "test-debug-shared-strict-native"
+    },
+    {
+      "name": "test-release-static-strict-bundle",
+      "inherits": "default-test",
+      "configurePreset": "test-release-static-strict-bundle"
+    },
+    {
+      "name": "test-release-static-strict-native",
+      "inherits": "default-test",
+      "configurePreset": "test-release-static-strict-native"
+    },
+    {
+      "name": "test-release-shared-strict-bundle",
+      "inherits": "default-test",
+      "configurePreset": "test-release-shared-strict-bundle"
+    },
+    {
+      "name": "test-release-shared-strict-native",
+      "inherits": "default-test",
+      "configurePreset": "test-release-shared-strict-native"
+    }
+  ]
+}

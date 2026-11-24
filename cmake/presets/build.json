@@ -1,0 +1,305 @@
+{
+  "version": 7,
+  "include": [
+    "configure.json"
+  ],
+  "buildPresets": [
+    {
+      "name": "default-build",
+      "hidden": true,
+      "jobs": 6
+    },
+    {
+      "name": "test-debug",
+      "displayName": "Test Debug Build",
+      "inherits": "default-build",
+      "description": "Test the debuggable build of the shared library.",
+      "configurePreset": "test-debug"
+    },
+    {
+      "name": "test-release",
+      "displayName": "Test Release Build",
+      "inherits": "default-build",
+      "description": "Test the release build of the shared library.",
+      "configurePreset": "test-release"
+    },
+    {
+      "name": "test-debug-static",
+      "displayName": "Test Debug Static Build",
+      "inherits": "default-build",
+      "description": "Test the debuggable build of the static library.",
+      "configurePreset": "test-debug-static"
+    },
+    {
+      "name": "test-release-static",
+      "displayName": "Test Release Static Build",
+      "inherits": "default-build",
+      "description": "Test the release build of the static library.",
+      "configurePreset": "test-release-static"
+    },
+    {
+      "name": "coverage",
+      "displayName": "Coverage Build",
+      "description": "Build the debuggable build of the shared library with coverage.",
+      "inherits": "default-build",
+      "configurePreset": "coverage"
+    },
+    {
+      "name": "benchmark",
+      "displayName": "Benchmark Build",
+      "description": "Build the release build of the shared library with benchmark.",
+      "inherits": "default-build",
+      "configurePreset": "benchmark"
+    },
+    {
+      "name": "package-shared",
+      "displayName": "Release Shared Package Build",
+      "inherits": "default-build",
+      "configurePreset": "package-shared"
+    },
+    {
+      "name": "package-static",
+      "displayName": "Release Static Package Build",
+      "inherits": "default-build",
+      "configurePreset": "package-static"
+    },
+    {
+      "name": "package-shared-strict",
+      "displayName": "Release Strict Shared Package Build",
+      "inherits": "default-build",
+      "configurePreset": "package-shared-strict"
+    },
+    {
+      "name": "package-static-strict",
+      "displayName": "Release Strict Static Package Build",
+      "inherits": "default-build",
+      "configurePreset": "package-static-strict"
+    },
+    {
+      "name": "docs",
+      "displayName": "Documentation Build",
+      "inherits": "default-build",
+      "configurePreset": "docs"
+    },
+    {
+      "name": "test-debug-static-native",
+      "inherits": "default-build",
+      "configurePreset": "test-debug-static-native"
+    },
+    {
+      "name": "test-debug-shared-native",
+      "inherits": "default-build",
+      "configurePreset": "test-debug-shared-native"
+    },
+    {
+      "name": "test-release-static-native",
+      "inherits": "default-build",
+      "configurePreset": "test-release-static-native"
+    },
+    {
+      "name": "test-release-shared-native",
+      "inherits": "default-build",
+      "configurePreset": "test-release-shared-native"
+    },
+    {
+      "name": "test-debug-static-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "test-debug-static-strict-bundle"
+    },
+    {
+      "name": "test-debug-static-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "test-debug-static-strict-native"
+    },
+    {
+      "name": "test-debug-shared-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "test-debug-shared-strict-bundle"
+    },
+    {
+      "name": "test-debug-shared-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "test-debug-shared-strict-native"
+    },
+    {
+      "name": "test-release-static-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "test-release-static-strict-bundle"
+    },
+    {
+      "name": "test-release-static-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "test-release-static-strict-native"
+    },
+    {
+      "name": "test-release-shared-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "test-release-shared-strict-bundle"
+    },
+    {
+      "name": "test-release-shared-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "test-release-shared-strict-native"
+    },
+    {
+      "name": "executable-debug-static-bundle",
+      "inherits": "default-build",
+      "configurePreset": "executable-debug-static-bundle"
+    },
+    {
+      "name": "executable-debug-static-native",
+      "inherits": "default-build",
+      "configurePreset": "executable-debug-static-native"
+    },
+    {
+      "name": "executable-debug-shared-bundle",
+      "inherits": "default-build",
+      "configurePreset": "executable-debug-shared-bundle"
+    },
+    {
+      "name": "executable-debug-shared-native",
+      "inherits": "default-build",
+      "configurePreset": "executable-debug-shared-native"
+    },
+    {
+      "name": "executable-release-static-bundle",
+      "inherits": "default-build",
+      "configurePreset": "executable-release-static-bundle"
+    },
+    {
+      "name": "executable-release-static-native",
+      "inherits": "default-build",
+      "configurePreset": "executable-release-static-native"
+    },
+    {
+      "name": "executable-release-shared-bundle",
+      "inherits": "default-build",
+      "configurePreset": "executable-release-shared-bundle"
+    },
+    {
+      "name": "executable-release-shared-native",
+      "inherits": "default-build",
+      "configurePreset": "executable-release-shared-native"
+    },
+    {
+      "name": "executable-debug-static-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "executable-debug-static-strict-bundle"
+    },
+    {
+      "name": "executable-debug-static-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "executable-debug-static-strict-native"
+    },
+    {
+      "name": "executable-debug-shared-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "executable-debug-shared-strict-bundle"
+    },
+    {
+      "name": "executable-debug-shared-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "executable-debug-shared-strict-native"
+    },
+    {
+      "name": "executable-release-static-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "executable-release-static-strict-bundle"
+    },
+    {
+      "name": "executable-release-static-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "executable-release-static-strict-native"
+    },
+    {
+      "name": "executable-release-shared-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "executable-release-shared-strict-bundle"
+    },
+    {
+      "name": "executable-release-shared-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "executable-release-shared-strict-native"
+    },
+    {
+      "name": "library-debug-static-bundle",
+      "inherits": "default-build",
+      "configurePreset": "library-debug-static-bundle"
+    },
+    {
+      "name": "library-debug-static-native",
+      "inherits": "default-build",
+      "configurePreset": "library-debug-static-native"
+    },
+    {
+      "name": "library-debug-shared-bundle",
+      "inherits": "default-build",
+      "configurePreset": "library-debug-shared-bundle"
+    },
+    {
+      "name": "library-debug-shared-native",
+      "inherits": "default-build",
+      "configurePreset": "library-debug-shared-native"
+    },
+    {
+      "name": "library-release-static-bundle",
+      "inherits": "default-build",
+      "configurePreset": "library-release-static-bundle"
+    },
+    {
+      "name": "library-release-static-native",
+      "inherits": "default-build",
+      "configurePreset": "library-release-static-native"
+    },
+    {
+      "name": "library-release-shared-bundle",
+      "inherits": "default-build",
+      "configurePreset": "library-release-shared-bundle"
+    },
+    {
+      "name": "library-release-shared-native",
+      "inherits": "default-build",
+      "configurePreset": "library-release-shared-native"
+    },
+    {
+      "name": "library-debug-static-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "library-debug-static-strict-bundle"
+    },
+    {
+      "name": "library-debug-static-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "library-debug-static-strict-native"
+    },
+    {
+      "name": "library-debug-shared-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "library-debug-shared-strict-bundle"
+    },
+    {
+      "name": "library-debug-shared-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "library-debug-shared-strict-native"
+    },
+    {
+      "name": "library-release-static-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "library-release-static-strict-bundle"
+    },
+    {
+      "name": "library-release-static-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "library-release-static-strict-native"
+    },
+    {
+      "name": "library-release-shared-strict-bundle",
+      "inherits": "default-build",
+      "configurePreset": "library-release-shared-strict-bundle"
+    },
+    {
+      "name": "library-release-shared-strict-native",
+      "inherits": "default-build",
+      "configurePreset": "library-release-shared-strict-native"
+    }
+  ]
+}

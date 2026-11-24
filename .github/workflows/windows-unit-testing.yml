@@ -9,16 +9,14 @@ on:
 
 jobs:
     unit-testing:
-        name: Testing ${{ matrix.os }} ${{matrix.build-variant}} build
+        name: Testing ${{ matrix.os }} ${{ matrix.build-variant }} build
         runs-on: ${{ matrix.os }}
         defaults:
             run:
                 shell: pwsh
 
         strategy:
-            matrix:
-                os: [windows-latest] # macos-latest
-                build-variant: [shared, static]
+            matrix: {include: [{os: windows-latest, build-variant: shared, test-preset: test-release}, {os: windows-latest, build-variant: static, test-preset: test-release-static}]}
         steps:
             - name: Checkout HEP-CE
               uses: actions/checkout@v6
@@ -35,5 +33,5 @@ jobs:
                   BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
               run: |
                   $env:Path = "C:\mingw64\bin;$env:Path"
-                  cmake --workflow --preset test-debug-${{ matrix.build-variant }}
+                  cmake --workflow --preset ${{ matrix.test-preset }}
               timeout-minutes: 10
