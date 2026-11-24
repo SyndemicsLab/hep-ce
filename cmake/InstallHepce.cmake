@@ -72,6 +72,18 @@ install(
 )
 
 #-------------------------------------------------------------------------------
+# Package Dependencies: This is to ensure we can package OS-native dependencies.
+# The first goal is to have OS-native packaging, however the fallback is TGZ
+# packages containing all dependencies if the OS-native packages don't work.
+#-------------------------------------------------------------------------------
+set(HEPCE_DEBIAN_PACKAGE_DEPENDS
+    "libsqlitecpp-dev, libspdlog-dev, libboost-dev, libomp-dev"
+    CACHE STRING "Debian packages required by the HEPCE library component")
+set(HEPCE_RPM_PACKAGE_REQUIRES
+    "SQLiteCpp-devel, spdlog-devel, boost-devel, libomp-devel"
+    CACHE STRING "RPM packages required by the HEPCE library component")
+
+#-------------------------------------------------------------------------------
 # CPack: This helps us create various installers. All options are controlled in
 # the `hepceCPackOptions.cmake.in` config file. Please do not change CPack
 # itself, only the Options file!
@@ -82,5 +94,10 @@ configure_file(
     @ONLY
 )
 set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/hepceCPackOptions.cmake")
+
+if(HEPCE_BUNDLE_DEPENDENCIES)
+    set(CPACK_COMPONENTS_ALL hepce_library hepce_executable libraries headers Unspecified)
+    set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
+endif()
 
 include(CPack)

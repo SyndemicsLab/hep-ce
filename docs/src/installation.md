@@ -24,6 +24,9 @@ If you build from source, missing dependencies are installed via CMake's
 [FetchContent][fetchcontent]. You will need to install these packages for
 yourself if you intend to use a specific version or release.
 
+The planned native and portable packaging approach is described in the
+[Packaging Strategy][packaging] documentation.
+
 ## Building From Source
 In order to build `HEP-CE` from source, clone the repository and use
 [CMake][cmake]. We recommend building the `gcc-release` preset, included in the
@@ -103,4 +106,5 @@ options in the help dialog.
 [hepceoptions]: https://github.com/SyndemicsLab/hep-ce/blob/main/cmake/options.cmake
 [home]: index.md
 [ninja]: https://ninja-build.org
+[packaging]: packaging.md
 [scc]: https://www.bu.edu/tech/support/research/computing-resources/scc/

@@ -31,4 +31,5 @@ option(HEPCE_BUILD_EXECUTABLE "Build Executable for HEPCE" ON)
 # install options
 option(HEPCE_SYSTEM_INCLUDES "Include as system headers (skip for clang-tidy)." OFF)
 option(HEPCE_INSTALL "Generate the install target" ${HEPCE_MASTER_PROJECT})
+option(HEPCE_BUNDLE_DEPENDENCIES "Bundle fetched dependencies in portable packages" OFF)
 

@@ -2,6 +2,11 @@
 
 include(CMakeFindDependencyMacro)
 
+# PACKAGE_PREFIX_DIR works in 3.27+ because it isn't changed before this
+if(@HEPCE_BUNDLE_DEPENDENCIES@)
+	list(PREPEND CMAKE_PREFIX_PATH "${PACKAGE_PREFIX_DIR}")
+endif()
+
 find_dependency(Boost REQUIRED)
 find_dependency(SQLiteCpp REQUIRED)
 find_dependency(spdlog REQUIRED)
