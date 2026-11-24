@@ -4,7 +4,7 @@
 // Created Date: 2025-04-17                                                   //
 // Author: Matthew Carroll                                                    //
 // -----                                                                      //
-// Last Modified: 2026-03-19                                                  //
+// Last Modified: 2026-11-24                                                  //
 // Modified By: Matthew Carroll                                               //
 // -----                                                                      //
 // Copyright (c) 2025-2026 Syndemics Lab at Boston Medical Center             //
@@ -27,7 +27,7 @@ public:
     /// Destroys the person.
     virtual ~Person() = default;
 
-    /// Creates an independent copy of the person.
+    /// Person cannot be copy-constructed.
     Person(const Person &) = delete;
     /// Persons cannot be copy-assigned.
     Person &operator=(const Person &) = delete;
