@@ -1,0 +1,693 @@
+{
+  "version": 7,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_SHARED_LIBS": "OFF",
+        "HEPCE_BUILD_PIC": "ON",
+        "HEPCE_BUILD_TESTS": "OFF",
+        "HEPCE_BUILD_EXECUTABLE": "OFF",
+        "HEPCE_BUILD_BENCH": "OFF",
+        "HEPCE_BUILD_WARNINGS": "ON",
+        "HEPCE_STOP_ON_WARNINGS": "OFF",
+        "HEPCE_CALCULATE_COVERAGE": "OFF",
+        "HEPCE_BUILD_DOCS": "OFF",
+        "HEPCE_INSTALL": "OFF",
+        "HEPCE_SYSTEM_INCLUDES": "OFF"
+      }
+    },
+    {
+      "name": "debug",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "shared",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": "ON"
+      }
+    },
+    {
+      "name": "bundle",
+      "hidden": true,
+      "cacheVariables": {
+        "HEPCE_BUNDLE_DEPENDENCIES": "ON"
+      }
+    },
+    {
+      "name": "debug-shared-bundle",
+      "hidden": true,
+      "inherits": [
+        "debug",
+        "shared",
+        "bundle",
+        "base"
+      ]
+    },
+    {
+      "name": "release-shared-bundle",
+      "hidden": true,
+      "inherits": [
+        "shared",
+        "bundle",
+        "base"
+      ]
+    },
+    {
+      "name": "debug-static-bundle",
+      "hidden": true,
+      "inherits": [
+        "debug",
+        "bundle",
+        "base"
+      ]
+    },
+    {
+      "name": "release-static-bundle",
+      "hidden": true,
+      "inherits": [
+        "bundle",
+        "base"
+      ]
+    },
+    {
+      "name": "debug-shared-native",
+      "hidden": true,
+      "inherits": [
+        "debug",
+        "shared",
+        "base"
+      ]
+    },
+    {
+      "name": "release-shared-native",
+      "hidden": true,
+      "inherits": [
+        "shared",
+        "base"
+      ]
+    },
+    {
+      "name": "debug-static-native",
+      "hidden": true,
+      "inherits": [
+        "debug",
+        "base"
+      ]
+    },
+    {
+      "name": "release-static-native",
+      "hidden": true,
+      "inherits": [
+        "base"
+      ]
+    },
+    {
+      "name": "strict",
+      "hidden": true,
+      "cacheVariables": {
+        "HEPCE_STOP_ON_WARNINGS": "ON"
+      }
+    },
+    {
+      "name": "test",
+      "hidden": true,
+      "cacheVariables": {
+        "HEPCE_BUILD_TESTS": "ON"
+      }
+    },
+    {
+      "name": "executable",
+      "hidden": true,
+      "cacheVariables": {
+        "HEPCE_BUILD_EXECUTABLE": "ON"
+      }
+    },
+    {
+      "name": "install",
+      "hidden": true,
+      "cacheVariables": {
+        "HEPCE_INSTALL": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "hidden": true
+    },
+    {
+      "name": "static",
+      "hidden": true
+    },
+    {
+      "name": "non-strict",
+      "hidden": true
+    },
+    {
+      "name": "os-native",
+      "hidden": true
+    },
+    {
+      "name": "test-debug",
+      "displayName": "Debug Tests Configuration",
+      "description": "Create a debuggable shared library for testing",
+      "inherits": [
+        "test",
+        "debug-shared-bundle"
+      ]
+    },
+    {
+      "name": "test-release",
+      "displayName": "Release Tests Configuration",
+      "description": "Create a release shared library for testing",
+      "inherits": [
+        "test",
+        "release-shared-bundle"
+      ]
+    },
+    {
+      "name": "test-debug-static",
+      "displayName": "Debug Tests Configuration",
+      "description": "Create a debuggable static library for testing",
+      "inherits": [
+        "test",
+        "debug-static-bundle"
+      ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "test-release-static",
+      "displayName": "Release Tests Configuration",
+      "description": "Create a release static library for testing",
+      "inherits": [
+        "test",
+        "release-static-bundle"
+      ]
+    },
+    {
+      "name": "coverage",
+      "displayName": "Coverage Tests Configuration",
+      "description": "Create the static debug library for testing with coverage",
+      "inherits": [
+        "test",
+        "debug",
+        "static",
+        "non-strict",
+        "os-native",
+        "base"
+      ],
+      "cacheVariables": {
+        "HEPCE_CALCULATE_COVERAGE": "ON"
+      }
+    },
+    {
+      "name": "benchmark",
+      "displayName": "Benchmark Tests Configuration",
+      "description": "Configure the library for benchmarking.",
+      "inherits": [
+        "release-static-native"
+      ],
+      "cacheVariables": {
+        "HEPCE_BUILD_BENCH": "ON"
+      }
+    },
+    {
+      "name": "package-shared",
+      "displayName": "Configure a Release Shared Library",
+      "description": "Build release package artifacts for a shared library and executable",
+      "inherits": [
+        "executable",
+        "release-shared-bundle"
+      ],
+      "cacheVariables": {
+        "HEPCE_INSTALL": "ON"
+      }
+    },
+    {
+      "name": "package-shared-strict",
+      "displayName": "Configure a Release Shared Library (Strict)",
+      "description": "Build release package artifacts for a shared, strict, library and executable",
+      "inherits": [
+        "strict",
+        "executable",
+        "release-shared-bundle"
+      ],
+      "cacheVariables": {
+        "HEPCE_INSTALL": "ON"
+      }
+    },
+    {
+      "name": "package-static",
+      "displayName": "Configure a Release Static Library",
+      "description": "Build release package artifacts for a static, library and executable",
+      "inherits": [
+        "executable",
+        "release-static-bundle"
+      ],
+      "cacheVariables": {
+        "HEPCE_INSTALL": "ON"
+      }
+    },
+    {
+      "name": "package-static-strict",
+      "displayName": "Configure a Release Static Library (Strict)",
+      "description": "Build release package artifacts for a static, strict, library and executable",
+      "inherits": [
+        "strict",
+        "executable",
+        "release-static-bundle"
+      ],
+      "cacheVariables": {
+        "HEPCE_BUILD_TESTS": "OFF",
+        "HEPCE_INSTALL": "ON"
+      }
+    },
+    {
+      "name": "windows-package-base",
+      "hidden": true,
+      "inherits": [
+        "bundle",
+        "executable"
+      ],
+      "cacheVariables": {
+        "HEPCE_BUILD_TESTS": "OFF",
+        "HEPCE_INSTALL": "ON"
+      }
+    },
+    {
+      "name": "windows-package-shared",
+      "binaryDir": "${sourceDir}/build/windows-shared",
+      "inherits": [
+        "windows-package-base",
+        "release-shared-bundle"
+      ]
+    },
+    {
+      "name": "windows-package-static",
+      "binaryDir": "${sourceDir}/build/windows-static",
+      "inherits": [
+        "windows-package-base",
+        "release-static-bundle"
+      ]
+    },
+    {
+      "name": "windows-package-shared-strict",
+      "binaryDir": "${sourceDir}/build/windows-shared-strict",
+      "inherits": [
+        "windows-package-base",
+        "release-shared-bundle",
+        "strict"
+      ]
+    },
+    {
+      "name": "windows-package-static-strict",
+      "binaryDir": "${sourceDir}/build/windows-static-strict",
+      "inherits": [
+        "windows-package-base",
+        "release-static-bundle",
+        "strict"
+      ]
+    },
+    {
+      "name": "docs",
+      "displayName": "Configure Documentation Generation",
+      "description": "Configure the library for documentation generation.",
+      "inherits": [
+        "release",
+        "static",
+        "non-strict",
+        "os-native",
+        "base"
+      ],
+      "cacheVariables": {
+        "HEPCE_BUILD_DOCS": "ON",
+        "HEPCE_INSTALL": "OFF"
+      }
+    },
+    {
+      "name": "test-debug-static-native",
+      "inherits": [
+        "test",
+        "debug-static-native"
+      ]
+    },
+    {
+      "name": "test-debug-shared-native",
+      "inherits": [
+        "test",
+        "debug-shared-native"
+      ]
+    },
+    {
+      "name": "test-release-static-native",
+      "inherits": [
+        "test",
+        "release-static-native"
+      ]
+    },
+    {
+      "name": "test-release-shared-native",
+      "inherits": [
+        "test",
+        "release-shared-native"
+      ]
+    },
+    {
+      "name": "test-debug-static-strict-bundle",
+      "inherits": [
+        "test",
+        "strict",
+        "debug-static-bundle"
+      ]
+    },
+    {
+      "name": "test-debug-static-strict-native",
+      "inherits": [
+        "test",
+        "strict",
+        "debug-static-native"
+      ]
+    },
+    {
+      "name": "test-debug-shared-strict-bundle",
+      "inherits": [
+        "test",
+        "strict",
+        "debug-shared-bundle"
+      ]
+    },
+    {
+      "name": "test-debug-shared-strict-native",
+      "inherits": [
+        "test",
+        "strict",
+        "debug-shared-native"
+      ]
+    },
+    {
+      "name": "test-release-static-strict-bundle",
+      "inherits": [
+        "test",
+        "strict",
+        "release-static-bundle"
+      ]
+    },
+    {
+      "name": "test-release-static-strict-native",
+      "inherits": [
+        "test",
+        "strict",
+        "release-static-native"
+      ]
+    },
+    {
+      "name": "test-release-shared-strict-bundle",
+      "inherits": [
+        "test",
+        "strict",
+        "release-shared-bundle"
+      ]
+    },
+    {
+      "name": "test-release-shared-strict-native",
+      "inherits": [
+        "test",
+        "strict",
+        "release-shared-native"
+      ]
+    },
+    {
+      "name": "executable-debug-static-bundle",
+      "inherits": [
+        "install",
+        "executable",
+        "debug-static-bundle"
+      ]
+    },
+    {
+      "name": "executable-debug-static-native",
+      "inherits": [
+        "install",
+        "executable",
+        "debug-static-native"
+      ]
+    },
+    {
+      "name": "executable-debug-shared-bundle",
+      "inherits": [
+        "install",
+        "executable",
+        "debug-shared-bundle"
+      ]
+    },
+    {
+      "name": "executable-debug-shared-native",
+      "inherits": [
+        "install",
+        "executable",
+        "debug-shared-native"
+      ]
+    },
+    {
+      "name": "executable-release-static-bundle",
+      "inherits": [
+        "install",
+        "executable",
+        "release-static-bundle"
+      ]
+    },
+    {
+      "name": "executable-release-static-native",
+      "inherits": [
+        "install",
+        "executable",
+        "release-static-native"
+      ]
+    },
+    {
+      "name": "executable-release-shared-bundle",
+      "inherits": [
+        "install",
+        "executable",
+        "release-shared-bundle"
+      ]
+    },
+    {
+      "name": "executable-release-shared-native",
+      "inherits": [
+        "install",
+        "executable",
+        "release-shared-native"
+      ]
+    },
+    {
+      "name": "executable-debug-static-strict-bundle",
+      "inherits": [
+        "install",
+        "executable",
+        "strict",
+        "debug-static-bundle"
+      ]
+    },
+    {
+      "name": "executable-debug-static-strict-native",
+      "inherits": [
+        "install",
+        "executable",
+        "strict",
+        "debug-static-native"
+      ]
+    },
+    {
+      "name": "executable-debug-shared-strict-bundle",
+      "inherits": [
+        "install",
+        "executable",
+        "strict",
+        "debug-shared-bundle"
+      ]
+    },
+    {
+      "name": "executable-debug-shared-strict-native",
+      "inherits": [
+        "install",
+        "executable",
+        "strict",
+        "debug-shared-native"
+      ]
+    },
+    {
+      "name": "executable-release-static-strict-bundle",
+      "inherits": [
+        "install",
+        "executable",
+        "strict",
+        "release-static-bundle"
+      ]
+    },
+    {
+      "name": "executable-release-static-strict-native",
+      "inherits": [
+        "install",
+        "executable",
+        "strict",
+        "release-static-native"
+      ]
+    },
+    {
+      "name": "executable-release-shared-strict-bundle",
+      "inherits": [
+        "install",
+        "executable",
+        "strict",
+        "release-shared-bundle"
+      ]
+    },
+    {
+      "name": "executable-release-shared-strict-native",
+      "inherits": [
+        "install",
+        "executable",
+        "strict",
+        "release-shared-native"
+      ]
+    },
+    {
+      "name": "library-debug-static-bundle",
+      "inherits": [
+        "install",
+        "debug-static-bundle"
+      ]
+    },
+    {
+      "name": "library-debug-static-native",
+      "inherits": [
+        "install",
+        "debug-static-native"
+      ]
+    },
+    {
+      "name": "library-debug-shared-bundle",
+      "inherits": [
+        "install",
+        "debug-shared-bundle"
+      ]
+    },
+    {
+      "name": "library-debug-shared-native",
+      "inherits": [
+        "install",
+        "debug-shared-native"
+      ]
+    },
+    {
+      "name": "library-release-static-bundle",
+      "inherits": [
+        "install",
+        "release-static-bundle"
+      ]
+    },
+    {
+      "name": "library-release-static-native",
+      "inherits": [
+        "install",
+        "release-static-native"
+      ]
+    },
+    {
+      "name": "library-release-shared-bundle",
+      "inherits": [
+        "install",
+        "release-shared-bundle"
+      ]
+    },
+    {
+      "name": "library-release-shared-native",
+      "inherits": [
+        "install",
+        "release-shared-native"
+      ]
+    },
+    {
+      "name": "library-debug-static-strict-bundle",
+      "inherits": [
+        "install",
+        "strict",
+        "debug-static-bundle"
+      ]
+    },
+    {
+      "name": "library-debug-static-strict-native",
+      "inherits": [
+        "install",
+        "strict",
+        "debug-static-native"
+      ]
+    },
+    {
+      "name": "library-debug-shared-strict-bundle",
+      "inherits": [
+        "install",
+        "strict",
+        "debug-shared-bundle"
+      ]
+    },
+    {
+      "name": "library-debug-shared-strict-native",
+      "inherits": [
+        "install",
+        "strict",
+        "debug-shared-native"
+      ]
+    },
+    {
+      "name": "library-release-static-strict-bundle",
+      "inherits": [
+        "install",
+        "strict",
+        "release-static-bundle"
+      ]
+    },
+    {
+      "name": "library-release-static-strict-native",
+      "inherits": [
+        "install",
+        "strict",
+        "release-static-native"
+      ]
+    },
+    {
+      "name": "library-release-shared-strict-bundle",
+      "inherits": [
+        "install",
+        "strict",
+        "release-shared-bundle"
+      ]
+    },
+    {
+      "name": "library-release-shared-strict-native",
+      "inherits": [
+        "install",
+        "strict",
+        "release-shared-native"
+      ]
+    }
+  ]
+}

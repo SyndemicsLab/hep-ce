@@ -1,0 +1,490 @@
+{
+  "version": 7,
+  "include": [
+    "configure.json"
+  ],
+  "packagePresets": [
+    {
+      "name": "default-package",
+      "hidden": true,
+      "generators": [
+        "TGZ"
+      ]
+    },
+    {
+      "name": "tgz-package",
+      "hidden": true,
+      "generators": [
+        "TGZ"
+      ]
+    },
+    {
+      "name": "linux-native-package",
+      "hidden": true,
+      "generators": [
+        "DEB",
+        "RPM"
+      ]
+    },
+    {
+      "name": "debian-native-package",
+      "hidden": true,
+      "generators": [
+        "DEB"
+      ]
+    },
+    {
+      "name": "rpm-native-package",
+      "hidden": true,
+      "generators": [
+        "RPM"
+      ]
+    },
+    {
+      "name": "windows-native-package",
+      "hidden": true,
+      "generators": [
+        "NSIS"
+      ]
+    },
+    {
+      "name": "debian-package",
+      "inherits": "debian-native-package",
+      "hidden": true
+    },
+    {
+      "name": "rpm-package",
+      "inherits": "rpm-native-package",
+      "hidden": true
+    },
+    {
+      "name": "nsis-package",
+      "inherits": "windows-native-package",
+      "hidden": true
+    },
+    {
+      "name": "debian-shared",
+      "displayName": "Package a Release Shared Library and Executable for Debian",
+      "inherits": "debian-package",
+      "configurePreset": "package-shared"
+    },
+    {
+      "name": "debian-static",
+      "displayName": "Package a Release Static Library and Executable for Debian",
+      "inherits": "debian-package",
+      "configurePreset": "package-static"
+    },
+    {
+      "name": "debian-shared-strict",
+      "displayName": "Package a Strict Release Shared Library and Executable for Debian",
+      "inherits": "debian-package",
+      "configurePreset": "package-shared-strict"
+    },
+    {
+      "name": "debian-static-strict",
+      "displayName": "Package a Strict Release Static Library and Executable for Debian",
+      "inherits": "debian-package",
+      "configurePreset": "package-static-strict"
+    },
+    {
+      "name": "rpm-shared",
+      "displayName": "Package a Release Shared Library and Executable for RPM",
+      "inherits": "rpm-package",
+      "configurePreset": "package-shared"
+    },
+    {
+      "name": "rpm-static",
+      "displayName": "Package a Release Static Library and Executable for RPM",
+      "inherits": "rpm-package",
+      "configurePreset": "package-static"
+    },
+    {
+      "name": "rpm-shared-strict",
+      "displayName": "Package a Strict Release Shared Library and Executable for RPM",
+      "inherits": "rpm-package",
+      "configurePreset": "package-shared-strict"
+    },
+    {
+      "name": "rpm-static-strict",
+      "displayName": "Package a Strict Release Static Library and Executable for RPM",
+      "inherits": "rpm-package",
+      "configurePreset": "package-static-strict"
+    },
+    {
+      "name": "nsis-shared",
+      "displayName": "Package a Release Shared Library and Executable for NSIS",
+      "inherits": "nsis-package",
+      "configurePreset": "windows-package-shared"
+    },
+    {
+      "name": "nsis-static",
+      "displayName": "Package a Release Static Library and Executable for NSIS",
+      "inherits": "nsis-package",
+      "configurePreset": "windows-package-static"
+    },
+    {
+      "name": "nsis-shared-strict",
+      "displayName": "Package a Strict Release Shared Library and Executable for NSIS",
+      "inherits": "nsis-package",
+      "configurePreset": "windows-package-shared-strict"
+    },
+    {
+      "name": "nsis-static-strict",
+      "displayName": "Package a Strict Release Static Library and Executable for NSIS",
+      "inherits": "nsis-package",
+      "configurePreset": "windows-package-static-strict"
+    },
+    {
+      "name": "tgz-executable-debug-static",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "executable-debug-static-bundle"
+    },
+    {
+      "name": "tgz-executable-debug-shared",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "executable-debug-shared-bundle"
+    },
+    {
+      "name": "tgz-executable-release-static",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "executable-release-static-bundle"
+    },
+    {
+      "name": "tgz-executable-release-shared",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "executable-release-shared-bundle"
+    },
+    {
+      "name": "tgz-executable-debug-static-strict",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "executable-debug-static-strict-bundle"
+    },
+    {
+      "name": "tgz-executable-debug-shared-strict",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "executable-debug-shared-strict-bundle"
+    },
+    {
+      "name": "tgz-executable-release-static-strict",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "executable-release-static-strict-bundle"
+    },
+    {
+      "name": "tgz-executable-release-shared-strict",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "executable-release-shared-strict-bundle"
+    },
+    {
+      "name": "tgz-library-debug-static",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "library-debug-static-bundle"
+    },
+    {
+      "name": "tgz-library-debug-shared",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "library-debug-shared-bundle"
+    },
+    {
+      "name": "tgz-library-release-static",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "library-release-static-bundle"
+    },
+    {
+      "name": "tgz-library-release-shared",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "library-release-shared-bundle"
+    },
+    {
+      "name": "tgz-library-debug-static-strict",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "library-debug-static-strict-bundle"
+    },
+    {
+      "name": "tgz-library-debug-shared-strict",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "library-debug-shared-strict-bundle"
+    },
+    {
+      "name": "tgz-library-release-static-strict",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "library-release-static-strict-bundle"
+    },
+    {
+      "name": "tgz-library-release-shared-strict",
+      "generators": [
+        "TGZ"
+      ],
+      "configurePreset": "library-release-shared-strict-bundle"
+    },
+    {
+      "name": "native-executable-debug-static",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "executable-debug-static-native"
+    },
+    {
+      "name": "native-executable-debug-shared",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "executable-debug-shared-native"
+    },
+    {
+      "name": "native-executable-release-static",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "executable-release-static-native"
+    },
+    {
+      "name": "native-executable-release-shared",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "executable-release-shared-native"
+    },
+    {
+      "name": "native-executable-debug-static-strict",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "executable-debug-static-strict-native"
+    },
+    {
+      "name": "native-executable-debug-shared-strict",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "executable-debug-shared-strict-native"
+    },
+    {
+      "name": "native-executable-release-static-strict",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "executable-release-static-strict-native"
+    },
+    {
+      "name": "native-executable-release-shared-strict",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "executable-release-shared-strict-native"
+    },
+    {
+      "name": "native-library-debug-static",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "library-debug-static-native"
+    },
+    {
+      "name": "native-library-debug-shared",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "library-debug-shared-native"
+    },
+    {
+      "name": "native-library-release-static",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "library-release-static-native"
+    },
+    {
+      "name": "native-library-release-shared",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "library-release-shared-native"
+    },
+    {
+      "name": "native-library-debug-static-strict",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "library-debug-static-strict-native"
+    },
+    {
+      "name": "native-library-debug-shared-strict",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "library-debug-shared-strict-native"
+    },
+    {
+      "name": "native-library-release-static-strict",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "library-release-static-strict-native"
+    },
+    {
+      "name": "native-library-release-shared-strict",
+      "generators": [
+        "DEB",
+        "RPM"
+      ],
+      "configurePreset": "library-release-shared-strict-native"
+    },
+    {
+      "name": "nsis-executable-debug-static",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "executable-debug-static-native"
+    },
+    {
+      "name": "nsis-executable-debug-shared",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "executable-debug-shared-native"
+    },
+    {
+      "name": "nsis-executable-release-static",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "executable-release-static-native"
+    },
+    {
+      "name": "nsis-executable-release-shared",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "executable-release-shared-native"
+    },
+    {
+      "name": "nsis-executable-debug-static-strict",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "executable-debug-static-strict-native"
+    },
+    {
+      "name": "nsis-executable-debug-shared-strict",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "executable-debug-shared-strict-native"
+    },
+    {
+      "name": "nsis-executable-release-static-strict",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "executable-release-static-strict-native"
+    },
+    {
+      "name": "nsis-executable-release-shared-strict",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "executable-release-shared-strict-native"
+    },
+    {
+      "name": "nsis-library-debug-static",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "library-debug-static-native"
+    },
+    {
+      "name": "nsis-library-debug-shared",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "library-debug-shared-native"
+    },
+    {
+      "name": "nsis-library-release-static",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "library-release-static-native"
+    },
+    {
+      "name": "nsis-library-release-shared",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "library-release-shared-native"
+    },
+    {
+      "name": "nsis-library-debug-static-strict",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "library-debug-static-strict-native"
+    },
+    {
+      "name": "nsis-library-debug-shared-strict",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "library-debug-shared-strict-native"
+    },
+    {
+      "name": "nsis-library-release-static-strict",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "library-release-static-strict-native"
+    },
+    {
+      "name": "nsis-library-release-shared-strict",
+      "generators": [
+        "NSIS"
+      ],
+      "configurePreset": "library-release-shared-strict-native"
+    }
+  ]
+}

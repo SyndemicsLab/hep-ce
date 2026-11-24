@@ -1,0 +1,114 @@
+{
+    "version": 7,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 27,
+        "patch": 0
+    },
+    "include": [
+        "configure.json",
+        "build.json",
+        "test.json",
+        "package.json"
+    ],
+    "workflowPresets": [
+        {
+            "name": "release-executable",
+            "displayName": "Build Release Executable",
+            "description": "Build a non-strict release executable.",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "executable-release-shared-bundle"
+                },
+                {
+                    "type": "build",
+                    "name": "executable-release-shared-bundle"
+                }
+            ]
+        },
+        {
+            "name": "strict-release-executable",
+            "displayName": "Build Strict Release Executable",
+            "description": "Build a strict release executable.",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "executable-release-shared-strict-bundle"
+                },
+                {
+                    "type": "build",
+                    "name": "executable-release-shared-strict-bundle"
+                }
+            ]
+        },
+        {
+            "name": "debug-executable",
+            "displayName": "Build Debug Executable",
+            "description": "Build a non-strict debug executable.",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "executable-debug-shared-bundle"
+                },
+                {
+                    "type": "build",
+                    "name": "executable-debug-shared-bundle"
+                }
+            ]
+        },
+        {
+            "name": "debug-test",
+            "displayName": "Build Debug Tests",
+            "description": "Build and run non-strict debug tests.",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "test-debug"
+                },
+                {
+                    "type": "build",
+                    "name": "test-debug"
+                },
+                {
+                    "type": "test",
+                    "name": "test-debug"
+                }
+            ]
+        },
+        {
+            "name": "coverage",
+            "displayName": "Build Coverage",
+            "description": "Build and test the coverage configuration.",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "coverage"
+                },
+                {
+                    "type": "build",
+                    "name": "coverage"
+                },
+                {
+                    "type": "test",
+                    "name": "coverage"
+                }
+            ]
+        },
+        {
+            "name": "docs",
+            "displayName": "Build Documentation",
+            "description": "Build the documentation configuration.",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "docs"
+                },
+                {
+                    "type": "build",
+                    "name": "docs"
+                }
+            ]
+        }
+    ]
+}

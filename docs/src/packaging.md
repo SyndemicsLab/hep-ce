@@ -54,6 +54,26 @@ The dependency names may differ between Debian-family and RPM-family
 distributions, so each package format needs its own dependency declarations.
 Both DEB and RPM packages are part of the initial Linux packaging scope.
 
+## Windows Installer
+
+Windows packaging uses CPack's NSIS generator. The `nsis-shared` and
+`nsis-static` package presets configure installation with
+`HEPCE_BUNDLE_DEPENDENCIES=ON`, so fetched dependency install artifacts are
+included in the installer. The executable and library are separate installer
+components, and selecting the executable also selects the library.
+
+For example, on a Windows machine with CMake, Ninja, a C++ compiler, Git, and
+NSIS installed:
+
+```bash
+cmake --preset windows-package-shared
+cmake --build build/windows-shared --config Release
+cpack --preset nsis-shared
+```
+
+The generated installer is written to the Windows build directory. Windows
+packaging is not validated on the current Linux development machine.
+
 ## Portable TGZ Package
 
 The TGZ package cannot rely on the host distribution to install dependencies.
