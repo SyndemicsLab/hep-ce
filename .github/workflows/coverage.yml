@@ -28,7 +28,7 @@ jobs:
 
             - name: Build and Test Project
               run: >
-                  cmake --preset coverage && cmake --build --preset coverage && ctest --preset coverage
+                  cmake --workflow --preset coverage
               env:
                   BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
 
