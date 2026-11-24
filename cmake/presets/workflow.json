@@ -77,6 +77,44 @@
             ]
         },
         {
+            "name": "test-release",
+            "displayName": "Build Release Tests",
+            "description": "Build and run non-strict release tests.",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "test-release"
+                },
+                {
+                    "type": "build",
+                    "name": "test-release"
+                },
+                {
+                    "type": "test",
+                    "name": "test-release"
+                }
+            ]
+        },
+        {
+            "name": "test-release-static",
+            "displayName": "Build Release Static Tests",
+            "description": "Build and run non-strict release tests for the static library.",
+            "steps": [
+                {
+                    "type": "configure",
+                    "name": "test-release-static"
+                },
+                {
+                    "type": "build",
+                    "name": "test-release-static"
+                },
+                {
+                    "type": "test",
+                    "name": "test-release-static"
+                }
+            ]
+        },
+        {
             "name": "coverage",
             "displayName": "Build Coverage",
             "description": "Build and test the coverage configuration.",
