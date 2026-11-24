@@ -20,8 +20,14 @@
 
 namespace hepce {
 namespace event {
+/// Factory for constructing named discrete events.
 class EventFactory {
 public:
+    /// Creates an event configured from the input data.
+    /// @param name Event name.
+    /// @param inputs Simulation inputs.
+    /// @param log_name Logger name used by the event.
+    /// @return The requested event instance.
     static std::unique_ptr<Event> CreateEvent(const std::string &name,
                                               const data::Inputs &inputs,
                                               const std::string &log_name);

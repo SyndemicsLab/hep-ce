@@ -26,8 +26,12 @@
 
 namespace hepce {
 namespace data {
+/// Provides access to the simulation configuration and SQLite input database.
 class Inputs {
 public:
+    /// Loads the INI configuration and records the database path.
+    /// @param config_file Path to the INI configuration file.
+    /// @param database_file Path to the SQLite database file.
     Inputs(const std::string &config_file, const std::string &database_file)
         : _config_file(config_file), _database_file(database_file) {
         read_ini(_config_file.string(), _ptree);
@@ -37,9 +41,16 @@ public:
 
     // No rule of 3 or 5 needed because this is a complete and copy-able object
 
+    /// Returns the parsed configuration property tree.
     const boost::property_tree::ptree &GetPropertyTree() const {
         return _ptree;
     }
+    /// Executes a query and invokes a callback for each returned row.
+    /// @param query SQL query to execute.
+    /// @param callback Function called for each result row.
+    /// @param storage Mutable caller-owned storage passed to the callback.
+    /// @param bindings Positional SQL bindings keyed by parameter index.
+    /// @throws std::runtime_error if the query or transaction fails.
     void SelectFromDatabase(
         const std::string &query,
         std::function<void(std::any &storage, const SQLite::Statement &stmt)>

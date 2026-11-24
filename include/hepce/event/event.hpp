@@ -23,14 +23,19 @@
 
 namespace hepce {
 namespace event {
+/// Base interface for a discrete simulation event.
 class Event {
 public:
+    /// Destroys the event.
     virtual ~Event() = default;
     Event(const Event &) = delete;
     Event &operator=(const Event &) = delete;
+    /// Creates an independent copy of the event.
     virtual std::unique_ptr<Event> clone() const = 0;
 
+    /// Reports whether the event can execute for a person in the current state.
     virtual bool ValidExecute(const model::Person &person) const = 0;
+    /// Applies the event to a person using the supplied sampler.
     virtual void Execute(model::Person &person,
                          const model::Sampler &sampler) = 0;
 

@@ -28,12 +28,16 @@
 namespace hepce {
 namespace utils {
 
+/// Throws an error indicating that a configuration key is missing.
+/// @param key Missing configuration key.
 inline void ThrowPathError(const std::string &key) {
     std::ostringstream msg;
     msg << "Key `" << key << "` not found in config file!";
     throw std::runtime_error(msg.str());
 }
 
+/// Throws an error indicating that a configuration value could not be read.
+/// @param key Configuration key whose value could not be read.
 inline void ThrowDataError(const std::string &key) {
     std::ostringstream msg;
     msg << "Unknown error occurred when attempting to get config value `" << key
@@ -41,9 +45,11 @@ inline void ThrowDataError(const std::string &key) {
     throw std::runtime_error(msg.str());
 }
 
-/// @brief
-/// @param
-/// @return
+/// Reads a Boolean value from the simulation configuration.
+/// @param config_key Configuration key.
+/// @param inputs Simulation inputs containing the configuration.
+/// @param def_val Value returned when the configured value has invalid data.
+/// @return The configured Boolean value or `def_val`.
 inline bool GetBoolFromConfig(const std::string &config_key,
                               const data::Inputs &inputs,
                               bool def_val = false) {
@@ -59,9 +65,11 @@ inline bool GetBoolFromConfig(const std::string &config_key,
     return false;
 }
 
-/// @brief
-/// @param
-/// @return
+/// Reads an integer value from the simulation configuration.
+/// @param config_key Configuration key.
+/// @param inputs Simulation inputs containing the configuration.
+/// @param def_val Value returned when the configured value has invalid data.
+/// @return The configured integer or `def_val`.
 inline int GetIntFromConfig(const std::string &config_key,
                             const data::Inputs &inputs, int def_val = -1) {
     try {
@@ -76,9 +84,12 @@ inline int GetIntFromConfig(const std::string &config_key,
     return std::numeric_limits<int>::min();
 }
 
-/// @brief
-/// @param
-/// @return
+/// Reads a floating-point value from the simulation configuration.
+/// @param config_key Configuration key.
+/// @param inputs Simulation inputs containing the configuration.
+/// @param positive Whether to return the absolute value of the result.
+/// @param def_val Value returned when the configured value has invalid data.
+/// @return The configured value or `def_val`.
 inline double GetDoubleFromConfig(const std::string &config_key,
                                   const data::Inputs &inputs,
                                   bool positive = true, double def_val = -1.0) {
@@ -97,9 +108,11 @@ inline double GetDoubleFromConfig(const std::string &config_key,
     return std::numeric_limits<double>::min();
 }
 
-/// @brief
-/// @param
-/// @return
+/// Reads a string value from the simulation configuration.
+/// @param config_key Configuration key.
+/// @param inputs Simulation inputs containing the configuration.
+/// @param def_val Value returned when the configured value has invalid data.
+/// @return The configured string or `def_val`.
 inline std::string GetStringFromConfig(const std::string &config_key,
                                        const data::Inputs &inputs,
                                        std::string def_val = "") {
@@ -115,6 +128,10 @@ inline std::string GetStringFromConfig(const std::string &config_key,
     return "";
 }
 
+/// Tests whether an event name occurs in the configured event list.
+/// @param event_name Event name to find, case-insensitively.
+/// @param inputs Simulation inputs containing the event list.
+/// @return `true` when the event is configured.
 inline bool FindInEventList(const std::string &event_name,
                             const data::Inputs &inputs) {
     auto event_list = utils::ToLowerVector(utils::SplitToVecT<std::string>(
