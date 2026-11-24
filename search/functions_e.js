@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['sampler_0',['Sampler',['../classhepce_1_1model_1_1Sampler.html#a33b37f3f8e9fdbdc647e09132b23ef20',1,'hepce::model::Sampler::Sampler()=default'],['../classhepce_1_1model_1_1Sampler.html#a4f0680c27c1ee35874cc4eb0e9cc27fe',1,'hepce::model::Sampler::Sampler(const Sampler &amp;)=delete']]],
+  ['sampler_0',['Sampler',['../classhepce_1_1model_1_1Sampler.html#a4f0680c27c1ee35874cc4eb0e9cc27fe',1,'hepce::model::Sampler::Sampler(const Sampler &amp;)=delete'],['../classhepce_1_1model_1_1Sampler.html#a33b37f3f8e9fdbdc647e09132b23ef20',1,'hepce::model::Sampler::Sampler()=default']]],
   ['screen_1',['Screen',['../classhepce_1_1model_1_1Person.html#a937a0a31030b9b4eb3ec49c6a842ce1b',1,'hepce::model::Person']]],
   ['selectfromdatabase_2',['SelectFromDatabase',['../classhepce_1_1data_1_1Inputs.html#ae3ea6e7c81eb437a8c84ab73b5b8e754',1,'hepce::data::Inputs']]],
   ['setbehavior_3',['SetBehavior',['../classhepce_1_1model_1_1Person.html#a3f924fdf849d89330c7ebeb25fcbe3d4',1,'hepce::model::Person']]],

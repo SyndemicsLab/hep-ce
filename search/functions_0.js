@@ -2,7 +2,7 @@ var searchData=
 [
   ['accumulatetotalutility_0',['AccumulateTotalUtility',['../classhepce_1_1model_1_1Person.html#a15a8f3c398b439df159b935edda76c89',1,'hepce::model::Person']]],
   ['addcompletedtreatment_1',['AddCompletedTreatment',['../classhepce_1_1model_1_1Person.html#a9931bd0d8914ae6059e541b478ca7216',1,'hepce::model::Person']]],
-  ['addcost_2',['AddCost',['../classhepce_1_1model_1_1Person.html#abc7b20aa607f2b807c1c37aaa9006991',1,'hepce::model::Person']]],
+  ['addcost_2',['AddCost',['../classhepce_1_1model_1_1Costs.html#a8d343bacf411f6c9f593afa3f641d4c2',1,'hepce::model::Costs::AddCost()'],['../classhepce_1_1model_1_1Person.html#abc7b20aa607f2b807c1c37aaa9006991',1,'hepce::model::Person::AddCost(double base_cost, double discount_cost, model::CostCategory category)=0']]],
   ['adddiscountedlifespan_3',['AddDiscountedLifeSpan',['../classhepce_1_1model_1_1Person.html#a28a1c3ee3cfb8dbdccdd66e9a6155472',1,'hepce::model::Person']]],
   ['addfalsenegative_4',['AddFalseNegative',['../classhepce_1_1model_1_1Person.html#a05922d174d3003afcedde727d104060c',1,'hepce::model::Person']]],
   ['addidentificationscleared_5',['AddIdentificationsCleared',['../classhepce_1_1model_1_1Person.html#a6b77e144191af3180c3a555f02bcc824',1,'hepce::model::Person']]],

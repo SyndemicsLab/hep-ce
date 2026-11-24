@@ -6,9 +6,9 @@ var namespacehepce_1_1utils =
     [ "key_hash_2i", "structhepce_1_1utils_1_1key__hash__2i.html", "structhepce_1_1utils_1_1key__hash__2i" ],
     [ "key_hash_3i", "structhepce_1_1utils_1_1key__hash__3i.html", "structhepce_1_1utils_1_1key__hash__3i" ],
     [ "key_hash_4i", "structhepce_1_1utils_1_1key__hash__4i.html", "structhepce_1_1utils_1_1key__hash__4i" ],
-    [ "tuple_2i", "namespacehepce_1_1utils.html#aa96136b1c992d26f88000dde8c3a6513", null ],
-    [ "tuple_3i", "namespacehepce_1_1utils.html#a813fa184d59c04d9fe047ca1e82af0d0", null ],
-    [ "tuple_4i", "namespacehepce_1_1utils.html#a67edda98bfd56b58ddc9db8a39da87ad", null ],
+    [ "tuple_2i", "namespacehepce_1_1utils.html#a0a7cbd13bd874385854db5d32b195ca6", null ],
+    [ "tuple_3i", "namespacehepce_1_1utils.html#a922463e99022d8d772749172de89bfba", null ],
+    [ "tuple_4i", "namespacehepce_1_1utils.html#a67c6bad4a268d935e1864fc3f13d4028", null ],
     [ "CreationStatus", "namespacehepce_1_1utils.html#a474adb1fe1bfd8d01326bd6ecfc46542", [
       [ "kError", "namespacehepce_1_1utils.html#a474adb1fe1bfd8d01326bd6ecfc46542ae3587c730cc1aa530fa4ddc9c4204e97", null ],
       [ "kSuccess", "namespacehepce_1_1utils.html#a474adb1fe1bfd8d01326bd6ecfc46542a8c632159fa131f09d04f94e3cbcd8782", null ],

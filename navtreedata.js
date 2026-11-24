@@ -26,49 +26,50 @@ var NAVTREE =
 [
   [ "HEP-CE", "index.html", [
     [ "Hepatitis-C Cost Effectiveness", "index.html", "index" ],
-    [ "Building & Installation", "md_docs_src_installation.html", [
-      [ "Dependencies", "md_docs_src_installation.html#autotoc_md9", null ],
-      [ "Building From Source", "md_docs_src_installation.html#autotoc_md10", [
-        [ "Presets", "md_docs_src_installation.html#autotoc_md11", null ],
-        [ "Using HEP-CE in Your Project", "md_docs_src_installation.html#autotoc_md12", null ],
-        [ "Building on UNIX", "md_docs_src_installation.html#autotoc_md13", null ]
+    [ "Building &amp; Installation", "md_docs_2src_2installation.html", [
+      [ "Dependencies", "md_docs_2src_2installation.html#autotoc_md9", null ],
+      [ "Building From Source", "md_docs_2src_2installation.html#autotoc_md10", [
+        [ "Presets", "md_docs_2src_2installation.html#autotoc_md11", null ],
+        [ "Using HEP-CE in Your Project", "md_docs_2src_2installation.html#autotoc_md12", null ],
+        [ "Building on UNIX", "md_docs_2src_2installation.html#autotoc_md13", null ]
       ] ]
     ] ],
-    [ "Inputs & Outputs", "md_docs_src_data.html", [
-      [ "Directory Structure", "md_docs_src_data.html#autotoc_md15", null ],
-      [ "Input Files", "md_docs_src_data.html#autotoc_md16", [
-        [ "sim.conf", "md_docs_src_data.html#autotoc_md17", null ],
-        [ "Input Database", "md_docs_src_data.html#autotoc_md18", null ]
+    [ "Inputs &amp; Outputs", "md_docs_2src_2data.html", [
+      [ "Directory Structure", "md_docs_2src_2data.html#autotoc_md15", null ],
+      [ "Input Files", "md_docs_2src_2data.html#autotoc_md16", [
+        [ "sim.conf", "md_docs_2src_2data.html#autotoc_md17", null ],
+        [ "Input Database", "md_docs_2src_2data.html#autotoc_md18", null ]
       ] ],
-      [ "Outputs", "md_docs_src_data.html#autotoc_md19", null ]
+      [ "Outputs", "md_docs_2src_2data.html#autotoc_md19", null ]
     ] ],
-    [ "Events", "md_docs_src_events.html", [
-      [ "Aging", "md_docs_src_events.html#autotoc_md21", null ],
-      [ "Behavior Changes", "md_docs_src_events.html#autotoc_md22", null ],
-      [ "Clearance", "md_docs_src_events.html#autotoc_md23", null ],
-      [ "Fibrosis Progression", "md_docs_src_events.html#autotoc_md24", null ],
-      [ "HCV Infection", "md_docs_src_events.html#autotoc_md25", null ],
-      [ "HCV Screening", "md_docs_src_events.html#autotoc_md26", null ],
-      [ "HCV Linking", "md_docs_src_events.html#autotoc_md27", null ],
-      [ "Voluntary Relinking", "md_docs_src_events.html#autotoc_md28", null ],
-      [ "Fibrosis Staging", "md_docs_src_events.html#autotoc_md29", null ],
-      [ "HCV Treatment", "md_docs_src_events.html#autotoc_md30", null ],
-      [ "Pregnancy", "md_docs_src_events.html#autotoc_md31", null ],
-      [ "Overdose", "md_docs_src_events.html#autotoc_md32", null ],
-      [ "Death", "md_docs_src_events.html#autotoc_md33", null ]
+    [ "Events", "md_docs_2src_2events.html", [
+      [ "Aging", "md_docs_2src_2events.html#autotoc_md21", null ],
+      [ "Behavior Changes", "md_docs_2src_2events.html#autotoc_md22", null ],
+      [ "Clearance", "md_docs_2src_2events.html#autotoc_md23", null ],
+      [ "Fibrosis Progression", "md_docs_2src_2events.html#autotoc_md24", null ],
+      [ "HCV Infection", "md_docs_2src_2events.html#autotoc_md25", null ],
+      [ "HCV Screening", "md_docs_2src_2events.html#autotoc_md26", null ],
+      [ "HCV Linking", "md_docs_2src_2events.html#autotoc_md27", null ],
+      [ "Voluntary Relinking", "md_docs_2src_2events.html#autotoc_md28", null ],
+      [ "Fibrosis Staging", "md_docs_2src_2events.html#autotoc_md29", null ],
+      [ "HCV Treatment", "md_docs_2src_2events.html#autotoc_md30", null ],
+      [ "Pregnancy", "md_docs_2src_2events.html#autotoc_md31", null ],
+      [ "Overdose", "md_docs_2src_2events.html#autotoc_md32", null ],
+      [ "Death", "md_docs_2src_2events.html#autotoc_md33", null ]
     ] ],
-    [ "Running the Model", "md_docs_src_run.html", [
-      [ "Using the Executable", "md_docs_src_run.html#autotoc_md35", null ],
-      [ "Arguments", "md_docs_src_run.html#autotoc_md36", null ]
+    [ "Running the Model", "md_docs_2src_2run.html", [
+      [ "Using the Executable", "md_docs_2src_2run.html#autotoc_md35", null ],
+      [ "Arguments", "md_docs_2src_2run.html#autotoc_md36", null ]
     ] ],
-    [ "Limitations", "md_docs_src_limitations.html", [
-      [ "Library", "md_docs_src_limitations.html#autotoc_md38", null ],
-      [ "Data", "md_docs_src_limitations.html#autotoc_md39", null ]
+    [ "Limitations", "md_docs_2src_2limitations.html", [
+      [ "Library", "md_docs_2src_2limitations.html#autotoc_md38", null ],
+      [ "Data", "md_docs_2src_2limitations.html#autotoc_md39", null ]
     ] ],
-    [ "FAQs", "md_docs_src_faq.html", null ],
-    [ "Differences from HEP-CEv1", "md_docs_src_differences.html", [
-      [ "HCV Screening", "md_docs_src_differences.html#autotoc_md42", null ]
+    [ "FAQs", "md_docs_2src_2faq.html", null ],
+    [ "Differences from HEP-CEv1", "md_docs_2src_2differences.html", [
+      [ "HCV Screening", "md_docs_2src_2differences.html#autotoc_md42", null ]
     ] ],
+    [ "Todo List", "todo.html", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -85,13 +86,6 @@ var NAVTREE =
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
-    ] ],
-    [ "Files", "files.html", [
-      [ "File List", "files.html", "files_dup" ],
-      [ "File Members", "globals.html", [
-        [ "All", "globals.html", null ],
-        [ "Macros", "globals_defs.html", null ]
-      ] ]
     ] ]
   ] ]
 ];
@@ -99,11 +93,10 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"event_8hpp.html",
-"namespacehepce_1_1data.html#ad715b3b798cd1fe3f2e96901bea7dbac",
-"structhepce_1_1data_1_1PersonSelect.html#a55fb8635e87c4266895e19aa6ac6d30b",
-"types_8hpp.html#a6f4e9751efaea52f6cb9751d329303fa"
+"functions.html",
+"namespacehepce_1_1utils.html#a38e06624598f36a3ad6fde4f5bbe3900ade970de858c5ffbaccdc0250e117ea9c"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
+const SYNCONMSG = 'click to disable panel synchronization';
+const SYNCOFFMSG = 'click to enable panel synchronization';
+const LISTOFALLMEMBERS = 'List of all members';

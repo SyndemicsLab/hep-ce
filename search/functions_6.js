@@ -3,7 +3,7 @@ var searchData=
   ['getage_0',['GetAge',['../classhepce_1_1model_1_1Person.html#a7dbb26608acdc6d7c69caeb49ff9572e',1,'hepce::model::Person']]],
   ['getbehaviordetails_1',['GetBehaviorDetails',['../classhepce_1_1model_1_1Person.html#a3b7ed62641e4c9139d771e05cc8967d3',1,'hepce::model::Person']]],
   ['getboolfromconfig_2',['GetBoolFromConfig',['../namespacehepce_1_1utils.html#ac72d57518ad7cc8ee9baf33a2c310258',1,'hepce::utils']]],
-  ['getcosts_3',['GetCosts',['../classhepce_1_1model_1_1Person.html#a525c3b79167721500349f868e08a0af6',1,'hepce::model::Person']]],
+  ['getcosts_3',['GetCosts',['../classhepce_1_1model_1_1Costs.html#a15712bf4114337cbf29200d3fe9f2649',1,'hepce::model::Costs::GetCosts()'],['../classhepce_1_1model_1_1Person.html#a525c3b79167721500349f868e08a0af6',1,'hepce::model::Person::GetCosts() const =0']]],
   ['getcosttotals_4',['GetCostTotals',['../classhepce_1_1model_1_1Person.html#a372895dee95181831d38fe9aecaf596a',1,'hepce::model::Person']]],
   ['getcurrentlyoverdosing_5',['GetCurrentlyOverdosing',['../classhepce_1_1model_1_1Person.html#a119129617cb1e31a92528bae82ae267b',1,'hepce::model::Person']]],
   ['getcurrenttimeinmilliseconds_6',['GetCurrentTimeInMilliseconds',['../namespacehepce_1_1utils.html#a82f8e229f02f01d752a28b07c39233e1',1,'hepce::utils']]],
@@ -30,9 +30,10 @@ var searchData=
   ['getseed_27',['GetSeed',['../classhepce_1_1model_1_1Hepce.html#a8666e913198ff2a7be797cf7f5cea385',1,'hepce::model::Hepce']]],
   ['getsex_28',['GetSex',['../classhepce_1_1model_1_1Person.html#a0760b013781f6525fa01151605e050b1',1,'hepce::model::Person']]],
   ['getstringfromconfig_29',['GetStringFromConfig',['../namespacehepce_1_1utils.html#a06bef28e9e93c31a678ce29389d85435',1,'hepce::utils']]],
-  ['gettotalutility_30',['GetTotalUtility',['../classhepce_1_1model_1_1Person.html#a1e43fa5bffe514ef04c1f3f9d4b990c5',1,'hepce::model::Person']]],
-  ['gettreatmentdetails_31',['GetTreatmentDetails',['../classhepce_1_1model_1_1Person.html#a283b415b1f0c7085988ccd4576e813be',1,'hepce::model::Person']]],
-  ['getutilities_32',['GetUtilities',['../classhepce_1_1model_1_1Person.html#a9e76a9909ffac25ce2751e41a88961ca',1,'hepce::model::Person']]],
-  ['givesecondstagingtest_33',['GiveSecondStagingTest',['../classhepce_1_1model_1_1Person.html#a9693c25d3295df87eaf8c144f74c6e2b',1,'hepce::model::Person']]],
-  ['grow_34',['Grow',['../classhepce_1_1model_1_1Person.html#ad25de2ec9dbfb579bce9727dc20bbbb7',1,'hepce::model::Person']]]
+  ['gettotals_30',['GetTotals',['../classhepce_1_1model_1_1Costs.html#a1e774e64b2d269f9e2674e6bd156b35b',1,'hepce::model::Costs']]],
+  ['gettotalutility_31',['GetTotalUtility',['../classhepce_1_1model_1_1Person.html#a1e43fa5bffe514ef04c1f3f9d4b990c5',1,'hepce::model::Person']]],
+  ['gettreatmentdetails_32',['GetTreatmentDetails',['../classhepce_1_1model_1_1Person.html#a283b415b1f0c7085988ccd4576e813be',1,'hepce::model::Person']]],
+  ['getutilities_33',['GetUtilities',['../classhepce_1_1model_1_1Person.html#a9e76a9909ffac25ce2751e41a88961ca',1,'hepce::model::Person']]],
+  ['givesecondstagingtest_34',['GiveSecondStagingTest',['../classhepce_1_1model_1_1Person.html#a9693c25d3295df87eaf8c144f74c6e2b',1,'hepce::model::Person']]],
+  ['grow_35',['Grow',['../classhepce_1_1model_1_1Person.html#ad25de2ec9dbfb579bce9727dc20bbbb7',1,'hepce::model::Person']]]
 ];
